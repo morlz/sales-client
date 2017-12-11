@@ -37,6 +37,7 @@ export default {
 	methods: {
 		clickHandler(row, index) {
 			if (typeof this.onClick == 'function') this.onClick(row)
+			this.$emit("onClick", row)
 		}
 	}
 }

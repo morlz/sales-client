@@ -21,5 +21,14 @@ export default {
 			method: "GET",
 			type: "preorderstats"
 		})
+	},
+	async getLimited (params) {
+		params = core.prepareArrays(params)
+
+		return await core.invoke({
+			method: "get",
+			type: "preorders",
+			params
+		})
 	}
 }

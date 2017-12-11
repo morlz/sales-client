@@ -40,7 +40,7 @@
 						<h2>Задачи</h2>
 					</div>
 
-					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" @onClick="routerGoIdPath('/preorder/tasks')" />
+					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" :onClick="routerGoIdPath('/preorder/tasks')" />
 				</el-card>
 
 				<el-card class="preorders">
@@ -49,11 +49,11 @@
 					</div>
 					<el-tabs>
 						<el-tab-pane label="Предстоящие">
-							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" @onClick="routerGoIdPath('/preorder/records')" />
+							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" />
 						</el-tab-pane>
 
 						<el-tab-pane label="Выполеные">
-							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" @onClick="routerGoIdPath('/preorder/records')" />
+							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" />
 						</el-tab-pane>
 					</el-tabs>
 				</el-card>
@@ -79,12 +79,13 @@
 				v-loading="loadingClients"
 				@onClick="routerGoId"
 				ref="table"
-				@filtredRows="filtredRowsChange"
-				@filter="localClientFilterChange" />
+				@filter="localClientFilterChange"
+				@sortChange="localClientSortChange"
+			/>
 			<infinite-loading @infinite="clientsInfinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="true" />
+				<div class="spinner" slot="spinner" v-loading="loadingBottomClients" />
 			</infinite-loading>
 		</div>
 	</div>
@@ -117,7 +118,8 @@ export default {
 			clientContactsFieldDescription,
 			clientTasksFieldDescription,
 			clientPreordersFieldDescription,
-			searchByPhone: ""
+			searchByPhone: "",
+			seachTimeout: false
 		}
 	},
 	mixins: [mixins],
@@ -133,22 +135,34 @@ export default {
 			} else {
 				this.getAllClients()
 			}
+		},
+		searchByPhone(n){
+			if (this.seachTimeout) clearTimeout (this.seachTimeout)
+
+			this.seachTimeout = setTimeout(() => {
+				this.updateSearchByPhoneQuery(n)
+				this.clientsCacheClear()
+
+				this.$nextTick(() => {
+				  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				})
+			}, 500)
 		}
 	},
 	computed: {
 		...mapGetters([
-			'cachedClientsFormated',
+			'cachedClients',
 			'cachedManagers',
 			'cachedSalons',
 			'loadingClients',
 			'oneLoadingClient',
 			'currentClient',
 			'taskTypes',
-			'recordStatuses'
+			'recordStatuses',
+			'loadingBottomClients'
 		]),
 		data () {
-			//return formated data
-			return this.cachedClientsFormated
+			return this.cachedClients
 		},
 		currentClientMainContact () {
 			if (!this.currentClient || ! this.currentClient.contactfaces) return {}
@@ -186,19 +200,27 @@ export default {
 		...mapActions([
 			'getAllClients',
 			'getOneClient',
-			'clientsInfinity'
+			'clientsInfinity',
+			'clientsSortChanged',
+			'clientsFiltersChange',
+			'clientsCacheClear'
 		]),
 		...mapMutations([
-			'filtredRowsChange',
-			'clientsFiltersChange'
+			'updateSearchByPhoneQuery'
 		]),
 		localClientFilterChange (n) {
 			this.clientsFiltersChange (n)
-			/*
+
 			this.$nextTick(() => {
 			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
-			*/
+		},
+		localClientSortChange (n) {
+			this.clientsSortChanged (n)
+
+			this.$nextTick(() => {
+			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
 		}
 	},
 	mounted(){

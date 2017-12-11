@@ -42,7 +42,7 @@ let dataObj = {
 	clientManyFieldDescription: [
 		//{ field: "id", label: "№", type: "number" },
 		{ field: "fio", label: "ФИО", type: "string" },
-		{ field: "gender", label: "Пол", type: "number" },
+		{ field: "gender", label: "Пол", type: "string" }, //filterOptions: [{ value: 0, text: "Женский" }, { value: 1, text: "Мужской" }], filterDropdown: true
 		{ field: "manager", label: "Менеджер", type: "string" },
 		{ field: "salon", label: "Салон", type: "string" },
 		{ field: "created_at", label: "Создан", type: "string", inputFormat: 'YYYYMMDD', outputFormat: 'MMM Do YY' },

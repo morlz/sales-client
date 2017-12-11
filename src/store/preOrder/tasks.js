@@ -1,53 +1,56 @@
 import api from '@/api'
 
-
-const formatTask = ({ id, contacts, description, managerresponsible, date, type, salon }) => {
-	let { fio } = contacts.find(el => el.regard == "Основной")
-	let { FIO: manager } = managerresponsible
-
-	return {
-		id,
-		fio,
-		description,
-		date,
-		manager,
-		type: type.title,
-		salon: salon.NAME
-	}
-}
-
-
-let fieldDescription = [
-	//{ field: "id", label: "№", type: "string" },
-	{ field: "fio", label: "ФИО", type: "string" },
-	{ field: "description", label: "Задача", type: "string" },
-	{ field: "date", label: "Дата", type: "string" },
-	{ field: "manager", label: "Ответсвенный", type: "string" },
-	{ field: "type", label: "Тип", type: "string" },
-	//{ field: "endManager", label: "Завершил", type: "string" },
-	//{ field: "endDate", label: "Дата завершения", type: "string" },
-	//{ field: "summ", label: "Сумма", type: "number" },
-	//{ field: "created_at", label: "Дата создания", type: "string" },
-	//{ field: "creatorManager", label: "Создатель", type: "string" },
-	{ field: "salon", label: "Салон", type: "string" },
-]
-
 const state = {
 	cached: [],
-	loading: true,
+	filters: [],
+	sort: [],
 	types: [],
 	current: 0,
 	loading: true,
-	currentLoading: true
+	loadingBottom: false,
+	oneLoading: true,
+	perLoadingLimit: 30,
+	offset: 0
 }
 
 const actions = {
-	getAllTasks({ commit, dispatch }){
+	tasksSortChanged({ commit, dispatch }, payload){
+		dispatch('tasksCacheClear')
+		commit("tasksSortChange", payload)
+	},
+	tasksFiltersChange({ commit, dispatch }, payload){
+		dispatch('tasksCacheClear')
+		commit("tasksFiltersChange", payload)
+	},
+	tasksCacheClear({ commit, dispatch }){
+		commit("clearCachedTasks")
+		commit('setCurrentOffsetTasks')
+		commit('loadingTasksSet', true)
+	},
+	getAllTasks({ commit, dispatch }, ids){
 		api.preorders.tasks
-			.getAll()
+			.getAll(ids)
 			.then(({ data }) => {
 				commit('updateCachedTasks', data)
 				commit('loadingTasksSet', false)
+			})
+	},
+	tasksInfinity({ commit, dispatch, state, getters }, payload){
+		commit('loadingBottomTasksSet', true)
+		api.preorders.tasks
+			.getLimited({
+				limit: state.perLoadingLimit,
+				offset: state.offset,
+				filters: getters.taskFIlters,
+				sort: state.sort
+			})
+			.then(({ data }) => {
+				commit('updateCachedTasks', data)
+				commit('loadingTasksSet', false)
+				commit('loadingBottomTasksSet', false)
+				commit('setCurrentOffsetTasks')
+				payload.loaded()
+				if (!data.length) payload.complete ()
 			})
 	},
 	getOneTask({ commit, dispatch }, payload){
@@ -56,8 +59,42 @@ const actions = {
 		api.preorders.tasks
 			.getOne(payload)
 			.then(({ data }) => {
+				const unique = (value, index, self) => self.indexOf(value) === index
+				let salonIDs = []
+
+				data.tasks.forEach(task => {
+					salonIDs.push(task.salon_id)
+				})
+
+				salonIDs = salonIDs.filter(unique)
+
+				// --------------------------------------------
+				// rewrite this
+
+				salonIDs.forEach(id => dispatch('getOneSalon', id))
+
+				// ---------------------------------------------
+
 				commit('updateCachedTasks', [data])
 				commit('oneLoadingTaskSet', false)
+			})
+	},
+	searchTasksByPhone({ commit, dispatch }, payload){
+		commit('updateSearchByPhoneQuery', payload)
+		if (!payload) return
+		commit('loadingByPhoneTasksSet', true)
+		api.preorders.tasks
+			.searchByPhone(payload)
+			.then(({ data }) => {
+				commit('updateCachedTasks', data)
+				commit('loadingByPhoneTasksSet', false)
+			})
+	},
+	getAllTaskStatuses ({ commit, dispatch }) {
+		api.preorders.tasks
+			.getSatuses()
+			.then(({ data }) => {
+				commit('setPreorderStatuses', data)
 			})
 	},
 	getAllTaskTypes({ commit, dispatch }){
@@ -67,9 +104,22 @@ const actions = {
 				commit('setTaskTypes', data)
 			})
 	}
+
 }
 
 const mutations = {
+	clearCachedTasks (store, payload){
+		store.cached = []
+	},
+	tasksFiltersChange (store, payload) {
+		store.filters = payload
+	},
+	tasksSortChange (store, payload) {
+		store.sort = payload
+	},
+	filtredRowsChange (store, payload) {
+		store.filteredRows = payload
+	},
 	updateCachedTasks(store, payload){
 		payload.map(el => {
 			let id = el.id || el
@@ -95,26 +145,35 @@ const mutations = {
 	loadingTasksSet(store, payload) {
 		store.loading = payload
 	},
+	loadingBottomTasksSet(store, payload) {
+		store.loadingBottom = payload
+	},
+	oneLoadingTaskSet(store, payload){
+		store.oneLoading = payload
+	},
+	loadingByPhoneTasksSet(store, payload) {
+		store.loadingByPhone = payload
+	},
+	updateSearchByPhoneQuery(store, payload) {
+		state.searchByPhoneQuery = payload
+	},
+	setCurrentTask(store, payload) {
+		store.current = payload
+	},
+	setCurrentOffsetTasks(store, payload) {
+		store.offset = payload || store.cached.length
+	},
 	setTaskTypes(store, payload){
 		store.types = payload
 	},
-	loadingTasksSet(store, payload) {
-		store.loading = payload
-	},
-	oneLoadingTaskSet(store, payload) {
-		store.currentLoading = payload
-	},
-	setCurrentTask(store, payload){
-		store.current = payload
+	setPreorderStatuses(store, payload){
+		store.statuses = payload
 	}
 }
 
 const getters = {
-	loadingTasks({ loading }){
-		return loading
-	},
-	loadingCurrentTask({ currentLoading }){
-		return currentLoading
+	tasksCachedIds ({ cached }) {
+		return cached.map(el => el.id)
 	},
 	currentTask({ cached, current }) {
 		return cached.find(el => el.id == current) || {}
@@ -122,8 +181,26 @@ const getters = {
 	cachedTasks({ cached }){
 		return cached
 	},
-	cachedTasksFormated({ cached }){
-		return cached.map(formatTask)
+	loadingTasks({ loading }){
+		return loading
+	},
+	loadingBottomTasks({ loadingBottom }){
+		return loadingBottom
+	},
+	oneLoadingTask({ oneLoading }){
+		return oneLoading
+	},
+	tasksByPhone({ cached, searchByPhoneQuery }){
+		return []//cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1)
+	},
+	loadingTasksByPhone({ loadingByPhone }){
+		return loadingByPhone
+	},
+	taskFIlters ({ searchByPhoneQuery: phone, filters }) {
+		return Object.assign({ phone }, filters)
+	},
+	taskStatuses ({ statuses }) {
+		return statuses
 	},
 	taskTypes({ types }){
 		let rez = []

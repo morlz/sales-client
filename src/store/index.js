@@ -3,6 +3,7 @@ import Vue from 'vue'
 Vue.use(Vuex)
 
 import nav from '@/store/main/nav'
+import files from '@/store/main/files'
 import clients from '@/store/preOrder/clients'
 import records from '@/store/preOrder/records'
 import tasks from '@/store/preOrder/tasks'
@@ -16,6 +17,7 @@ export default new Vuex.Store({
 		records,
 		tasks,
 		managers,
-		salons
+		salons,
+		files
 	}
 })

@@ -21,5 +21,14 @@ export default {
 			method: "get",
 			type: "tasktypes"
 		})
+	},
+	async getLimited (params) {
+		params = core.prepareArrays(params)
+
+		return await core.invoke({
+			method: "get",
+			type: "tasks",
+			params
+		})
 	}
 }

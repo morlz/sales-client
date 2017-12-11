@@ -1,19 +1,21 @@
 <template>
-<div id="app">
-	<div class="header">
-		<main-header/>
-	</div>
+<div class="app" :class="{ menuOpenMain: menuOpen }">
 	<div class="menu">
 		<main-menu/>
 	</div>
-	<div class="main">
-		<router-view/>
+	<div class="mainContentWrapper">
+		<div class="header">
+			<main-header/>
+		</div>
+		<div class="main">
+			<router-view/>
+		</div>
 	</div>
 </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import mainMenu from '@/components/mainMenu.vue'
 import mainHeader from '@/components/header.vue'
 
@@ -23,6 +25,7 @@ export default {
 		mainMenu,
 		mainHeader
 	},
+	computed: mapGetters(['menuOpen']),
 	methods: {
 		...mapActions([
 			'getAllTaskTypes',
@@ -49,27 +52,38 @@ body {
 	color: #5a5e66;
 }
 
-#app {
+.app {
 	font-family: 'Avenir', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 
-	display: grid;
-	grid-template: 	"menu head" 50px
-					"menu main" auto;
-
-	.header {
-		grid-area: head;
-	}
+	transition: all 0.3s ease-in-out;
 
 	.menu {
-		grid-area: menu;
+		width: 80px;
+		float: left;
+		transition: all 0.3s ease-in-out;
+	}
+
+	.mainContentWrapper {
+		width: ~"calc(100% - 80px)";
+		transition: all 0.3s ease-in-out;
+		float: left;
 	}
 
 	.main {
-		grid-area: main;
+		box-sizing: border-box;
 		padding: 10px;
 		color: #5a5e66;
+	}
+}
+
+.menuOpenMain {
+	.menu {
+		width: 300px;
+	}
+	.mainContentWrapper {
+		width: ~"calc(100% - 300px)";
 	}
 }
 
@@ -121,10 +135,20 @@ h2 {
 }
 
 @media screen and (max-width: 768px) {
-	#app {
-		grid-template: 	"menu head" 50px
-						"menu main" auto
-					~"/" minmax(0, max-content) 1fr;
+	.app {
+		.logo {
+			display: none;
+		}
+		.mainContentWrapper {
+			width: 100%;
+		}
+	}
+}
+
+.el-button, .el-checkbox {
+	transition: all 0.3s ease-in-out;
+	span {
+		transition: all 0.3s ease-in-out;
 	}
 }
 

@@ -4,16 +4,59 @@
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/records' }">Список предзаказов</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/preorder/records/${oneId}` }">Заказ №{{oneId}}</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/preorder/records/${oneId}` }">Предзаказ №{{oneId}}</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<el-form>
-			<el-card>
+		<el-form class="cards">
+			<el-card class="info">
 				<h2 slot="header">Общая информация</h2>
 
-				<el-card>
-					{{ currentRecord }}
-				</el-card>
+				<div class="infoGrid">
+					<div>Салон</div>
+					<div>{{ currentRecord.salon ? currentRecord.salon.NAME : '...' }}</div>
+					<div>Менеджер</div>
+					<div>{{ currentRecord.manager ? currentRecord.manager.FIO : '...' }}</div>
+					<div>Дата создания</div>
+					<div>{{ currentRecord.created_at }}</div>
+					<div>Клиент</div>
+					<div>{{ currentRecordCLientMainContact.fio }}</div>
+					<div>Адрес</div>
+					<div>{{ currentRecordCLientMainContact.address }}</div>
+					<div>Рекл. источник</div>
+					<div>{{ currentRecord.adsource ? currentRecord.adsource.NAME : '...' }}</div>
+					<div>Вероятность</div>
+					<div><el-rate :value="+currentRecord.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" disabled /></div>
+					<div>Бюджет</div>
+					<div>{{ currentRecord.budget }}</div>
+					<div>Сумма предоплаты</div>
+					<div>{{ currentRecord.prepay_summ }}</div>
+					<div>Сумма расчёта</div>
+					<div>{{ currentRecord.calc_summ }}</div>
+					<div>Примечание</div>
+					<div>{{ currentRecord.description }}</div>
+				</div>
+			</el-card>
+
+			<el-card class="contacts">
+				<h2 slot="header">Контакты</h2>
+
+				<lightTable :data="currentRecord.contactFaces || [	]" :fieldDescription="clientContactsFieldDescription" />
+			</el-card>
+
+			<el-card class="tasks">
+				<h2 slot="header">Задачи</h2>
+
+				<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" :onClick="routerGoIdPath('/preorder/tasks')" />
+			</el-card>
+
+			<el-card class="files">
+				<h2 slot="header">Прикреплённые файлы</h2>
+
+				<el-upload
+					action="fileUploadUrl"
+				>
+					<el-button size="small" type="primary">Загрузить файл</el-button>
+				</el-upload>
 			</el-card>
 		</el-form>
 	</div>
@@ -25,7 +68,22 @@
 		</el-breadcrumb>
 		<el-tabs tab-position="top">
 			<el-tab-pane label="Все предзаказы">
-				<tabless :data="data" :fieldDescription="recordsManyFieldDescription" :key="1" v-loading="loadingRecords" @onClick="routerGoId" />
+				<tabless
+					:data="data"
+					:fieldDescription="recordsManyFieldDescription"
+					:key="1"
+					v-loading="loadingRecords"
+					@onClick="routerGoId"
+					ref="table"
+					@filter="localRecordFilterChange"
+					@sortChange="localRecordSortChange"
+				/>
+				<infinite-loading @infinite="recordsInfinity" ref="infiniteLoading">
+					<div class="end" slot="no-results" />
+					<div class="end" slot="no-more" />
+					<div class="spinner" slot="spinner" v-loading="loadingBottomRecords" />
+				</infinite-loading>
+
 			</el-tab-pane>
 
 			<el-tab-pane label="Новый предзаказ">
@@ -40,7 +98,7 @@
 						</el-form-item>
 
 						<el-form-item label="Бюджет">
-							<el-input-number v-model="addForm.butget" placeholder="Бюджет" :min="0" :step="2500" />
+							<el-input v-model="addForm.butget" placeholder="Бюджет" />
 						</el-form-item>
 
 						<el-form-item label="Веростность">
@@ -102,7 +160,7 @@
 
 						<el-form-item label="Тип">
 							<el-select v-model="addForm.type" placeholder="Тип">
-								<el-option v-for="item in taskTypes" :key="item.value" :label="item.label" :value="item.value" />
+								<el-option v-for="item in addTaskTypes" :key="item.value" :label="item.label" :value="item.value" />
 							</el-select>
 						</el-form-item>
 
@@ -136,7 +194,9 @@ import fieldDescription from '@/static/fieldDescription'
 let {
 	recordsManyFieldDescription,
 	adSources,
-	taskTypes
+	taskTypes: addTaskTypes,
+	clientContactsFieldDescription,
+	clientTasksFieldDescription
 } = fieldDescription
 
 import {
@@ -145,13 +205,18 @@ import {
 } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS.vue'
+import lightTable from '@/components/lightTable.vue'
+import InfiniteLoading from 'vue-infinite-loading'
+
 
 export default {
 	data() {
 		return {
 			recordsManyFieldDescription,
 			adSources,
-			taskTypes,
+			clientContactsFieldDescription,
+			clientTasksFieldDescription,
+			addTaskTypes,
 			addForm: {
 				source: "",
 				butget: "",
@@ -175,7 +240,9 @@ export default {
 	},
 	mixins: [mixins],
 	components: {
-		tabless
+		tabless,
+		InfiniteLoading,
+		lightTable
 	},
 	watch: {
 		oneId () {
@@ -188,30 +255,62 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'cachedRecordsFormated',
+			'cachedRecords',
 			'loadingRecords',
 			'clientsByPhone',
-			'loadingClientsByPhone',
-			'currentRecord'
+			'currentRecord',
+			'loadingBottomRecords',
+			'cachedSalons',
+			'taskTypes',
+			'fileUploadUrl',
+			'loadingClientsByPhone'
 		]),
+		currentRecordCLientMainContact () {
+			return this.currentRecord.contactFaces ? this.currentRecord.contactFaces.find(el => el.regard == "Основной") : {}
+		},
 		data() {
-			return this.cachedRecordsFormated
+			return this.cachedRecords
 		},
 		isOne () {
 			return this.$route.params.id !== undefined
 		},
 		oneId () {
 			return this.$route.params.id
-		}
+		},
+		clientTasksFormated () {
+			return this.currentRecord.tasks ? this.currentRecord.tasks.map(task => {
+				task.type = this.taskTypes[task.type_id] ? this.taskTypes[task.type_id].title : '...'
+				let salon = this.cachedSalons.find(el => task.salon_id == el.ID_SALONA)
+				task.salon = salon ? salon.NAME : '...'
+				return task
+			}) : []
+		},
 	},
 	methods: {
 		...mapActions([
 			'getAllRecords',
 			'searchClientsByPhone',
-			'getOneRecord'
+			'getOneRecord',
+			'recordsInfinity',
+			'recordsFiltersChange',
+			'recordsSortChanged'
 		]),
 		onAddForm () {
 			console.log(this.addForm);
+		},
+		localRecordFilterChange (n) {
+			this.recordsFiltersChange (n)
+
+			this.$nextTick(() => {
+			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
+		},
+		localRecordSortChange (n) {
+			this.recordsSortChanged (n)
+
+			this.$nextTick(() => {
+			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
 		}
 	},
 	mounted() {
@@ -236,4 +335,40 @@ export default {
     }
 	padding-bottom: 10px;
 }
+.oneRecordWrapper {
+	.cards {
+		display: grid;
+		grid-gap: 20px;
+		grid-template-columns: 550px 1fr;
+		.tasks, .files {
+			grid-column: ~"1 / 3";
+		}
+
+		.infoGrid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			> div {
+				padding: 5px 0;
+				&:not(:last-child) {
+					border-bottom: 1px solid #f4f4f4;
+				}
+				&:nth-child(2n+1) {
+					font-weight: bold;
+				}
+			}
+		}
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	.oneRecordWrapper {
+		.cards {
+			grid-template-columns: 1fr;
+			.tasks, .files {
+				grid-column: ~"1 / 2";
+			}
+		}
+	}
+}
+
 </style>

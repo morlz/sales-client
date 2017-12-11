@@ -65,6 +65,8 @@ export default {
 			if (!this.mounted) return false
 			if (!this.$children.length) return {}
 			let { sortType, sortColumn } = this.$refs.goodTable.$data
+			let sortColumnDescription = this.fieldDescription[sortColumn]
+			sortColumn = sortColumnDescription ? sortColumnDescription.name : sortColumn
 			return this.addGettersData({ sortType, sortColumn })
 		}
 	},
@@ -113,7 +115,7 @@ export default {
 				td {
 					padding: 5px;
 				}
-				th {
+				th:not(.line-numbers) {
 					border-bottom: 2px solid #f4f4f4;
 				}
 				thead {

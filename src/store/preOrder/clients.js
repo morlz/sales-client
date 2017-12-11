@@ -1,35 +1,32 @@
 import api from '@/api'
 
-const formatClient = ({ id, contactfaces, manager, salon, created_at }) => {
-	let { fio, gender, phone } = contactfaces.find(el => el.regard == "Основной")
-	return {
-		id,
-		fio,
-		gender,
-		manager: manager.FIO,
-		salon: salon.NAME,
-		created_at
-	}
-}
-
-
 const state = {
 	cached: [],
 	filters: [],
 	sort: [],
-	filteredRows: [],
 	current: 0,
 	loading: true,
+	loadingBottom: false,
 	oneLoading: true,
 	loadingByPhone: false,
 	searchByPhoneQuery: "",
-	perLoadingLimit: 30
+	perLoadingLimit: 30,
+	offset: 0
 }
 
 const actions = {
 	clientsSortChanged({ commit, dispatch }, payload){
-		commit("clearCachedClients")
+		dispatch('clientsCacheClear')
 		commit("clientsSortChange", payload)
+	},
+	clientsFiltersChange({ commit, dispatch }, payload){
+		dispatch('clientsCacheClear')
+		commit("clientsFiltersChange", payload)
+	},
+	clientsCacheClear({ commit, dispatch }){
+		commit("clearCachedClients")
+		commit('setCurrentOffsetClients')
+		commit('loadingClientsSet', true)
 	},
 	getAllClients({ commit, dispatch }, ids){
 		api.preorders.clients
@@ -40,18 +37,21 @@ const actions = {
 			})
 	},
 	clientsInfinity({ commit, dispatch, state, getters }, payload){
+		commit('loadingBottomClientsSet', true)
 		api.preorders.clients
 			.getLimited({
 				limit: state.perLoadingLimit,
-				loadedIds: getters.clientsCachedIds,
-				filters: state.filters,
+				offset: state.offset,
+				filters: getters.clientFIlters,
 				sort: state.sort
 			})
 			.then(({ data }) => {
 				commit('updateCachedClients', data)
 				commit('loadingClientsSet', false)
+				commit('loadingBottomClientsSet', false)
+				commit('setCurrentOffsetClients')
 				payload.loaded()
-				if (!data.length) payload.complete()
+				if (!data.length) payload.complete ()
 			})
 	},
 	getOneClient({ commit, dispatch }, payload){
@@ -60,8 +60,6 @@ const actions = {
 		api.preorders.clients
 			.getOne(payload)
 			.then(({ data }) => {
-
-
 				const unique = (value, index, self) => self.indexOf(value) === index
 
 				let managerIDs = [], salonIDs = []
@@ -141,6 +139,9 @@ const mutations = {
 	loadingClientsSet(store, payload) {
 		store.loading = payload
 	},
+	loadingBottomClientsSet(store, payload) {
+		store.loadingBottom = payload
+	},
 	oneLoadingClientSet(store, payload){
 		store.oneLoading = payload
 	},
@@ -152,6 +153,9 @@ const mutations = {
 	},
 	setCurrentClient(store, payload) {
 		store.current = payload
+	},
+	setCurrentOffsetClients(store, payload) {
+		store.offset = payload || store.cached.length
 	}
 }
 
@@ -165,11 +169,11 @@ const getters = {
 	cachedClients({ cached }){
 		return cached
 	},
-	cachedClientsFormated({ cached }){
-		return cached.map(formatClient)
-	},
 	loadingClients({ loading }){
 		return loading
+	},
+	loadingBottomClients({ loadingBottom }){
+		return loadingBottom
 	},
 	oneLoadingClient({ oneLoading }){
 		return oneLoading
@@ -179,6 +183,9 @@ const getters = {
 	},
 	loadingClientsByPhone({ loadingByPhone }){
 		return loadingByPhone
+	},
+	clientFIlters ({ searchByPhoneQuery: phone, filters }) {
+		return Object.assign({ phone }, filters)
 	}
 }
 

@@ -38,7 +38,7 @@ export default {
 		return rez
 	},
 	async invoke (params = {}) {
-		//await _wait() //emit real server
+		//await _wait(10000, 5000) //emit real server
 		if (!params.data) params.data = {}
 		let url = `http://localhost/sales-server/web/${params.type}`
 		if (params.data.id !== undefined) url += `/${params.data.id}`
