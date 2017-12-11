@@ -68,15 +68,7 @@ const actions = {
 					salonIDs.push(task.salon_id)
 				})
 
-				salonIDs = salonIDs.filter(unique)
-
-				// --------------------------------------------
-				// rewrite this
-
-				salonIDs.forEach(id => dispatch('getOneSalon', id))
-
-				// ---------------------------------------------
-
+				dispatch('getSalonsByIds', salonIDs.filter(unique))
 				commit('updateCachedRecords', [data])
 				commit('oneLoadingRecordSet', false)
 			})

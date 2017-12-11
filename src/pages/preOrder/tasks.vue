@@ -4,59 +4,11 @@
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/preorder/tasks/${oneId}` }">Задача №{{oneId}}</el-breadcrumb-item>
 		</el-breadcrumb>
 
 		<el-form class="cards">
 			<el-card class="info">
 				<h2 slot="header">Общая информация</h2>
-
-				<div class="infoGrid">
-					<div>Салон</div>
-					<div>{{ currentTask.salon ? currentTask.salon.NAME : '...' }}</div>
-					<div>Менеджер</div>
-					<div>{{ currentTask.manager ? currentTask.manager.FIO : '...' }}</div>
-					<div>Дата создания</div>
-					<div>{{ currentTask.created_at }}</div>
-					<div>Клиент</div>
-					<div>{{ currentTaskCLientMainContact.fio }}</div>
-					<div>Адрес</div>
-					<div>{{ currentTaskCLientMainContact.address }}</div>
-					<div>Рекл. источник</div>
-					<div>{{ currentTask.adsource ? currentTask.adsource.NAME : '...' }}</div>
-					<div>Вероятность</div>
-					<div><el-rate :value="+currentTask.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" disabled /></div>
-					<div>Бюджет</div>
-					<div>{{ currentTask.budget }}</div>
-					<div>Сумма предоплаты</div>
-					<div>{{ currentTask.prepay_summ }}</div>
-					<div>Сумма расчёта</div>
-					<div>{{ currentTask.calc_summ }}</div>
-					<div>Примечание</div>
-					<div>{{ currentTask.description }}</div>
-				</div>
-			</el-card>
-
-			<el-card class="contacts">
-				<h2 slot="header">Контакты</h2>
-
-				<lightTable :data="currentTask.contactFaces || [	]" :fieldDescription="clientContactsFieldDescription" />
-			</el-card>
-
-			<el-card class="tasks">
-				<h2 slot="header">Задачи</h2>
-
-				<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" :onClick="routerGoIdPath('/preorder/tasks')" />
-			</el-card>
-
-			<el-card class="files">
-				<h2 slot="header">Прикреплённые файлы</h2>
-
-				<el-upload
-					action="fileUploadUrl"
-				>
-					<el-button size="small" type="primary">Загрузить файл</el-button>
-				</el-upload>
 			</el-card>
 		</el-form>
 	</div>
@@ -73,7 +25,7 @@
 					:fieldDescription="tasksManyFieldDescription"
 					:key="1"
 					v-loading="loadingTasks"
-					@onClick="routerGoId"
+					@onClick="goToPreorder"
 					ref="table"
 					@filter="localTaskFilterChange"
 					@sortChange="localTaskSortChange"
@@ -91,23 +43,9 @@
 					<el-card>
 						<h2 slot="header">Новый задача</h2>
 
-						<el-form-item label="Источник">
-							<el-select v-model="addForm.source" placeholder="Выбирите рекламный источник">
-								<el-option v-for="item in adSources" :key="item.value" :label="item.label" :value="item.value" />
-							</el-select>
-						</el-form-item>
-
-						<el-form-item label="Бюджет">
-							<el-input v-model="addForm.butget" placeholder="Бюджет" />
-						</el-form-item>
-
-						<el-form-item label="Веростность">
-							<el-rate v-model="addForm.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" />
-						</el-form-item>
-
-						<el-form-item label="Примечание">
-							<el-input type="textarea" v-model="addForm.description" placeholder="Примечание" />
-						</el-form-item>
+						<div>
+							...
+						</div>
 					</el-card>
 				</el-form>
 			</el-tab-pane>
@@ -243,6 +181,11 @@ export default {
 			this.$nextTick(() => {
 			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
+		},
+		goToPreorder (id) {
+			id = id.id || id
+
+			router.push({ path: `/preorder/records/${id	}` })
 		}
 	},
 	mounted() {

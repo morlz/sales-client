@@ -59,22 +59,6 @@ const actions = {
 		api.preorders.tasks
 			.getOne(payload)
 			.then(({ data }) => {
-				const unique = (value, index, self) => self.indexOf(value) === index
-				let salonIDs = []
-
-				data.tasks.forEach(task => {
-					salonIDs.push(task.salon_id)
-				})
-
-				salonIDs = salonIDs.filter(unique)
-
-				// --------------------------------------------
-				// rewrite this
-
-				salonIDs.forEach(id => dispatch('getOneSalon', id))
-
-				// ---------------------------------------------
-
 				commit('updateCachedTasks', [data])
 				commit('oneLoadingTaskSet', false)
 			})

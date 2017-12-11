@@ -9,5 +9,14 @@ export default {
 				id
 			}
 		})
+	},
+	async getByIds (ids) {
+		let params = core.prepareArrays({ ids })
+
+		return await core.invoke({
+			method: "get",
+			type: "salons",
+			params
+		})
 	}
 }

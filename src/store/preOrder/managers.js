@@ -14,7 +14,16 @@ const actions = {
 				commit('updateCachedManagers', [data])
 				commit('loadingManagersSet', false)
 			})
-	}
+	},
+	getManagersByIds({ commit, dispatch }, payload){
+		commit('loadingManagersSet', true)
+		api.preorders.managers
+			.getByIds(payload)
+			.then(({ data }) => {
+				commit('updateCachedManagers', data)
+				commit('loadingManagersSet', false)
+			})
+	},
 }
 
 const mutations = {

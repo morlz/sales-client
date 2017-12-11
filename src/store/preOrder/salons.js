@@ -14,6 +14,15 @@ const actions = {
 				commit('updateCachedSalons', [data])
 				commit('loadingSalonsSet', false)
 			})
+	},
+	getSalonsByIds({ commit, dispatch }, payload){
+		commit('loadingSalonsSet', true)
+		api.preorders.salons
+			.getByIds(payload)
+			.then(({ data }) => {
+				commit('updateCachedSalons', data)
+				commit('loadingSalonsSet', false)
+			})
 	}
 }
 

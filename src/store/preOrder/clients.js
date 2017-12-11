@@ -73,17 +73,8 @@ const actions = {
 					salonIDs.push(task.salon_id)
 				})
 
-				managerIDs = managerIDs.filter(unique)
-				salonIDs = salonIDs.filter(unique)
-
-				// --------------------------------------------
-				// rewrite this
-
-				managerIDs.forEach(id => dispatch('getOneManager', id))
-				salonIDs.forEach(id => dispatch('getOneSalon', id))
-
-				// ---------------------------------------------
-
+				dispatch('getManagersByIds', managerIDs.filter(unique))
+				dispatch('getSalonsByIds', salonIDs.filter(unique))
 				commit('updateCachedClients', [data])
 				commit('oneLoadingClientSet', false)
 			})

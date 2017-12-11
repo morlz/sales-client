@@ -11,6 +11,10 @@
 			<el-card class="info">
 				<h2 slot="header">Общая информация</h2>
 
+				<el-steps :active="+currentRecord.status_id" align-center finish-status="success">
+					<el-step :title="item.title" v-for="item, index in recordStatuses" :key="index"></el-step>
+				</el-steps>
+
 				<div class="infoGrid">
 					<div>Салон</div>
 					<div>{{ currentRecord.salon ? currentRecord.salon.NAME : '...' }}</div>
@@ -41,6 +45,9 @@
 				<h2 slot="header">Контакты</h2>
 
 				<lightTable :data="currentRecord.contactFaces || [	]" :fieldDescription="clientContactsFieldDescription" />
+				<div class="buttons">
+					<el-button type="primary">Добавить контакт</el-button>
+				</div>
 			</el-card>
 
 			<el-card class="tasks">
@@ -55,7 +62,7 @@
 				<el-upload
 					action="fileUploadUrl"
 				>
-					<el-button size="small" type="primary">Загрузить файл</el-button>
+					<el-button type="primary">Загрузить файл</el-button>
 				</el-upload>
 			</el-card>
 		</el-form>
@@ -263,7 +270,8 @@ export default {
 			'cachedSalons',
 			'taskTypes',
 			'fileUploadUrl',
-			'loadingClientsByPhone'
+			'loadingClientsByPhone',
+			'recordStatuses'
 		]),
 		currentRecordCLientMainContact () {
 			return this.currentRecord.contactFaces ? this.currentRecord.contactFaces.find(el => el.regard == "Основной") : {}
@@ -329,7 +337,7 @@ export default {
 .addForm {
 	display: grid;
 	grid-gap: 20px;
-	grid-template-columns: repeat(auto-fit, minmax(500px, auto));
+	grid-template-columns: repeat(auto-fit, minmax(450px, auto));
     h2 {
         margin-left: 20px;
     }
@@ -342,6 +350,18 @@ export default {
 		grid-template-columns: 550px 1fr;
 		.tasks, .files {
 			grid-column: ~"1 / 3";
+		}
+
+		.info {
+			.el-steps {
+				margin-bottom: 10px;
+			}
+		}
+
+		.contacts {
+			.buttons {
+				margin-top: 10px;
+			}
 		}
 
 		.infoGrid {
