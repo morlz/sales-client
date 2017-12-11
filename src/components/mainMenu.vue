@@ -8,26 +8,29 @@
 
 	<div class="shadow" :class="{ shadowActive: menuOpen }" @click="closeMenu"></div>
 
-	<el-menu :default-active="dafaultActive" :class="{ isCollapse: !menuOpen }" class="mainMenu" @select="menuClickHandler">
-		<div class="moileBackButton el-icon-back" @click="closeMenu" />
+	<div class="backgroundWrapper" :class="{ isCollapse: !menuOpen }">
+		<el-menu :default-active="dafaultActive" class="mainMenu" @select="menuClickHandler">
+			<div class="moileBackButton el-icon-back" @click="closeMenu" />
 
-		<el-menu-item v-for="item in menuItemsWithoutChilds(menuItemsWithIndexes)" :index="item.path || item.index" :key="item.index">
-			<i :class="item.icon || 'el-icon-location'" />
-			<div class="name">{{item.name}}</div>
-		</el-menu-item>
-
-		<el-submenu v-for="item in menuItemsWithChilds(menuItemsWithIndexes)" :index="item.index" :key="item.index">
-			<template slot="title">
+			<el-menu-item v-for="item in menuItemsWithoutChilds(menuItemsWithIndexes)" :index="item.path || item.index" :key="item.index">
 				<i :class="item.icon || 'el-icon-location'" />
-				<div class="name"> {{ item.name }} </div>
-			</template>
-
-			<el-menu-item v-for="cItem in menuItemsWithoutChilds(item.childs)" :index="cItem.path || cItem.index" :key="cItem.index">
-				<i :class="cItem.icon || 'el-icon-location'" />
-				<div class="name">{{cItem.name}}</div>
+				<div class="name">{{item.name}}</div>
 			</el-menu-item>
-		</el-submenu>
-	</el-menu>
+
+			<el-submenu v-for="item in menuItemsWithChilds(menuItemsWithIndexes)" :index="item.index" :key="item.index">
+				<template slot="title">
+					<i :class="item.icon || 'el-icon-location'" />
+					<div class="name"> {{ item.name }} </div>
+				</template>
+
+				<el-menu-item v-for="cItem in menuItemsWithoutChilds(item.childs)" :index="cItem.path || cItem.index" :key="cItem.index">
+					<i :class="cItem.icon || 'el-icon-location'" />
+					<div class="name">{{cItem.name}}</div>
+				</el-menu-item>
+			</el-submenu>
+		</el-menu>
+	</div>
+
 </div>
 </template>
 
@@ -95,24 +98,26 @@ export default {
 		width: 100%;
 		height: 100%;
 		background: rgba(0, 0, 0, 0.5);
-		transition: all 0.3s ease-in-out;
+		transition: all 0.4s ease-in-out;
 	}
 
-	.mainMenu {
-		max-width: 320px;
-		overflow: hidden;
-		transition: all 0.3s ease-in-out;
-		.moileBackButton {
-			display: none;
-		}
-		.name {
-			display: inline-block;
-			transition: all 0.3s ease-in-out;
+	.backgroundWrapper {
+		width: 300px;
+		overflow:hidden;
+		transition: all 0.4s ease-in-out;
+		.mainMenu {
+			.moileBackButton {
+				display: none;
+			}
+			.name {
+				display: inline-block;
+				transition: all 0.4s ease-in-out;
+			}
 		}
 	}
 
 	.isCollapse {
-		max-width: 80px;
+		width: 80px;
 		.name {
 			opacity: 0;
 		}
@@ -125,20 +130,28 @@ export default {
 			pointer-events: all;
 			opacity: 1;
 		}
-		.mainMenu {
-			position: absolute;
+
+		.backgroundWrapper {
+			background-color: #fff;
+			position: fixed;
 			top: 0;
 			left: 0;
 			z-index: 25;
-			.moileBackButton {
-				height: 50px;
-				line-height: 50px;
-				padding: 0 20px;
-				display: block;
+			height: 100%;
+			overflow-x: hidden;
+			overflow-y: auto;
+			.mainMenu {
+				.moileBackButton {
+					height: 50px;
+					line-height: 50px;
+					padding: 0 20px;
+					display: block;
+				}
 			}
 		}
+
 		.isCollapse {
-			max-width: 0;
+			width: 0;
 		}
 	}
 

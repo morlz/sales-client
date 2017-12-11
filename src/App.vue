@@ -56,8 +56,7 @@ body {
 
 	display: grid;
 	grid-template: 	"menu head" 50px
-					"menu main" auto
-				~"/" minmax(80px, max-content) auto;
+					"menu main" auto;
 
 	.header {
 		grid-area: head;
