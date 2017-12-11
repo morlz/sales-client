@@ -1,15 +1,20 @@
 <template>
 <header>
 	<div class="toggleMenu" @click="toggleMenu" />
+	<profile/>
 </header>
 </template>
 
 <script>
 import { mapMutations } from 'vuex'
+import profile from '@/components/profile.vue'
 
 export default {
 	methods: {
 		...mapMutations(['toggleMenu'])
+	},
+	components: {
+		profile
 	}
 }
 </script>
@@ -19,6 +24,9 @@ export default {
 header {
     height: 50px;
     background-color: #3c8dbc;
+	display: grid;
+	justify-content: space-between;
+	grid-auto-flow: column;
     .toggleMenu {
 		font-family: fontAwesome;
 		transition: all 0.3s ease-in-out;
