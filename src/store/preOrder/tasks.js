@@ -1,11 +1,12 @@
 import api from '@/api'
 
 
-const formatTask = ({ contacts, description, managerresponsible, date, type, salon }) => {
+const formatTask = ({ id, contacts, description, managerresponsible, date, type, salon }) => {
 	let { fio } = contacts.find(el => el.regard == "Основной")
 	let { FIO: manager } = managerresponsible
 
 	return {
+		id,
 		fio,
 		description,
 		date,
@@ -34,7 +35,10 @@ let fieldDescription = [
 const state = {
 	cached: [],
 	loading: true,
-	types: []
+	types: [],
+	current: 0,
+	loading: true,
+	currentLoading: true
 }
 
 const actions = {
@@ -44,6 +48,16 @@ const actions = {
 			.then(({ data }) => {
 				commit('updateCachedTasks', data)
 				commit('loadingTasksSet', false)
+			})
+	},
+	getOneTask({ commit, dispatch }, payload){
+		commit('setCurrentTask', payload)
+		commit('oneLoadingTaskSet', true)
+		api.preorders.tasks
+			.getOne(payload)
+			.then(({ data }) => {
+				commit('updateCachedTasks', [data])
+				commit('oneLoadingTaskSet', false)
 			})
 	},
 	getAllTaskTypes({ commit, dispatch }){
@@ -83,18 +97,33 @@ const mutations = {
 	},
 	setTaskTypes(store, payload){
 		store.types = payload
+	},
+	loadingTasksSet(store, payload) {
+		store.loading = payload
+	},
+	oneLoadingTaskSet(store, payload) {
+		store.currentLoading = payload
+	},
+	setCurrentTask(store, payload){
+		store.current = payload
 	}
 }
 
 const getters = {
+	loadingTasks({ loading }){
+		return loading
+	},
+	loadingCurrentTask({ currentLoading }){
+		return currentLoading
+	},
+	currentTask({ cached, current }) {
+		return cached.find(el => el.id == current) || {}
+	},
 	cachedTasks({ cached }){
 		return cached
 	},
 	cachedTasksFormated({ cached }){
 		return cached.map(formatTask)
-	},
-	loadingTasks({ loading }){
-		return loading
 	},
 	taskTypes({ types }){
 		let rez = []

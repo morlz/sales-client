@@ -25,7 +25,7 @@
 		</el-breadcrumb>
 		<el-tabs tab-position="top">
 			<el-tab-pane label="Все предзаказы">
-				<tabless :data="data" :fieldDescription="fieldDescription" :key="1" v-loading="loadingRecords" :onClick="routerGoId" />
+				<tabless :data="data" :fieldDescription="recordsManyFieldDescription" :key="1" v-loading="loadingRecords" @onClick="routerGoId" />
 			</el-tab-pane>
 
 			<el-tab-pane label="Новый предзаказ">
@@ -131,82 +131,13 @@
 // счета
 
 
+import fieldDescription from '@/static/fieldDescription'
 
-
-let fieldDescription = [
-		//{field: "id", label: "№", type: "number" },
-		{
-			field: "fio",
-			label: "ФИО",
-			type: "string"
-		},
-		{
-			field: "created_at",
-			label: "Дата создания",
-			type: "string"
-		},
-		{
-			field: "status",
-			label: "Статус",
-			type: "string"
-		},
-		{
-			field: "manager",
-			label: "Менеджер",
-			type: "string",
-			filterOptions: ['Вася', 'Петя'],
-			filterDropdown: true
-		},
-		{
-			field: "salon",
-			label: "Салон",
-			type: "string"
-		},
-		{
-			field: "calc_summ",
-			label: "Сумма расчёта",
-			type: "number"
-		},
-		{
-			field: "prepay_summ",
-			label: "Сумма предзаказа",
-			type: "number"
-		},
-	],
-	adSources = [{
-			value: "1",
-			label: "Реклама"
-		},
-		{
-			value: "2",
-			label: "Рассылка по почте"
-		},
-		{
-			value: "3",
-			label: "Рассылка по телефону"
-		},
-		{
-			value: "4",
-			label: "Интернет"
-		},
-	],
-	taskTypes = [{
-			value: "1",
-			label: "Контакт"
-		},
-		{
-			value: "2",
-			label: "Заказ"
-		},
-		{
-			value: "3",
-			label: "Отказ"
-		},
-		{
-			value: "4",
-			label: "Напоминание"
-		},
-	]
+let {
+	recordsManyFieldDescription,
+	adSources,
+	taskTypes
+} = fieldDescription
 
 import {
 	mapGetters,
@@ -218,7 +149,7 @@ import tabless from '@/components/tableSS.vue'
 export default {
 	data() {
 		return {
-			fieldDescription,
+			recordsManyFieldDescription,
 			adSources,
 			taskTypes,
 			addForm: {

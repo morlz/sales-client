@@ -40,7 +40,7 @@
 						<h2>Задачи</h2>
 					</div>
 
-					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" :onClick="routerGoIdPath('/preorder/tasks')" />
+					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" @onClick="routerGoIdPath('/preorder/tasks')" />
 				</el-card>
 
 				<el-card class="preorders">
@@ -49,11 +49,11 @@
 					</div>
 					<el-tabs>
 						<el-tab-pane label="Предстоящие">
-							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" />
+							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" @onClick="routerGoIdPath('/preorder/records')" />
 						</el-tab-pane>
 
 						<el-tab-pane label="Выполеные">
-							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" />
+							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" @onClick="routerGoIdPath('/preorder/records')" />
 						</el-tab-pane>
 					</el-tabs>
 				</el-card>
@@ -74,10 +74,10 @@
 			<el-input v-model="searchByPhone" placeholder="8 900 800 70 60" class="searchByPhone" />
 			<tabless
 				:data="data"
-				:fieldDescription="fieldDescription"
+				:fieldDescription="clientManyFieldDescription"
 				:key="1"
 				v-loading="loadingClients"
-				:onClick="routerGoId"
+				@onClick="routerGoId"
 				ref="table"
 				@filtredRows="filtredRowsChange"
 				@filter="localClientFilterChange" />
@@ -93,48 +93,16 @@
 
 
 <script>
+//import  from '@/static/fieldDescription'
 
-let fieldDescription = [
-	//{ field: "id", label: "№", type: "number" },
-	{ field: "fio", label: "ФИО", type: "string" },
-	{ field: "gender", label: "Пол", type: "number" },
-	{ field: "manager", label: "Менеджер", type: "string" },
-	{ field: "salon", label: "Салон", type: "string" },
-	{ field: "created_at", label: "Создан", type: "string", inputFormat: 'YYYYMMDD', outputFormat: 'MMM Do YY' },
-]
+import fieldDescription from '@/static/fieldDescription'
 
-let clientContactsFieldDescription = [
-	//{ field: "id", label: "№", type: "number" },
-	{ field: "fio", label: "ФИО", type: "string" },
-	//{ field: "gender", label: "Пол", type: "number" },
-	{ field: "regard", label: "Отношение", type: "string" },
-	{ field: "phone", label: "Телефон", type: "string" },
-	//{ field: "disableSMS", label: "Откл. sms", type: "number" },
-	{ field: "email", label: "Email", type: "string" },
-	//{ field: "disableEMAIL", label: "Откл. письм.", type: "number" },
-	//{ field: "lost", label: "Потерян", type: "number" },
-]
-
-let clientTasksFieldDescription = [
-	{ field: "id", label: "№", type: "string" },
-	{ field: "description", label: "Задача", type: "string" },
-	{ field: "date", label: "Дата", type: "string" },
-	{ field: "type", label: "Тип", type: "string" },
-	{ field: "summ", label: "Сумма", type: "number" },
-	{ field: "salon", label: "Салон", type: "string" },
-]
-
-let clientPreordersFieldDescription = [
-	{ field: "id", label: "№", type: "number" },
-	{ field: "created_at", label: "Дата создания", type: "string" },
-	{ field: "status", label: "Статус", type: "string" },
-	{ field: "manager", label: "Менеджер", type: "string", filterOptions: ['Вася', 'Петя'], filterDropdown: true },
-	{ field: "salon", label: "Салон", type: "string" },
-	{ field: "budget", label: "Бюждет", type: "number" },
-	{ field: "calc_summ", label: "Сумма расчёта", type: "number" },
-	{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
-]
-
+let {
+	clientManyFieldDescription,
+	clientContactsFieldDescription,
+	clientTasksFieldDescription,
+	clientPreordersFieldDescription
+} = fieldDescription
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import tabless from '@/components/tableSS.vue'
@@ -145,7 +113,7 @@ import InfiniteLoading from 'vue-infinite-loading'
 export default {
 	data () {
 		return {
-			fieldDescription,
+			clientManyFieldDescription,
 			clientContactsFieldDescription,
 			clientTasksFieldDescription,
 			clientPreordersFieldDescription,

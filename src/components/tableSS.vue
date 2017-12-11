@@ -37,6 +37,9 @@ export default {
 		},
 		filteredRows (n) {
 			this.$emit("filteredRows", n)
+		},
+		sorts (n) {
+			this.$emit("sortChange", n)
 		}
 	},
 	computed: {
@@ -57,6 +60,12 @@ export default {
 			if (!this.mounted) return false
 			if (!this.$children.length) return {}
 			return this.addGettersData(this.$refs.goodTable.$data.filteredRows)
+		},
+		sorts () {
+			if (!this.mounted) return false
+			if (!this.$children.length) return {}
+			let { sortType, sortColumn } = this.$refs.goodTable.$data
+			return this.addGettersData({ sortType, sortColumn })
 		}
 	},
 	methods: {
@@ -70,7 +79,8 @@ export default {
 			return n
 		},
 		clickHandler (row, index) {
-			if (typeof this.onClick == 'function') this.onClick(row)
+			this.$emit("onClick", row)
+			//if (typeof this.onClick == 'function') this.onClick(row)
 		}
 	},
 	mounted () {

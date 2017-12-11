@@ -7,6 +7,15 @@ export default {
 			type: "tasks"
 		})
 	},
+	async getOne(id) {
+		return await core.invoke({
+			method: "get",
+			type: "task",
+			data: {
+				id
+			}
+		})
+	},
 	async getAllTypes () {
 		return await core.invoke({
 			method: "get",

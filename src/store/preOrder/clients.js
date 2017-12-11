@@ -16,6 +16,7 @@ const formatClient = ({ id, contactfaces, manager, salon, created_at }) => {
 const state = {
 	cached: [],
 	filters: [],
+	sort: [],
 	filteredRows: [],
 	current: 0,
 	loading: true,
@@ -26,6 +27,10 @@ const state = {
 }
 
 const actions = {
+	clientsSortChanged({ commit, dispatch }, payload){
+		commit("clearCachedClients")
+		commit("clientsSortChange", payload)
+	},
 	getAllClients({ commit, dispatch }, ids){
 		api.preorders.clients
 			.getAll(ids)
@@ -39,7 +44,8 @@ const actions = {
 			.getLimited({
 				limit: state.perLoadingLimit,
 				loadedIds: getters.clientsCachedIds,
-				filters: state.filters
+				filters: state.filters,
+				sort: state.sort
 			})
 			.then(({ data }) => {
 				commit('updateCachedClients', data)
@@ -98,9 +104,14 @@ const actions = {
 }
 
 const mutations = {
+	clearCachedClients (store, payload){
+		store.cached = []
+	},
 	clientsFiltersChange (store, payload) {
-		console.log("filter change", payload);
 		store.filters = payload
+	},
+	clientsSortChange (store, payload) {
+		store.sort = payload
 	},
 	filtredRowsChange (store, payload) {
 		store.filteredRows = payload
