@@ -32,7 +32,12 @@
 						<h2>Контакты</h2>
 					</div>
 
-					<lightTable :data="clientContactsFormated" :fieldDescription="clientContactsFieldDescription" />
+					<lightTable :data="clientContactsFormated" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" />
+					<div class="buttons">
+						<el-button type="primary" @click="updateAddClientContactFormVisible(true)">Добавить контакт</el-button>
+						<add-contact-form/>
+						<edit-contact-form/>
+					</div>
 				</el-card>
 
 				<el-card class="tasks">
@@ -40,7 +45,8 @@
 						<h2>Задачи</h2>
 					</div>
 
-					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" :onClick="routerGoIdPath('/preorder/tasks')" />
+					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" @onClick="goToPreorder" :buttons="afterTableTasksButtons" />
+					<edit-task-form/>
 				</el-card>
 
 				<el-card class="preorders">
@@ -108,6 +114,9 @@ let {
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import tabless from '@/components/tableSS.vue'
 import lightTable from '@/components/lightTable.vue'
+import addContactForm from '@/components/forms/addContact.vue'
+import editContactForm from '@/components/forms/editContact.vue'
+import editTaskForm from '@/components/forms/editTask.vue'
 import mixins from '@/components/mixins'
 import InfiniteLoading from 'vue-infinite-loading'
 
@@ -126,7 +135,10 @@ export default {
 	components: {
 		tabless,
 		lightTable,
-		InfiniteLoading
+		InfiniteLoading,
+		addContactForm,
+		editContactForm,
+		editTaskForm
 	},
 	watch: {
 		oneId () {
@@ -206,7 +218,8 @@ export default {
 			'clientsCacheClear'
 		]),
 		...mapMutations([
-			'updateSearchByPhoneQuery'
+			'updateSearchByPhoneQuery',
+			'updateAddClientContactFormVisible'
 		]),
 		localClientFilterChange (n) {
 			this.clientsFiltersChange (n)
@@ -225,6 +238,7 @@ export default {
 	},
 	mounted(){
 		if (this.oneId !== undefined) {
+			console.log(this.oneId);
 			this.getOneClient(this.oneId)
 		} else {
 			//this.getAllClients()

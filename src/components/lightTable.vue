@@ -7,6 +7,11 @@
 		<div slot="emptystate">
 			Список пуст.
 		</div>
+		<template slot="table-row-after" slot-scope="props" v-if="buttonRedused.length">
+			<td>
+				<el-button size="small" @click="button.click($event, props)" v-for="button, index in buttonRedused" :key="index">{{ button.name }}</el-button>
+			</td>
+		</template>
 	</vue-good-table>
 </div>
 </template>
@@ -25,13 +30,16 @@
  */
 
 export default {
-	props: ['data', 'fieldDescription', 'onClick'],
+	props: ['data', 'fieldDescription', 'onClick', 'buttons'],
 	computed: {
 		columns() {
 			return this.fieldDescription
 		},
 		rows() {
 			return this.data
+		},
+		buttonRedused() {
+			return this.buttons || []
 		}
 	},
 	methods: {
@@ -59,6 +67,7 @@ export default {
 				}
 				td {
 					padding: 5px;
+					vertical-align: middle;
 				}
 				th {
 					border-bottom: 2px solid #f4f4f4;

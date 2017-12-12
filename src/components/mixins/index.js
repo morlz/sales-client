@@ -1,5 +1,13 @@
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+
 export default {
 	methods: {
+		...mapMutations([
+			'setCurrentEditedContact',
+			'updateEditClientContactFormVisible',
+			'setCurrentEditedTask',
+			'updateEditTaskFormVisible'
+		]),
 		routerGoId(id) {
 			id = id.id || id
 			let path = `${router.currentRoute.fullPath}/${id}`
@@ -11,6 +19,44 @@ export default {
 				let newPath = `${path}/${id}`
 				router.push({ path: newPath })
 			}
+		},
+		goToPreorder (id) {
+			id = id.preorder_id || id
+
+			router.push({ path: `/preorder/records/${id}` })
+		}
+	},
+	computed: {
+		afterTableContactButtons () {
+			return [
+				{
+					name: "Редактировать",
+					click: (e, { row }) => {
+						e.stopPropagation()
+						this.setCurrentEditedContact(row)
+						this.updateEditClientContactFormVisible(true)
+					}
+				}
+			]
+		},
+		afterTableTasksButtons () {
+			return [
+				{
+					name: "Редактировать",
+					click: (e, { row }) => {
+						e.stopPropagation()
+						this.setCurrentEditedTask(row)
+						this.updateEditTaskFormVisible(true)
+					}
+				},
+				{
+					name: "Завршить",
+					click: (e, { row }) => {
+						e.stopPropagation()
+						console.log("end", row, e);
+					}
+				}
+			]
 		}
 	}
 }

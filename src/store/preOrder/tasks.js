@@ -5,12 +5,14 @@ const state = {
 	filters: [],
 	sort: [],
 	types: [],
-	current: 0,
+	current: {},
 	loading: true,
 	loadingBottom: false,
 	oneLoading: true,
 	perLoadingLimit: 30,
-	offset: 0
+	offset: 0,
+	currentEdited: {},
+	editTaskFormVisible: false
 }
 
 const actions = {
@@ -152,6 +154,12 @@ const mutations = {
 	},
 	setPreorderStatuses(store, payload){
 		store.statuses = payload
+	},
+	updateEditTaskFormVisible(store, payload){
+		store.editTaskFormVisible = payload
+	},
+	setCurrentEditedTask(store, payload){
+		store.currentEdited = payload
 	}
 }
 
@@ -192,6 +200,12 @@ const getters = {
 			rez[task.id] = task
 		})
 		return rez
+	},
+	editTaskFormVisible({ editTaskFormVisible }) {
+		return editTaskFormVisible
+	},
+	currentEditedTask ({ currentEdited }) {
+		return currentEdited
 	}
 }
 

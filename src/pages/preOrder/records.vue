@@ -44,16 +44,19 @@
 			<el-card class="contacts">
 				<h2 slot="header">Контакты</h2>
 
-				<lightTable :data="currentRecord.contactFaces || [	]" :fieldDescription="clientContactsFieldDescription" />
+				<lightTable :data="currentRecord.contactFaces || []" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" />
 				<div class="buttons">
-					<el-button type="primary">Добавить контакт</el-button>
+					<el-button type="primary" @click="updateAddClientContactFormVisible(true)">Добавить контакт</el-button>
+					<add-contact-form/>
+					<edit-contact-form/>
 				</div>
 			</el-card>
 
 			<el-card class="tasks">
 				<h2 slot="header">Задачи</h2>
 
-				<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" :onClick="routerGoIdPath('/preorder/tasks')" />
+				<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" @onClick="goToPreorder" :buttons="afterTableTasksButtons" />
+				<edit-task-form/>
 			</el-card>
 
 			<el-card class="files">
@@ -208,11 +211,15 @@ let {
 
 import {
 	mapGetters,
-	mapActions
+	mapActions,
+	mapMutations
 } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS.vue'
 import lightTable from '@/components/lightTable.vue'
+import addContactForm from '@/components/forms/addContact.vue'
+import editContactForm from '@/components/forms/editContact.vue'
+import editTaskForm from '@/components/forms/editTask.vue'
 import InfiniteLoading from 'vue-infinite-loading'
 
 
@@ -249,7 +256,10 @@ export default {
 	components: {
 		tabless,
 		InfiniteLoading,
-		lightTable
+		lightTable,
+		addContactForm,
+		editContactForm,
+		editTaskForm
 	},
 	watch: {
 		oneId () {
@@ -292,7 +302,7 @@ export default {
 				task.salon = salon ? salon.NAME : '...'
 				return task
 			}) : []
-		},
+		}
 	},
 	methods: {
 		...mapActions([
@@ -302,6 +312,9 @@ export default {
 			'recordsInfinity',
 			'recordsFiltersChange',
 			'recordsSortChanged'
+		]),
+		...mapMutations([
+			'updateAddClientContactFormVisible',
 		]),
 		onAddForm () {
 			console.log(this.addForm);

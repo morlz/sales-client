@@ -40,7 +40,14 @@ export default {
 	async invoke (params = {}) {
 		//await _wait(10000, 5000) //emit real server
 		if (!params.data) params.data = {}
-		let url = `http://localhost/sales-server/web/${params.type}`
+
+		let url
+		if (process.env.NODE_ENV == 'development') {
+			url = `http://localhost/sales-server/web/${params.type}`
+		} else {
+			url = `http://192.168.234.10/sales-server/web/${params.type}`
+		}
+
 		if (params.data.id !== undefined) url += `/${params.data.id}`
 		params.url = url
 

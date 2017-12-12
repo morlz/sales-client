@@ -4,14 +4,17 @@ const state = {
 	cached: [],
 	filters: [],
 	sort: [],
-	current: 0,
+	current: {},
 	loading: true,
 	loadingBottom: false,
 	oneLoading: true,
 	loadingByPhone: false,
 	searchByPhoneQuery: "",
 	perLoadingLimit: 30,
-	offset: 0
+	offset: 0,
+	addFormVisible: false,
+	editFormVisible: false,
+	currentEditedContact: {}
 }
 
 const actions = {
@@ -55,7 +58,6 @@ const actions = {
 			})
 	},
 	getOneClient({ commit, dispatch }, payload){
-		commit('setCurrentClient', payload)
 		commit('oneLoadingClientSet', true)
 		api.preorders.clients
 			.getOne(payload)
@@ -75,7 +77,7 @@ const actions = {
 
 				dispatch('getManagersByIds', managerIDs.filter(unique))
 				dispatch('getSalonsByIds', salonIDs.filter(unique))
-				commit('updateCachedClients', [data])
+				commit('setCurrentClient', data)
 				commit('oneLoadingClientSet', false)
 			})
 	},
@@ -145,8 +147,17 @@ const mutations = {
 	setCurrentClient(store, payload) {
 		store.current = payload
 	},
+	setCurrentEditedContact(store, payload){
+		store.currentEditedContact = payload
+	},
 	setCurrentOffsetClients(store, payload) {
 		store.offset = payload || store.cached.length
+	},
+	updateAddClientContactFormVisible(store, payload){
+		store.addFormVisible = payload
+	},
+	updateEditClientContactFormVisible(store, payload){
+		store.editFormVisible = payload
 	}
 }
 
@@ -154,8 +165,8 @@ const getters = {
 	clientsCachedIds ({ cached }) {
 		return cached.map(el => el.id)
 	},
-	currentClient({ cached, current }) {
-		return cached.find(el => el.id == current) || {}
+	currentClient({ current }) {
+		return current
 	},
 	cachedClients({ cached }){
 		return cached
@@ -177,6 +188,15 @@ const getters = {
 	},
 	clientFIlters ({ searchByPhoneQuery: phone, filters }) {
 		return Object.assign({ phone }, filters)
+	},
+	addClientContactFormVisible ({ addFormVisible }) {
+		return addFormVisible
+	},
+	editClientContactFormVisible ({ editFormVisible }) {
+		return editFormVisible
+	},
+	currentEditedContact ({ currentEditedContact }) {
+		return currentEditedContact
 	}
 }
 

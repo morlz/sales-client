@@ -19,29 +19,32 @@
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
 		</el-breadcrumb>
 		<el-tabs tab-position="top">
-			<el-tab-pane label="Все задачаы">
+			<el-tab-pane label="Все задачи">
 				<tabless
 					:data="data"
 					:fieldDescription="tasksManyFieldDescription"
 					:key="1"
+					:buttons="afterTableTasksButtons"
 					v-loading="loadingTasks"
 					@onClick="goToPreorder"
 					ref="table"
 					@filter="localTaskFilterChange"
 					@sortChange="localTaskSortChange"
 				/>
+
 				<infinite-loading @infinite="tasksInfinity" ref="infiniteLoading">
 					<div class="end" slot="no-results" />
 					<div class="end" slot="no-more" />
 					<div class="spinner" slot="spinner" v-loading="loadingBottomTasks" />
 				</infinite-loading>
 
+				<edit-task-form/>
 			</el-tab-pane>
 
-			<el-tab-pane label="Новый задача">
+			<el-tab-pane label="Новая задача">
 				<el-form label-width="100px" class="addForm">
 					<el-card>
-						<h2 slot="header">Новый задача</h2>
+						<h2 slot="header">Новая задача</h2>
 
 						<div>
 							...
@@ -77,6 +80,7 @@ import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS.vue'
 import lightTable from '@/components/lightTable.vue'
 import InfiniteLoading from 'vue-infinite-loading'
+import editTaskForm from '@/components/forms/editTask.vue'
 
 
 export default {
@@ -112,7 +116,8 @@ export default {
 	components: {
 		tabless,
 		InfiniteLoading,
-		lightTable
+		lightTable,
+		editTaskForm
 	},
 	watch: {
 		oneId () {
@@ -181,11 +186,6 @@ export default {
 			this.$nextTick(() => {
 			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
-		},
-		goToPreorder (id) {
-			id = id.id || id
-
-			router.push({ path: `/preorder/records/${id	}` })
 		}
 	},
 	mounted() {
