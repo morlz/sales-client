@@ -3,27 +3,25 @@
 	<el-dialog  :visible.sync="formOpen" :lock-scroll="false">
 		<h2 slot="title">Изменить задачу</h2>
 
-		<el-form label-width="100px">
-			<el-form-item label="ФИО">
-				<el-input v-model="editTaskForm.fio" placeholder="ФИО" />
+		<el-form label-width="130px">
+			<el-form-item label="Дата контакта">
+				<el-date-picker type="date" v-model="editTaskForm.date" placeholder="Дата контакта" :editable="false" />
 			</el-form-item>
 
-			<el-form-item label="Пол">
-				<el-switch v-model="editTaskForm.gender" active-text="Мужской" inactive-text="Женский" />
+			<el-form-item label="Тип задачи">
+				{{ editTaskForm.type }}
 			</el-form-item>
 
-			<el-form-item label="Отношение">
-				<el-input placeholder="Основной" v-model="editTaskForm.regard" />
+			<el-form-item label="Ответственный">
+				{{ managerResponsible }}
 			</el-form-item>
 
-			<el-form-item label="Телефон">
-				<el-input v-model="editTaskForm.phone" placeholder="8 (900) 800 70 60" />
-				<el-checkbox v-model="editTaskForm.disableSMS">SMS-рассылка запрещена</el-checkbox>
+			<el-form-item label="Описание задачи">
+				<el-input type="textarea" v-model="editTaskForm.description" placeholder="Описание" />
 			</el-form-item>
 
-			<el-form-item label="Эл почта">
-				<el-input v-model="editTaskForm.email" placeholder="some@email.com" />
-				<el-checkbox v-model="editTaskForm.disableEMAIL">Email-рассылка запрещена</el-checkbox>
+			<el-form-item label="Сумма расчёта">
+				<el-input v-model="editTaskForm.summ" placeholder="Сумма расчёта" />
 			</el-form-item>
 		</el-form>
 
@@ -42,15 +40,7 @@ export default {
 	data () {
 		return {
 			formOpen: false,
-			editTaskForm: {
-				fio: "",
-				gender: "",
-				regard: "",
-				phone: "",
-				disableSMS: 0,
-				email: "",
-				disableEMAIL: 0
-			}
+			editTaskForm: {}
 		}
 	},
 	watch: {
@@ -62,10 +52,14 @@ export default {
 		},
 		currentEditedTask (n) {
 			if (!n) return
+			this.getManagersByIds([n.manager_responsible_id])
 			this.editTaskForm = Object.assign(this.editTaskForm, n)
 		}
 	},
 	methods: {
+		...mapActions([
+			'getManagersByIds'
+		]),
 		canselEdit () {
 			this.updateEditTaskFormVisible(false)
 		},
@@ -79,8 +73,15 @@ export default {
 	computed: {
 		...mapGetters([
 			'editTaskFormVisible',
-			'currentEditedTask'
-		])
+			'currentEditedTask',
+			'cachedManagers'
+		]),
+		managerResponsible() {
+			if (!this.cachedManagers || this.editTaskForm.manager_responsible_id == undefined) return '...'
+			let manager = this.cachedManagers.find(el => el.ID_M == this.editTaskForm.manager_responsible_id)
+			if (!manager) return '...'
+			return manager.FIO
+		}
 	}
 }
 </script>

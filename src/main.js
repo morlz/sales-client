@@ -1,8 +1,9 @@
 import ElementUI from 'element-ui'
 import VueGoodTable from 'vue-good-table'
+import locale from 'element-ui/lib/locale/lang/ru-RU'
 
 Vue.use(VueGoodTable)
-Vue.use(ElementUI)
+Vue.use(ElementUI, { locale })
 
 import Vue from 'vue'
 import App from './App'

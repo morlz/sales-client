@@ -127,6 +127,7 @@ export default {
 				.buttons {
 					display: grid;
 					grid-auto-flow: column;
+					justify-content: flex-end;
 				}
 				th:not(.line-numbers) {
 					border-bottom: 2px solid #f4f4f4;

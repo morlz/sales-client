@@ -4,11 +4,112 @@
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Завершение задачи №{{ currentTask.id }}</el-breadcrumb-item>
 		</el-breadcrumb>
 
 		<el-form class="cards">
-			<el-card class="info">
-				<h2 slot="header">Общая информация</h2>
+			<el-card class="prev">
+				<h2 slot="header">Предыдущая задача</h2>
+
+				<el-form label-width="130px">
+					<el-form-item label="Срок">
+						<el-date-picker type="date" v-model="currentTask.date" :editable="false" />
+					</el-form-item>
+
+					<el-form-item label="Тип">
+						{{ currentTask.type ? currentTask.type.title : '...' }}
+					</el-form-item>
+
+					<el-form-item label="Сумма расчёта">
+						{{ currentTask.summ }}
+					</el-form-item>
+
+					<el-form-item label="Описание задачи">
+						{{ currentTask.description }}
+					</el-form-item>
+
+					<el-form-item label="Результат">
+						<el-input type="textarea" v-model="form.result" />
+					</el-form-item>
+				</el-form>
+			</el-card>
+
+			<el-card class="next">
+				<h2 slot="header">Следующая задача</h2>
+
+				<el-form label-width="130px">
+					<el-form-item label="Тип">
+						<el-select v-model="form.type">
+							<el-option v-for="item, index in addTaskTypes" :value="item.value" :label="item.label" :key="index" />
+						</el-select>
+					</el-form-item>
+
+					<div class="nextFormTransitionWrapper">
+						<div v-show="form.type == 1" key="1" class="nextFormTransition">
+							<el-form-item label="Дата">
+								<el-date-picker type="date" v-model="form.contact.date" placeholder="Дата выполнения задачи" />
+							</el-form-item>
+
+							<el-form-item label="Сумма расчёта">
+								<el-input v-model="form.contact.summ" placeholder="Сумма расчёта" />
+							</el-form-item>
+
+							<el-form-item label="Описание задачи">
+								<el-input type="textarea" v-model="form.contact.description" placeholder="Описание задачи" />
+							</el-form-item>
+
+							<el-form-item>
+								<div class="buttons">
+									<el-button type="primary">Создать</el-button>
+									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+								</div>
+							</el-form-item>
+						</div>
+
+						<div v-show="form.type == 2" key="2" class="nextFormTransition">
+							<el-form-item>
+								...
+							</el-form-item>
+
+							<el-form-item>
+								<div class="buttons">
+									<el-button type="primary">Создать</el-button>
+									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+								</div>
+							</el-form-item>
+						</div>
+
+						<div v-show="form.type == 3" key="3" class="nextFormTransition">
+							<el-form-item label="Описание">
+								<el-input type="textarea" v-model="form.otkaz.description" placeholder="Описание" />
+							</el-form-item>
+
+							<el-form-item>
+								<div class="buttons">
+									<el-button type="primary">Создать</el-button>
+									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+								</div>
+							</el-form-item>
+						</div>
+
+						<div v-show="form.type == 4" key="4" class="nextFormTransition">
+							<el-form-item label="Дата">
+								<el-date-picker type="date" v-model="form.reminder.date" placeholder="Дата напоминания" />
+							</el-form-item>
+
+							<el-form-item label="Описание">
+								<el-input type="textarea" v-model="form.reminder.description" placeholder="Описание" />
+							</el-form-item>
+
+							<el-form-item>
+								<div class="buttons">
+									<el-button type="primary">Создать</el-button>
+									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+								</div>
+							</el-form-item>
+						</div>
+					</div>
+				</el-form>
 			</el-card>
 		</el-form>
 	</div>
@@ -91,24 +192,28 @@ export default {
 			clientContactsFieldDescription,
 			clientTasksFieldDescription,
 			addTaskTypes,
-			addForm: {
-				source: "",
-				butget: "",
-				chance: 3,
-				description: "",
-
-				phone: "",
-				disableSms: 0,
-				fio: "",
-				gender: "",
-				clientDescription: "",
-				email: "",
-				disableEmail: 0,
-
-				date: "",
-				type: "",
-				rasch: "",
-				taskDescription: ""
+			form: {
+				result: "",
+				type: "1",
+				contact: {
+					description: "",
+					summ: "",
+					date: ""
+				},
+				zamer: {
+					date: "",
+					region: "",
+					address: "",
+					comment: "",
+					difficly: ""
+				},
+				otkaz: {
+					description: ""
+				},
+				reminder: {
+					date: "",
+					descrption: ""
+				}
 			}
 		}
 	},
@@ -201,6 +306,7 @@ export default {
 
 
 <style lang="less" scoped>
+
 .addForm {
 	display: grid;
 	grid-gap: 20px;
@@ -210,26 +316,17 @@ export default {
     }
 	padding-bottom: 10px;
 }
+
 .oneTaskWrapper {
 	.cards {
 		display: grid;
 		grid-gap: 20px;
-		grid-template-columns: 550px 1fr;
-		.tasks, .files {
-			grid-column: ~"1 / 3";
-		}
-
-		.infoGrid {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			> div {
-				padding: 5px 0;
-				&:not(:last-child) {
-					border-bottom: 1px solid #f4f4f4;
-				}
-				&:nth-child(2n+1) {
-					font-weight: bold;
-				}
+		grid-template-columns: 1fr 1fr;
+		.nextFormTransitionWrapper {
+			.buttons {
+				display: grid;
+				grid-auto-flow: column;
+				justify-content: flex-start;
 			}
 		}
 	}
@@ -239,9 +336,6 @@ export default {
 	.oneTaskWrapper {
 		.cards {
 			grid-template-columns: 1fr;
-			.tasks, .files {
-				grid-column: ~"1 / 2";
-			}
 		}
 	}
 }

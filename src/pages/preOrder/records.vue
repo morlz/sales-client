@@ -78,6 +78,7 @@
 		</el-breadcrumb>
 		<el-tabs tab-position="top">
 			<el-tab-pane label="Все предзаказы">
+				<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 				<tabless
 					:data="data"
 					:fieldDescription="recordsManyFieldDescription"
@@ -231,6 +232,8 @@ export default {
 			clientContactsFieldDescription,
 			clientTasksFieldDescription,
 			addTaskTypes,
+			searchByPhone: "",
+			seachTimeout: false,
 			addForm: {
 				source: "",
 				butget: "",
@@ -268,6 +271,18 @@ export default {
 			} else {
 				this.getAllRecords()
 			}
+		},
+		searchByPhone (n) {
+			if (this.seachTimeout) clearTimeout (this.seachTimeout)
+
+			this.seachTimeout = setTimeout(() => {
+				this.updateRecordsSearchByPhoneQuery(n)
+				this.recordsCacheClear()
+
+				this.$nextTick(() => {
+				  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				})
+			}, 500)
 		}
 	},
 	computed: {
@@ -311,10 +326,12 @@ export default {
 			'getOneRecord',
 			'recordsInfinity',
 			'recordsFiltersChange',
-			'recordsSortChanged'
+			'recordsSortChanged',
+			'recordsCacheClear'
 		]),
 		...mapMutations([
 			'updateAddClientContactFormVisible',
+			'updateRecordsSearchByPhoneQuery'
 		]),
 		onAddForm () {
 			console.log(this.addForm);
@@ -356,6 +373,12 @@ export default {
     }
 	padding-bottom: 10px;
 }
+.manyRecordsWrapper {
+	.searchByPhone {
+		width: 300px;
+		margin: 5px;
+	}
+}
 .oneRecordWrapper {
 	.cards {
 		display: grid;
@@ -393,7 +416,7 @@ export default {
 	}
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1250px) {
 	.oneRecordWrapper {
 		.cards {
 			grid-template-columns: 1fr;

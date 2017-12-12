@@ -77,7 +77,7 @@
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: '/preorder/clients' }">Список клиентов</el-breadcrumb-item>
 			</el-breadcrumb>
-			<el-input v-model="searchByPhone" placeholder="8 900 800 70 60" class="searchByPhone" />
+			<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 			<tabless
 				:data="data"
 				:fieldDescription="clientManyFieldDescription"
@@ -300,7 +300,7 @@ export default {
 		}
 	}
 
-	@media screen and (max-width: 1200px) {
+	@media screen and (max-width: 1250px) {
 		.oneClientWrapper {
 			.cards {
 				grid-template-columns: 1fr;

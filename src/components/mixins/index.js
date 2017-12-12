@@ -53,7 +53,7 @@ export default {
 					name: "Завршить",
 					click: (e, { row }) => {
 						e.stopPropagation()
-						console.log("end", row, e);
+						router.push({ path: `/preorder/tasks/${row.id}` })
 					}
 				}
 			]

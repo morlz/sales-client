@@ -141,7 +141,7 @@ const mutations = {
 	loadingByPhoneRecordsSet(store, payload) {
 		store.loadingByPhone = payload
 	},
-	updateSearchByPhoneQuery(store, payload) {
+	updateRecordsSearchByPhoneQuery(store, payload) {
 		state.searchByPhoneQuery = payload
 	},
 	setCurrentRecord(store, payload) {

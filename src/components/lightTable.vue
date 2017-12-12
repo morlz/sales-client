@@ -8,7 +8,7 @@
 			Список пуст.
 		</div>
 		<template slot="table-row-after" slot-scope="props" v-if="buttonRedused.length">
-			<td>
+			<td class="buttons">
 				<el-button size="small" @click="button.click($event, props)" v-for="button, index in buttonRedused" :key="index">{{ button.name }}</el-button>
 			</td>
 		</template>
@@ -68,6 +68,11 @@ export default {
 				td {
 					padding: 5px;
 					vertical-align: middle;
+				}
+				.buttons {
+					display: grid;
+					grid-auto-flow: column;
+					justify-content: flex-end;
 				}
 				th {
 					border-bottom: 2px solid #f4f4f4;

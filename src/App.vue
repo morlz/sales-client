@@ -8,7 +8,10 @@
 			<main-header/>
 		</div>
 		<div class="main">
-			<router-view/>
+			<transition name="fade">
+				<router-view/>
+			</transition>
+
 		</div>
 	</div>
 </div>
@@ -46,6 +49,19 @@ export default {
 body {
 	margin: 0;
 	color: #5a5e66;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .25s;
+}
+
+.fade-enter-active {
+  transition-delay: .25s;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0
 }
 
 .el-card {
