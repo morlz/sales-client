@@ -185,6 +185,9 @@ const getters = {
 	},
 	recordStatuses ({ statuses }) {
 		return statuses
+	},
+	newPreorderAccepted ({ searchByPhoneQuery, cached, loading }) {
+		return searchByPhoneQuery.length && !loading
 	}
 }
 

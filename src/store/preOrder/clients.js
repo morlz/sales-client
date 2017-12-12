@@ -2,6 +2,7 @@ import api from '@/api'
 
 const state = {
 	cached: [],
+	cachedClientsByPhone: [],
 	filters: [],
 	sort: [],
 	current: {},
@@ -82,13 +83,13 @@ const actions = {
 			})
 	},
 	searchClientsByPhone({ commit, dispatch }, payload){
-		commit('updateSearchByPhoneQuery', payload)
 		if (!payload) return
+		commit('updateCachedClientsByPhone', [])
 		commit('loadingByPhoneClientsSet', true)
 		api.preorders.clients
 			.searchByPhone(payload)
 			.then(({ data }) => {
-				commit('updateCachedClients', data)
+				commit('updateCachedClientsByPhone', data)
 				commit('loadingByPhoneClientsSet', false)
 			})
 	},
@@ -158,6 +159,9 @@ const mutations = {
 	},
 	updateEditClientContactFormVisible(store, payload){
 		store.editFormVisible = payload
+	},
+	updateCachedClientsByPhone(store, payload){
+		store.cachedClientsByPhone = payload
 	}
 }
 
@@ -180,8 +184,8 @@ const getters = {
 	oneLoadingClient({ oneLoading }){
 		return oneLoading
 	},
-	clientsByPhone({ cached, searchByPhoneQuery }){
-		return []//cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1)
+	clientsByPhone({ cachedClientsByPhone }){
+		return cachedClientsByPhone
 	},
 	loadingClientsByPhone({ loadingByPhone }){
 		return loadingByPhone

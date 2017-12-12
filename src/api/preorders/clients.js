@@ -20,12 +20,16 @@ export default {
 		})
 	},
 	async searchByPhone (phone) {
-		return await core.fakeInvoke({
-			method: "get",
-			type: "clients",
-			data: {
+		let params = core.prepareArrays({
+			filters: {
 				phone
 			}
+		})
+
+		return await core.invoke({
+			method: "get",
+			type: "clients",
+			params
 		})
 	},
 	async getLimited (params) {

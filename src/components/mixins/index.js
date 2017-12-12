@@ -30,7 +30,9 @@ export default {
 		afterTableContactButtons () {
 			return [
 				{
-					name: "Редактировать",
+					class: {
+						'el-icon-edit' : true
+					},
 					click: (e, { row }) => {
 						e.stopPropagation()
 						this.setCurrentEditedContact(row)
@@ -42,7 +44,9 @@ export default {
 		afterTableTasksButtons () {
 			return [
 				{
-					name: "Редактировать",
+					class: {
+						'el-icon-edit' : true
+					},
 					click: (e, { row }) => {
 						e.stopPropagation()
 						this.setCurrentEditedTask(row)
@@ -50,7 +54,7 @@ export default {
 					}
 				},
 				{
-					name: "Завршить",
+					name: "Завершить",
 					click: (e, { row }) => {
 						e.stopPropagation()
 						router.push({ path: `/preorder/tasks/${row.id}` })

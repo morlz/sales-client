@@ -7,7 +7,7 @@
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Завершение задачи №{{ currentTask.id }}</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<el-form class="cards">
+		<el-form class="cards" v-loading="oneLoadingTask">
 			<el-card class="prev">
 				<h2 slot="header">Предыдущая задача</h2>
 
@@ -119,41 +119,26 @@
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
 		</el-breadcrumb>
-		<el-tabs tab-position="top">
-			<el-tab-pane label="Все задачи">
-				<tabless
-					:data="data"
-					:fieldDescription="tasksManyFieldDescription"
-					:key="1"
-					:buttons="afterTableTasksButtons"
-					v-loading="loadingTasks"
-					@onClick="goToPreorder"
-					ref="table"
-					@filter="localTaskFilterChange"
-					@sortChange="localTaskSortChange"
-				/>
 
-				<infinite-loading @infinite="tasksInfinity" ref="infiniteLoading">
-					<div class="end" slot="no-results" />
-					<div class="end" slot="no-more" />
-					<div class="spinner" slot="spinner" v-loading="loadingBottomTasks" />
-				</infinite-loading>
+		<tabless
+			:data="data"
+			:fieldDescription="tasksManyFieldDescription"
+			:key="1"
+			:buttons="afterTableTasksButtons"
+			v-loading="loadingTasks"
+			@onClick="goToPreorder"
+			ref="table"
+			@filter="localTaskFilterChange"
+			@sortChange="localTaskSortChange"
+		/>
 
-				<edit-task-form/>
-			</el-tab-pane>
+		<infinite-loading @infinite="tasksInfinity" ref="infiniteLoading">
+			<div class="end" slot="no-results" />
+			<div class="end" slot="no-more" />
+			<div class="spinner" slot="spinner" v-loading="loadingBottomTasks" />
+		</infinite-loading>
 
-			<el-tab-pane label="Новая задача">
-				<el-form label-width="100px" class="addForm">
-					<el-card>
-						<h2 slot="header">Новая задача</h2>
-
-						<div>
-							...
-						</div>
-					</el-card>
-				</el-form>
-			</el-tab-pane>
-		</el-tabs>
+		<edit-task-form/>
 	</div>
 </div>
 </template>
@@ -243,7 +228,8 @@ export default {
 			'cachedSalons',
 			'taskTypes',
 			'fileUploadUrl',
-			'loadingClientsByPhone'
+			'loadingClientsByPhone',
+			'oneLoadingTask'
 		]),
 		currentTaskCLientMainContact () {
 			return this.currentTask.contactFaces ? this.currentTask.contactFaces.find(el => el.regard == "Основной") : {}

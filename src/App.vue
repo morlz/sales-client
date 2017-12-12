@@ -150,6 +150,10 @@ h2 {
 	background-image: url("./assets/people-trading.svg");
 }
 
+.el-dialog {
+	min-width: 400px;
+}
+
 @media screen and (max-width: 768px) {
 	.app {
 		.logo {
