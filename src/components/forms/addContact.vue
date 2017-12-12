@@ -3,25 +3,25 @@
 	<el-dialog  :visible.sync="formOpen" :lock-scroll="false">
 		<h2 slot="title">Добавить контакт</h2>
 
-		<el-form label-width="100px">
-			<el-form-item label="ФИО">
+		<el-form :model="addContactForm" label-width="100px" :rules="rules" ref="addContactForm">
+			<el-form-item label="ФИО" prop="fio">
 				<el-input v-model="addContactForm.fio" placeholder="ФИО" />
 			</el-form-item>
 
-			<el-form-item label="Пол">
+			<el-form-item label="Пол" prop="gender">
 				<el-switch v-model="addContactForm.gender" active-text="Мужской" inactive-text="Женский" />
 			</el-form-item>
 
-			<el-form-item label="Отношение">
+			<el-form-item label="Отношение" prop="regard">
 				<el-input placeholder="Основной" v-model="addContactForm.regard" />
 			</el-form-item>
 
-			<el-form-item label="Телефон">
+			<el-form-item label="Телефон" prop="phone">
 				<el-input v-model="addContactForm.phone" placeholder="8 (900) 800 70 60" />
 				<el-checkbox v-model="addContactForm.disableSMS">SMS-рассылка запрещена</el-checkbox>
 			</el-form-item>
 
-			<el-form-item label="Эл почта">
+			<el-form-item label="Эл почта" prop="email">
 				<el-input v-model="addContactForm.email" placeholder="some@email.com" />
 				<el-checkbox v-model="addContactForm.disableEmail">Email-рассылка запрещена</el-checkbox>
 			</el-form-item>
@@ -37,6 +37,11 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import rules from '@/static/formRules'
+
+let {
+	contacts
+} = rules
 
 export default {
 	data () {
@@ -50,11 +55,13 @@ export default {
 				disableSMS: 0,
 				email: "",
 				disableEmail: 0
-			}
+			},
+			rules: contacts
 		}
 	},
 	watch: {
 		formOpen (n) {
+			if (n && this.$refs.addContactForm) this.$refs.addContactForm.resetFields()
 			this.updateAddClientContactFormVisible(n)
 		},
 		addClientContactFormVisible (n) {
@@ -66,8 +73,12 @@ export default {
 			this.updateAddClientContactFormVisible(false)
 		},
 		add () {
-			console.log(this.addContactForm);
-			this.updateAddClientContactFormVisible(false)
+			this.$refs.addContactForm.validate(valid => {
+				if (valid) {
+					console.log(this.addContactForm)
+					this.updateAddClientContactFormVisible(false)
+				}
+			})
 		},
 		...mapMutations([
 			'updateAddClientContactFormVisible'

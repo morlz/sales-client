@@ -238,7 +238,6 @@ export default {
 	},
 	mounted(){
 		if (this.oneId !== undefined) {
-			console.log(this.oneId);
 			this.getOneClient(this.oneId)
 		} else {
 			//this.getAllClients()
