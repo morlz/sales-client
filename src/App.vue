@@ -172,4 +172,7 @@ h2 {
 	}
 }
 
+.spinner {
+	height: 50px;
+}
 </style>

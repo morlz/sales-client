@@ -75,11 +75,14 @@ export default {
 		add () {
 			this.$refs.addContactForm.validate(valid => {
 				if (valid) {
-					console.log(this.addContactForm)
+					thsi.clientAddContact(this.addContactForm)
 					this.updateAddClientContactFormVisible(false)
 				}
 			})
 		},
+		...mapActions([
+			'clientAddContact'
+		]),
 		...mapMutations([
 			'updateAddClientContactFormVisible'
 		])

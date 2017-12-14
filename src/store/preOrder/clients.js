@@ -13,6 +13,7 @@ const state = {
 	searchByPhoneQuery: "",
 	perLoadingLimit: 30,
 	offset: 0,
+	lastOffset: -1,
 	addFormVisible: false,
 	editFormVisible: false,
 	currentEditedContact: {}
@@ -21,10 +22,12 @@ const state = {
 const actions = {
 	clientsSortChanged({ commit, dispatch }, payload){
 		dispatch('clientsCacheClear')
+		commit('changeClientsLastOffset', -1)
 		commit("clientsSortChange", payload)
 	},
 	clientsFiltersChange({ commit, dispatch }, payload){
 		dispatch('clientsCacheClear')
+		commit('changeClientsLastOffset', -1)
 		commit("clientsFiltersChange", payload)
 	},
 	clientsCacheClear({ commit, dispatch }){
@@ -41,6 +44,8 @@ const actions = {
 			})
 	},
 	clientsInfinity({ commit, dispatch, state, getters }, payload){
+		if (state.lastOffset == state.offset) return
+		commit('changeClientsLastOffset', state.offset)
 		commit('loadingBottomClientsSet', true)
 		api.preorders.clients
 			.getLimited({
@@ -93,9 +98,19 @@ const actions = {
 				commit('loadingByPhoneClientsSet', false)
 			})
 	},
+	clientAddContact({ commit, dispatch }, payload){
+		api.preorders.clients
+			.addContact(payload)
+			.then(({ data }) => {
+				console.log(data);
+			})
+	},
 }
 
 const mutations = {
+	changeClientsLastOffset (store, payload) {
+		store.lastOffset = payload
+	},
 	clearCachedClients (store, payload){
 		store.cached = []
 	},

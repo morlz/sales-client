@@ -1,24 +1,41 @@
-
-Таблица с поиском и сортировкой
-
 <template>
 <div class="tableWrapper">
-	<vue-good-table :columns="columns" :rows="rows" :sortable="true" :lineNumbers="true" :onClick="clickHandler" ref="goodTable">
-		<div slot="emptystate">
-			Список пуст.
-		</div>
+	<table-core
+		:columns="columns"
+		:rows="rows"
+		:lineNumbers="true"
+		:sortable="true"
+		:onClick="clickHandler"
+		:minify="minify"
+		@sortChange="sortChange"
+		@filterChange="filterChange">
 		<template slot="table-row-after" slot-scope="props" v-if="buttonRedused.length">
 			<td class="buttons">
 				<el-button size="small" @click="button.click($event, props)" v-for="button, index in buttonRedused" :key="index" :class="button.class">{{ button.name }}</el-button>
 			</td>
 		</template>
-	</vue-good-table>
+	</table-core>
 </div>
 </template>
 
 
 
 <script>
+
+/*
+<vue-good-table :columns="columns" :rows="rows" :sortable="true" :lineNumbers="true" :onClick="clickHandler" ref="goodTable">
+	<div slot="emptystate">
+		Список пуст.
+	</div>
+	<template slot="table-row-after" slot-scope="props" v-if="buttonRedused.length">
+		<td class="buttons">
+			<el-button size="small" @click="button.click($event, props)" v-for="button, index in buttonRedused" :key="index" :class="button.class">{{ button.name }}</el-button>
+		</td>
+	</template>
+</vue-good-table>
+*/
+
+
 /*
  *	data:Array of object
  *		anyField => string
@@ -29,23 +46,12 @@
  *
  */
 
+import tableCore from '@/components/tableCore.vue'
+
 export default {
-	props: ['data', 'fieldDescription', 'onClick', 'buttons'],
-	data () {
-		return {
-			mounted: false
-		}
-	},
-	watch: {
-		columnFilters (n) {
-			this.$emit("filter", n)
-		},
-		filteredRows (n) {
-			this.$emit("filteredRows", n)
-		},
-		sorts (n) {
-			this.$emit("sortChange", n)
-		}
+	props: ['data', 'fieldDescription', 'onClick', 'buttons', 'minify'],
+	components: {
+		tableCore
 	},
 	computed: {
 		buttonRedused() {
@@ -58,27 +64,15 @@ export default {
 		},
 		rows() {
 			return this.data
-		},
-		columnFilters () {
-			if (!this.mounted) return false
-			if (!this.$children.length) return {}
-			return this.addGettersData(this.$refs.goodTable.$data.columnFilters)
-		},
-		filteredRows () {
-			if (!this.mounted) return false
-			if (!this.$children.length) return {}
-			return this.addGettersData(this.$refs.goodTable.$data.filteredRows)
-		},
-		sorts () {
-			if (!this.mounted) return false
-			if (!this.$children.length) return {}
-			let { sortType, sortColumn } = this.$refs.goodTable.$data
-			let sortColumnDescription = this.fieldDescription[sortColumn]
-			sortColumn = sortColumnDescription ? sortColumnDescription.name : sortColumn
-			return this.addGettersData({ sortType, sortColumn })
 		}
 	},
 	methods: {
+		sortChange(row) {
+			this.$emit("sortChange", row)
+		},
+		filterChange(row) {
+			this.$emit("filter", row)
+		},
 		addGettersData (data) {
 			let n = {}
 			for (var prop in data) {
@@ -88,13 +82,10 @@ export default {
 			}
 			return n
 		},
-		clickHandler (row, index) {
-			this.$emit("onClick", row)
+		clickHandler (e, row, index) {
+			this.$emit("onClick", e, row, index)
 			//if (typeof this.onClick == 'function') this.onClick(row)
 		}
-	},
-	mounted () {
-		this.mounted = true
 	}
 }
 </script>
@@ -105,6 +96,7 @@ export default {
 .tableWrapper {
     width: 100%;
     box-sizing: border-box;
+	/*
 	.good-table {
 		.responsive {
 			overflow-x: auto;
@@ -144,5 +136,6 @@ export default {
 			}
 		}
 	}
+	*/
 }
 </style>

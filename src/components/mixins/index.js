@@ -8,19 +8,19 @@ export default {
 			'setCurrentEditedTask',
 			'updateEditTaskFormVisible'
 		]),
-		routerGoId(id) {
+		routerGoId(e, id) {
 			id = id.id || id
 			let path = `${router.currentRoute.fullPath}/${id}`
 			router.push({ path })
 		},
 		routerGoIdPath(path) {
-			return (id) => {
+			return (e, id) => {
 				id = id.id || id
 				let newPath = `${path}/${id}`
 				router.push({ path: newPath })
 			}
 		},
-		goToPreorder (id) {
+		goToPreorder (e, id) {
 			id = id.preorder_id || id
 
 			router.push({ path: `/preorder/records/${id}` })

@@ -11,6 +11,7 @@ const state = {
 	oneLoading: true,
 	perLoadingLimit: 30,
 	offset: 0,
+	lastOffset: -1,
 	currentEdited: {},
 	editTaskFormVisible: false
 }
@@ -18,10 +19,12 @@ const state = {
 const actions = {
 	tasksSortChanged({ commit, dispatch }, payload){
 		dispatch('tasksCacheClear')
+		commit('changeTasksLastOffset', -1)
 		commit("tasksSortChange", payload)
 	},
 	tasksFiltersChange({ commit, dispatch }, payload){
 		dispatch('tasksCacheClear')
+		commit('changeTasksLastOffset', -1)
 		commit("tasksFiltersChange", payload)
 	},
 	tasksCacheClear({ commit, dispatch }){
@@ -38,6 +41,8 @@ const actions = {
 			})
 	},
 	tasksInfinity({ commit, dispatch, state, getters }, payload){
+		if (state.lastOffset == state.offset) return
+		commit('changeTasksLastOffset', state.offset)
 		commit('loadingBottomTasksSet', true)
 		api.preorders.tasks
 			.getLimited({
@@ -51,7 +56,7 @@ const actions = {
 				commit('loadingTasksSet', false)
 				commit('loadingBottomTasksSet', false)
 				commit('setCurrentOffsetTasks')
-				payload.loaded()
+				if (data.length) payload.loaded()
 				if (!data.length) payload.complete ()
 			})
 	},
@@ -94,6 +99,10 @@ const actions = {
 }
 
 const mutations = {
+	changeTasksLastOffset (store, payload) {
+		console.log("offset");
+		store.lastOffset = payload
+	},
 	clearCachedTasks (store, payload){
 		store.cached = []
 	},

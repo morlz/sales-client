@@ -4,65 +4,13 @@
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: '/preorder/clients' }">Список клиентов</el-breadcrumb-item>
-				<el-breadcrumb-item>{{ currentClientMainContact.fio }}</el-breadcrumb-item>
+				<el-breadcrumb-item>{{ currentClient.lastname }} {{ currentClient.name }} {{ currentClient.patronymic }}</el-breadcrumb-item>
 			</el-breadcrumb>
 			<div class="cards">
-
-				<el-card class="info">
-					<div slot="header">
-						<h2>Информация о клиенте</h2>
-					</div>
-
-					<div class="infoGrid">
-						<div>ФИО</div>
-						<div>{{ currentClientMainContact.fio }}</div>
-						<div>Пол</div>
-						<div>{{ currentClientMainContact.gender }}</div>
-						<div>Приметы</div>
-						<div>{{ currentClient.signs }}</div>
-						<div>Менеджер</div>
-						<div>{{ currentClient.manager ? currentClient.manager.FIO : '' }}</div>
-						<div>Неактивен</div>
-						<div>{{ currentClient.notactive }}</div>
-					</div>
-				</el-card>
-
-				<el-card class="contacts">
-					<div slot="header">
-						<h2>Контакты</h2>
-					</div>
-
-					<lightTable :data="clientContactsFormated" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" />
-					<div class="buttons">
-						<el-button type="primary" @click="updateAddClientContactFormVisible(true)">Добавить контакт</el-button>
-						<add-contact-form/>
-						<edit-contact-form/>
-					</div>
-				</el-card>
-
-				<el-card class="tasks">
-					<div slot="header">
-						<h2>Задачи</h2>
-					</div>
-
-					<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" @onClick="goToPreorder" :buttons="afterTableTasksButtons" />
-					<edit-task-form/>
-				</el-card>
-
-				<el-card class="preorders">
-					<div slot="header">
-						<h2>Предзаказы</h2>
-					</div>
-					<el-tabs>
-						<el-tab-pane label="Предстоящие">
-							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" />
-						</el-tab-pane>
-
-						<el-tab-pane label="Выполеные">
-							<lightTable :data="clienPreordersFormated" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" />
-						</el-tab-pane>
-					</el-tabs>
-				</el-card>
+				<client-info :content="currentClient"/>
+				<contact-faces :content="currentClient.contactfaces"/>
+				<tasks :content="currentClient.tasks"/>
+				<preorders :content="currentClient.preorders"/>
 
 				<el-card class="orders">
 					<div slot="header">
@@ -82,7 +30,6 @@
 				:data="data"
 				:fieldDescription="clientManyFieldDescription"
 				:key="1"
-				v-loading="loadingClients"
 				@onClick="routerGoId"
 				ref="table"
 				@filter="localClientFilterChange"
@@ -114,9 +61,13 @@ let {
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import tabless from '@/components/tableSS.vue'
 import lightTable from '@/components/lightTable.vue'
-import addContactForm from '@/components/forms/addContact.vue'
-import editContactForm from '@/components/forms/editContact.vue'
-import editTaskForm from '@/components/forms/editTask.vue'
+
+import clientInfo from '@/components/preorder/clientInfo.vue'
+import contactFaces from '@/components/preorder/contactFaces.vue'
+import tasks from '@/components/preorder/tasks.vue'
+import preorders from '@/components/preorder/preorders.vue'
+
+
 import mixins from '@/components/mixins'
 import InfiniteLoading from 'vue-infinite-loading'
 
@@ -136,9 +87,10 @@ export default {
 		tabless,
 		lightTable,
 		InfiniteLoading,
-		addContactForm,
-		editContactForm,
-		editTaskForm
+		clientInfo,
+		contactFaces,
+		tasks,
+		preorders
 	},
 	watch: {
 		oneId () {
@@ -169,37 +121,11 @@ export default {
 			'loadingClients',
 			'oneLoadingClient',
 			'currentClient',
-			'taskTypes',
 			'recordStatuses',
 			'loadingBottomClients'
 		]),
 		data () {
 			return this.cachedClients
-		},
-		currentClientMainContact () {
-			if (!this.currentClient || ! this.currentClient.contactfaces) return {}
-			return this.currentClient.contactfaces.find(el => el.regard == "Основной")
-		},
-		clientContactsFormated () {
-			return this.currentClient.contactfaces || []
-		},
-		clientTasksFormated () {
-			return this.currentClient.tasks ? this.currentClient.tasks.map(task => {
-				task.type = this.taskTypes[task.type_id] ? this.taskTypes[task.type_id].title : '...'
-				let salon = this.cachedSalons.find(el => task.salon_id == el.ID_SALONA)
-				task.salon =  salon ? salon.NAME : '...'
-				return task
-			}) : []
-		},
-		clienPreordersFormated () {
-			return this.currentClient.preorders ? this.currentClient.preorders.map(preorder => {
-				preorder.status = this.recordStatuses[preorder.status_id] ? this.recordStatuses[preorder.status_id].title : '...'
-				let manager = this.cachedManagers.find(el => preorder.manager_id == el.ID_M),
-					salon = this.cachedSalons.find(el => preorder.salon_id == el.ID_SALONA)
-				preorder.manager = manager ? manager.FIO : '...'
-				preorder.salon =  salon ? salon.NAME : '...'
-				return preorder
-			}) : []
 		},
 		isOne(){
 			return this.$route.params.id !== undefined
@@ -225,14 +151,14 @@ export default {
 			this.clientsFiltersChange (n)
 
 			this.$nextTick(() => {
-			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localClientSortChange (n) {
 			this.clientsSortChanged (n)
 
 			this.$nextTick(() => {
-			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},
@@ -267,34 +193,10 @@ export default {
 				grid-column: ~"1 / 3";
 			}
 
-			.infoGrid {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				> div {
-					padding: 5px 0;
-					&:not(:last-child) {
-						border-bottom: 1px solid #f4f4f4;
-					}
-					&:nth-child(2n+1) {
-						font-weight: bold;
-					}
-				}
-			}
-
-			.tasks {
-
-			}
-
 			h2 {
 				margin: 0;
 				font-size: 18px;
 				font-weight: bold;
-			}
-		}
-
-		.info {
-			.infoTable {
-				width: 500px;
 			}
 		}
 	}

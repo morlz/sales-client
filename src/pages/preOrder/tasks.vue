@@ -125,7 +125,6 @@
 			:fieldDescription="tasksManyFieldDescription"
 			:key="1"
 			:buttons="afterTableTasksButtons"
-			v-loading="loadingTasks"
 			@onClick="goToPreorder"
 			ref="table"
 			@filter="localTaskFilterChange"
@@ -268,14 +267,16 @@ export default {
 			this.tasksFiltersChange (n)
 
 			this.$nextTick(() => {
-			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				console.log("1", n);
+				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localTaskSortChange (n) {
 			this.tasksSortChanged (n)
 
 			this.$nextTick(() => {
-			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				console.log("2", n);
+				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},

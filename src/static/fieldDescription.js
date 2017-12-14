@@ -22,7 +22,7 @@ let dataObj = {
 		{ field: "status", label: "Статус", type: "string" },
 		{ field: "manager", label: "Менеджер", type: "string", filterOptions: ['Вася', 'Петя'], filterDropdown: true },
 		{ field: "salon", label: "Салон", type: "string" },
-		{ field: "calc_summ", label: "Сумма расчёта", type: "number" },
+		{ field: "calc_summ", label: "Сумма расчета", type: "number" },
 		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" },
 	],
 
@@ -78,7 +78,7 @@ let dataObj = {
 		{ field: "manager", label: "Менеджер", type: "string", filterOptions: ['Вася', 'Петя'], filterDropdown: true },
 		{ field: "salon", label: "Салон", type: "string" },
 		{ field: "budget", label: "Бюждет", type: "number" },
-		{ field: "calc_summ", label: "Сумма расчёта", type: "number" },
+		{ field: "calc_summ", label: "Сумма расчета", type: "number" },
 		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
 	]
 }

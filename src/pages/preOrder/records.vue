@@ -83,7 +83,6 @@
 					:data="data"
 					:fieldDescription="recordsManyFieldDescription"
 					:key="1"
-					v-loading="loadingRecords"
 					@onClick="routerGoId"
 					ref="table"
 					@filter="localRecordFilterChange"

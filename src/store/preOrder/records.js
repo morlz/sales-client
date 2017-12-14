@@ -12,16 +12,19 @@ const state = {
 	loadingByPhone: false,
 	searchByPhoneQuery: "",
 	perLoadingLimit: 30,
-	offset: 0
+	offset: 0,
+	lastOffset: -1,
 }
 
 const actions = {
 	recordsSortChanged({ commit, dispatch }, payload){
 		dispatch('recordsCacheClear')
+		commit('changeRecordsLastOffset', -1)
 		commit("recordsSortChange", payload)
 	},
 	recordsFiltersChange({ commit, dispatch }, payload){
 		dispatch('recordsCacheClear')
+		commit('changeRecordsLastOffset', -1)
 		commit("recordsFiltersChange", payload)
 	},
 	recordsCacheClear({ commit, dispatch }){
@@ -38,6 +41,8 @@ const actions = {
 			})
 	},
 	recordsInfinity({ commit, dispatch, state, getters }, payload){
+		if (state.lastOffset == state.offset) return
+		commit('changeRecordsLastOffset', state.offset)
 		commit('loadingBottomRecordsSet', true)
 		api.preorders.records
 			.getLimited({
@@ -95,6 +100,9 @@ const actions = {
 }
 
 const mutations = {
+	changeRecordsLastOffset (store, payload) {
+		store.lastOffset = payload
+	},
 	clearCachedRecords (store, payload){
 		store.cached = []
 	},
