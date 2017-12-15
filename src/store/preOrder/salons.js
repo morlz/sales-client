@@ -40,12 +40,8 @@ const mutations = {
 }
 
 const getters = {
-	cachedSalons({ cached }){
-		return cached
-	},
-	loadingSalons({ loading }){
-		return loading
-	},
+	cachedSalons: ({ cached }) => cached,
+	loadingSalons: ({ loading }) => loading,
 }
 
 export default {

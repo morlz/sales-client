@@ -7,7 +7,7 @@
 		<tabless :data="data" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" :minify="true" />
 
 		<div class="buttons">
-			<el-button type="primary" @click="updateAddClientContactFormVisible(true)">Добавить контакт</el-button>
+			<el-button type="primary" @click="updateAddClientContactFormVisible(true)" v-if="allowCreate">Добавить контакт</el-button>
 			<add-contact-form/>
 			<edit-contact-form/>
 		</div>
@@ -27,7 +27,15 @@ let {
 } = fieldDescription
 
 export default {
-	props: ['content'],
+	props: {
+		allowCreate: {
+			type: Boolean,
+			default: false
+		},
+		content: {
+			type: Array
+		}
+	},
 	mixins: [mixins],
 	components: {
 		editContactForm,

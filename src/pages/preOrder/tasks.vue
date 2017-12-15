@@ -8,6 +8,7 @@
 		</el-breadcrumb>
 
 		<el-form class="cards" v-loading="oneLoadingTask">
+
 			<el-card class="prev">
 				<h2 slot="header">Предыдущая задача</h2>
 
@@ -34,6 +35,7 @@
 				</el-form>
 			</el-card>
 
+
 			<el-card class="next">
 				<h2 slot="header">Следующая задача</h2>
 
@@ -44,7 +46,7 @@
 						</el-select>
 					</el-form-item>
 
-					<div class="nextFormTransitionWrapper">
+					<transition-group class="nextFormTransitionWrapper" name="fade">
 						<div v-show="form.type == 1" key="1" class="nextFormTransition">
 							<el-form-item label="Дата">
 								<el-date-picker type="date" v-model="form.contact.date" placeholder="Дата выполнения задачи" />
@@ -61,7 +63,7 @@
 							<el-form-item>
 								<div class="buttons">
 									<el-button type="primary">Создать</el-button>
-									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+									<el-button @click="goToPreorder('', currentTask.preorder_id)">Вернуться к предзаказу</el-button>
 								</div>
 							</el-form-item>
 						</div>
@@ -74,7 +76,7 @@
 							<el-form-item>
 								<div class="buttons">
 									<el-button type="primary">Создать</el-button>
-									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+									<el-button @click="goToPreorder('', currentTask.preorder_id)">Вернуться к предзаказу</el-button>
 								</div>
 							</el-form-item>
 						</div>
@@ -87,7 +89,7 @@
 							<el-form-item>
 								<div class="buttons">
 									<el-button type="primary">Создать</el-button>
-									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+									<el-button @click="goToPreorder('', currentTask.preorder_id)">Вернуться к предзаказу</el-button>
 								</div>
 							</el-form-item>
 						</div>
@@ -104,11 +106,11 @@
 							<el-form-item>
 								<div class="buttons">
 									<el-button type="primary">Создать</el-button>
-									<el-button @click="goToPreorder(currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+									<el-button @click="goToPreorder('', currentTask.preorder_id)">Вернуться к предзаказу</el-button>
 								</div>
 							</el-form-item>
 						</div>
-					</div>
+					</transition-group>
 				</el-form>
 			</el-card>
 		</el-form>
@@ -123,8 +125,7 @@
 		<tabless
 			:data="data"
 			:fieldDescription="tasksManyFieldDescription"
-			:key="1"
-			:buttons="afterTableTasksButtons"
+			:key="1" :buttons="afterTableTasksButtons"
 			@onClick="goToPreorder"
 			ref="table"
 			@filter="localTaskFilterChange"
@@ -209,7 +210,7 @@ export default {
 		editTaskForm
 	},
 	watch: {
-		oneId () {
+		oneId() {
 			if (this.oneId !== undefined) {
 				this.getOneTask(this.oneId)
 			} else {
@@ -230,19 +231,19 @@ export default {
 			'loadingClientsByPhone',
 			'oneLoadingTask'
 		]),
-		currentTaskCLientMainContact () {
+		currentTaskCLientMainContact() {
 			return this.currentTask.contactFaces ? this.currentTask.contactFaces.find(el => el.regard == "Основной") : {}
 		},
 		data() {
 			return this.cachedTasks
 		},
-		isOne () {
+		isOne() {
 			return this.$route.params.id !== undefined
 		},
-		oneId () {
+		oneId() {
 			return this.$route.params.id
 		},
-		clientTasksFormated () {
+		clientTasksFormated() {
 			return this.currentTask.tasks ? this.currentTask.tasks.map(task => {
 				task.type = this.taskTypes[task.type_id] ? this.taskTypes[task.type_id].title : '...'
 				let salon = this.cachedSalons.find(el => task.salon_id == el.ID_SALONA)
@@ -260,19 +261,19 @@ export default {
 			'tasksFiltersChange',
 			'tasksSortChanged'
 		]),
-		onAddForm () {
+		onAddForm() {
 			console.log(this.addForm);
 		},
-		localTaskFilterChange (n) {
-			this.tasksFiltersChange (n)
+		localTaskFilterChange(n) {
+			this.tasksFiltersChange(n)
 
 			this.$nextTick(() => {
 				console.log("1", n);
 				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localTaskSortChange (n) {
-			this.tasksSortChanged (n)
+		localTaskSortChange(n) {
+			this.tasksSortChanged(n)
 
 			this.$nextTick(() => {
 				console.log("2", n);
@@ -293,38 +294,53 @@ export default {
 
 
 <style lang="less" scoped>
-
 .addForm {
-	display: grid;
-	grid-gap: 20px;
-	grid-template-columns: repeat(auto-fit, minmax(500px, auto));
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(500px, auto));
     h2 {
         margin-left: 20px;
     }
-	padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .oneTaskWrapper {
-	.cards {
-		display: grid;
-		grid-gap: 20px;
-		grid-template-columns: 1fr 1fr;
-		.nextFormTransitionWrapper {
-			.buttons {
-				display: grid;
-				grid-auto-flow: column;
-				justify-content: flex-start;
-			}
-		}
+	position: relative;
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity .3s;
+    }
+
+	.fade-leave-active, .fade-leave {
+		position: absolute;
+		top: 181px;
 	}
+
+
+    .fade-enter,
+    .fade-leave-to {
+        opacity: 0;
+    }
+
+    .cards {
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: 1fr 1fr;
+        .nextFormTransitionWrapper {
+            .buttons {
+                display: grid;
+                grid-auto-flow: column;
+                justify-content: flex-start;
+            }
+        }
+    }
 }
 
 @media screen and (max-width: 1200px) {
-	.oneTaskWrapper {
-		.cards {
-			grid-template-columns: 1fr;
-		}
-	}
+    .oneTaskWrapper {
+        .cards {
+            grid-template-columns: 1fr;
+        }
+    }
 }
-
 </style>

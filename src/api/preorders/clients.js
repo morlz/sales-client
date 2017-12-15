@@ -40,5 +40,19 @@ export default {
 			type: "clients",
 			params
 		})
-	}
+	},
+	async addContact (data) {
+		return await core.invoke({
+			method: "post",
+			type: "contactfaces",
+			data
+		})
+	},
+	async editContact (data) {
+		return await core.invoke({
+			method: "put",
+			type: "contactface",
+			data
+		})
+	},
 }

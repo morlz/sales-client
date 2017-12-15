@@ -88,11 +88,14 @@ export default {
 		edit () {
 			this.$refs.editContactForm.validate(valid => {
 				if (valid) {
-					console.log(this.editContactForm)
+					this.clientUpdateContact(this.editContactForm)
 					this.updateEditClientContactFormVisible(false)
 				}
 			})
 		},
+		...mapActions([
+			'clientUpdateContact'
+		]),
 		...mapMutations([
 			'updateEditClientContactFormVisible'
 		])

@@ -81,7 +81,7 @@ const actions = {
 				commit('loadingByPhoneTasksSet', false)
 			})
 	},
-	getAllTaskStatuses ({ commit, dispatch }) {
+	getAllTaskStatuses({ commit, dispatch }) {
 		api.preorders.tasks
 			.getSatuses()
 			.then(({ data }) => {
@@ -94,8 +94,14 @@ const actions = {
 			.then(({ data }) => {
 				commit('setTaskTypes', data)
 			})
+	},
+	updateTask({ commit, dispatch }, payload){
+		api.preorders.tasks
+			.update(payload)
+			.then(({ data }) => {
+				console.log(data);
+			})
 	}
-
 }
 
 const mutations = {
@@ -173,49 +179,25 @@ const mutations = {
 }
 
 const getters = {
-	tasksCachedIds ({ cached }) {
-		return cached.map(el => el.id)
-	},
-	currentTask({ cached, current }) {
-		return cached.find(el => el.id == current) || {}
-	},
-	cachedTasks({ cached }){
-		return cached
-	},
-	loadingTasks({ loading }){
-		return loading
-	},
-	loadingBottomTasks({ loadingBottom }){
-		return loadingBottom
-	},
-	oneLoadingTask({ oneLoading }){
-		return oneLoading
-	},
-	tasksByPhone({ cached, searchByPhoneQuery }){
-		return []//cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1)
-	},
-	loadingTasksByPhone({ loadingByPhone }){
-		return loadingByPhone
-	},
-	taskFIlters ({ searchByPhoneQuery: phone, filters }) {
-		return Object.assign({ phone }, filters)
-	},
-	taskStatuses ({ statuses }) {
-		return statuses
-	},
-	taskTypes({ types }){
+	tasksCachedIds: ({ cached }) => cached.map(el => el.id),
+	currentTask: ({ cached, current }) => cached.find(el => el.id == current) || {},
+	cachedTasks: ({ cached }) => cached,
+	loadingTasks: ({ loading }) => loading,
+	loadingBottomTasks: ({ loadingBottom }) => loadingBottom,
+	oneLoadingTask: ({ oneLoading }) => oneLoading,
+	tasksByPhone: ({ cached, searchByPhoneQuery }) => [], 		//cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1),
+	loadingTasksByPhone: ({ loadingByPhone }) => loadingByPhone,
+	taskFIlters: ({ searchByPhoneQuery: phone, filters }) => Object.assign({ phone }, filters),
+	taskStatuses: ({ statuses }) => statuses,
+	taskTypes ({ types }) {
 		let rez = []
 		types.map(task => {
 			rez[task.id] = task
 		})
 		return rez
 	},
-	editTaskFormVisible({ editTaskFormVisible }) {
-		return editTaskFormVisible
-	},
-	currentEditedTask ({ currentEdited }) {
-		return currentEdited
-	}
+	editTaskFormVisible: ({ editTaskFormVisible }) => editTaskFormVisible,
+	currentEditedTask: ({ currentEdited }) => currentEdited
 }
 
 export default {

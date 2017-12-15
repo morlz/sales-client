@@ -4,7 +4,7 @@
 			<h2>Задачи</h2>
 		</div>
 
-		<tabless :data="data" :fieldDescription="clientTasksFieldDescription" @onClick="goToPreorder" :buttons="afterTableTasksButtons" :minify="true"/>
+		<tabless :data="data" :fieldDescription="clientTasksFieldDescription" :onClick="goToPreorder" :buttons="afterTableTasksButtons" :minify="true"/>
 		<edit-task-form/>
 	</el-card>
 </template>

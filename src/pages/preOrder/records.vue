@@ -7,57 +7,10 @@
 			<el-breadcrumb-item :to="{ path: `/preorder/records/${oneId}` }">Предзаказ №{{oneId}}</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<el-form class="cards">
-			<el-card class="info">
-				<h2 slot="header">Общая информация</h2>
-
-				<el-steps :active="+currentRecord.status_id" align-center finish-status="success">
-					<el-step :title="item.title" v-for="item, index in recordStatuses" :key="index"></el-step>
-				</el-steps>
-
-				<div class="infoGrid">
-					<div>Салон</div>
-					<div>{{ currentRecord.salon ? currentRecord.salon.NAME : '...' }}</div>
-					<div>Менеджер</div>
-					<div>{{ currentRecord.manager ? currentRecord.manager.FIO : '...' }}</div>
-					<div>Дата создания</div>
-					<div>{{ currentRecord.created_at }}</div>
-					<div>Клиент</div>
-					<div>{{ currentRecordCLientMainContact.fio }}</div>
-					<div>Адрес</div>
-					<div>{{ currentRecordCLientMainContact.address }}</div>
-					<div>Рекл. источник</div>
-					<div>{{ currentRecord.adsource ? currentRecord.adsource.NAME : '...' }}</div>
-					<div>Вероятность</div>
-					<div><el-rate :value="+currentRecord.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" disabled /></div>
-					<div>Бюджет</div>
-					<div>{{ currentRecord.budget }}</div>
-					<div>Сумма предоплаты</div>
-					<div>{{ currentRecord.prepay_summ }}</div>
-					<div>Сумма расчёта</div>
-					<div>{{ currentRecord.calc_summ }}</div>
-					<div>Примечание</div>
-					<div>{{ currentRecord.description }}</div>
-				</div>
-			</el-card>
-
-			<el-card class="contacts">
-				<h2 slot="header">Контакты</h2>
-
-				<lightTable :data="currentRecord.contactFaces || []" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" />
-				<div class="buttons">
-					<el-button type="primary" @click="updateAddClientContactFormVisible(true)">Добавить контакт</el-button>
-					<add-contact-form/>
-					<edit-contact-form/>
-				</div>
-			</el-card>
-
-			<el-card class="tasks">
-				<h2 slot="header">Задачи</h2>
-
-				<lightTable :data="clientTasksFormated" :fieldDescription="clientTasksFieldDescription" @onClick="goToPreorder" :buttons="afterTableTasksButtons" />
-				<edit-task-form/>
-			</el-card>
+		<el-form class="cards" v-loading="oneLoadingRecord">
+			<preorder-info :content="currentRecord"/>
+			<contact-faces :content="currentRecord.contactFaces" allowCreate/>
+			<tasks :content="currentRecord.tasks"/>
 
 			<el-card class="files">
 				<h2 slot="header">Прикреплённые файлы</h2>
@@ -80,6 +33,7 @@
 			<el-tab-pane label="Все предзаказы">
 				<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 				<tabless
+					key="records"
 					:data="data"
 					:fieldDescription="recordsManyFieldDescription"
 					:key="1"
@@ -303,6 +257,10 @@ import editContactForm from '@/components/forms/editContact.vue'
 import editTaskForm from '@/components/forms/editTask.vue'
 import InfiniteLoading from 'vue-infinite-loading'
 
+import preorderInfo from '@/components/preorder/preorderInfo.vue'
+import contactFaces from '@/components/preorder/contactFaces.vue'
+import tasks from '@/components/preorder/tasks.vue'
+
 
 export default {
 	data() {
@@ -359,7 +317,10 @@ export default {
 		lightTable,
 		addContactForm,
 		editContactForm,
-		editTaskForm
+		editTaskForm,
+		preorderInfo,
+		contactFaces,
+		tasks,
 	},
 	watch: {
 		oneId () {
@@ -394,7 +355,8 @@ export default {
 			'fileUploadUrl',
 			'loadingClientsByPhone',
 			'recordStatuses',
-			'newPreorderAccepted'
+			'newPreorderAccepted',
+			'oneLoadingRecord'
 		]),
 		currentRecordCLientMainContact () {
 			return this.currentRecord.contactFaces ? this.currentRecord.contactFaces.find(el => el.regard == "Основной") : {}
@@ -407,14 +369,6 @@ export default {
 		},
 		oneId () {
 			return this.$route.params.id
-		},
-		clientTasksFormated () {
-			return this.currentRecord.tasks ? this.currentRecord.tasks.map(task => {
-				task.type = this.taskTypes[task.type_id] ? this.taskTypes[task.type_id].title : '...'
-				let salon = this.cachedSalons.find(el => task.salon_id == el.ID_SALONA)
-				task.salon = salon ? salon.NAME : '...'
-				return task
-			}) : []
 		},
 		addFormSelectedClient () {
 			return this.clientsByPhone.find(el => el.phone == this.addForm.phone)
@@ -501,20 +455,6 @@ export default {
 		.contacts {
 			.buttons {
 				margin-top: 10px;
-			}
-		}
-
-		.infoGrid {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			> div {
-				padding: 5px 0;
-				&:not(:last-child) {
-					border-bottom: 1px solid #f4f4f4;
-				}
-				&:nth-child(2n+1) {
-					font-weight: bold;
-				}
 			}
 		}
 	}

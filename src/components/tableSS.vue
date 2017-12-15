@@ -84,7 +84,7 @@ export default {
 		},
 		clickHandler (e, row, index) {
 			this.$emit("onClick", e, row, index)
-			//if (typeof this.onClick == 'function') this.onClick(row)
+			if (typeof this.onClick == 'function') this.onClick(e, row, index)
 		}
 	}
 }

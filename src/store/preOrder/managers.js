@@ -40,12 +40,8 @@ const mutations = {
 }
 
 const getters = {
-	cachedManagers({ cached }){
-		return cached
-	},
-	loadingManagers({ loading }){
-		return loading
-	},
+	cachedManagers: ({ cached }) => cached,
+	loadingManagers: ({ loading }) => loading,
 }
 
 export default {

@@ -164,39 +164,17 @@ const mutations = {
 }
 
 const getters = {
-	recordsCachedIds ({ cached }) {
-		return cached.map(el => el.id)
-	},
-	currentRecord({ cached, current }) {
-		return cached.find(el => el.id == current) || {}
-	},
-	cachedRecords({ cached }){
-		return cached
-	},
-	loadingRecords({ loading }){
-		return loading
-	},
-	loadingBottomRecords({ loadingBottom }){
-		return loadingBottom
-	},
-	oneLoadingRecord({ oneLoading }){
-		return oneLoading
-	},
-	recordsByPhone({ cached, searchByPhoneQuery }){
-		return []//cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1)
-	},
-	loadingRecordsByPhone({ loadingByPhone }){
-		return loadingByPhone
-	},
-	recordFIlters ({ searchByPhoneQuery: phone, filters }) {
-		return Object.assign({ phone }, filters)
-	},
-	recordStatuses ({ statuses }) {
-		return statuses
-	},
-	newPreorderAccepted ({ searchByPhoneQuery, cached, loading }) {
-		return searchByPhoneQuery.length && !loading
-	}
+	recordsCachedIds: ({ cached }) => cached.map(el => el.id),
+	currentRecord: ({ cached, current }) => cached.find(el => el.id == current) || {},
+	cachedRecords: ({ cached }) => cached,
+	loadingRecords: ({ loading }) => loading,
+	loadingBottomRecords: ({ loadingBottom }) => loadingBottom,
+	oneLoadingRecord: ({ oneLoading }) => oneLoading,
+	recordsByPhone: ({ cached, searchByPhoneQuery }) => [], //cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1),
+	loadingRecordsByPhone: ({ loadingByPhone }) => loadingByPhone,
+	recordFIlters: ({ searchByPhoneQuery: phone, filters }) => Object.assign({ phone }, filters),
+	recordStatuses: ({ statuses }) => statuses,
+	newPreorderAccepted: ({ searchByPhoneQuery, cached, loading }) => searchByPhoneQuery.length && !loading
 }
 
 export default {

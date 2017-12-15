@@ -105,6 +105,13 @@ const actions = {
 				console.log(data);
 			})
 	},
+	clientUpdateContact({ commit, dispatch }, payload){
+		api.preorders.clients
+			.editContact(payload)
+			.then(({ data }) => {
+				console.log(data);
+			})
+	},
 }
 
 const mutations = {
@@ -181,42 +188,18 @@ const mutations = {
 }
 
 const getters = {
-	clientsCachedIds ({ cached }) {
-		return cached.map(el => el.id)
-	},
-	currentClient({ current }) {
-		return current
-	},
-	cachedClients({ cached }){
-		return cached
-	},
-	loadingClients({ loading }){
-		return loading
-	},
-	loadingBottomClients({ loadingBottom }){
-		return loadingBottom
-	},
-	oneLoadingClient({ oneLoading }){
-		return oneLoading
-	},
-	clientsByPhone({ cachedClientsByPhone }){
-		return cachedClientsByPhone
-	},
-	loadingClientsByPhone({ loadingByPhone }){
-		return loadingByPhone
-	},
-	clientFIlters ({ searchByPhoneQuery: phone, filters }) {
-		return Object.assign({ phone }, filters)
-	},
-	addClientContactFormVisible ({ addFormVisible }) {
-		return addFormVisible
-	},
-	editClientContactFormVisible ({ editFormVisible }) {
-		return editFormVisible
-	},
-	currentEditedContact ({ currentEditedContact }) {
-		return currentEditedContact
-	}
+	clientsCachedIds: ({ cached }) => cached.map(el => el.id),
+	currentClient: ({ current }) => current,
+	cachedClients: ({ cached }) => cached,
+	loadingClients: ({ loading }) => loading,
+	loadingBottomClients: ({ loadingBottom }) => loadingBottom,
+	oneLoadingClient: ({ oneLoading }) => oneLoading,
+	clientsByPhone: ({ cachedClientsByPhone }) => cachedClientsByPhone,
+	loadingClientsByPhone: ({ loadingByPhone }) => loadingByPhone,
+	clientFIlters: ({ searchByPhoneQuery: phone, filters }) => Object.assign({ phone }, filters),
+	addClientContactFormVisible: ({ addFormVisible }) => addFormVisible,
+	editClientContactFormVisible: ({ editFormVisible }) => editFormVisible,
+	currentEditedContact: ({ currentEditedContact }) => currentEditedContact
 }
 
 export default {

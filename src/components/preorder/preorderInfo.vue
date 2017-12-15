@@ -1,0 +1,78 @@
+<template>
+<el-card class="preorderInfo">
+	<h2 slot="header">Общая информация</h2>
+
+	<el-steps :active="+data.status_id" align-center finish-status="success">
+		<el-step :title="item.title" v-for="item, index in recordStatuses" :key="index"></el-step>
+	</el-steps>
+
+	<div class="infoGrid">
+		<div>Салон</div>
+		<div>{{ data.salon ? data.salon.NAME : '...' }}</div>
+		<div>Менеджер</div>
+		<div>{{ data.manager ? data.manager.FIO : '...' }}</div>
+		<div>Дата создания</div>
+		<div>{{ data.created_at }}</div>
+		<div>Клиент</div>
+		<div>{{ data.contactFaces ? data.contactFaces.find(el => el.regard == "Основной").fio : '...' }}</div>
+		<div>Адрес</div>
+		<div>{{ data.contactFaces ? data.contactFaces.find(el => el.regard == "Основной").address : '...' }}</div>
+		<div>Рекл. источник</div>
+		<div>{{ data.adsource ? data.adsource.NAME : '...' }}</div>
+		<div>Вероятность</div>
+		<div>
+			<el-rate :value="+data.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" disabled />
+		</div>
+		<div>Бюджет</div>
+		<div>{{ data.budget }}</div>
+		<div>Сумма предоплаты</div>
+		<div>{{ data.prepay_summ }}</div>
+		<div>Сумма расчёта</div>
+		<div>{{ data.calc_summ }}</div>
+		<div class="lc">Примечание</div>
+		<div class="lc">{{ data.description }}</div>
+	</div>
+</el-card>
+</template>
+
+<script>
+import {
+	mapActions,
+	mapGetters,
+	mapMutations
+} from 'vuex'
+
+
+
+
+export default {
+	props: ['content'],
+	computed: {
+		...mapGetters([
+			'recordStatuses'
+		]),
+		data() {
+			return this.content || {}
+		}
+	}
+}
+</script>
+
+
+<style lang="less">
+.preorderInfo {
+    .infoGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        > div {
+            padding: 5px 0;
+			&:not(.lc) {
+				border-bottom: 1px solid #f4f4f4;
+			}
+            &:nth-child(2n+1) {
+                font-weight: bold;
+            }
+        }
+    }
+}
+</style>

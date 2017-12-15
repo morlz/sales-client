@@ -30,5 +30,12 @@ export default {
 			type: "tasks",
 			params
 		})
-	}
+	},
+	async update (data) {
+		return await core.invoke({
+			method: "put",
+			type: "task",
+			data
+		})
+	},
 }

@@ -58,12 +58,14 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'getManagersByIds'
+			'getManagersByIds',
+			'updateTask'
 		]),
 		canselEdit () {
 			this.updateEditTaskFormVisible(false)
 		},
 		edit () {
+			this.updateTask(this.editTaskForm)
 			this.updateEditTaskFormVisible(false)
 		},
 		...mapMutations([

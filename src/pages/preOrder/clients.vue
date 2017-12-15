@@ -1,12 +1,12 @@
 <template>
 	<div class="mainWrapper">
-		<div class="oneClientWrapper" v-if="isOne" v-loading="oneLoadingClient">
+		<div class="oneClientWrapper" v-if="isOne">
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: '/preorder/clients' }">Список клиентов</el-breadcrumb-item>
 				<el-breadcrumb-item>{{ currentClient.lastname }} {{ currentClient.name }} {{ currentClient.patronymic }}</el-breadcrumb-item>
 			</el-breadcrumb>
-			<div class="cards">
+			<div class="cards" v-loading="oneLoadingClient">
 				<client-info :content="currentClient"/>
 				<contact-faces :content="currentClient.contactfaces"/>
 				<tasks :content="currentClient.tasks"/>
@@ -27,6 +27,7 @@
 			</el-breadcrumb>
 			<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 			<tabless
+				key="clients"
 				:data="data"
 				:fieldDescription="clientManyFieldDescription"
 				:key="1"

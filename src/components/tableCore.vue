@@ -3,14 +3,14 @@
 	<table>
 		<thead>
 			<tr>
-				<th v-if="lineNumbers" class="tableIndex">№</th>
+				<th v-if="lineNumbers && !minify" class="tableIndex">№</th>
 				<th v-for="column, index in columns" @click="thClick(column, index)" :key="index">
 					{{ column.label }}
 					<i v-if="sortable" :class="sortableIconClass(column, index)" />
 				</th>
 			</tr>
 			<tr v-if="!minify">
-				<th v-if="lineNumbers" class="tableIndex"></th>
+				<th v-if="lineNumbers && !minify" class="tableIndex"></th>
 				<th v-for="column, index in columnsSearchFields">
 					<el-input v-model="search[column.field]" class="searchByField" :key="index" />
 				</th>
@@ -18,7 +18,7 @@
 		</thead>
 		<tbody>
 			<tr v-for="row, index in sortedRows" :key="index" :data-index="index">
-				<td v-if="lineNumbers" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
+				<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
 				<td v-for="column, columnItem in columns" :class="column.type" @click="clickHandler($event, row, columnItem)"> {{ row[column.field] }} </td>
 				<td>
 					<slot name="table-row-after" :row="row" />
@@ -223,6 +223,8 @@ export default {
         thead {
             tr {
                 th {
+					user-select: none;
+					cursor: pointer;
                     white-space: nowrap;
                     width: auto;
                     padding: 5px;
