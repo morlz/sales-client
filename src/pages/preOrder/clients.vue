@@ -98,7 +98,7 @@ export default {
 			if (this.oneId !== undefined) {
 				this.getOneClient(this.oneId)
 			} else {
-				this.getAllClients()
+				//this.getAllClients()
 			}
 		},
 		searchByPhone(n){
@@ -128,12 +128,6 @@ export default {
 		data () {
 			return this.cachedClients
 		},
-		isOne(){
-			return this.$route.params.id !== undefined
-		},
-		oneId () {
-			return this.$route.params.id
-		}
 	},
 	methods: {
 		...mapActions([

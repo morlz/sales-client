@@ -51,178 +51,7 @@
 			</el-tab-pane>
 
 			<el-tab-pane label="Новый предзаказ" v-if="newPreorderAccepted">
-				<el-form label-width="100px" class="addForm">
-					<el-card>
-						<h2 slot="header">Новый предзаказ</h2>
-
-						<el-form-item label="Источник">
-							<el-select v-model="addForm.source" placeholder="Выбирите рекламный источник">
-								<el-option v-for="item in adSources" :key="item.value" :label="item.label" :value="item.value" />
-							</el-select>
-						</el-form-item>
-
-						<el-form-item label="Бюджет">
-							<el-input v-model="addForm.butget" placeholder="Бюджет" />
-						</el-form-item>
-
-						<el-form-item label="Веростность">
-							<el-rate v-model="addForm.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" />
-						</el-form-item>
-
-						<el-form-item label="Примечание">
-							<el-input type="textarea" v-model="addForm.description" placeholder="Примечание" />
-						</el-form-item>
-					</el-card>
-
-					<el-card>
-						<h2 slot="header">Данные о клиенте</h2>
-
-						<el-form-item label="Телефон">
-							<el-select
-								v-model="addForm.phone"
-								placeholder="8 (800) 555 35 35"
-								:allow-create="!loadingClientsByPhone"
-								remote
-								filterable
-								:remote-method="searchClientsByPhone"
-								:loading="loadingClientsByPhone"
-								:loading-text="'Загрузка...'"
-								:no-data-text="'Клиентов не найдено'">
-								<el-option v-for="client, index in clientsByPhone" :label="client.phone" :value="client.phone" :key="index" class="clientOption">
-									<span>{{ client.fio }}</span>
-									<span>{{ client.phone }}</span>
-									<span>{{ client.salon }}</span>
-								</el-option>
-							</el-select>
-						</el-form-item>
-
-						<div v-if="addFormSelectedClient">
-							<el-form-item>
-								<el-checkbox v-model="addFormSelectedClient.disableSMS" disabled>sms-рассылка запрещена</el-checkbox>
-							</el-form-item>
-
-							<el-form-item label="ФИО">
-								<el-input v-model="addFormSelectedClient.fio" placeholder="ФИО" readonly />
-							</el-form-item>
-
-							<el-form-item label="Пол">
-								<el-switch v-model="addFormSelectedClient.gender == 'Мужской'" active-text="Мужской" inactive-text="Женский" readonly/>
-							</el-form-item>
-
-							<el-form-item label="Приметы">
-								<el-input type="textarea" v-model="addFormSelectedClient.signs" placeholder="Описание пользователя" readonly/>
-							</el-form-item>
-
-							<el-form-item label="Эл почта">
-								<el-input v-model="addFormSelectedClient.email" placeholder="some@email.com" readonly />
-								<el-checkbox v-model="addFormSelectedClient.disableEMAIL" disabled>Email-рассылка запрещена</el-checkbox>
-							</el-form-item>
-						</div>
-
-						<div v-else="addFormSelectedClient">
-							<el-form-item>
-								<el-checkbox v-model="addForm.disableSMS">sms-рассылка запрещена</el-checkbox>
-							</el-form-item>
-
-							<el-form-item label="ФИО">
-								<el-input v-model="addForm.fio" placeholder="ФИО" />
-							</el-form-item>
-
-							<el-form-item label="Пол">
-								<el-switch v-model="addForm.gender" active-text="Мужской" inactive-text="Женский">
-								</el-switch>
-							</el-form-item>
-
-							<el-form-item label="Приметы">
-								<el-input type="textarea" v-model="addForm.clientDescription" placeholder="Описание пользователя" />
-							</el-form-item>
-
-							<el-form-item label="Эл почта">
-								<el-input v-model="addForm.email" placeholder="some@email.com" />
-								<el-checkbox v-model="addForm.disableEmail">Email-рассылка запрещена</el-checkbox>
-							</el-form-item>
-						</div>
-
-					</el-card>
-
-					<el-card class="next">
-						<h2 slot="header">Следующая задача</h2>
-
-						<el-form label-width="130px">
-							<el-form-item label="Тип">
-								<el-select v-model="addForm.type">
-									<el-option v-for="item, index in addTaskTypes" :value="item.value" :label="item.label" :key="index" />
-								</el-select>
-							</el-form-item>
-
-							<div class="nextFormTransitionWrapper">
-								<div v-show="addForm.type == 1" key="1" class="nextFormTransition">
-									<el-form-item label="Дата">
-										<el-date-picker type="date" v-model="addForm.contact.date" placeholder="Дата выполнения задачи" />
-									</el-form-item>
-
-									<el-form-item label="Сумма расчёта">
-										<el-input v-model="addForm.contact.summ" placeholder="Сумма расчёта" />
-									</el-form-item>
-
-									<el-form-item label="Описание задачи">
-										<el-input type="textarea" v-model="addForm.contact.description" placeholder="Описание задачи" />
-									</el-form-item>
-
-									<el-form-item>
-										<div class="buttons">
-											<el-button type="primary" @click="onAddForm">Создать предзаказ</el-button>
-											<el-button type="danger" @click="goBack">Отмена</el-button>
-										</div>
-									</el-form-item>
-								</div>
-
-								<div v-show="addForm.type == 2" key="2" class="nextFormTransition">
-									<el-form-item>
-										...
-									</el-form-item>
-
-									<el-form-item>
-										<div class="buttons">
-											<el-button type="primary" @click="onAddForm">Создать предзаказ</el-button>
-											<el-button type="danger" @click="goBack">Отмена</el-button>
-										</div>
-									</el-form-item>
-								</div>
-
-								<div v-show="addForm.type == 3" key="3" class="nextFormTransition">
-									<el-form-item label="Описание">
-										<el-input type="textarea" v-model="addForm.otkaz.description" placeholder="Описание" />
-									</el-form-item>
-
-									<el-form-item>
-										<div class="buttons">
-											<el-button type="primary" @click="onAddForm">Создать предзаказ</el-button>
-											<el-button type="danger" @click="goBack">Отмена</el-button>
-										</div>
-									</el-form-item>
-								</div>
-
-								<div v-show="addForm.type == 4" key="4" class="nextFormTransition">
-									<el-form-item label="Дата">
-										<el-date-picker type="date" v-model="addForm.reminder.date" placeholder="Дата напоминания" />
-									</el-form-item>
-
-									<el-form-item label="Описание">
-										<el-input type="textarea" v-model="addForm.reminder.description" placeholder="Описание" />
-									</el-form-item>
-
-									<el-form-item>
-										<div class="buttons">
-											<el-button type="primary" @click="onAddForm">Создать предзаказ</el-button>
-											<el-button type="danger" @click="goBack">Отмена</el-button>
-										</div>
-									</el-form-item>
-								</div>
-							</div>
-						</el-form>
-					</el-card>
-				</el-form>
+				<new-preorder-form @goBack="currentTab = '0'"/>
 			</el-tab-pane>
 		</el-tabs>
 	</div>
@@ -237,11 +66,7 @@
 import fieldDescription from '@/static/fieldDescription'
 
 let {
-	recordsManyFieldDescription,
-	adSources,
-	taskTypes: addTaskTypes,
-	clientContactsFieldDescription,
-	clientTasksFieldDescription
+	recordsManyFieldDescription
 } = fieldDescription
 
 import {
@@ -251,10 +76,10 @@ import {
 } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS.vue'
-import lightTable from '@/components/lightTable.vue'
 import addContactForm from '@/components/forms/addContact.vue'
 import editContactForm from '@/components/forms/editContact.vue'
 import editTaskForm from '@/components/forms/editTask.vue'
+import newPreorderForm from '@/components/forms/newPreorder.vue'
 import InfiniteLoading from 'vue-infinite-loading'
 
 import preorderInfo from '@/components/preorder/preorderInfo.vue'
@@ -266,68 +91,29 @@ export default {
 	data() {
 		return {
 			recordsManyFieldDescription,
-			adSources,
-			clientContactsFieldDescription,
-			clientTasksFieldDescription,
-			addTaskTypes,
 			searchByPhone: "",
 			seachTimeout: false,
-			currentTab: "0",
-			addForm: {
-				source: "",
-				butget: "",
-				chance: 3,
-				description: "",
-
-				phone: "",
-				disableSMS: 0,
-				fio: "",
-				gender: "",
-				clientDescription: "",
-				email: "",
-				disableEmail: 0,
-
-				type: "1",
-				contact: {
-					description: "",
-					summ: "",
-					date: ""
-				},
-				zamer: {
-					date: "",
-					region: "",
-					address: "",
-					comment: "",
-					difficly: ""
-				},
-				otkaz: {
-					description: ""
-				},
-				reminder: {
-					date: "",
-					descrption: ""
-				}
-			}
+			currentTab: "0"
 		}
 	},
 	mixins: [mixins],
 	components: {
 		tabless,
 		InfiniteLoading,
-		lightTable,
 		addContactForm,
 		editContactForm,
 		editTaskForm,
 		preorderInfo,
 		contactFaces,
 		tasks,
+		newPreorderForm
 	},
 	watch: {
 		oneId () {
 			if (this.oneId !== undefined) {
 				this.getOneRecord(this.oneId)
 			} else {
-				this.getAllRecords()
+				//this.getAllRecords()
 			}
 		},
 		searchByPhone (n) {
@@ -335,10 +121,11 @@ export default {
 
 			this.seachTimeout = setTimeout(() => {
 				this.updateRecordsSearchByPhoneQuery(n)
+				this.changeRecordsLastOffset()
 				this.recordsCacheClear()
 
 				this.$nextTick(() => {
-				  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 				})
 			}, 500)
 		}
@@ -346,51 +133,28 @@ export default {
 	computed: {
 		...mapGetters([
 			'cachedRecords',
-			'loadingRecords',
-			'clientsByPhone',
 			'currentRecord',
 			'loadingBottomRecords',
-			'cachedSalons',
-			'taskTypes',
 			'fileUploadUrl',
-			'loadingClientsByPhone',
-			'recordStatuses',
 			'newPreorderAccepted',
 			'oneLoadingRecord'
 		]),
-		currentRecordCLientMainContact () {
-			return this.currentRecord.contactFaces ? this.currentRecord.contactFaces.find(el => el.regard == "Основной") : {}
-		},
 		data() {
 			return this.cachedRecords
-		},
-		isOne () {
-			return this.$route.params.id !== undefined
-		},
-		oneId () {
-			return this.$route.params.id
-		},
-		addFormSelectedClient () {
-			return this.clientsByPhone.find(el => el.phone == this.addForm.phone)
 		}
 	},
 	methods: {
 		...mapActions([
-			'getAllRecords',
-			'searchClientsByPhone',
 			'getOneRecord',
 			'recordsInfinity',
 			'recordsFiltersChange',
 			'recordsSortChanged',
-			'recordsCacheClear'
+			'recordsCacheClear',
 		]),
 		...mapMutations([
-			'updateAddClientContactFormVisible',
-			'updateRecordsSearchByPhoneQuery'
+			'updateRecordsSearchByPhoneQuery',
+			'changeRecordsLastOffset'
 		]),
-		onAddForm () {
-			console.log(this.addForm);
-		},
 		localRecordFilterChange (n) {
 			this.recordsFiltersChange (n)
 
@@ -404,16 +168,13 @@ export default {
 			this.$nextTick(() => {
 			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
-		},
-		goBack () {
-			this.currentTab = "0"
 		}
 	},
 	mounted() {
 		if (this.oneId !== undefined) {
 			this.getOneRecord(this.oneId)
 		} else {
-			this.getAllRecords()
+			//this.getAllRecords()
 		}
 	}
 }

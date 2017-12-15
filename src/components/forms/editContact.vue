@@ -25,6 +25,10 @@
 				<el-input v-model="editContactForm.email" placeholder="some@email.com" />
 				<el-checkbox v-model="editContactForm.disableEMAIL">Email-рассылка запрещена</el-checkbox>
 			</el-form-item>
+
+			<el-form-item>
+				<el-checkbox v-model="editContactForm.lost">Контакт утерян</el-checkbox>
+			</el-form-item>
 		</el-form>
 
 		<div slot="footer" class="dialog-footer">
@@ -52,36 +56,43 @@ export default {
 				gender: "",
 				regard: "",
 				phone: "",
-				disableSMS: 0,
+				disableSMS: false,
 				email: "",
-				disableEMAIL: 0
+				disableEMAIL: false,
+				lost: false
 			},
-			rules: contacts
+			rules: contacts,
+			bool: ['disableSMS', 'disableEMAIL', 'lost']
 		}
 	},
 	watch: {
 		formOpen (n) {
 			this.updateEditClientContactFormVisible(n)
-			if (!this.currentEditedContact) return
-			this.editContactForm = Object.assign(this.editContactForm, this.currentEditedContact, {
-				gender: n.gender == "Мужской"
-			})
-			if (!this.$refs.editContactForm) return
-			this.$refs.editContactForm.clearValidate()
+			this.assignFields(n)
 		},
 		editClientContactFormVisible (n) {
 			this.formOpen = n
 		},
 		currentEditedContact (n) {
+			this.assignFields(n)
+		}
+	},
+	methods: {
+		assignFields (n) {
 			if (!n) return
+			for (var prop in n) {
+				if (n.hasOwnProperty(prop)) {
+					if (typeof n[prop] != 'boolean' && this.bool.indexOf(prop) + 1) {
+						n[prop] = !!(+n[prop])
+					}
+				}
+			}
 			this.editContactForm = Object.assign(this.editContactForm, n, {
 				gender: n.gender == "Мужской"
 			})
 			if (!this.$refs.editContactForm) return
 			this.$refs.editContactForm.clearValidate()
-		}
-	},
-	methods: {
+		},
 		canselEdit () {
 			this.updateEditClientContactFormVisible(false)
 		},

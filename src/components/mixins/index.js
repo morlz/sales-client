@@ -27,6 +27,12 @@ export default {
 		}
 	},
 	computed: {
+		isOne() {
+			return this.$route.params.id !== undefined
+		},
+		oneId() {
+			return this.$route.params.id
+		},
 		afterTableContactButtons () {
 			return [
 				{

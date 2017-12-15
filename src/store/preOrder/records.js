@@ -61,7 +61,6 @@ const actions = {
 			})
 	},
 	getOneRecord({ commit, dispatch }, payload){
-		commit('setCurrentRecord', payload)
 		commit('oneLoadingRecordSet', true)
 		api.preorders.records
 			.getOne(payload)
@@ -74,7 +73,7 @@ const actions = {
 				})
 
 				dispatch('getSalonsByIds', salonIDs.filter(unique))
-				commit('updateCachedRecords', [data])
+				commit('setCurrentRecord', data)
 				commit('oneLoadingRecordSet', false)
 			})
 	},
@@ -100,7 +99,7 @@ const actions = {
 }
 
 const mutations = {
-	changeRecordsLastOffset (store, payload) {
+	changeRecordsLastOffset (store, payload = -1) {
 		store.lastOffset = payload
 	},
 	clearCachedRecords (store, payload){
@@ -165,7 +164,7 @@ const mutations = {
 
 const getters = {
 	recordsCachedIds: ({ cached }) => cached.map(el => el.id),
-	currentRecord: ({ cached, current }) => cached.find(el => el.id == current) || {},
+	currentRecord: ({ cached, current }) => current,
 	cachedRecords: ({ cached }) => cached,
 	loadingRecords: ({ loading }) => loading,
 	loadingBottomRecords: ({ loadingBottom }) => loadingBottom,

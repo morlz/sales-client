@@ -61,12 +61,11 @@ const actions = {
 			})
 	},
 	getOneTask({ commit, dispatch }, payload){
-		commit('setCurrentTask', payload)
 		commit('oneLoadingTaskSet', true)
 		api.preorders.tasks
 			.getOne(payload)
 			.then(({ data }) => {
-				commit('updateCachedTasks', [data])
+				commit('setCurrentTask', data)
 				commit('oneLoadingTaskSet', false)
 			})
 	},
@@ -180,7 +179,7 @@ const mutations = {
 
 const getters = {
 	tasksCachedIds: ({ cached }) => cached.map(el => el.id),
-	currentTask: ({ cached, current }) => cached.find(el => el.id == current) || {},
+	currentTask: ({ current }) => current,
 	cachedTasks: ({ cached }) => cached,
 	loadingTasks: ({ loading }) => loading,
 	loadingBottomTasks: ({ loadingBottom }) => loadingBottom,

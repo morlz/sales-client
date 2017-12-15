@@ -27,7 +27,11 @@ let {
 } = fieldDescription
 
 export default {
-	props: ['content'],
+	props: {
+		content: {
+			required: true
+		}
+	},
 	mixins: [mixins],
 	components: {
 		editTaskForm,

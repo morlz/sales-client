@@ -66,6 +66,16 @@ body {
 
 .el-card {
 	color: #5a5e66;
+	display: grid;
+	grid-template-rows: min-content auto;
+
+	.el-card__body {
+		display: grid;
+		grid-auto-flow: row;
+	}
+	.buttons {
+		align-self: end;
+	}
 }
 
 .app {

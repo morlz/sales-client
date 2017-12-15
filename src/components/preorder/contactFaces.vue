@@ -33,7 +33,7 @@ export default {
 			default: false
 		},
 		content: {
-			type: Array
+			required: true
 		}
 	},
 	mixins: [mixins],

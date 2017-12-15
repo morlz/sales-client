@@ -23,7 +23,12 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
-	props: ['content'],
+	props: {
+		content: {
+			type: Object,
+			required: true
+		}
+	},
 	data () {
 		return {}
 	},
