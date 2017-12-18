@@ -12,7 +12,7 @@
 		<el-menu :default-active="dafaultActive" class="mainMenu" @select="menuClickHandler">
 			<div class="moileBackButton el-icon-back" @click="closeMenu" />
 
-			<el-menu-item v-for="item in menuItemsWithoutChilds(menuItemsWithIndexes)" :index="item.path || item.index" :key="item.index">
+			<el-menu-item v-for="item in menuItemsWithoutChilds(menuItemsWithIndexes)" :index="item.path || item.index" :key="item.index" :class="{active: dafaultActive == item.path}">
 				<i :class="item.icon || 'el-icon-location'" />
 				<div class="name">{{item.name}}</div>
 			</el-menu-item>
@@ -23,7 +23,7 @@
 					<div class="name"> {{ item.name }} </div>
 				</template>
 
-				<el-menu-item v-for="cItem in menuItemsWithoutChilds(item.childs)" :index="cItem.path || cItem.index" :key="cItem.index">
+				<el-menu-item v-for="cItem in menuItemsWithoutChilds(item.childs)" :index="cItem.path || cItem.index" :key="cItem.index" :class="{active: dafaultActive == cItem.path}">
 					<i :class="cItem.icon || 'el-icon-location'" />
 					<div class="name">{{cItem.name}}</div>
 				</el-menu-item>
@@ -106,6 +106,12 @@ export default {
 		overflow:hidden;
 		transition: all 0.4s ease-in-out;
 		.mainMenu {
+			i {
+				color: #3c8dbc;
+			}
+			.active {
+				background: rgba(64,158,255, 0.1);
+			}
 			.moileBackButton {
 				display: none;
 			}

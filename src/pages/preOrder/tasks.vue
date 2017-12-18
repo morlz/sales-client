@@ -138,6 +138,7 @@ export default {
 		} else {
 			//this.getAllTasks()
 		}
+		this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 	}
 }
 </script>

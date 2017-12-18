@@ -254,9 +254,11 @@ export default {
         }
         tbody {
             tr {
+				height: 50px;
 				cursor: pointer;
                 transition: all 0.3s;
                 td {
+
                     padding: 3px;
                     .buttons {
                         display: grid;

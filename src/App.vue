@@ -160,6 +160,72 @@ h2 {
 	background-image: url("./assets/people-trading.svg");
 }
 
+.el-icon-furniture {
+	.icon;
+	background-image: url("./assets/armchair.svg");
+}
+
+.el-icon-salon {
+	.icon;
+	background-image: url("./assets/shop.svg");
+}
+
+.el-icon-storage {
+	.icon;
+	background-image: url("./assets/warehouse.svg");
+}
+
+.el-icon-discount {
+	.icon;
+	background-image: url("./assets/percent.svg");
+}
+
+.el-icon-docs {
+	.icon;
+	background-image: url("./assets/docs.svg");
+}
+
+.el-icon-order {
+	.icon;
+	background-image: url("./assets/notebook.svg");
+}
+
+.el-icon-movement {
+	.icon;
+	background-image: url("./assets/delivery-packages-on-a-trolley.svg");
+}
+
+.el-icon-shipments {
+	.icon;
+	background-image: url("./assets/delivery-truck.svg");
+}
+
+.el-icon-code {
+	.icon;
+	background-image: url("./assets/code.svg");
+}
+
+.el-icon-report {
+	.icon;
+	background-image: url("./assets/teacher-asking-a-student-about-bad-test-result.svg");
+}
+
+.el-icon-sell-result {
+	.icon;
+	background-image: url("./assets/education-chart.svg");
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .el-dialog {
 	min-width: 400px;
 }

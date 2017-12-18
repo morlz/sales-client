@@ -4,144 +4,57 @@ const state = {
 	menuOpen: false,
 	menuItems: [{
 			name: 'Главная',
-			path: "",
+			path: "/",
 			icon: "el-icon-home"
 		},
 		{
 			name: 'Помощь',
-			path: "",
+			path: "/help",
 			icon: "el-icon-info"
 		},
 		{
 			name: "Мебель",
+			icon: "el-icon-furniture",
 			childs: [{
-					name: "Мебель во всех салоах",
-					path: "/furniture/allSalons"
-				},
-				{
 					name: "В салоне",
-					path: "/furniture/oneSalon"
+					path: "/furniture/salon",
+					icon: "el-icon-salon"
 				},
 				{
-					name: "На складе (Готовая и в работе)",
-					path: ""
+					name: "На складе",
+					path: "/furniture/storage",
+					icon: "el-icon-storage"
 				},
 				{
-					name: "Интернет-магазин",
-					path: ""
-				},
-				{
-					name: "Склад дисконт",
-					path: ""
-				},
-				{
-					name: "В заказе",
-					path: ""
-				},
-				{
-					name: "Заказать изготовление",
-					path: ""
-				},
-			]
-		},
-		{
-			name: 'Сервис',
-			childs: [{
-					name: "Доставки",
-					path: ""
-				},
-				{
-					name: "Прайс",
-					path: ""
-				},
-				{
-					name: "Доставки (Отчёт)",
-					path: ""
-				},
-				{
-					name: "Доставки 2",
-					path: ""
-				},
+					name: "Дисконт",
+					path: "/furniture/discount",
+					icon: "el-icon-discount"
+				}
 			]
 		},
 		{
 			name: 'Документы',
+			icon: "el-icon-docs",
 			childs: [{
-					name: "Счета",
-					path: "/docs/accounts"
+					name: "Заказы",
+					path: "/docs/order",
+					icon: "el-icon-order"
 				},
 				{
-					name: "Счета (Отказ)",
-					path: ""
+					name: "Перемещения",
+					path: "/docs/movements",
+					icon: "el-icon-movement"
 				},
 				{
-					name: "Итоги \"p\"",
-					path: ""
-				},
-				{
-					name: "Итоги по продажам",
-					path: ""
-				},
-			]
-		},
-		{
-			name: "Отчёты",
-			childs: [{
-					name: "Реклама",
-					path: ""
-				},
-				{
-					name: "Отчёт по продажам",
-					path: ""
-				},
-				{
-					name: "Приход",
-					path: ""
-				},
-				{
-					name: "Отчёт 2",
-					path: ""
-				},
-				{
-					name: "Отчёт по оборачиваемости",
-					path: ""
-				},
-				{
-					name: "Подиум",
-					path: ""
-				},
-				{
-					name: "Отчёт по доставкам",
-					path: ""
-				},
-				{
-					name: "Отчёт по продажам и отгрузке",
-					path: ""
-				},
-				{
-					name: "Отчёт интернет",
-					path: ""
-				},
-				{
-					name: "Новая акция",
-					path: ""
+					name: "Доставки",
+					path: "/docs/shipments",
+					icon: "el-icon-shipments"
 				},
 			]
 		},
 		{
 			name: 'Наработки',
-			childs: [{
-					name: "Наработки",
-					path: ""
-				},
-				{
-					name: "Действия",
-					path: ""
-				}
-			]
-		},
-		{
-			name: 'Предзаказы',
+			icon: "el-icon-code",
 			childs: [{
 					name: "Клиенты",
 					path: "/preorder/clients",
@@ -158,7 +71,17 @@ const state = {
 					icon: "el-icon-list"
 				}
 			]
-		}
+		},
+		{
+			name: "Отчёты",
+			icon: "el-icon-report",
+			childs: [{
+					name: "Итоги продаж",
+					path: "/reports/sales",
+					icon: "el-icon-sell-result"
+				},
+			]
+		},
 	]
 }
 

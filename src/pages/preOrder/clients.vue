@@ -163,6 +163,7 @@ export default {
 		} else {
 			//this.getAllClients()
 		}
+		this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 	}
 }
 

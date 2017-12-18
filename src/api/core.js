@@ -45,7 +45,7 @@ export default {
 		if (process.env.NODE_ENV == 'development') {
 			url = `http://localhost/sales-server/web/${params.type}`
 		} else {
-			url = `http://192.168.234.10/sales-server/web/${params.type}`
+			url = `/sales-server/web/${params.type}`
 		}
 
 		if (params.data.id !== undefined) url += `/${params.data.id}`

@@ -176,6 +176,7 @@ export default {
 		} else {
 			//this.getAllRecords()
 		}
+		this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 	}
 }
 </script>
