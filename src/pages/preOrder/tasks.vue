@@ -138,7 +138,9 @@ export default {
 		} else {
 			//this.getAllTasks()
 		}
-		this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+		setTimeout(() => {
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+		}, 4e2)
 	}
 }
 </script>

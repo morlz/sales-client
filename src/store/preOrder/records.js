@@ -10,10 +10,10 @@ const state = {
 	loadingBottom: false,
 	oneLoading: true,
 	loadingByPhone: false,
-	searchByPhoneQuery: "",
-	perLoadingLimit: 30,
 	offset: 0,
 	lastOffset: -1,
+	searchByPhoneQuery: "",
+	perLoadingLimit: 30,
 }
 
 const actions = {

@@ -1,6 +1,12 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
+	watch: {
+		refInfinite: (n) => {
+			console.log("w");
+			n.$emit('$InfiniteLoading:reset')
+		}
+	},
 	methods: {
 		...mapMutations([
 			'setCurrentEditedContact',
@@ -27,6 +33,10 @@ export default {
 		}
 	},
 	computed: {
+		refInfinite () {
+			console.log("inf");
+			return this.$refs.infiniteLoading
+		},
 		isOne() {
 			return this.$route.params.id !== undefined
 		},

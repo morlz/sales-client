@@ -29,8 +29,8 @@
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/records' }">Список предзаказов</el-breadcrumb-item>
 		</el-breadcrumb>
-		<el-tabs tab-position="top" v-model="currentTab">
-			<el-tab-pane label="Все предзаказы">
+		<el-tabs tab-position="top" v-model="currentTab" key="recordsTabs">
+			<el-tab-pane label="Все предзаказы" key="1">
 				<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 				<tabless
 					key="records"
@@ -50,7 +50,7 @@
 
 			</el-tab-pane>
 
-			<el-tab-pane label="Новый предзаказ" v-if="newPreorderAccepted">
+			<el-tab-pane label="Новый предзаказ" v-if="newPreorderAccepted" key="2">
 				<new-preorder-form @goBack="currentTab = '0'"/>
 			</el-tab-pane>
 		</el-tabs>
@@ -159,14 +159,13 @@ export default {
 			this.recordsFiltersChange (n)
 
 			this.$nextTick(() => {
-			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localRecordSortChange (n) {
-			this.recordsSortChanged (n)
 
 			this.$nextTick(() => {
-			  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},
@@ -176,7 +175,9 @@ export default {
 		} else {
 			//this.getAllRecords()
 		}
-		this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+		setTimeout(() => {
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+		}, 4e2)
 	}
 }
 </script>

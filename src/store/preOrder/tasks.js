@@ -9,11 +9,11 @@ const state = {
 	loading: true,
 	loadingBottom: false,
 	oneLoading: true,
-	perLoadingLimit: 30,
+	editTaskFormVisible: false,
 	offset: 0,
 	lastOffset: -1,
 	currentEdited: {},
-	editTaskFormVisible: false
+	perLoadingLimit: 30,
 }
 
 const actions = {
@@ -105,7 +105,6 @@ const actions = {
 
 const mutations = {
 	changeTasksLastOffset (store, payload) {
-		console.log("offset");
 		store.lastOffset = payload
 	},
 	clearCachedTasks (store, payload){

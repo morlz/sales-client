@@ -163,7 +163,9 @@ export default {
 		} else {
 			//this.getAllClients()
 		}
-		this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+		setTimeout(() => {
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+		}, 4e2)
 	}
 }
 
