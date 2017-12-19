@@ -1,9 +1,9 @@
 <template>
-<div class="mainAuthWrapper" v-loading="auchChecking">
-	<div class="gradient" :style="gradientStyles" />
+<div class="mainAuthWrapper">
+	<div class="gradient" :style="gradientStyles"/>
 
 	<div class="mainAuth">
-		<el-card class="centralCard">
+		<el-card class="centralCard" v-loading="auchChecking">
 			<h2 class="title" slot="header">Авторизация</h2>
 
 			<el-form :model="form" :rules="loginFormRules" ref="loginForm">
@@ -97,7 +97,8 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'auchChecking'
+			'auchChecking',
+			'logined'
 		]),
 		gradientStyles() {
 			return {
@@ -117,26 +118,29 @@ export default {
 
 
 <style lang="less">
-.gradient,
-.mainAuth {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: grid;
-    justify-content: center;
-	align-content: center;
-    .centralCard {
-        .title {
-            margin: 0;
-        }
-    }
+.mainAuthWrapper {
+	.gradient,
+	.mainAuth {
+	    width: 100%;
+	    height: 100%;
+	    position: absolute;
+	    top: 0;
+	    right: 0;
+	    bottom: 0;
+	    left: 0;
+	    display: grid;
+	    justify-content: center;
+		align-content: center;
+	    .centralCard {
+	        .title {
+	            margin: 0;
+	        }
+	    }
+	}
+
+	.gradient {
+	    opacity: 0.5;
+	}
 }
 
-.gradient {
-    opacity: 0.5;
-}
 </style>

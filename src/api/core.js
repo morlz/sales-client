@@ -1,6 +1,6 @@
 import axios from 'axios'
 import db from '@/api/tempDB'
-import cookie from '@/api/auth/cookie'
+import cookie from '@/api/cookie'
 
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => {

@@ -50,10 +50,13 @@ export default {
 <style lang="less">
 .clientInfo {
 	.infoGrid {
+		align-self: start;
 		display: grid;
 		grid-template-columns: 130px 1fr;
+		align-content: center;
 		> div {
-			padding: 5px 0;
+			padding: 15px 0;
+
 			&:not(.lc) {
 				border-bottom: 1px solid #f4f4f4;
 			}

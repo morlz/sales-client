@@ -63,7 +63,7 @@ export default {
 			}, el))
 		},
 		rows() {
-			return this.data
+			return this.data || []
 		}
 	},
 	methods: {

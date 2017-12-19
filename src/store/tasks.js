@@ -33,7 +33,7 @@ const actions = {
 		commit('loadingTasksSet', true)
 	},
 	getAllTasks({ commit, dispatch }, ids){
-		api.preorders.tasks
+		api.tasks
 			.getAll(ids)
 			.then(({ data }) => {
 				commit('updateCachedTasks', data)
@@ -44,7 +44,7 @@ const actions = {
 		if (state.lastOffset == state.offset) return
 		commit('changeTasksLastOffset', state.offset)
 		commit('loadingBottomTasksSet', true)
-		api.preorders.tasks
+		api.tasks
 			.getLimited({
 				limit: state.perLoadingLimit,
 				offset: state.offset,
@@ -62,7 +62,7 @@ const actions = {
 	},
 	getOneTask({ commit, dispatch }, payload){
 		commit('oneLoadingTaskSet', true)
-		api.preorders.tasks
+		api.tasks
 			.getOne(payload)
 			.then(({ data }) => {
 				commit('setCurrentTask', data)
@@ -73,7 +73,7 @@ const actions = {
 		commit('updateSearchByPhoneQuery', payload)
 		if (!payload) return
 		commit('loadingByPhoneTasksSet', true)
-		api.preorders.tasks
+		api.tasks
 			.searchByPhone(payload)
 			.then(({ data }) => {
 				commit('updateCachedTasks', data)
@@ -81,21 +81,21 @@ const actions = {
 			})
 	},
 	getAllTaskStatuses({ commit, dispatch }) {
-		api.preorders.tasks
+		api.tasks
 			.getSatuses()
 			.then(({ data }) => {
 				commit('setPreorderStatuses', data)
 			})
 	},
 	getAllTaskTypes({ commit, dispatch }){
-		api.preorders.tasks
+		api.tasks
 			.getAllTypes()
 			.then(({ data }) => {
 				commit('setTaskTypes', data)
 			})
 	},
 	updateTask({ commit, dispatch }, payload){
-		api.preorders.tasks
+		api.tasks
 			.update(payload)
 			.then(({ data }) => {
 				console.log(data);

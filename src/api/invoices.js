@@ -1,15 +1,13 @@
 import core from '@/api/core'
 
 export default {
-	async getList () {
-		let params = core.prepareArrays({
-			type: "list"
-		})
+	async getLimited (params) {
+		params = core.prepareArrays(params)
 
 		return await core.invoke({
 			method: "get",
-			type: "salons",
+			type: "invoices",
 			params
 		})
-	}
+	},
 }

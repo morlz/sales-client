@@ -5,16 +5,18 @@ Vue.use(Vuex)
 import nav from '@/store/main/nav'
 import files from '@/store/main/files'
 import auth from '@/store/main/auth'
-import clients from '@/store/preOrder/clients'
-import records from '@/store/preOrder/records'
-import tasks from '@/store/preOrder/tasks'
-import managers from '@/store/preOrder/managers'
-import salons from '@/store/preOrder/salons'
+import clients from '@/store/clients'
+import invoices from '@/store/invoices'
+import records from '@/store/records'
+import tasks from '@/store/tasks'
+import managers from '@/store/managers'
+import salons from '@/store/salons'
 
 export default new Vuex.Store({
 	modules: {
 		nav,
 		clients,
+		invoices,
 		records,
 		tasks,
 		managers,

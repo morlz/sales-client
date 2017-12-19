@@ -33,7 +33,7 @@ const actions = {
 		commit('loadingRecordsSet', true)
 	},
 	getAllRecords({ commit, dispatch }, ids){
-		api.preorders.records
+		api.records
 			.getAll(ids)
 			.then(({ data }) => {
 				commit('updateCachedRecords', data)
@@ -44,7 +44,7 @@ const actions = {
 		if (state.lastOffset == state.offset) return
 		commit('changeRecordsLastOffset', state.offset)
 		commit('loadingBottomRecordsSet', true)
-		api.preorders.records
+		api.records
 			.getLimited({
 				limit: state.perLoadingLimit,
 				offset: state.offset,
@@ -62,7 +62,7 @@ const actions = {
 	},
 	getOneRecord({ commit, dispatch }, payload){
 		commit('oneLoadingRecordSet', true)
-		api.preorders.records
+		api.records
 			.getOne(payload)
 			.then(({ data }) => {
 				const unique = (value, index, self) => self.indexOf(value) === index
@@ -81,7 +81,7 @@ const actions = {
 		commit('updateSearchByPhoneQuery', payload)
 		if (!payload) return
 		commit('loadingByPhoneRecordsSet', true)
-		api.preorders.records
+		api.records
 			.searchByPhone(payload)
 			.then(({ data }) => {
 				commit('updateCachedRecords', data)
@@ -89,7 +89,7 @@ const actions = {
 			})
 	},
 	getAllRecordStatuses ({ commit, dispatch }) {
-		api.preorders.records
+		api.records
 			.getSatuses()
 			.then(({ data }) => {
 				commit('setPreorderStatuses', data)

@@ -2,13 +2,15 @@ import api from '@/api'
 
 const state = {
 	cached: [],
-	loading: true
+	loading: true,
+	current: {},
+	currentLoading: true
 }
 
 const actions = {
 	getOneManager({ commit, dispatch }, payload){
 		commit('loadingManagersSet', true)
-		api.preorders.managers
+		api.managers
 			.getOne(payload)
 			.then(({ data }) => {
 				commit('updateCachedManagers', [data])
@@ -17,13 +19,20 @@ const actions = {
 	},
 	getManagersByIds({ commit, dispatch }, payload){
 		commit('loadingManagersSet', true)
-		api.preorders.managers
+		api.managers
 			.getByIds(payload)
 			.then(({ data }) => {
 				commit('updateCachedManagers', data)
 				commit('loadingManagersSet', false)
 			})
 	},
+	getManagerProfileById({ commit, dispatch }, payload) {
+		api.managers
+			.getManagerProfile(payload)
+			.then(({ data }) => {
+				commit("updateCurrentManager", data)
+			})
+	}
 }
 
 const mutations = {
@@ -34,14 +43,14 @@ const mutations = {
 			store.cached.push(el)
 		})
 	},
-	loadingManagersSet(store, payload) {
-		store.loading = payload
-	}
+	loadingManagersSet: (store, payload) => store.loading = payload,
+	updateCurrentManager: (store, payload) => store.current = payload
 }
 
 const getters = {
 	cachedManagers: ({ cached }) => cached,
 	loadingManagers: ({ loading }) => loading,
+	currentManagerProfile: ({ current }) => current,
 }
 
 export default {

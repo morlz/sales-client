@@ -1,11 +1,9 @@
 <template>
 	<header>
-		<el-popover ref="mainMenuButtonPopover" trigger="hover" placement="bottom-start" class="mainMenuButtonPopover">
-			<div>
+		<el-popover ref="mainMenuButtonPopover" trigger="hover" placement="bottom-start" >
+			<div class="mainMenuButtonPopover">
 				<el-checkbox v-model="autoMenuCollapce">Зафиксировать меню</el-checkbox>
-			</div>
-			<div>
-				<el-switch v-model="autoBenuCollapceState" active-text="Открыто" inactive-text="Закрыто" :disabled="!autoMenuCollapce" />
+				<el-switch v-model="autoBenuCollapceState" active-text="Открыто" inactive-text="Закрыто" :disabled="!autoMenuCollapce" class="menuCollapceSwitcher" />
 			</div>
 		</el-popover>
 		<div class="toggleMenu" v-popover:mainMenuButtonPopover @click="toggleMenu" />
@@ -18,6 +16,12 @@ import {
 	mapMutations
 } from 'vuex'
 import profile from '@/components/profile.vue'
+/**
+ invoice - заказы
+ SP_OTGRUZOK - доставки
+ */
+
+
 
 export default {
 	data () {
@@ -48,7 +52,9 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
+
+
+<style lang="less">
 header {
     height: 50px;
     background-color: #3c8dbc;
@@ -75,11 +81,15 @@ header {
 	.profileWrapper {
 		grid-area: profile;
 	}
+}
 
-	.mainMenuButtonPopover {
-		display: grid;
-		grid-gap: 20px;
-		grid-auto-flow: row;
+.mainMenuButtonPopover {
+	display: grid;
+	justify-content: center;
+	grid-gap: 10px;
+	grid-auto-flow: row;
+	.menuCollapceSwitcher {
+		transition: opacity 0.3s ease-in-out;
 	}
 }
 </style>

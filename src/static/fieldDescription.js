@@ -134,6 +134,16 @@ let dataObj = {
 			field: "price",
 			label: "Цена руб."
 		},
+	],
+
+	invoicesFieldDescription: [
+		{ field: "N_DOC", label: "Номер документа" },
+		{ field: "DATE", label: "Дата оформления" },
+		{ field: "PL_OTGR", label: "Дата отгрузки" },
+		{ field: "manager", label: "Менеджер" },
+		{ field: "client", label: "Клиент" },
+		{ field: "adSource", label: "Рекламный источник" },
+		{ field: "storage", label: "Склад" },
 	]
 }
 

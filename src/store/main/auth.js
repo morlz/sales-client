@@ -8,7 +8,7 @@ const state = {
 
 const actions = {
 	authInit ({ commit, dispatch }) {
-		let { token } = api.auth.cookie.getAuth()
+		let { token } = api.cookie.getAuth()
 		if (token) {
 			commit("updateToken", token)
 			commit("auchCheckingChange", true)
@@ -61,7 +61,7 @@ const mutations = {
 	},
 	updateToken (state, payload) {
 		state.token = payload
-		api.auth.cookie.setAuth({ token: payload })
+		api.cookie.setAuth({ token: payload })
 	},
 	auchCheckingChange (state, payload) {
 		state.auchChecking = payload

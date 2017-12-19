@@ -125,7 +125,7 @@ export default {
 				this.recordsCacheClear()
 
 				this.$nextTick(() => {
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+					if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 				})
 			}, 500)
 		}
@@ -159,13 +159,13 @@ export default {
 			this.recordsFiltersChange (n)
 
 			this.$nextTick(() => {
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localRecordSortChange (n) {
 
 			this.$nextTick(() => {
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},
@@ -177,7 +177,7 @@ export default {
 		}
 
 		setTimeout(() => {
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 		}, 1e3)
 	}
 }
@@ -205,7 +205,7 @@ export default {
 	.cards {
 		display: grid;
 		grid-gap: 20px;
-		grid-template-columns: 550px 1fr;
+		grid-template-columns: 1fr 1fr;
 		.tasks, .files {
 			grid-column: ~"1 / 3";
 		}

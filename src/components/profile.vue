@@ -12,12 +12,12 @@
 				<div class="avatar"></div>
 				<div class="fio">{{ fio }}</div>
 				<div class="dol">{{ loginedAs.UPOST }}</div>
-				<div class="salon">{{ loginedAs.salon }}</div>
+				<div class="salon">{{ loginedAs.UPOST }}</div>
 			</div>
 			<div class="buttons">
 				<el-button>Задачи</el-button>
 				<el-button>Заказы</el-button>
-				<el-button>Профиль</el-button>
+				<el-button @click="goToProfile">Профиль</el-button>
 				<el-button type="danger" @click="logOut">Выйти</el-button>
 			</div>
 		</div>
@@ -35,7 +35,10 @@ export default {
 		...mapMutations([]),
 		...mapActions([
 			'logOut'
-		])
+		]),
+		goToProfile () {
+			router.push({ path: `/profile/${this.loginedAs.id}` })
+		}
 	},
 	computed: {
 		...mapGetters([

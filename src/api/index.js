@@ -1,9 +1,18 @@
-import preorders from '@/api/preorders'
-import furniture from '@/api/furniture'
-import auth from '@/api/auth'
+import clients from '@/api/clients'
+import records from '@/api/records'
+import tasks from '@/api/tasks'
+import managers from '@/api/managers'
+import salons from '@/api/salons'
+import invoices from '@/api/invoices'
+import auth from '@/api/auth.js'
+import cookie from '@/api/cookie.js'
 
 export default {
-	preorders,
-	furniture,
-	auth
+	clients,
+	records,
+	tasks,
+	managers,
+	salons,
+	auth,
+	cookie
 }

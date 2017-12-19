@@ -109,7 +109,7 @@ export default {
 				this.clientsCacheClear()
 
 				this.$nextTick(() => {
-				  this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				  if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 				})
 			}, 500)
 		}
@@ -146,14 +146,14 @@ export default {
 			this.clientsFiltersChange (n)
 
 			this.$nextTick(() => {
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localClientSortChange (n) {
 			this.clientsSortChanged (n)
 
 			this.$nextTick(() => {
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},
@@ -164,7 +164,7 @@ export default {
 			//this.getAllClients()
 		}
 		setTimeout(() => {
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 		}, 1e3)
 	}
 }
@@ -184,7 +184,7 @@ export default {
 	.oneClientWrapper {
 		.cards {
 			display: grid;
-			grid-template-columns: 550px 1fr;
+			grid-template-columns: 1fr 1fr;
 			grid-gap: 20px;
 			.tasks,
 			.preorders {

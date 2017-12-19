@@ -36,7 +36,7 @@ const actions = {
 		commit('loadingClientsSet', true)
 	},
 	getAllClients({ commit, dispatch }, ids){
-		api.preorders.clients
+		api.clients
 			.getAll(ids)
 			.then(({ data }) => {
 				commit('updateCachedClients', data)
@@ -47,7 +47,7 @@ const actions = {
 		if (state.lastOffset == state.offset) return
 		commit('changeClientsLastOffset', state.offset)
 		commit('loadingBottomClientsSet', true)
-		api.preorders.clients
+		api.clients
 			.getLimited({
 				limit: state.perLoadingLimit,
 				offset: state.offset,
@@ -65,7 +65,7 @@ const actions = {
 	},
 	getOneClient({ commit, dispatch }, payload){
 		commit('oneLoadingClientSet', true)
-		api.preorders.clients
+		api.clients
 			.getOne(payload)
 			.then(({ data }) => {
 				const unique = (value, index, self) => self.indexOf(value) === index
@@ -91,7 +91,7 @@ const actions = {
 		if (!payload) return
 		commit('updateCachedClientsByPhone', [])
 		commit('loadingByPhoneClientsSet', true)
-		api.preorders.clients
+		api.clients
 			.searchByPhone(payload)
 			.then(({ data }) => {
 				commit('updateCachedClientsByPhone', data)
@@ -99,14 +99,14 @@ const actions = {
 			})
 	},
 	clientAddContact({ commit, dispatch }, payload){
-		api.preorders.clients
+		api.clients
 			.addContact(payload)
 			.then(({ data }) => {
 				console.log(data);
 			})
 	},
 	clientUpdateContact({ commit, dispatch }, payload){
-		api.preorders.clients
+		api.clients
 			.editContact(payload)
 			.then(({ data }) => {
 				console.log(data);

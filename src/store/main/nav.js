@@ -39,7 +39,7 @@ const state = {
 			icon: "el-icon-docs",
 			childs: [{
 					name: "Заказы",
-					path: "/docs/order",
+					path: "/docs/invoices",
 					icon: "el-icon-order"
 				},
 				{

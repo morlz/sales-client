@@ -18,5 +18,14 @@ export default {
 			type: "managers",
 			params
 		})
+	},
+	async getManagerProfile (id) {
+		return await core.invoke({
+			method: "get",
+			type: "manager",
+			data: {
+				id
+			}
+		})
 	}
 }

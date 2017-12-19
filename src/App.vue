@@ -63,6 +63,7 @@ export default {
 
 <style lang="less">
 @import url("./lib/FontAwesome/less/font-awesome.less");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Slab");
 
 body {
     margin: 0;
@@ -108,7 +109,7 @@ body {
 }
 
 .app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+	font-family: 'Roboto Slab', serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
@@ -160,6 +161,10 @@ h2 {
     margin: 0;
     font-size: 18px;
     font-weight: bold;
+}
+
+.el-icon-* {
+	font-family: 'Avenir', Helvetica, Arial, sans-serif;
 }
 
 .icon {

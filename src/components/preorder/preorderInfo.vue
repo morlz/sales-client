@@ -62,10 +62,11 @@ export default {
 <style lang="less">
 .preorderInfo {
     .infoGrid {
+		align-self: start;
         display: grid;
         grid-template-columns: 1fr 1fr;
         > div {
-            padding: 5px 0;
+            padding: 15px 0;
 			&:not(.lc) {
 				border-bottom: 1px solid #f4f4f4;
 			}

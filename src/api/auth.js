@@ -1,5 +1,4 @@
 import core from '@/api/core'
-import cookie from '@/api/auth/cookie'
 
 export default {
 	async signIn (params) {
@@ -20,6 +19,5 @@ export default {
 			method: "get",
 			type: "auth/userdata"
 		})
-	},
-	cookie
+	}
 }

@@ -12,7 +12,7 @@ const state = {
 const actions = {
 	getOneSalon({ commit, dispatch }, payload){
 		commit('loadingSalonsSet', true)
-		api.preorders.salons
+		api.salons
 			.getOne(payload)
 			.then(({ data }) => {
 				commit('updateCachedSalons', [data])
@@ -21,7 +21,7 @@ const actions = {
 	},
 	getSalonsByIds({ commit, dispatch }, payload){
 		commit('loadingSalonsSet', true)
-		api.preorders.salons
+		api.salons
 			.getByIds(payload)
 			.then(({ data }) => {
 				commit('updateCachedSalons', data)
@@ -30,7 +30,7 @@ const actions = {
 	},
 	getSalonsList ({ commit, dispatch }) {
 		commit('updateSalonsListLoading', true)
-		api.furniture.salons
+		api.salons
 			.getList()
 			.then(({ data }) => {
 				commit('updateSalonsList', data)

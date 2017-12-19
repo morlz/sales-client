@@ -121,14 +121,14 @@ export default {
 			this.tasksFiltersChange(n)
 
 			this.$nextTick(() => {
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localTaskSortChange(n) {
 			this.tasksSortChanged(n)
 
 			this.$nextTick(() => {
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},
@@ -139,7 +139,7 @@ export default {
 			//this.getAllTasks()
 		}
 		setTimeout(() => {
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 		}, 1e3)
 	}
 }
