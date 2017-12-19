@@ -1,5 +1,7 @@
 import axios from 'axios'
 import db from '@/api/tempDB'
+import cookie from '@/api/auth/cookie'
+
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => {
 	return new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
@@ -40,16 +42,13 @@ export default {
 	async invoke (params = {}) {
 		//await _wait(10000, 5000) //emit real server
 		if (!params.data) params.data = {}
-
-		let url
-		if (process.env.NODE_ENV == 'development') {
-			url = `http://localhost/sales-server/web/${params.type}`
-		} else {
-			url = `/sales-server/web/${params.type}`
-		}
+		if (!params.params) params.params = {}
+		let url = process.env.NODE_ENV == 'development' ? `http://localhost/sales-server/web/${params.type}` : `/sales-server/web/${params.type}`
 
 		if (params.data.id !== undefined) url += `/${params.data.id}`
 		params.url = url
+		let auth = cookie.getAuth()
+		if (auth) params.params.token = auth.token
 
 		if (process.env.NODE_ENV == 'development') console.log("api request", params)
 		let res = await axios(params)

@@ -34,7 +34,6 @@ export default {
 	},
 	computed: {
 		refInfinite () {
-			console.log("inf");
 			return this.$refs.infiniteLoading
 		},
 		isOne() {

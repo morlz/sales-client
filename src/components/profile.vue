@@ -10,29 +10,40 @@
 		<div class="profileModalWrapper">
 			<div class="bg">
 				<div class="avatar"></div>
-				<div class="fio">{ user.fio }</div>
-				<div class="dol">{ user.dolznost }</div>
-				<div class="salon">{ salon.name }</div>
+				<div class="fio">{{ fio }}</div>
+				<div class="dol">{{ loginedAs.UPOST }}</div>
+				<div class="salon">{{ loginedAs.salon }}</div>
 			</div>
 			<div class="buttons">
 				<el-button>Задачи</el-button>
 				<el-button>Заказы</el-button>
 				<el-button>Профиль</el-button>
-				<el-button type="danger">Выйти</el-button>
+				<el-button type="danger" @click="logOut">Выйти</el-button>
 			</div>
 		</div>
 	</el-popover>
 
-	<div v-popover:popoverProfie class="name">{ user.name }</div>
+	<div v-popover:popoverProfie class="name">{{ fio }}</div>
 </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
 	methods: {
-		...mapMutations([])
+		...mapMutations([]),
+		...mapActions([
+			'logOut'
+		])
+	},
+	computed: {
+		...mapGetters([
+			'loginedAs'
+		]),
+		fio () {
+			return `${this.loginedAs.FIO} ${this.loginedAs.IMY} ${this.loginedAs.OTCH}`
+		}
 	}
 }
 </script>
