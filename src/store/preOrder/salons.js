@@ -2,7 +2,11 @@ import api from '@/api'
 
 const state = {
 	cached: [],
-	loading: true
+	loading: true,
+
+	salonList: [],
+	salonListLoading: true,
+
 }
 
 const actions = {
@@ -23,6 +27,15 @@ const actions = {
 				commit('updateCachedSalons', data)
 				commit('loadingSalonsSet', false)
 			})
+	},
+	getSalonsList ({ commit, dispatch }) {
+		commit('updateSalonsListLoading', true)
+		api.furniture.salons
+			.getList()
+			.then(({ data }) => {
+				commit('updateSalonsList', data)
+				commit('updateSalonsListLoading', false)
+			})
 	}
 }
 
@@ -34,14 +47,16 @@ const mutations = {
 			store.cached.push(el)
 		})
 	},
-	loadingSalonsSet(store, payload) {
-		store.loading = payload
-	}
+	loadingSalonsSet: (store, payload) => store.loading = payload,
+	updateSalonsList: (store, payload) => store.salonList = payload,
+	updateSalonsListLoading: (store, payload) => store.salonListLoading = payload
 }
 
 const getters = {
 	cachedSalons: ({ cached }) => cached,
 	loadingSalons: ({ loading }) => loading,
+	salonsList: ({ salonList }) => salonList,
+	salonsListLoading: ({ salonListLoading }) => salonListLoading
 }
 
 export default {

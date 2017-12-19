@@ -2,6 +2,8 @@ import api from '@/api'
 
 const state = {
 	menuOpen: false,
+	menuFixed: false,
+	menuFixedState: false,
 	menuItems: [{
 			name: 'Главная',
 			path: "/",
@@ -98,11 +100,18 @@ const mutations = {
 	},
 	closeMenu (state) {
 		state.menuOpen = false
+	},
+	changeMenuFixed (state, payload) {
+		state.menuFixed = payload
+	},
+	changeMenuFixedState (state, payload) {
+		state.menuFixedState = payload
 	}
 }
 
 const getters = {
-	menuOpen ({ menuOpen }) {
+	menuOpen ({ menuOpen, menuFixed, menuFixedState }) {
+		if (menuFixed) return menuFixedState
 		return menuOpen
 	},
 	menuItems ({ menuItems }) {

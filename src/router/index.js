@@ -5,7 +5,7 @@ import Router from 'vue-router'
 import home from '@/pages/home'
 
 import allSalons from '@/pages/furniture/allSalons.vue'
-import oneSalon from '@/pages/furniture/oneSalon.vue'
+import salon from '@/pages/furniture/salon.vue'
 
 import clients from '@/pages/preOrder/clients.vue'
 import records from '@/pages/preOrder/records.vue'
@@ -27,8 +27,8 @@ let routes = [
 		component: allSalons
 	},
 	{
-		path: '/furniture/oneSalon',
-		component: oneSalon
+		path: '/furniture/salon',
+		component: salon
 	},
 	{
 		path: '/docs/accounts',

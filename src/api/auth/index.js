@@ -9,6 +9,12 @@ export default {
 			params
 		})
 	},
+	async logOut () {
+		return await core.invoke({
+			method: "get",
+			type: "auth/logout"
+		})
+	},
 	async getUserData () {
 		return await core.invoke({
 			method: "get",

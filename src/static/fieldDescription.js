@@ -80,6 +80,60 @@ let dataObj = {
 		{ field: "budget", label: "Бюждет", type: "number" },
 		{ field: "calc_summ", label: "Сумма расчета", type: "number" },
 		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
+	],
+
+	furnitureSalonFieldDescription: [{
+			field: "id",
+			label: "№ зак."
+		},
+		{
+			field: "salon",
+			label: "Салон"
+		},
+		{
+			field: "fab",
+			label: "Фаб.н."
+		},
+		{
+			field: "storage",
+			label: "М.хр."
+		},
+		{
+			field: "isp",
+			label: "Исп."
+		},
+		{
+			field: "timeInStorage",
+			label: "Дней на складе"
+		},
+		{
+			field: "cloth1",
+			label: "Ткань 1"
+		},
+		{
+			field: "cloth2",
+			label: "Ткань 2"
+		},
+		{
+			field: "cloth3",
+			label: "Ткань 3"
+		},
+		{
+			field: "cat",
+			label: "Кат"
+		},
+		{
+			field: "decor",
+			label: "Декор"
+		},
+		{
+			field: "steska",
+			label: "Стежка"
+		},
+		{
+			field: "price",
+			label: "Цена руб."
+		},
 	]
 }
 

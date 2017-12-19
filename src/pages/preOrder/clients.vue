@@ -165,7 +165,7 @@ export default {
 		}
 		setTimeout(() => {
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 4e2)
+		}, 1e3)
 	}
 }
 

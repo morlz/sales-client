@@ -25,6 +25,13 @@ const actions = {
 				}
 				commit("auchCheckingChange", false)
 			})
+			.catch(({ data, status }) => {
+				if (status == 403) {
+					commit("updateUserAuth", false)
+					commit("updateToken", "")
+				}
+				commit("auchCheckingChange", false)
+			})
 	},
 	signIn ({ commit, dispatch }, payload) {
 		api.auth.signIn(payload)
@@ -39,14 +46,10 @@ const actions = {
 
 	},
 	logOut ({ commit, dispatch }) {
-		/*
 		api.auth.logOut()
 			.then(({ data }) => {
 				console.log(data);
-				if (data.token)
 			})
-		*/
-
 		commit("updateUserAuth", false)
 		commit("updateToken", "")
 	}
@@ -69,6 +72,7 @@ const getters = {
 	logined: state => !!state.user,
 	loginedAs: state => state.user,
 	auchChecking: state => state.auchChecking,
+	currentUserSalon: state => state.user.ID_SALONA,
 }
 
 export default {
