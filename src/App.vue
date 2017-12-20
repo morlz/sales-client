@@ -63,7 +63,7 @@ export default {
 
 <style lang="less">
 @import url("./lib/FontAwesome/less/font-awesome.less");
-@import url("https://fonts.googleapis.com/css?family=Roboto+Slab");
+@import url("https://fonts.googleapis.com/css?family=Roboto");
 
 body {
     margin: 0;
@@ -109,7 +109,7 @@ body {
 }
 
 .app {
-	font-family: 'Roboto Slab', serif;
+	font-family: 'Roboto', serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 

@@ -3,7 +3,7 @@
 	<table-core
 		:columns="columns"
 		:rows="rows"
-		:lineNumbers="true"
+		:lineNumbers="false"
 		:sortable="true"
 		:onClick="clickHandler"
 		:minify="minify"

@@ -1,25 +1,50 @@
 <template>
 	<div class="mainWrapper">
-		<el-tabs tab-position="top">
-			<el-tab-pane label="Все" />
-			<el-tab-pane label="Счета" />
-			<el-tab-pane label="Оплаченые" />
-			<el-tab-pane label="В работе" />
-			<el-tab-pane label="Отгружено" />
-			<el-tab-pane label="Отказ" />
-		</el-tabs>
+		<div class="oneClientWrapper" v-if="isOne">
+			<el-breadcrumb separator="/" class="bc">
+				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">Выставеные счета</el-breadcrumb-item>
+				<el-breadcrumb-item>Счёт {{ currentInvoice.N_DOC }}</el-breadcrumb-item>
+			</el-breadcrumb>
 
-		<tabless
-			key="invoices"
-			:data="data"
-			:fieldDescription="invoicesFieldDescription"
-			ref="table"
-		/>
-		<infinite-loading @infinite="invoicesInfinity" ref="infiniteLoading" key="invoicesinf">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="loadingBottomInvoices" />
-		</infinite-loading>
+			<div class="cards" v-loading="oneLoadingInvoice">
+
+				<el-card class="invoiceMainInfo">
+					<div slot="header">
+						<h2>Основная информация</h2>
+					</div>
+
+					{{ currentInvoice }}
+				</el-card>
+
+			</div>
+		</div>
+
+		<div class="manyInvoicesWrapper" v-if="!isOne">
+			<el-breadcrumb separator="/" class="bc">
+				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">Выставеные счета</el-breadcrumb-item>
+			</el-breadcrumb>
+
+			<el-tabs tab-position="top" :value="currentTab" @tab-click="tabClickHandler">
+				<el-tab-pane :label="tab.name" v-for="tab, index in tabs" :key="index" />
+			</el-tabs>
+
+			<tabless
+				key="invoices"
+				:data="data"
+				:fieldDescription="invoicesFieldDescription"
+				ref="table"
+				@filter="localInvoiceFilterChange"
+				@sortChange="localInvoiceSortChange"
+				@onClick="routerGoId"
+			/>
+			<infinite-loading @infinite="invoicesInfinity" ref="infiniteLoading" key="invoicesinf">
+				<div class="end" slot="no-results" />
+				<div class="end" slot="no-more" />
+				<div class="spinner" slot="spinner" v-loading="loadingBottomInvoices" />
+			</infinite-loading>
+		</div>
 	</div>
 </template>
 
@@ -27,48 +52,97 @@
 
 <script>
 
-
-/**
- * 			@onClick="routerGoId"
- 			@filter="localClientFilterChange"
- 			@sortChange="localClientSortChange"
- */
-
-
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import tabless from '@/components/tableSS.vue'
 import fieldDesription from '@/static/fieldDescription'
 import InfiniteLoading from 'vue-infinite-loading'
+import mixins from '@/components/mixins'
 
 let {
 	invoicesFieldDescription
 } = fieldDesription
 
+
 export default {
+	props: ['type'],
 	data () {
 		return {
-			invoicesFieldDescription
+			invoicesFieldDescription,
+			currentTab: 0,
+			tabs: [
+				{ name: "Счета", filters: {} }, // all
+				{ name: "Оплаченые", filters: { IS_PAY: "1", ISSAVE: "0",  IS_CLOSE: "0", Otkaz: "0" } },
+				{ name: "В работе", filters: { IS_PAY: "0", ISSAVE: "0", IS_CLOSE: "0", Otkaz: "0" } },
+				{ name: "Отгружено", filters: { IS_CLOSE: "1", Otkaz: "0" } },
+				{ name: "Отказ", filters: { Otkaz: "1" } },
+			],
+			lastInvoicesFilters: {}
 		}
 	},
+	mixins: [mixins],
 	components: {
 		tabless,
 		InfiniteLoading
 	},
+	watch: {
+		additionalFIlters (n) {
+			this.invoicesFiltersChange (Object.assign({}, this.lastInvoicesFilters, n))
+
+			this.$nextTick(() => {
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
+		},
+		oneId () {
+			if (this.oneId !== undefined)
+				this.getOneInvoice(this.oneId)
+
+		},
+	},
 	computed: {
 		...mapGetters([
 			'loadingBottomInvoices',
-			'cachedInvoices'
+			'cachedInvoices',
+			'oneLoadingInvoice',
+			'currentInvoice'
 		]),
 		data () {
 			return this.cachedInvoices
+		},
+		additionalFIlters () {
+			return Object.assign({
+				type: this.type
+			}, this.tabs[this.currentTab].filters)
 		}
 	},
 	methods: {
 		...mapActions([
-			'invoicesInfinity'
-		])
+			'invoicesInfinity',
+			'invoicesFiltersChange',
+			'invoicesSortChanged',
+			'getOneInvoice'
+		]),
+		localInvoiceFilterChange (n) {
+			this.lastInvoicesFilters = n
+			this.invoicesFiltersChange (Object.assign({}, this.additionalFIlters, n))
+
+			this.$nextTick(() => {
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
+		},
+		localInvoiceSortChange (n) {
+			this.invoicesSortChanged (n)
+
+			this.$nextTick(() => {
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
+		},
+		tabClickHandler (tabRef) {
+			this.currentTab = tabRef.$data.index
+		}
 	},
 	mounted () {
+		if (this.oneId !== undefined)
+			this.getOneInvoice(this.oneId)
 		setTimeout(() => {
 			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 		}, 1e3)

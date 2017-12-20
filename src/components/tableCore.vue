@@ -12,7 +12,7 @@
 			<tr v-if="!minify">
 				<th v-if="lineNumbers && !minify" class="tableIndex"></th>
 				<th v-for="column, index in columnsSearchFields">
-					<el-input v-model="search[column.field]" class="searchByField" :key="index" />
+					<el-input v-model="search[column.field]" class="searchByField" suffix-icon="el-icon-search" :key="index" />
 				</th>
 			</tr>
 		</thead>
@@ -226,7 +226,6 @@ export default {
 					user-select: none;
 					cursor: pointer;
                     white-space: nowrap;
-                    width: auto;
                     padding: 5px;
                     color: #337ab7;
                     transition: all 0.3s ease-in-out;
@@ -244,11 +243,18 @@ export default {
                     .sortByThisIcon {
                         opacity: 1;
                     }
-                    .searchByField input {
-                        width: 100%;
-                        height: 100%;
-                        padding: 4px;
-                    }
+                    .searchByField {
+						.el-input__suffix {
+							i {
+								line-height: 14px;
+							}
+						}
+						input {
+							width: 100%;
+							height: 100%;
+							padding: 4px;
+						}
+					}
                 }
             }
         }
@@ -258,7 +264,9 @@ export default {
 				cursor: pointer;
                 transition: all 0.3s;
                 td {
-
+					&:first-child {
+						padding-left: 10px;
+					}
                     padding: 3px;
                     .buttons {
                         display: grid;
@@ -276,7 +284,7 @@ export default {
                     text-align: right;
                 }
                 &:hover {
-                    background-color: #f5f5f5;
+                    background-color: rgba(51,122,183, 0.1);
                 }
             }
         }

@@ -97,8 +97,6 @@ export default {
 		oneId () {
 			if (this.oneId !== undefined) {
 				this.getOneClient(this.oneId)
-			} else {
-				//this.getAllClients()
 			}
 		},
 		searchByPhone(n){
@@ -176,7 +174,17 @@ export default {
 <style lang="less">
 .mainWrapper {
 	.manyClientsWrapper {
+		display: grid;
+		grid-template: "bc search";
+		> * {
+			grid-column: ~"1 / 3";
+		}
+		.bc {
+			grid-area: bc;
+		}
 		.searchByPhone {
+			grid-area: search;
+			justify-self: end;
 			width: 300px;
 			margin: 5px;
 		}

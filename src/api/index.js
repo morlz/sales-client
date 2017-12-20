@@ -14,5 +14,6 @@ export default {
 	managers,
 	salons,
 	auth,
-	cookie
+	cookie,
+	invoices
 }

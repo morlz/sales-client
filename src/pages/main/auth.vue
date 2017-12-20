@@ -3,7 +3,7 @@
 	<div class="gradient" :style="gradientStyles"/>
 
 	<div class="mainAuth">
-		<el-card class="centralCard" v-loading="auchChecking">
+		<el-card class="centralCard" v-loading="auchChecking || logined">
 			<h2 class="title" slot="header">Авторизация</h2>
 
 			<el-form :model="form" :rules="loginFormRules" ref="loginForm">

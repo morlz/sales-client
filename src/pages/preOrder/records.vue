@@ -29,9 +29,9 @@
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/records' }">Список предзаказов</el-breadcrumb-item>
 		</el-breadcrumb>
-		<el-tabs tab-position="top" v-model="currentTab" key="recordsTabs">
+		<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" v-if="currentTab == '0'" />
+		<el-tabs tab-position="top" v-model="currentTab" key="recordsTabs" class="manyRecordsTabs">
 			<el-tab-pane label="Все предзаказы" key="1">
-				<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 				<tabless
 					key="records"
 					:data="data"
@@ -195,12 +195,24 @@ export default {
     }
 	padding-bottom: 10px;
 }
+
 .manyRecordsWrapper {
+	display: grid;
+	grid-template: "bc search";
+	> * {
+		grid-column: ~"1 / 3";
+	}
+	.bc {
+		grid-area: bc;
+	}
 	.searchByPhone {
+		grid-area: search;
+		justify-self: end;
 		width: 300px;
 		margin: 5px;
 	}
 }
+
 .oneRecordWrapper {
 	.cards {
 		display: grid;

@@ -36,7 +36,7 @@ const actions = {
 		commit('loadingInvoicesSet', true)
 	},
 	getAllInvoices({ commit, dispatch }, ids){
-		api.docs.invoices
+		api.invoices
 			.getAll(ids)
 			.then(({ data }) => {
 				commit('updateCachedInvoices', data)
@@ -47,7 +47,7 @@ const actions = {
 		if (state.lastOffset == state.offset) return
 		commit('changeInvoicesLastOffset', state.offset)
 		commit('loadingBottomInvoicesSet', true)
-		api.docs.invoices
+		api.invoices
 			.getLimited({
 				limit: state.perLoadingLimit,
 				offset: state.offset,
@@ -55,34 +55,22 @@ const actions = {
 				sort: state.sort
 			})
 			.then(({ data }) => {
-				commit('updateCachedInvoices', data)
+				if (!data.error) {
+					commit('updateCachedInvoices', data)
+					payload.loaded()
+					if (!data.length) payload.complete ()
+				}
 				commit('loadingInvoicesSet', false)
 				commit('loadingBottomInvoicesSet', false)
 				commit('setCurrentOffsetInvoices')
-				payload.loaded()
-				if (!data.length) payload.complete ()
+				if (data.error) dispatch('catchErrorNotify', data.error)
 			})
 	},
 	getOneInvoice({ commit, dispatch }, payload){
 		commit('oneLoadingInvoiceSet', true)
-		api.docs.invoices
+		api.invoices
 			.getOne(payload)
 			.then(({ data }) => {
-				const unique = (value, index, self) => self.indexOf(value) === index
-
-				let managerIDs = [], salonIDs = []
-
-				data.preorders.forEach(el => {
-					managerIDs.push(el.manager_id)
-					salonIDs.push(el.salon_id)
-				})
-
-				data.tasks.forEach(task => {
-					salonIDs.push(task.salon_id)
-				})
-
-				dispatch('getManagersByIds', managerIDs.filter(unique))
-				dispatch('getSalonsByIds', salonIDs.filter(unique))
 				commit('setCurrentInvoice', data)
 				commit('oneLoadingInvoiceSet', false)
 			})
@@ -91,7 +79,7 @@ const actions = {
 		if (!payload) return
 		commit('updateCachedInvoicesByPhone', [])
 		commit('loadingByPhoneInvoicesSet', true)
-		api.docs.invoices
+		api.invoices
 			.searchByPhone(payload)
 			.then(({ data }) => {
 				commit('updateCachedInvoicesByPhone', data)
@@ -99,14 +87,14 @@ const actions = {
 			})
 	},
 	invoiceAddContact({ commit, dispatch }, payload){
-		api.docs.invoices
+		api.invoices
 			.addContact(payload)
 			.then(({ data }) => {
 				console.log(data);
 			})
 	},
 	invoiceUpdateContact({ commit, dispatch }, payload){
-		api.docs.invoices
+		api.invoices
 			.editContact(payload)
 			.then(({ data }) => {
 				console.log(data);
@@ -196,7 +184,7 @@ const getters = {
 	oneLoadingInvoice: ({ oneLoading }) => oneLoading,
 	invoicesByPhone: ({ cachedInvoicesByPhone }) => cachedInvoicesByPhone,
 	loadingInvoicesByPhone: ({ loadingByPhone }) => loadingByPhone,
-	invoiceFIlters: ({ searchByPhoneQuery: phone, filters }) => Object.assign({ phone }, filters),
+	invoiceFIlters: ({ filters }) => Object.assign({}, filters),
 	addInvoiceContactFormVisible: ({ addFormVisible }) => addFormVisible,
 	editInvoiceContactFormVisible: ({ editFormVisible }) => editFormVisible,
 }
