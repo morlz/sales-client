@@ -4,6 +4,7 @@ import tasks from '@/api/tasks'
 import managers from '@/api/managers'
 import salons from '@/api/salons'
 import invoices from '@/api/invoices'
+import furnitures from '@/api/furnitures'
 import auth from '@/api/auth.js'
 import cookie from '@/api/cookie.js'
 
@@ -15,5 +16,6 @@ export default {
 	salons,
 	auth,
 	cookie,
-	invoices
+	invoices,
+	furnitures
 }

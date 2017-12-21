@@ -245,8 +245,10 @@ export default {
                     }
                     .searchByField {
 						.el-input__suffix {
+							pointer-events: none;
 							i {
 								line-height: 14px;
+								cursor: default;
 							}
 						}
 						input {

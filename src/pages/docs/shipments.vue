@@ -2,6 +2,7 @@
 <div class="mainWrapper">
 	<el-breadcrumb separator="/" class="bc">
 		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+		<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
 		<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
 	</el-breadcrumb>
 

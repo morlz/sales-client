@@ -3,7 +3,8 @@
 		<div class="oneClientWrapper" v-if="isOne">
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">Выставеные счета</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
 				<el-breadcrumb-item>Счёт {{ currentInvoice.N_DOC }}</el-breadcrumb-item>
 			</el-breadcrumb>
 
@@ -23,10 +24,15 @@
 		<div class="manyInvoicesWrapper" v-if="!isOne">
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">Выставеные счета</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
 			</el-breadcrumb>
 
-			<el-tabs tab-position="top" :value="currentTab" @tab-click="tabClickHandler">
+			<el-select v-model="currentSalon" filterable placeholder="Салон">
+				<el-option v-for="salon, index in salonsList" :value="salon.id" :label="salon.NAME" :key="index" />
+			</el-select>
+
+			<el-tabs tab-position="top" v-model="currentTab">
 				<el-tab-pane :label="tab.name" v-for="tab, index in tabs" :key="index" />
 			</el-tabs>
 
@@ -76,6 +82,7 @@ export default {
 				{ name: "Отгружено", filters: { IS_CLOSE: "1", Otkaz: "0" } },
 				{ name: "Отказ", filters: { Otkaz: "1" } },
 			],
+			currentSalon: "999",
 			lastInvoicesFilters: {}
 		}
 	},
@@ -97,20 +104,26 @@ export default {
 				this.getOneInvoice(this.oneId)
 
 		},
+		currentUserSalon (n) {
+			this.currentSalon = n
+		}
 	},
 	computed: {
 		...mapGetters([
 			'loadingBottomInvoices',
 			'cachedInvoices',
 			'oneLoadingInvoice',
-			'currentInvoice'
+			'currentInvoice',
+			'salonsList',
+			'currentUserSalon'
 		]),
 		data () {
 			return this.cachedInvoices
 		},
 		additionalFIlters () {
 			return Object.assign({
-				type: this.type
+				type: this.type,
+				ID_SALON: this.currentSalon != 999 ? this.currentSalon : null
 			}, this.tabs[this.currentTab].filters)
 		}
 	},
@@ -119,7 +132,8 @@ export default {
 			'invoicesInfinity',
 			'invoicesFiltersChange',
 			'invoicesSortChanged',
-			'getOneInvoice'
+			'getOneInvoice',
+			'getSalonsList'
 		]),
 		localInvoiceFilterChange (n) {
 			this.lastInvoicesFilters = n
@@ -135,14 +149,15 @@ export default {
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
-		},
-		tabClickHandler (tabRef) {
-			this.currentTab = tabRef.$data.index
 		}
 	},
 	mounted () {
 		if (this.oneId !== undefined)
 			this.getOneInvoice(this.oneId)
+
+		this.currentSalon = this.currentUserSalon
+
+		this.getSalonsList()
 		setTimeout(() => {
 			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 		}, 1e3)

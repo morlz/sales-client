@@ -55,7 +55,15 @@ const mutations = {
 const getters = {
 	cachedSalons: ({ cached }) => cached,
 	loadingSalons: ({ loading }) => loading,
-	salonsList: ({ salonList }) => salonList,
+	salonsList: ({ salonList }) => {
+		let s = (a, b) => {
+			if (a.id == 999) return -1
+			if (b.id == 999) return 1
+			if (a.NAME.toLowerCase() < b.NAME.toLowerCase()) return -1
+			if (a.NAME.toLowerCase() > b.NAME.toLowerCase()) return 1
+		}
+		return salonList.sort(s)
+	},
 	salonsListLoading: ({ salonListLoading }) => salonListLoading
 }
 

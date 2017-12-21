@@ -10,6 +10,7 @@ import notify from '@/store/main/notify'
 import clients from '@/store/clients'
 import invoices from '@/store/invoices'
 import shipments from '@/store/shipments'
+import furniture from '@/store/furniture'
 import records from '@/store/records'
 import tasks from '@/store/tasks'
 import managers from '@/store/managers'
@@ -28,6 +29,7 @@ export default new Vuex.Store({
 		files,
 		auth,
 		notify,
-		shipments
+		shipments,
+		furniture
 	}
 })

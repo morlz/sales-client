@@ -82,58 +82,21 @@ let dataObj = {
 		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
 	],
 
-	furnitureSalonFieldDescription: [{
-			field: "id",
-			label: "№ зак."
-		},
-		{
-			field: "salon",
-			label: "Салон"
-		},
-		{
-			field: "fab",
-			label: "Фаб.н."
-		},
-		{
-			field: "storage",
-			label: "М.хр."
-		},
-		{
-			field: "isp",
-			label: "Исп."
-		},
-		{
-			field: "timeInStorage",
-			label: "Дней на складе"
-		},
-		{
-			field: "cloth1",
-			label: "Ткань 1"
-		},
-		{
-			field: "cloth2",
-			label: "Ткань 2"
-		},
-		{
-			field: "cloth3",
-			label: "Ткань 3"
-		},
-		{
-			field: "cat",
-			label: "Кат"
-		},
-		{
-			field: "decor",
-			label: "Декор"
-		},
-		{
-			field: "steska",
-			label: "Стежка"
-		},
-		{
-			field: "price",
-			label: "Цена руб."
-		},
+	furnitureSalonFieldDescription: [
+		{ field: "id", label: "№ зак." },
+		{ field: "salon", label: "Салон" },
+		{ field: "UN", label: "Фаб.н." },
+		{ field: "mXR", label: "М.хр." },
+		{ field: "TIP", label: "Тип" },
+		{ field: "ISP", label: "Исп." },
+		{ field: "DATE_VX", label: "Дней на складе" },
+		{ field: "cOSNOVA", label: "Ткань 1" },
+		{ field: "cKOMP", label: "Ткань 2" },
+		{ field: "cKOMP2", label: "Ткань 3" },
+		{ field: "KAT", label: "Кат" },
+		{ field: "DEKOR", label: "Декор" },
+		{ field: "stegka", label: "Стежка" },
+		{ field: "CENA_ZAL", label: "Цена руб." },
 	],
 
 	invoicesFieldDescription: [

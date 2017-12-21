@@ -84,6 +84,17 @@ const state = {
 				},
 			]
 		},
+		{
+			name: "Администрирование",
+			icon: "el-icon-admin",
+			childs: [
+				{
+					name: "Роли",
+					path: "/admin/roles",
+					icon: "el-icon-roles"
+				},
+			]
+		},
 	]
 }
 

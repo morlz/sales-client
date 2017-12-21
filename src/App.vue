@@ -108,6 +108,12 @@ body {
     }
 }
 
+.el-tabs {
+	&__item {
+		transition: all 0.3s ease-in-out;
+	}
+}
+
 .app {
 	font-family: 'Roboto', serif;
     -webkit-font-smoothing: antialiased;
@@ -247,6 +253,16 @@ h2 {
 .el-icon-sell-result {
     .icon;
     background-image: url("./assets/education-chart.svg");
+}
+
+.el-icon-roles {
+    .icon;
+    background-image: url("./assets/board-games-with-roles.svg");
+}
+
+.el-icon-admin {
+    .icon;
+    background-image: url("./assets/admin-with-cogwheels.svg");
 }
 
 .el-dialog {
