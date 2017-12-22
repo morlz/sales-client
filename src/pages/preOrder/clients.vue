@@ -104,12 +104,20 @@ export default {
 
 			this.seachTimeout = setTimeout(() => {
 				this.updateSearchByPhoneQuery(n)
+				this.changeClientsLastOffset(-1)
 				this.clientsCacheClear()
 
 				this.$nextTick(() => {
 				  if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 				})
 			}, 500)
+		},
+		loadingClientsByPhone (n) {
+			if (!n) {
+				this.$nextTick(() => {
+				  if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				})
+			}
 		}
 	},
 	computed: {
@@ -121,7 +129,8 @@ export default {
 			'oneLoadingClient',
 			'currentClient',
 			'recordStatuses',
-			'loadingBottomClients'
+			'loadingBottomClients',
+			'loadingClientsByPhone'
 		]),
 		data () {
 			return this.cachedClients
@@ -138,7 +147,8 @@ export default {
 		]),
 		...mapMutations([
 			'updateSearchByPhoneQuery',
-			'updateAddClientContactFormVisible'
+			'updateAddClientContactFormVisible',
+			'changeClientsLastOffset'
 		]),
 		localClientFilterChange (n) {
 			this.clientsFiltersChange (n)

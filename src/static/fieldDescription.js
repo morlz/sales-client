@@ -5,7 +5,7 @@ let dataObj = {
 		{ field: "description", label: "Задача", type: "string" },
 		{ field: "date", label: "Дата", type: "string" },
 		{ field: "manager", label: "Ответсвенный", type: "string" },
-		{ field: "type", label: "Тип", type: "string" },
+		{ field: "tasktype", label: "Тип", type: "string" },
 		{ field: "end_date", label: "Выполнена", type: "string" },
 		//{ field: "endManager", label: "Завершил", type: "string" },
 		//{ field: "endDate", label: "Дата завершения", type: "string" },

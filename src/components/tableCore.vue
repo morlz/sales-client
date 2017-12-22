@@ -214,8 +214,8 @@ export default {
 
 <style lang="less">
 .tableCoreWrapper {
-	width: 100%;
-    overflow-x: auto;
+	//width: 100%;
+    //overflow-x: auto;
     table {
         width: 100%;
         table-layout: auto;

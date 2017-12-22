@@ -15,6 +15,7 @@ import records from '@/store/records'
 import tasks from '@/store/tasks'
 import managers from '@/store/managers'
 import salons from '@/store/salons'
+import permissions from '@/store/permissions'
 
 
 export default new Vuex.Store({
@@ -30,6 +31,7 @@ export default new Vuex.Store({
 		auth,
 		notify,
 		shipments,
-		furniture
+		furniture,
+		permissions
 	}
 })

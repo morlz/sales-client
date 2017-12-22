@@ -65,8 +65,31 @@ export default {
 @import url("./lib/FontAwesome/less/font-awesome.less");
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
+*::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+*::-webkit-scrollbar {
+    width: 12px;
+	height: 12px;
+    background-color: #F5F5F5;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.2);
+    background-color: rgba(60,141,188, 0.8);
+}
+
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
+    height: 100%;
     color: #5a5e66;
 }
 
@@ -87,7 +110,7 @@ body {
 
 .fadeZoom-enter-active,
 .fadeZoom-leave-active {
-    transition: all 1s ease-in-out;
+    transition: all 0.7s ease-in-out;
 }
 .fadeZoom-enter,
 .fadeZoom-leave-to {
@@ -109,34 +132,41 @@ body {
 }
 
 .el-tabs {
-	&__item {
-		transition: all 0.3s ease-in-out;
-	}
+    &__item {
+        transition: all 0.3s ease-in-out;
+    }
 }
 
-.app {
-	font-family: 'Roboto', serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.appWrapper {
+    height: 100%;
+    .app {
+        font-family: 'Roboto', serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
 
-    transition: all 0.3s ease-in-out;
-
-    .menu {
-        width: 80px;
-        float: left;
         transition: all 0.3s ease-in-out;
-    }
+        height: 100%;
+        .menu {
+            width: 80px;
+            float: left;
+            transition: all 0.3s ease-in-out;
+        }
 
-    .mainContentWrapper {
-        width: ~"calc(100% - 80px)";
-        transition: all 0.3s ease-in-out;
-        float: right;
-    }
+        .mainContentWrapper {
+            width: ~"calc(100% - 80px)";
+            height: 100%;
+            transition: all 0.3s ease-in-out;
+            float: right;
+        }
 
-    .main {
-        box-sizing: border-box;
-        padding: 10px;
-        color: #5a5e66;
+        .main {
+            height: ~"calc(100% - 60px)";
+            overflow-y: scroll;
+            box-sizing: border-box;
+            padding: 10px;
+			margin: 5px;
+            color: #5a5e66;
+        }
     }
 }
 
@@ -150,6 +180,7 @@ body {
 }
 
 .mainWrapper {
+    height: 100%;
     .bc {
         height: 40px;
         line-height: 40px;
@@ -170,7 +201,7 @@ h2 {
 }
 
 .el-icon-* {
-	font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
 }
 
 .icon {

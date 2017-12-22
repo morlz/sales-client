@@ -44,6 +44,7 @@ const actions = {
 			})
 	},
 	clientsInfinity({ commit, dispatch, state, getters }, payload){
+		console.log("inf");
 		if (state.lastOffset == state.offset) return
 		commit('changeClientsLastOffset', state.offset)
 		commit('loadingBottomClientsSet', true)

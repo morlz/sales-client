@@ -139,7 +139,7 @@ export default {
 	}
 
 	.gradient {
-	    opacity: 0.5;
+	    opacity: 1;
 	}
 }
 

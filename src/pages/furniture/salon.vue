@@ -22,7 +22,15 @@
 		</el-select>
 	</transition>
 
-	<tabless :data="data" :fieldDescription="furnitureSalonFieldDescription"/>
+	<tabless
+		key="salon"
+		:data="data"
+		:fieldDescription="furnitureSalonFieldDescription"
+		ref="table"
+		@filter="localFurnitureFilterChange"
+		@sortChange="localFurnitureSortChange"
+		@onClick="routerGoId"
+	/>
 
 	<infinite-loading @infinite="furnituresInfinity" ref="infiniteLoading">
 		<div class="end" slot="no-results" />
@@ -36,17 +44,17 @@
 
 <script>
 
+
+
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import mixins from '@/components/mixins'
+import tabless from '@/components/tableSS'
+import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 
 let {
 	furnitureSalonFieldDescription
 } = fieldDesription
-
-import { mapGetters, mapActions, mapMutations } from 'vuex'
-
-import tabless from '@/components/tableSS'
-import InfiniteLoading from 'vue-infinite-loading'
-
 
 
 
@@ -55,6 +63,7 @@ export default {
 		tabless,
 		InfiniteLoading
 	},
+	mixins: [mixins],
 	data() {
 		return {
 			furnitureSalonFieldDescription,
@@ -115,20 +124,21 @@ export default {
 			'getFurninuteModels',
 			'furnituresInfinity',
 			'furnituresFiltersChange',
+			'furnituresSortChanged',
 		]),
 		selectFuriture () {
 
 		},
 		localFurnitureFilterChange (n) {
 			this.lastFurnituresFilters = n
-			this.invoicesFiltersChange (Object.assign({}, this.additionalFIlters, n))
+			this.furnituresFiltersChange (Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localFurnitureSortChange (n) {
-			this.invoicesSortChanged (n)
+			this.furnituresSortChanged (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');

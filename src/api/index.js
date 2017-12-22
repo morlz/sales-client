@@ -7,6 +7,7 @@ import invoices from '@/api/invoices'
 import furnitures from '@/api/furnitures'
 import auth from '@/api/auth.js'
 import cookie from '@/api/cookie.js'
+import permissions from '@/api/permissions.js'
 
 export default {
 	clients,
@@ -17,5 +18,6 @@ export default {
 	auth,
 	cookie,
 	invoices,
-	furnitures
+	furnitures,
+	permissions
 }
