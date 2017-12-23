@@ -17,7 +17,7 @@
 			</el-form>
 
 			<div class="buttons">
-				<el-button type="primary" @click="authHandler">Войти</el-button>
+				<el-button type="primary" @click="authHandler" @keyup.enter.native="authHandler">Войти</el-button>
 				<el-button disabled>Востановить пароль</el-button>
 			</div>
 		</el-card>
