@@ -168,16 +168,18 @@ body {
             color: #5a5e66;
         }
     }
+
+	.menuOpenMain {
+	    .menu {
+	        width: 300px;
+	    }
+	    .mainContentWrapper {
+	        width: ~"calc(100% - 300px)";
+	    }
+	}
 }
 
-.menuOpenMain {
-    .menu {
-        width: 300px;
-    }
-    .mainContentWrapper {
-        width: ~"calc(100% - 300px)";
-    }
-}
+
 
 .mainWrapper {
     height: 100%;
