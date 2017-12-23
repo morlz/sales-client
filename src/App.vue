@@ -139,10 +139,10 @@ body {
 
 .appWrapper {
     height: 100%;
+	font-family: 'Roboto', serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
     .app {
-        font-family: 'Roboto', serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
 
         transition: all 0.3s ease-in-out;
         height: 100%;
