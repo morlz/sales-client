@@ -7,7 +7,7 @@
 		<tabless :data="data" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" :minify="true" />
 
 		<div class="buttons">
-			<el-button type="primary" @click="updateAddClientContactFormVisible(true)" v-if="allowCreate">Добавить контакт</el-button>
+			<el-button type="primary" @click="client_visible_addContactFormSet(true)" v-if="allowCreate">Добавить контакт</el-button>
 			<add-contact-form/>
 			<edit-contact-form/>
 		</div>
@@ -47,12 +47,9 @@ export default {
 			clientContactsFieldDescription
 		}
 	},
-	watch: {
-
-	},
 	methods: {
 		...mapMutations([
-			'updateAddClientContactFormVisible'
+			'client_visible_addContactFormSet'
 		])
 	},
 	computed: {

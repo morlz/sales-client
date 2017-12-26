@@ -1,14 +1,62 @@
 <template>
 <div class="mainWrapper">
-	<el-breadcrumb separator="/" class="bc">
-		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
-	</el-breadcrumb>
+	<div class="oneShipmentWrapper" v-if="isOne">
+		<el-breadcrumb separator="/" class="bc">
+			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/docs/shipments/${shipment_current}` }">{{shipment_current.ID_OTG}}</el-breadcrumb-item>
+		</el-breadcrumb>
 
-	<el-select v-model="filters.salon"></el-select>
-	<el-date-picker v-model="filters.date" type="daterange" unlink-panels range-separator="До" start-placeholder="Дата начала" end-placeholder="Дата конца" :picker-options="datePickerOptions" />
+		<div class="cards" v-loading="shipment_loadingOne">
+			<el-card class="card">
+				<div class="title" slot="header">
 
+				</div>
+
+				{{shipment_current}}
+			</el-card>
+		</div>
+
+	</div>
+
+	<div class="manyShipmntsWrapper" v-if="!isOne">
+		<el-breadcrumb separator="/" class="bc">
+			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
+		</el-breadcrumb>
+
+		<el-select v-model="filters.ID_SALONA" filterable placeholder="Салон" v-loading="salonsListLoading">
+			<el-option v-for="salon, index in salonsList" :value="salon.id" :label="salon.NAME" :key="index" />
+		</el-select>
+
+		<el-date-picker
+			v-model="filters.dateRange"
+			type="daterange"
+			unlink-panels
+			range-separator="До"
+			start-placeholder="Дата начала"
+			end-placeholder="Дата конца"
+			:picker-options="datePickerOptions"
+		/>
+
+		<tabless
+			v-loading="shipment_loading"
+			key="shipments"
+			:data="shipment_cached"
+			:fieldDescription="shipmentsFieldDescription"
+			ref="table"
+			@filter="localShipmentFilterChange"
+			@sortChange="localShipmentSortChange"
+			@onClick="routerGoId"
+		/>
+		<infinite-loading @infinite="shipment_infinity" ref="infiniteLoading" key="shipmentsinf">
+			<div class="end" slot="no-results" />
+			<div class="end" slot="no-more" />
+			<div class="spinner" slot="spinner" v-loading="shipment_loadingBottom" />
+		</infinite-loading>
+	</div>
 </div>
 </template>
 
@@ -25,18 +73,19 @@ import fieldDesription from '@/static/fieldDescription'
 import InfiniteLoading from 'vue-infinite-loading'
 import mixins from '@/components/mixins'
 
-/*
+
 let {
 	shipmentsFieldDescription
 } = fieldDesription
-*/
+
 
 export default {
 	data() {
 		return {
+			shipmentsFieldDescription,
 			filters: {
-				date: "",
-				salon: 0
+				dateRange: "",
+				ID_SALONA: "999"
 			},
 			datePickerOptions: {
 				shortcuts: [{
@@ -74,64 +123,60 @@ export default {
 	},
 	watch: {
 		additionalFIlters(n) {
-			this.shipmentsFiltersChange(Object.assign({}, this.lastShipmentsFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-			})
+			this.shipment_filtersChange(Object.assign({}, this.lastShipmentsFilters, n))
 		},
 		oneId() {
 			if (this.oneId !== undefined)
-				this.getOneShipment(this.oneId)
-
+				this.shipment_getOne(this.oneId)
 		},
+		currentUserSalon (n) {
+			this.filters.ID_SALONA = n
+		}
 	},
 	computed: {
 		...mapGetters([
-			'loadingBottomShipments',
-			'cachedShipments',
-			'oneLoadingShipment',
-			'currentShipment'
+			'salonsList',
+			'salonsListLoading',
+			'currentUserSalon',
+			'shipment_cached',
+			'shipment_current',
+			'shipment_loading',
+			'shipment_loadingBottom',
+			'shipment_loadingOne'
 		]),
-		data() {
-			return this.cachedShipments
-		},
 		additionalFIlters() {
-			return Object.assign({})
+			return Object.assign({}, this.filters)
 		}
 	},
 	methods: {
 		...mapActions([
-			'shipmentsInfinity',
-			'shipmentsFiltersChange',
-			'shipmentsSortChanged',
-			'getOneShipment'
+			'getSalonsList',
+			'shipment_init',
+			'shipment_infinity',
+			'shipment_sortChange',
+			'shipment_filtersChange',
+			'shipment_getOne',
 		]),
 		localShipmentFilterChange(n) {
 			this.lastShipmentsFilters = n
-			this.shipmentsFiltersChange(Object.assign({}, this.additionalFIlters, n))
+			this.shipment_filtersChange(Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localShipmentSortChange(n) {
-			this.shipmentsSortChanged(n)
+			this.shipment_sortChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
-		},
-		tabClickHandler(tabRef) {
-			this.currentTab = tabRef.$data.index
 		}
 	},
 	mounted() {
-		if (this.oneId !== undefined)
-			this.getOneShipment(this.oneId)
-		setTimeout(() => {
-			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 1e3)
+		this.filters.ID_SALONA = this.currentUserSalon
+		this.getSalonsList()
+		this.shipment_init(this.oneId)
 	}
 }
 </script>

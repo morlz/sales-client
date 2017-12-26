@@ -303,14 +303,16 @@ h2 {
 }
 
 @media screen and (max-width: 768px) {
-    .app {
-        .logo {
-            display: none;
-        }
-        .mainContentWrapper {
-            width: 100%;
-        }
-    }
+	.appWrapper {
+		.app {
+			.logo {
+				display: none;
+			}
+			.mainContentWrapper {
+				width: 100%;
+			}
+		}
+	}
 }
 
 .el-button,

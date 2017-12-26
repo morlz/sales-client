@@ -1,192 +1,114 @@
 import api from '@/api'
 
 const state = {
-	cached: [],
-	cachedShipmentsByPhone: [],
 	filters: [],
 	sort: [],
-	current: {},
-	loading: true,
-	loadingBottom: false,
-	oneLoading: true,
-	loadingByPhone: false,
-	searchByPhoneQuery: "",
 	perLoadingLimit: 30,
-	offset: 0,
-	lastOffset: -1,
-	addFormVisible: false,
-	editFormVisible: false,
-	currentEditedContact: {}
+	cached: {
+		list: [],
+		current: {},
+	},
+	offset: {
+		current: 0,
+		last: -1
+	},
+	loading: {
+		list: true,
+		one: true,
+		bottom: false
+	}
 }
 
 const actions = {
-	shipmentsSortChanged({ commit, dispatch }, payload){
-		dispatch('shipmentsCacheClear')
-		commit('changeShipmentsLastOffset', -1)
-		commit("shipmentsSortChange", payload)
+	shipment_init ({ commit, dispatch }, payload) {
+		if (payload) {
+			dispatch('shipment_getOne', payload)
+		} else {
+			dispatch('shipment_infinityStart')
+		}
 	},
-	shipmentsFiltersChange({ commit, dispatch }, payload){
-		dispatch('shipmentsCacheClear')
-		commit('changeShipmentsLastOffset', -1)
-		commit("shipmentsFiltersChange", payload)
+	shipment_sortChange({ commit, dispatch }, payload){
+		commit("shipment_sortSet", payload)
+		dispatch('shipment_infinityStart')
 	},
-	shipmentsCacheClear({ commit, dispatch }){
-		commit("clearCachedShipments")
-		commit('setCurrentOffsetShipments')
-		commit('loadingShipmentsSet', true)
+	shipment_filtersChange({ commit, dispatch }, payload){
+		commit("shipment_filtersSet", payload)
+		dispatch('shipment_infinityStart')
 	},
-	getAllShipments({ commit, dispatch }, ids){
-		api.shipments
-			.getAll(ids)
-			.then(({ data }) => {
-				commit('updateCachedShipments', data)
-				commit('loadingShipmentsSet', false)
-			})
-	},
-	shipmentsInfinity({ commit, dispatch, state, getters }, payload){
-		if (state.lastOffset == state.offset) return
-		commit('changeShipmentsLastOffset', state.offset)
-		commit('loadingBottomShipmentsSet', true)
+	shipment_infinity({ commit, dispatch, state, getters }, payload){
+		if (state.offset.last == state.offset.current) return
+		commit('shipment_lastOffsetSet', state.offset.current)
+		commit('shipment_loadingBottomSet', true)
 		api.shipments
 			.getLimited({
 				limit: state.perLoadingLimit,
-				offset: state.offset,
-				filters: getters.shipmentFIlters,
+				offset: state.offset.current,
+				filters: getters.shipment_filters,
 				sort: state.sort
 			})
 			.then(({ data }) => {
 				if (!data.error) {
-					commit('updateCachedShipments', data)
-					payload.loaded()
+					commit('shipment_cacheAppend', data)
+					payload.loaded ()
 					if (!data.length) payload.complete ()
 				}
-				commit('loadingShipmentsSet', false)
-				commit('loadingBottomShipmentsSet', false)
-				commit('setCurrentOffsetShipments')
+				commit('shipment_loadingSet', false)
+				commit('shipment_loadingBottomSet', false)
+				commit('shipment_currentOffsetSet')
 				if (data.error) dispatch('catchErrorNotify', data.error)
 			})
 	},
-	getOneShipment({ commit, dispatch }, payload){
-		commit('oneLoadingShipmentSet', true)
+	shipment_infinityStart({ commit, dispatch, state, getters }){
+		commit('shipment_lastOffsetSet', -1)
+		commit('shipment_loadingBottomSet', true)
+		commit('shipment_loadingSet', true)
+		api.shipments
+			.getLimited({
+				limit: state.perLoadingLimit,
+				offset: 0,
+				filters: getters.shipment_filters,
+				sort: state.sort
+			})
+			.then(({ data }) => {
+				if (!data.error) commit('shipment_cacheSet', data)
+				if (data.error) dispatch('catchErrorNotify', data.error)
+				commit('shipment_loadingBottomSet', false)
+				commit('shipment_loadingSet', false)
+				commit('shipment_currentOffsetSet')
+			})
+	},
+	shipment_getOne({ commit, dispatch }, payload){
+		commit('shipment_loadingOneSet', true)
 		api.shipments
 			.getOne(payload)
 			.then(({ data }) => {
-				commit('setCurrentShipment', data)
-				commit('oneLoadingShipmentSet', false)
-			})
-	},
-	searchShipmentsByPhone({ commit, dispatch }, payload){
-		if (!payload) return
-		commit('updateCachedShipmentsByPhone', [])
-		commit('loadingByPhoneShipmentsSet', true)
-		api.shipments
-			.searchByPhone(payload)
-			.then(({ data }) => {
-				commit('updateCachedShipmentsByPhone', data)
-				commit('loadingByPhoneShipmentsSet', false)
-			})
-	},
-	shipmentAddContact({ commit, dispatch }, payload){
-		api.shipments
-			.addContact(payload)
-			.then(({ data }) => {
-				console.log(data);
-			})
-	},
-	shipmentUpdateContact({ commit, dispatch }, payload){
-		api.shipments
-			.editContact(payload)
-			.then(({ data }) => {
-				console.log(data);
+				commit('shipment_currentSet', data)
+				commit('shipment_loadingOneSet', false)
 			})
 	},
 }
 
 const mutations = {
-	changeShipmentsLastOffset (store, payload) {
-		store.lastOffset = payload
-	},
-	clearCachedShipments (store, payload){
-		store.cached = []
-	},
-	shipmentsFiltersChange (store, payload) {
-		store.filters = payload
-	},
-	shipmentsSortChange (store, payload) {
-		store.sort = payload
-	},
-	filtredRowsChange (store, payload) {
-		store.filteredRows = payload
-	},
-	updateCachedShipments(store, payload){
-		payload.map(el => {
-			let id = el.id || el
-			store.cached = store.cached.filter(el2 => el2.id != id)
-			store.cached.push(el)
-		})
-	},
-	updateCachedShipment(store, payload) {
-		let id = payload.id || payload
-		store.cached = store.cached.filter(el2 => el2.id != id)
-		store.cached.push(payload)
-	},
-	removeCachedShipments(store, payload){
-		payload.map(data => {
-			let id = data.id || data
-			store.cached = store.cached.filter(el => el.id != id)
-		})
-	},
-	removeCachedShipment(store, payload) {
-		let id = payload.id || payload
-		store.cached = store.cached.filter(el => el.id != id)
-	},
-	loadingShipmentsSet(store, payload) {
-		store.loading = payload
-	},
-	loadingBottomShipmentsSet(store, payload) {
-		store.loadingBottom = payload
-	},
-	oneLoadingShipmentSet(store, payload){
-		store.oneLoading = payload
-	},
-	loadingByPhoneShipmentsSet(store, payload) {
-		store.loadingByPhone = payload
-	},
-	updateSearchByPhoneQuery(store, payload) {
-		state.searchByPhoneQuery = payload
-	},
-	setCurrentShipment(store, payload) {
-		store.current = payload
-	},
-	setCurrentEditedContact(store, payload){
-		store.currentEditedContact = payload
-	},
-	setCurrentOffsetShipments(store, payload) {
-		store.offset = payload || store.cached.length
-	},
-	updateAddShipmentContactFormVisible(store, payload){
-		store.addFormVisible = payload
-	},
-	updateEditShipmentContactFormVisible(store, payload){
-		store.editFormVisible = payload
-	},
-	updateCachedShipmentsByPhone(store, payload){
-		store.cachedShipmentsByPhone = payload
-	}
+	shipment_cacheSet: (state, payload) => state.cached.list = payload,
+	shipment_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	shipment_filtersSet: (store, payload) => store.filters = payload,
+	shipment_sortSet: (store, payload) => store.sort = payload,
+	shipment_lastOffsetSet: (store, payload) => store.offset.last = payload,
+	shipment_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
+	shipment_currentSet: (store, payload) => store.cached.current = payload,
+	shipment_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	shipment_loadingSet: (store, payload) => store.loading.list = payload,
+	shipment_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
+	shipment_loadingOneSet: (store, payload) => store.loading.one = payload,
 }
 
 const getters = {
-	shipmentsCachedIds: ({ cached }) => cached.map(el => el.id),
-	currentShipment: ({ current }) => current,
-	cachedShipments: ({ cached }) => cached,
-	loadingShipments: ({ loading }) => loading,
-	loadingBottomShipments: ({ loadingBottom }) => loadingBottom,
-	oneLoadingShipment: ({ oneLoading }) => oneLoading,
-	shipmentsByPhone: ({ cachedShipmentsByPhone }) => cachedShipmentsByPhone,
-	loadingShipmentsByPhone: ({ loadingByPhone }) => loadingByPhone,
-	shipmentFIlters: ({ filters }) => Object.assign({}, filters),
-	addShipmentContactFormVisible: ({ addFormVisible }) => addFormVisible,
-	editShipmentContactFormVisible: ({ editFormVisible }) => editFormVisible,
+	shipment_filters: ({ filters }) => filters,
+	shipment_current: ({ cached }) => cached.current,
+	shipment_cached: ({ cached }) => cached.list,
+	shipment_loading: ({ loading }) => loading.list,
+	shipment_loadingBottom: ({ loading }) => loading.bottom,
+	shipment_loadingOne: ({ loading }) => loading.one,
 }
 
 export default {

@@ -5,17 +5,17 @@
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
-				<el-breadcrumb-item>Счёт {{ currentInvoice.N_DOC }}</el-breadcrumb-item>
+				<el-breadcrumb-item>Счёт {{ invoice_current.N_DOC }}</el-breadcrumb-item>
 			</el-breadcrumb>
 
-			<div class="cards" v-loading="oneLoadingInvoice">
+			<div class="cards" v-loading="invoice_loadingOne">
 
 				<el-card class="invoiceMainInfo">
 					<div slot="header">
 						<h2>Основная информация</h2>
 					</div>
 
-					{{ currentInvoice }}
+					{{ invoice_current }}
 				</el-card>
 
 			</div>
@@ -37,18 +37,19 @@
 			</el-tabs>
 
 			<tabless
+				v-loading="invoice_loading"
 				key="invoices"
-				:data="data"
+				:data="invoice_cached"
 				:fieldDescription="invoicesFieldDescription"
 				ref="table"
 				@filter="localInvoiceFilterChange"
 				@sortChange="localInvoiceSortChange"
 				@onClick="routerGoId"
 			/>
-			<infinite-loading @infinite="invoicesInfinity" ref="infiniteLoading" key="invoicesinf">
+			<infinite-loading @infinite="invoice_infinity" ref="infiniteLoading" key="invoicesinf">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="loadingBottomInvoices" />
+				<div class="spinner" slot="spinner" v-loading="invoice_loadingBottom" />
 			</infinite-loading>
 		</div>
 	</div>
@@ -93,7 +94,7 @@ export default {
 	},
 	watch: {
 		additionalFIlters (n) {
-			this.invoicesFiltersChange (Object.assign({}, this.lastInvoicesFilters, n))
+			this.invoice_filtersChange (Object.assign({}, this.lastInvoicesFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -101,8 +102,7 @@ export default {
 		},
 		oneId () {
 			if (this.oneId !== undefined)
-				this.getOneInvoice(this.oneId)
-
+				this.invoice_getOne(this.oneId)
 		},
 		currentUserSalon (n) {
 			this.currentSalon = n
@@ -110,10 +110,11 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'loadingBottomInvoices',
-			'cachedInvoices',
-			'oneLoadingInvoice',
-			'currentInvoice',
+			'invoice_loading',
+			'invoice_loadingBottom',
+			'invoice_loadingOne',
+			'invoice_cached',
+			'invoice_current',
 			'salonsList',
 			'currentUserSalon'
 		]),
@@ -129,22 +130,23 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'invoicesInfinity',
-			'invoicesFiltersChange',
-			'invoicesSortChanged',
-			'getOneInvoice',
+			'invoice_init',
+			'invoice_infinity',
+			'invoice_filtersChange',
+			'invoice_sortChange',
+			'invoice_getOne',
 			'getSalonsList'
 		]),
 		localInvoiceFilterChange (n) {
 			this.lastInvoicesFilters = n
-			this.invoicesFiltersChange (Object.assign({}, this.additionalFIlters, n))
+			this.invoice_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localInvoiceSortChange (n) {
-			this.invoicesSortChanged (n)
+			this.invoice_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -152,15 +154,9 @@ export default {
 		}
 	},
 	mounted () {
-		if (this.oneId !== undefined)
-			this.getOneInvoice(this.oneId)
-
 		this.currentSalon = this.currentUserSalon
-
 		this.getSalonsList()
-		setTimeout(() => {
-			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 1e3)
+		this.invoice_init(this.oneId)
 	}
 }
 

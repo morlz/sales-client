@@ -67,13 +67,13 @@ export default {
 	},
 	watch: {
 		formOpen (n) {
-			this.updateEditClientContactFormVisible(n)
+			this.client_visible_editContactFormSet(n)
 			this.assignFields(n)
 		},
-		editClientContactFormVisible (n) {
+		client_visible_editContactForm (n) {
 			this.formOpen = n
 		},
-		currentEditedContact (n) {
+		client_edit_currentContact (n) {
 			this.assignFields(n)
 		}
 	},
@@ -94,27 +94,27 @@ export default {
 			this.$refs.editContactForm.clearValidate()
 		},
 		canselEdit () {
-			this.updateEditClientContactFormVisible(false)
+			this.client_visible_editContactFormSet(false)
 		},
 		edit () {
 			this.$refs.editContactForm.validate(valid => {
 				if (valid) {
-					this.clientUpdateContact(this.editContactForm)
-					this.updateEditClientContactFormVisible(false)
+					this.client_updateContact(this.editContactForm)
+					this.client_visible_editContactFormSet(false)
 				}
 			})
 		},
 		...mapActions([
-			'clientUpdateContact'
+			'client_updateContact'
 		]),
 		...mapMutations([
-			'updateEditClientContactFormVisible'
+			'client_visible_editContactFormSet'
 		])
 	},
 	computed: {
 		...mapGetters([
-			'editClientContactFormVisible',
-			'currentEditedContact'
+			'client_visible_editContactForm',
+			'client_edit_currentContact'
 		])
 	}
 }

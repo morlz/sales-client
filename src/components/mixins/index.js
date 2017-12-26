@@ -3,8 +3,8 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
 	methods: {
 		...mapMutations([
-			'setCurrentEditedContact',
-			'updateEditClientContactFormVisible',
+			'client_edit_contactSet',
+			'client_visible_editContactFormSet',
 			'setCurrentEditedTask',
 			'updateEditTaskFormVisible'
 		]),
@@ -44,8 +44,8 @@ export default {
 					},
 					click: (e, { row }) => {
 						e.stopPropagation()
-						this.setCurrentEditedContact(row)
-						this.updateEditClientContactFormVisible(true)
+						this.client_edit_contactSet(row)
+						this.client_visible_editContactFormSet(true)
 					}
 				}
 			]

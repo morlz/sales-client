@@ -5,6 +5,9 @@ import managers from '@/api/managers'
 import salons from '@/api/salons'
 import invoices from '@/api/invoices'
 import furnitures from '@/api/furnitures'
+import shipments from '@/api/shipments'
+import storages from '@/api/storages'
+import discounts from '@/api/discounts'
 import auth from '@/api/auth.js'
 import cookie from '@/api/cookie.js'
 import permissions from '@/api/permissions.js'
@@ -19,5 +22,8 @@ export default {
 	cookie,
 	invoices,
 	furnitures,
-	permissions
+	shipments,
+	permissions,
+	storages,
+	discounts
 }

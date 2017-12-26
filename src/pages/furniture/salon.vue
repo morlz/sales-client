@@ -1,42 +1,63 @@
 <template>
 <div class="mainWrapper">
-	<el-breadcrumb separator="/" class="bc">
-		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: `/furniture/salon` }">В салоне</el-breadcrumb-item>
-	</el-breadcrumb>
+	<div class="oneFurnitureWrapper" v-if="isOne">
+		<el-breadcrumb separator="/" class="bc">
+			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/furniture/salon` }">В салоне</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/furniture/salon/${furniture_current.ID}` }">{{ furniture_current.ID }}</el-breadcrumb-item>
+		</el-breadcrumb>
 
-	<el-tabs tab-position="top" v-model="currentTab">
-		<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
-	</el-tabs>
+		<div class="cards" v-loading="furniture_loadingOne">
+			<el-card class="card">
+				<div class="title" slot="header"></div>
 
-	<transition name="fade">
-		<el-select v-model="currentSalon" filterable placeholder="Салон" v-loading="salonsListLoading" v-if="currentTab != 2">
-			<el-option v-for="salon, index in salonsList" :key="index" :label="salon.NAME" :value="salon.id" />
-		</el-select>
-	</transition>
+				{{ furniture_current }}
+			</el-card>
+		</div>
+	</div>
 
-	<transition name="fade">
-		<el-select v-model="currentFurnitureModel" filterable placeholder="Наименование" v-loading="loadingFutnitureModels" v-if="currentTab == 0">
-			<el-option v-for="model, index in futnitureModels" :key="index" :label="model.MODEL" :value="model.MODEL" />
-		</el-select>
-	</transition>
 
-	<tabless
-		key="salon"
-		:data="data"
-		:fieldDescription="furnitureSalonFieldDescription"
-		ref="table"
-		@filter="localFurnitureFilterChange"
-		@sortChange="localFurnitureSortChange"
-		@onClick="routerGoId"
-	/>
+	<div class="manyFurnitureWrapper" v-if="!isOne">
+		<el-breadcrumb separator="/" class="bc">
+			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/furniture/salon` }">В салоне</el-breadcrumb-item>
+		</el-breadcrumb>
 
-	<infinite-loading @infinite="furnituresInfinity" ref="infiniteLoading">
-		<div class="end" slot="no-results" />
-		<div class="end" slot="no-more" />
-		<div class="spinner" slot="spinner" v-loading="loadingBottomFurnitures" />
-	</infinite-loading>
+		<el-tabs tab-position="top" v-model="currentTab">
+			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
+		</el-tabs>
+
+		<transition name="fade">
+			<el-select v-model="currentSalon" filterable placeholder="Салон" v-loading="salonsListLoading" v-if="currentTab != 2">
+				<el-option v-for="salon, index in salonsList" :key="index" :label="salon.NAME" :value="salon.id" />
+			</el-select>
+		</transition>
+
+		<transition name="fade">
+			<el-select v-model="currentFurnitureModel" filterable placeholder="Наименование" v-loading="furniture_loadingModels" v-if="currentTab == 0">
+				<el-option v-for="model, index in furniture_models" :key="index" :label="model.MODEL" :value="model.MODEL" />
+			</el-select>
+		</transition>
+
+		<tabless
+			v-loading="furniture_loading"
+			key="salon"
+			:data="furniture_cached"
+			:fieldDescription="furnitureSalonFieldDescription"
+			ref="table"
+			@filter="localFurnitureFilterChange"
+			@sortChange="localFurnitureSortChange"
+			@onClick="routerGoId"
+		/>
+
+		<infinite-loading @infinite="furniture_infinity" ref="infiniteLoading">
+			<div class="end" slot="no-results" />
+			<div class="end" slot="no-more" />
+			<div class="spinner" slot="spinner" v-loading="furniture_loadingBottom" />
+		</infinite-loading>
+	</div>
 </div>
 </template>
 
@@ -82,19 +103,23 @@ export default {
 			this.currentSalon = n
 		},
 		additionalFIlters (n) {
-			this.furnituresFiltersChange (Object.assign({}, this.lastFurnitureFilters, n))
+			this.furniture_filtersChange (Object.assign({}, this.lastFurnitureFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		currentSalon (n) {
-			if (n = 999) n = null
+			if (n == 999) n = null
 
-			this.getFurninuteModels(this.currentSalon)
+			this.furniture_getModels(this.currentSalon)
 		},
-		futnitureModels () {
+		furniture_models () {
 			this.currentFurnitureModel = ""
+		},
+		oneId (n) {
+			if (n != undefined)
+				this.furniture_getOne(n)
 		}
 	},
 	computed: {
@@ -102,11 +127,13 @@ export default {
 			'salonsList',
 			'salonsListLoading',
 			'currentUserSalon',
-			'futnitureModels',
-			'loadingFutnitureModels',
-			'loadingBottomFurnitures',
-			'cachedFurnitures',
-			'salonsList'
+			'furniture_loadingModels',
+			'furniture_loadingBottom',
+			'furniture_loadingOne',
+			'furniture_loading',
+			'furniture_cached',
+			'furniture_current',
+			'furniture_models',
 		]),
 		data () {
 			return this.cachedFurnitures
@@ -120,25 +147,24 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'getSalonsList',
-			'getFurninuteModels',
-			'furnituresInfinity',
-			'furnituresFiltersChange',
-			'furnituresSortChanged',
+			'furniture_init',
+			'furniture_sortChange',
+			'furniture_filtersChange',
+			'furniture_infinity',
+			'furniture_getModels',
+			'furniture_getOne',
+			'getSalonsList'
 		]),
-		selectFuriture () {
-
-		},
 		localFurnitureFilterChange (n) {
 			this.lastFurnituresFilters = n
-			this.furnituresFiltersChange (Object.assign({}, this.additionalFIlters, n))
+			this.furniture_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localFurnitureSortChange (n) {
-			this.furnituresSortChanged (n)
+			this.furniture_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -147,11 +173,8 @@ export default {
 	},
 	mounted () {
 		this.currentSalon = this.currentUserSalon
+		this.furniture_init(this.oneId)
 		this.getSalonsList()
-
-		setTimeout(() => {
-			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 1e3)
 	}
 }
 </script>

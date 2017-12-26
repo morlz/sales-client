@@ -1,166 +1,130 @@
 import api from '@/api'
 
 const state = {
-	cached: [],
 	filters: [],
 	sort: [],
-	current: {},
-	loading: true,
-	loadingBottom: false,
-	oneLoading: true,
 	perLoadingLimit: 30,
-	offset: 0,
-	lastOffset: -1,
-	addFormVisible: false,
-	editFormVisible: false,
-	models: [],
-	modelsLoading: true
+	cached: {
+		list: [],
+		current: {},
+		models: []
+	},
+	offset: {
+		current: 0,
+		last: -1
+	},
+	loading: {
+		list: true,
+		one: true,
+		models: true,
+		bottom: false
+	}
 }
 
 const actions = {
-	furnituresSortChanged({ commit, dispatch }, payload){
-		dispatch('furnituresCacheClear')
-		commit('changeFurnituresLastOffset', -1)
-		commit("furnituresSortChange", payload)
+	furniture_init ({ commit, dispatch }, payload) {
+		dispatch('furniture_getModels')
+		if (payload) {
+			dispatch('furniture_getOne', payload)
+		} else {
+			dispatch('furniture_infinityStart')
+		}
 	},
-	furnituresFiltersChange({ commit, dispatch }, payload){
-		dispatch('furnituresCacheClear')
-		commit('changeFurnituresLastOffset', -1)
-		commit("furnituresFiltersChange", payload)
+	furniture_sortChange({ commit, dispatch }, payload){
+		commit("furniture_sortSet", payload)
+		dispatch('furniture_infinityStart')
 	},
-	furnituresCacheClear({ commit, dispatch }){
-		commit("clearCachedFurnitures")
-		commit('setCurrentOffsetFurnitures')
-		commit('loadingFurnituresSet', true)
+	furniture_filtersChange({ commit, dispatch }, payload){
+		commit("furniture_filtersSet", payload)
+		dispatch('furniture_infinityStart')
 	},
-	getAllFurnitures({ commit, dispatch }, ids){
-		api.furnitures
-			.getAll(ids)
-			.then(({ data }) => {
-				commit('updateCachedFurnitures', data)
-				commit('loadingFurnituresSet', false)
-			})
-	},
-	furnituresInfinity({ commit, dispatch, state, getters }, payload){
-		if (state.lastOffset == state.offset) return
-		commit('changeFurnituresLastOffset', state.offset)
-		commit('loadingBottomFurnituresSet', true)
+	furniture_infinity({ commit, dispatch, state, getters }, payload){
+		if (state.offset.last == state.offset.current) return
+		commit('furniture_lastOffsetSet', state.offset.current)
+		commit('furniture_loadingBottomSet', true)
 		api.furnitures
 			.getLimited({
 				limit: state.perLoadingLimit,
-				offset: state.offset,
-				filters: getters.furnitureFIlters,
+				offset: state.offset.current,
+				filters: getters.furniture_filters,
 				sort: state.sort
 			})
 			.then(({ data }) => {
 				if (!data.error) {
-					commit('updateCachedFurnitures', data)
+					commit('furniture_cacheAppend', data)
 					payload.loaded()
 					if (!data.length) payload.complete ()
 				}
-				commit('loadingFurnituresSet', false)
-				commit('loadingBottomFurnituresSet', false)
-				commit('setCurrentOffsetFurnitures')
+				commit('furniture_loadingSet', false)
+				commit('furniture_loadingBottomSet', false)
+				commit('furniture_currentOffsetSet')
 				if (data.error) dispatch('catchErrorNotify', data.error)
 			})
 	},
-	getOneFurniture({ commit, dispatch }, payload){
-		commit('oneLoadingFurnitureSet', true)
+	furniture_infinityStart({ commit, dispatch, state, getters }){
+		commit('furniture_lastOffsetSet', -1)
+		commit('furniture_loadingBottomSet', true)
+		commit('furniture_loadingSet', true)
+		api.furnitures
+			.getLimited({
+				limit: state.perLoadingLimit,
+				offset: 0,
+				filters: getters.furniture_filters,
+				sort: state.sort
+			})
+			.then(({ data }) => {
+				if (!data.error) commit('furniture_cacheSet', data)
+				if (data.error) dispatch('catchErrorNotify', data.error)
+				commit('furniture_loadingBottomSet', false)
+				commit('furniture_loadingSet', false)
+				commit('furniture_currentOffsetSet')
+			})
+	},
+	furniture_getOne({ commit, dispatch }, payload){
+		commit('furniture_loadingOneSet', true)
 		api.furnitures
 			.getOne(payload)
 			.then(({ data }) => {
-				commit('setCurrentFurniture', data)
-				commit('oneLoadingFurnitureSet', false)
+				commit('furniture_currentSet', data)
+				commit('furniture_loadingOneSet', false)
 			})
 	},
-	getFurninuteModels({ commit, dispatch }, payload){
-		commit('loadingFurnitureModelsSet', true)
+	furniture_getModels({ commit, dispatch }, payload){
+		commit('furniture_loadingModelsSet', true)
 		api.furnitures
 			.getModels(payload)
 			.then(({ data }) => {
-				commit('updateCachedFurnitureModels', data)
-				commit('loadingFurnitureModelsSet', false)
+				commit('furniture_cachedModelsSet', data)
+				commit('furniture_loadingModelsSet', false)
 			})
 	},
 }
 
 const mutations = {
-	changeFurnituresLastOffset (store, payload) {
-		store.lastOffset = payload
-	},
-	clearCachedFurnitures (store, payload){
-		store.cached = []
-	},
-	furnituresFiltersChange (store, payload) {
-		store.filters = payload
-	},
-	furnituresSortChange (store, payload) {
-		store.sort = payload
-	},
-	filtredRowsChange (store, payload) {
-		store.filteredRows = payload
-	},
-	updateCachedFurnitures(store, payload){
-		payload.map(el => {
-			let id = el.id || el
-			store.cached = store.cached.filter(el2 => el2.id != id)
-			store.cached.push(el)
-		})
-	},
-	updateCachedFurniture(store, payload) {
-		let id = payload.id || payload
-		store.cached = store.cached.filter(el2 => el2.id != id)
-		store.cached.push(payload)
-	},
-	removeCachedFurnitures(store, payload){
-		payload.map(data => {
-			let id = data.id || data
-			store.cached = store.cached.filter(el => el.id != id)
-		})
-	},
-	removeCachedFurniture(store, payload) {
-		let id = payload.id || payload
-		store.cached = store.cached.filter(el => el.id != id)
-	},
-	loadingFurnituresSet(store, payload) {
-		store.loading = payload
-	},
-	loadingBottomFurnituresSet(store, payload) {
-		store.loadingBottom = payload
-	},
-	oneLoadingFurnitureSet(store, payload){
-		store.oneLoading = payload
-	},
-	loadingByPhoneFurnituresSet(store, payload) {
-		store.loadingByPhone = payload
-	},
-	updateSearchByPhoneQuery(store, payload) {
-		state.searchByPhoneQuery = payload
-	},
-	setCurrentFurniture(store, payload) {
-		store.current = payload
-	},
-	setCurrentOffsetFurnitures(store, payload) {
-		store.offset = payload || store.cached.length
-	},
-	updateCachedFurnitureModels: (store, payload) => store.models = payload,
-	loadingFurnitureModelsSet: (store, payload) => store.modelsLoading = payload
+	furniture_cacheSet: (state, payload) => state.cached.list = payload,
+	furniture_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	furniture_filtersSet: (store, payload) => store.filters = payload,
+	furniture_sortSet: (store, payload) => store.sort = payload,
+	furniture_lastOffsetSet: (store, payload) => store.offset.last = payload,
+	furniture_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
+	furniture_currentSet: (store, payload) => store.cached.current = payload,
+	furniture_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	furniture_cachedModelsSet: (store, payload) => store.cached.models = payload,
+	furniture_loadingSet: (store, payload) => store.loading.list = payload,
+	furniture_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
+	furniture_loadingOneSet: (store, payload) => store.loading.one = payload,
+	furniture_loadingModelsSet: (store, payload) => store.loading.models = payload
 }
 
 const getters = {
-	furnituresCachedIds: ({ cached }) => cached.map(el => el.id),
-	currentFurniture: ({ current }) => current,
-	cachedFurnitures: ({ cached }) => cached,
-	loadingFurnitures: ({ loading }) => loading,
-	loadingBottomFurnitures: ({ loadingBottom }) => loadingBottom,
-	oneLoadingFurniture: ({ oneLoading }) => oneLoading,
-	furnituresByPhone: ({ cachedFurnituresByPhone }) => cachedFurnituresByPhone,
-	loadingFurnituresByPhone: ({ loadingByPhone }) => loadingByPhone,
-	furnitureFIlters: ({ filters }) => Object.assign({}, filters),
-	addFurnitureContactFormVisible: ({ addFormVisible }) => addFormVisible,
-	editFurnitureContactFormVisible: ({ editFormVisible }) => editFormVisible,
-	futnitureModels: ({ models }) => models,
-	loadingFutnitureModels: ({ modelsLoading }) => modelsLoading,
+	furniture_filters: ({ filters }) => filters,
+	furniture_current: ({ cached }) => cached.current,
+	furniture_cached: ({ cached }) => cached.list,
+	furniture_models: ({ cached }) => [ { MODEL: "Все модели" }, ...cached.models],
+	furniture_loading: ({ loading }) => loading.list,
+	furniture_loadingBottom: ({ loading }) => loading.bottom,
+	furniture_loadingOne: ({ loading }) => loading.one,
+	furniture_loadingModels: ({ loading }) => loading.models,
 }
 
 export default {

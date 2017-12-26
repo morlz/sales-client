@@ -4,13 +4,13 @@
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: '/preorder/clients' }">Список клиентов</el-breadcrumb-item>
-				<el-breadcrumb-item>{{ currentClient.lastname }} {{ currentClient.name }} {{ currentClient.patronymic }}</el-breadcrumb-item>
+				<el-breadcrumb-item>{{ client_currentFIO }}</el-breadcrumb-item>
 			</el-breadcrumb>
-			<div class="cards" v-loading="oneLoadingClient">
-				<client-info :content="currentClient"/>
-				<contact-faces :content="currentClient.contactfaces"/>
-				<tasks :content="currentClient.tasks"/>
-				<preorders :content="currentClient.preorders"/>
+			<div class="cards" v-loading="client_loadingOne">
+				<client-info :content="client_current"/>
+				<contact-faces :content="client_current.contactfaces"/>
+				<tasks :content="client_current.tasks"/>
+				<preorders :content="client_current.preorders"/>
 
 				<el-card class="orders">
 					<div slot="header">
@@ -27,19 +27,19 @@
 			</el-breadcrumb>
 			<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 			<tabless
-				key="clients"
-				:data="data"
-				:fieldDescription="clientManyFieldDescription"
-				:key="1"
-				@onClick="routerGoId"
+				v-loading="client_loading"
+				key="clientsinf"
 				ref="table"
+				:data="client_cached"
+				:fieldDescription="clientManyFieldDescription"
+				@onClick="routerGoId"
 				@filter="localClientFilterChange"
 				@sortChange="localClientSortChange"
 			/>
-			<infinite-loading @infinite="clientsInfinity" ref="infiniteLoading">
+			<infinite-loading @infinite="client_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="loadingBottomClients" />
+				<div class="spinner" slot="spinner" v-loading="client_loadingBottom" />
 			</infinite-loading>
 		</div>
 	</div>
@@ -48,15 +48,10 @@
 
 
 <script>
-//import  from '@/static/fieldDescription'
-
 import fieldDescription from '@/static/fieldDescription'
 
 let {
 	clientManyFieldDescription,
-	clientContactsFieldDescription,
-	clientTasksFieldDescription,
-	clientPreordersFieldDescription
 } = fieldDescription
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
@@ -76,10 +71,9 @@ export default {
 	data () {
 		return {
 			clientManyFieldDescription,
-			clientContactsFieldDescription,
-			clientTasksFieldDescription,
-			clientPreordersFieldDescription,
+			lastClientsFilters: [],
 			searchByPhone: "",
+			searchByPhone2: "",
 			seachTimeout: false
 		}
 	},
@@ -95,70 +89,54 @@ export default {
 	},
 	watch: {
 		oneId () {
-			if (this.oneId !== undefined) {
-				this.getOneClient(this.oneId)
-			}
+			if (this.oneId !== undefined)
+				this.client_getOne(this.oneId)
 		},
 		searchByPhone(n){
 			if (this.seachTimeout) clearTimeout (this.seachTimeout)
-
-			this.seachTimeout = setTimeout(() => {
-				this.updateSearchByPhoneQuery(n)
-				this.changeClientsLastOffset(-1)
-				this.clientsCacheClear()
-
-				this.$nextTick(() => {
-				  if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-				})
-			}, 500)
+			this.seachTimeout = setTimeout(() => this.searchByPhone2 = n, 500)
 		},
-		loadingClientsByPhone (n) {
-			if (!n) {
-				this.$nextTick(() => {
-				  if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-				})
-			}
+		additionalFIlters (n) {
+			this.client_filtersChange (Object.assign({}, this.lastClientsFilters, n))
+
+			this.$nextTick(() => {
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
 		}
 	},
 	computed: {
 		...mapGetters([
-			'cachedClients',
-			'cachedManagers',
-			'cachedSalons',
-			'loadingClients',
-			'oneLoadingClient',
-			'currentClient',
-			'recordStatuses',
-			'loadingBottomClients',
-			'loadingClientsByPhone'
+			'client_cached',
+			'client_current',
+			'client_currentFIO',
+			'client_loading',
+			'client_loadingOne',
+			'client_loadingBottom',
 		]),
-		data () {
-			return this.cachedClients
-		},
+		additionalFIlters () {
+			return Object.assign({}, {
+				phone: this.searchByPhone2
+			})
+		}
 	},
 	methods: {
 		...mapActions([
-			'getAllClients',
-			'getOneClient',
-			'clientsInfinity',
-			'clientsSortChanged',
-			'clientsFiltersChange',
-			'clientsCacheClear'
-		]),
-		...mapMutations([
-			'updateSearchByPhoneQuery',
-			'updateAddClientContactFormVisible',
-			'changeClientsLastOffset'
+			'client_init',
+			'client_getOne',
+			'client_infinity',
+			'client_sortChange',
+			'client_filtersChange',
 		]),
 		localClientFilterChange (n) {
-			this.clientsFiltersChange (n)
+			this.lastClientsFilters = n
+			this.client_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localClientSortChange (n) {
-			this.clientsSortChanged (n)
+			this.client_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -166,14 +144,7 @@ export default {
 		}
 	},
 	mounted(){
-		if (this.oneId !== undefined) {
-			this.getOneClient(this.oneId)
-		} else {
-			//this.getAllClients()
-		}
-		setTimeout(() => {
-			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 1e3)
+		this.client_init(this.oneId)
 	}
 }
 

@@ -62,37 +62,37 @@ export default {
 	watch: {
 		formOpen (n) {
 			if (n && this.$refs.addContactForm) this.$refs.addContactForm.resetFields()
-			this.updateAddClientContactFormVisible(n)
+			this.client_visible_addContactFormSet(n)
 		},
-		addClientContactFormVisible (n) {
+		client_visible_addContactForm (n) {
 			this.formOpen = n
 		}
 	},
 	methods: {
 		canselAdd () {
-			this.updateAddClientContactFormVisible(false)
+			this.client_visible_addContactFormSet(false)
 		},
 		add () {
 			this.$refs.addContactForm.validate(valid => {
 				if (valid) {
-					this.clientAddContact(Object.assign({
+					this.client_addContact(Object.assign({
 						client_id: this.currentRecord.client_id,
 						preorder_id: this.currentRecord.id
 					}, this.addContactForm))
-					this.updateAddClientContactFormVisible(false)
+					this.client_visible_addContactFormSet(false)
 				}
 			})
 		},
 		...mapActions([
-			'clientAddContact'
+			'client_addContact'
 		]),
 		...mapMutations([
-			'updateAddClientContactFormVisible'
+			'client_visible_addContactFormSet'
 		])
 	},
 	computed: {
 		...mapGetters([
-			'addClientContactFormVisible',
+			'client_visible_addContactForm',
 			'currentRecord'
 		])
 	}

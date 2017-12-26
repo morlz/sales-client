@@ -4,8 +4,9 @@ import Router from 'vue-router'
 
 
 
-import allSalons 	from '@/pages/furniture/allSalons.vue'
 import salon 		from '@/pages/furniture/salon.vue'
+import storage 		from '@/pages/furniture/storage.vue'
+import discount 		from '@/pages/furniture/discount.vue'
 
 import clients 		from '@/pages/preOrder/clients.vue'
 import records 		from '@/pages/preOrder/records.vue'
@@ -28,11 +29,12 @@ let routes = [
 	{ path: '/', component: home, name: 'home' },
 	{ path: '/admin/roles/:id?', component: roles },
 	{ path: '/profile/:id?', component: profile },
-	{ path: '/furniture/allSalons', component: allSalons },
-	{ path: '/furniture/salon', component: salon },
+	{ path: '/furniture/storage/:id?', component: storage },
+	{ path: '/furniture/discount/:id?', component: discount },
+	{ path: '/furniture/salon/:id?', component: salon },
 	{ path: '/docs/invoices/:id?', component: invoices, props: { type: "invoices" } },
 	{ path: '/docs/movements/:id?', component: invoices, props: { type: "movements" } },
-	{ path: '/docs/shipments/:id?/:date?', component: shipments },
+	{ path: '/docs/shipments/:id?', component: shipments },
 	{ path: '/preorder/clients/:id?', component: clients },
 	{ path: '/preorder/records/:id?', component: records },
 	{ path: '/preorder/tasks/:id?', component: tasks },

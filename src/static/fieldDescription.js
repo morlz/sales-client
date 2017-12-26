@@ -107,6 +107,50 @@ let dataObj = {
 		{ field: "client", label: "Клиент" },
 		{ field: "adSource", label: "Рекламный источник" },
 		{ field: "storage", label: "Склад" },
+	],
+
+	shipmentsFieldDescription: [
+		{ field: "N_DOC", label: "№ Док" },
+		{ field: "DATEV", label: "Дата ввода" },
+		{ field: "VID_OPLATI", label: "Оплата доставки" },
+		{ field: "VIDDOST", label: "Вид" },
+		{ field: "", label: "Примечание" },
+		{ field: "DATEWORK", label: "В работе" },
+		{ field: "NAME", label: "Склад" },
+	],
+
+	storageFieldDescription: [
+		{ field: "UCH_N", label: "Уч №" },
+		{ field: "UN", label: "Фаб. №" },
+		{ field: "TIP", label: "Тип" },
+		{ field: "TKAN", label: "Ткань 1" },
+		{ field: "cKOMP", label: "Ткань 2" },
+		{ field: "KOMP1", label: "Ткань 3" },
+		{ field: "KAT", label: "Кат." },
+		{ field: "COMMENT", label: "Примечание" },
+		{ field: "DEKOR", label: "Декор" },
+		{ field: "stegka", label: "Стежка" },
+		{ field: "NAKC", label: "Акция" },
+		{ field: "Sostoynie", label: "Сост." },
+		{ field: "DATE_CEX", label: "Цех" },
+		{ field: "cNDOC", label: "Номер заказа" },
+	],
+
+	discountFieldDescription: [
+		{ field: "", label: "Склад" },
+		{ field: "", label: "Уч. №" },
+		{ field: "", label: "Фаб.н." },
+		{ field: "", label: "Тип" },
+		{ field: "", label: "Исп." },
+		{ field: "", label: "Ткань 1" },
+		{ field: "", label: "Ткань 2" },
+		{ field: "", label: "Ткань 3" },
+		{ field: "", label: "Кат." },
+		{ field: "", label: "Примечание" },
+		{ field: "", label: "Декор" },
+		{ field: "", label: "Стежка" },
+		{ field: "", label: "Цена руб." },
+		{ field: "", label: "Цех" },
 	]
 }
 
