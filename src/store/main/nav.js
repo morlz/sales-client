@@ -3,7 +3,7 @@ import api from '@/api'
 const state = {
 	menuOpen: false,
 	menuFixed: false,
-	menuFixedState: false,
+	menuFixedState: true,
 	menuItems: [{
 			name: 'Главная',
 			path: "/",

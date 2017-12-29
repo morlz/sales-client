@@ -40,6 +40,7 @@ const actions = {
 					commit("updateUserAuth", data)
 					commit("updateToken", data.token)
 				}
+				if (data.error) dispatch('catchErrorNotify', data.error)
 			})
 	},
 	signUp () {

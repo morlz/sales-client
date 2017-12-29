@@ -52,18 +52,20 @@ const mutations = {
 	updateSalonsListLoading: (store, payload) => store.salonListLoading = payload
 }
 
+let sortSalons = (a, b) => {
+	if (a.id == 999 || a.id == 10 || a.id == 1040) return -1
+	if (b.id == 999 || b.id == 10 || b.id == 1040) return 1
+
+	if (a.NAME.toLowerCase() < b.NAME.toLowerCase()) return -1
+	if (a.NAME.toLowerCase() > b.NAME.toLowerCase()) return 1
+}
+
 const getters = {
 	cachedSalons: ({ cached }) => cached,
 	loadingSalons: ({ loading }) => loading,
-	salonsList: ({ salonList }) => {
-		let s = (a, b) => {
-			if (a.id == 999) return -1
-			if (b.id == 999) return 1
-			if (a.NAME.toLowerCase() < b.NAME.toLowerCase()) return -1
-			if (a.NAME.toLowerCase() > b.NAME.toLowerCase()) return 1
-		}
-		return salonList.sort(s)
-	},
+	salonsList: ({ salonList }) => salonList.sort(sortSalons),
+	salonsListDiscount: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 10),
+	salonsListFurniture: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 1040 && el.id != 10),
 	salonsListLoading: ({ salonListLoading }) => salonListLoading
 }
 

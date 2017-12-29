@@ -27,7 +27,7 @@ export default {
 	data () {
 		return {
 			autoMenuCollapce: false,
-			autoBenuCollapceState: false
+			autoBenuCollapceState: true
 		}
 	},
 	watch: {

@@ -31,7 +31,7 @@
 
 		<transition name="fade">
 			<el-select v-model="currentSalon" filterable placeholder="Салон" v-loading="salonsListLoading" v-if="currentTab != 2">
-				<el-option v-for="salon, index in salonsList" :key="index" :label="salon.NAME" :value="salon.id" />
+				<el-option v-for="salon, index in salonsListFurniture" :key="index" :label="salon.NAME" :value="salon.id" />
 			</el-select>
 		</transition>
 
@@ -124,7 +124,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'salonsList',
+			'salonsListFurniture',
 			'salonsListLoading',
 			'currentUserSalon',
 			'furniture_loadingModels',

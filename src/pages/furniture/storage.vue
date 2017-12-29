@@ -84,9 +84,9 @@ export default {
 			lastStorageFilters: {},
 			currentTab: 0,
 			tabs: [
-				{ name: "СГП", filters: {  } },
-				{ name: "Интернет", filters: {  } },
-				{ name: "e-commerce", filters: {  } },
+				{ name: "СГП", filters: { type: "sgp" } },
+				{ name: "Интернет", filters: { type: "internet" } },
+				{ name: "e-commerce", filters: { type: "e" } },
 			]
 		}
 	},
@@ -122,7 +122,7 @@ export default {
 		additionalFIlters () {
 			return Object.assign({}, {
 				model: this.currentFurnitureModel
-			})
+			}, this.tabs[this.currentTab].filters)
 		}
 	},
 	methods: {

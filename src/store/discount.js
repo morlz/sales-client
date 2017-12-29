@@ -110,6 +110,23 @@ const getters = {
 	discount_filters: ({ filters }) => filters,
 	discount_current: ({ cached }) => cached.current,
 	discount_cached: ({ cached }) => cached.list,
+	discount_cachedByModel: (store) => {
+		let models = []
+
+		store.cached.list.forEach(el => {
+			let model = models.find(m => m.model == el.model)
+			if (model) {
+				model.data.push(el)
+			} else {
+				models.push({
+					model: el.model,
+					data: [el]
+				})
+			}
+		})
+
+		return models
+	},
 	discount_models: ({ cached }) => cached.models,
 	discount_loading: ({ loading }) => loading.list,
 	discount_loadingBottom: ({ loading }) => loading.bottom,
