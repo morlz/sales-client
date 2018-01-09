@@ -41,10 +41,10 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'currentTask'
+			'task_current'
 		]),
 		data() {
-			return this.currentTask || {}
+			return this.task_current || {}
 		}
 	}
 }

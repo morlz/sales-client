@@ -5,7 +5,7 @@
 		<next-task-form>
 			<div class="buttons" slot="buttons">
 				<el-button type="primary">Создать</el-button>
-				<el-button @click="goToPreorder('', currentTask.preorder_id)">Вернуться к предзаказу</el-button>
+				<el-button @click="goToPreorder('', task_current.preorder_id)">Вернуться к предзаказу</el-button>
 			</div>
 		</next-task-form>
 	</div>
@@ -26,7 +26,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'currentTask'
+			'task_current'
 		])
 	}
 }

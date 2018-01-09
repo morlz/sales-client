@@ -1,5 +1,5 @@
 import clients from '@/api/clients'
-import records from '@/api/records'
+import preorders from '@/api/preorders'
 import tasks from '@/api/tasks'
 import managers from '@/api/managers'
 import salons from '@/api/salons'
@@ -14,7 +14,7 @@ import permissions from '@/api/permissions.js'
 
 export default {
 	clients,
-	records,
+	preorders,
 	tasks,
 	managers,
 	salons,

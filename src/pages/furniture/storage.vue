@@ -10,9 +10,42 @@
 
 		<div class="cards" v-loading="storage_loadingOne">
 			<el-card class="card">
-				<div class="title" slot="header"></div>
+				<div class="title" slot="header">Основная информация</div>
 
-				{{ storage_current }}
+				<div class="infoGrid">
+					<div>Уч №</div>
+					<div>{{ storage_current.UCH_N }}</div>
+					<div>Фаб.н.</div>
+					<div>{{ storage_current.UN }}</div>
+					<div>Тип</div>
+					<div>{{ storage_current.TIP }}</div>
+					<div>Ткань 1</div>
+					<div>{{ storage_current.TKAN }}</div>
+					<div>Ткань 2</div>
+					<div>{{ storage_current.cKOMP }}</div>
+					<div>Ткань 3</div>
+					<div>{{ storage_current.KOMP1 }}</div>
+					<div>Кат</div>
+					<div>{{ storage_current.KAT }}</div>
+					<div>Примечание</div>
+					<div>{{ storage_current.COMMENT }}</div>
+					<div>Декор</div>
+					<div>{{ storage_current.DEKOR }}</div>
+					<div>Стежка</div>
+					<div>{{ storage_current.stegka }}</div>
+					<div>Акция</div>
+					<div>{{ storage_current.NAKC }}</div>
+					<div>Сост.</div>
+					<div>{{ storage_current.Sostoynie }}</div>
+					<div>Цех</div>
+					<div>{{ storage_current.DATE_CEX }}</div>
+					<div class="lc">Номер заказа</div>
+					<div class="lc">{{ storage_current.cNDOC }}</div>
+				</div>
+
+				<div class="buttons">
+					<el-button type="primary">Добавить в корзину</el-button>
+				</div>
 			</el-card>
 		</div>
 	</div>
@@ -159,11 +192,24 @@ export default {
 
 
 
-<style lang="less" scoped>
-	.el-main {
-		padding: 0;
+<style lang="less">
+	.oneFurnitureWrapper {
+		.el-main {
+			padding: 0;
+		}
+		.buttons {
+			margin: 0 0 10px 0;
+		}
+		.cards {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
 	}
-	.buttons {
-		margin: 0 0 10px 0;
+	@media screen and (max-width: 1250px) {
+		.oneFurnitureWrapper {
+			.cards {
+				grid-template-columns: 1fr;
+			}
+		}
 	}
 </style>

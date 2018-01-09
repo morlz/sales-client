@@ -1,201 +1,137 @@
 import api from '@/api'
 
 const state = {
-	cached: [],
 	filters: [],
 	sort: [],
-	types: [],
-	current: {},
-	loading: true,
-	loadingBottom: false,
-	oneLoading: true,
-	editTaskFormVisible: false,
-	offset: 0,
-	lastOffset: -1,
-	currentEdited: {},
 	perLoadingLimit: 30,
+	cached: {
+		list: [],
+		current: {},
+		types: []
+	},
+	offset: {
+		current: 0,
+		last: -1
+	},
+	loading: {
+		list: true,
+		one: true,
+		types: true,
+		bottom: false
+	},
+	edit: {
+		visible: false,
+		current: {}
+	}
 }
 
 const actions = {
-	tasksSortChanged({ commit, dispatch }, payload){
-		dispatch('tasksCacheClear')
-		commit('changeTasksLastOffset', -1)
-		commit("tasksSortChange", payload)
+	task_init ({ commit, dispatch }, payload) {
+		if (payload) {
+			dispatch('task_getOne', payload)
+		} else {
+			dispatch('task_infinityStart')
+		}
 	},
-	tasksFiltersChange({ commit, dispatch }, payload){
-		dispatch('tasksCacheClear')
-		commit('changeTasksLastOffset', -1)
-		commit("tasksFiltersChange", payload)
+	task_sortChange({ commit, dispatch }, payload){
+		commit("task_sortSet", payload)
+		dispatch('task_infinityStart')
 	},
-	tasksCacheClear({ commit, dispatch }){
-		commit("clearCachedTasks")
-		commit('setCurrentOffsetTasks')
-		commit('loadingTasksSet', true)
+	task_filtersChange({ commit, dispatch }, payload){
+		commit("task_filtersSet", payload)
+		dispatch('task_infinityStart')
 	},
-	getAllTasks({ commit, dispatch }, ids){
-		api.tasks
-			.getAll(ids)
-			.then(({ data }) => {
-				commit('updateCachedTasks', data)
-				commit('loadingTasksSet', false)
-			})
-	},
-	tasksInfinity({ commit, dispatch, state, getters }, payload){
-		if (state.lastOffset == state.offset) return
-		commit('changeTasksLastOffset', state.offset)
-		commit('loadingBottomTasksSet', true)
+	task_infinity({ commit, dispatch, state, getters }, payload){
+		if (state.offset.last == state.offset.current) return
+		commit('task_lastOffsetSet', state.offset.current)
+		commit('task_loadingBottomSet', true)
 		api.tasks
 			.getLimited({
 				limit: state.perLoadingLimit,
-				offset: state.offset,
-				filters: getters.taskFIlters,
+				offset: state.offset.current,
+				filters: getters.task_filters,
 				sort: state.sort
 			})
 			.then(({ data }) => {
-				commit('updateCachedTasks', data)
-				commit('loadingTasksSet', false)
-				commit('loadingBottomTasksSet', false)
-				commit('setCurrentOffsetTasks')
-				if (data.length) payload.loaded()
-				if (!data.length) payload.complete ()
+				if (!data.error) {
+					commit('task_cacheAppend', data)
+					payload.loaded()
+					if (!data.length) payload.complete ()
+				}
+				commit('task_loadingSet', false)
+				commit('task_loadingBottomSet', false)
+				commit('task_currentOffsetSet')
+				if (data.error) dispatch('catchErrorNotify', data.error)
 			})
 	},
-	getOneTask({ commit, dispatch }, payload){
-		commit('oneLoadingTaskSet', true)
+	task_infinityStart({ commit, dispatch, state, getters }){
+		commit('task_lastOffsetSet', 0)
+		commit('task_loadingBottomSet', true)
+		commit('task_loadingSet', true)
+		api.tasks
+			.getLimited({
+				limit: state.perLoadingLimit,
+				offset: 0,
+				filters: getters.task_filters,
+				sort: state.sort
+			})
+			.then(({ data }) => {
+				if (!data.error) commit('task_cacheSet', data)
+				if (data.error) dispatch('catchErrorNotify', data.error)
+				commit('task_loadingBottomSet', false)
+				commit('task_loadingSet', false)
+				commit('task_currentOffsetSet')
+			})
+	},
+	task_getOne({ commit, dispatch }, payload){
+		commit('task_loadingOneSet', true)
 		api.tasks
 			.getOne(payload)
 			.then(({ data }) => {
-				commit('setCurrentTask', data)
-				commit('oneLoadingTaskSet', false)
+				commit('task_currentSet', data)
+				commit('task_loadingOneSet', false)
 			})
 	},
-	searchTasksByPhone({ commit, dispatch }, payload){
-		commit('updateSearchByPhoneQuery', payload)
-		if (!payload) return
-		commit('loadingByPhoneTasksSet', true)
+	task_getTypes({ commit, dispatch }, payload){
+		commit('task_loadingTypesSet', true)
 		api.tasks
-			.searchByPhone(payload)
+			.getAllTypes(payload)
 			.then(({ data }) => {
-				commit('updateCachedTasks', data)
-				commit('loadingByPhoneTasksSet', false)
+				commit('task_cachedTypesSet', data)
+				commit('task_loadingTypesSet', false)
 			})
 	},
-	getAllTaskStatuses({ commit, dispatch }) {
-		api.tasks
-			.getSatuses()
-			.then(({ data }) => {
-				commit('setPreorderStatuses', data)
-			})
-	},
-	getAllTaskTypes({ commit, dispatch }){
-		api.tasks
-			.getAllTypes()
-			.then(({ data }) => {
-				commit('setTaskTypes', data)
-			})
-	},
-	updateTask({ commit, dispatch }, payload){
-		api.tasks
-			.update(payload)
-			.then(({ data }) => {
-				console.log(data);
-			})
-	}
 }
 
 const mutations = {
-	changeTasksLastOffset (store, payload) {
-		store.lastOffset = payload
-	},
-	clearCachedTasks (store, payload){
-		store.cached = []
-	},
-	tasksFiltersChange (store, payload) {
-		store.filters = payload
-	},
-	tasksSortChange (store, payload) {
-		store.sort = payload
-	},
-	filtredRowsChange (store, payload) {
-		store.filteredRows = payload
-	},
-	updateCachedTasks(store, payload){
-		payload.map(el => {
-			let id = el.id || el
-			store.cached = store.cached.filter(el2 => el2.id != id)
-			store.cached.push(el)
-		})
-	},
-	updateCachedTask(store, payload) {
-		let id = payload.id || payload
-		store.cached = store.cached.filter(el2 => el2.id != id)
-		store.cached.push(payload)
-	},
-	removeCachedTasks(store, payload){
-		payload.map(data => {
-			let id = data.id || data
-			store.cached = store.cached.filter(el => el.id != id)
-		})
-	},
-	removeCachedTask(store, payload) {
-		let id = payload.id || payload
-		store.cached = store.cached.filter(el => el.id != id)
-	},
-	loadingTasksSet(store, payload) {
-		store.loading = payload
-	},
-	loadingBottomTasksSet(store, payload) {
-		store.loadingBottom = payload
-	},
-	oneLoadingTaskSet(store, payload){
-		store.oneLoading = payload
-	},
-	loadingByPhoneTasksSet(store, payload) {
-		store.loadingByPhone = payload
-	},
-	updateSearchByPhoneQuery(store, payload) {
-		state.searchByPhoneQuery = payload
-	},
-	setCurrentTask(store, payload) {
-		store.current = payload
-	},
-	setCurrentOffsetTasks(store, payload) {
-		store.offset = payload || store.cached.length
-	},
-	setTaskTypes(store, payload){
-		store.types = payload
-	},
-	setPreorderStatuses(store, payload){
-		store.statuses = payload
-	},
-	updateEditTaskFormVisible(store, payload){
-		store.editTaskFormVisible = payload
-	},
-	setCurrentEditedTask(store, payload){
-		store.currentEdited = payload
-	}
+	task_cacheSet: (state, payload) => state.cached.list = payload,
+	task_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	task_filtersSet: (store, payload) => store.filters = payload,
+	task_sortSet: (store, payload) => store.sort = payload,
+	task_lastOffsetSet: (store, payload) => store.offset.last = payload,
+	task_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
+	task_currentSet: (store, payload) => store.cached.current = payload,
+	task_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	task_cachedTypesSet: (store, payload) => store.cached.models = payload,
+	task_loadingSet: (store, payload) => store.loading.list = payload,
+	task_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
+	task_loadingOneSet: (store, payload) => store.loading.one = payload,
+	task_loadingTypesSet: (store, payload) => store.loading.models = payload,
+	task_edit_currentSet: (store, payload) => store.edit.current = payload,
+	task_edit_visibleSet: (store, payload) => store.edit.visible = payload,
 }
 
 const getters = {
-	tasksCachedIds: ({ cached }) => cached.map(el => el.id),
-	currentTask: ({ current }) => current,
-	cachedTasks: ({ cached }) => cached,
-	loadingTasks: ({ loading }) => loading,
-	loadingBottomTasks: ({ loadingBottom }) => loadingBottom,
-	oneLoadingTask: ({ oneLoading }) => oneLoading,
-	tasksByPhone: ({ cached, searchByPhoneQuery }) => [], 		//cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1),
-	loadingTasksByPhone: ({ loadingByPhone }) => loadingByPhone,
-	taskFIlters: ({ searchByPhoneQuery: phone, filters }) => Object.assign({ phone }, filters),
-	taskStatuses: ({ statuses }) => statuses,
-	taskTypes ({ types }) {
-		let rez = []
-		types.map(task => {
-			rez[task.id] = task
-		})
-		return rez
-	},
-	editTaskFormVisible: ({ editTaskFormVisible }) => editTaskFormVisible,
-	currentEditedTask: ({ currentEdited }) => currentEdited
+	task_filters: ({ filters }) => filters,
+	task_current: ({ cached }) => cached.current,
+	task_cached: ({ cached }) => cached.list,
+	task_types: ({ cached }) => cached.types,
+	task_loading: ({ loading }) => loading.list,
+	task_loadingBottom: ({ loading }) => loading.bottom,
+	task_loadingOne: ({ loading }) => loading.one,
+	task_loadingTypes: ({ loading }) => loading.types,
+	task_edit_visible: ({ edit }) => edit.visible,
+	task_edit_current: ({ edit }) => edit.current,
 }
 
 export default {

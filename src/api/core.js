@@ -47,8 +47,9 @@ export default {
 
 		if (params.data.id !== undefined) url += `/${params.data.id}`
 		params.url = url
+
 		let auth = cookie.getAuth()
-		if (auth) params.params.token = auth.token
+		if (auth && auth.token) params.params.token = auth.token
 
 		if (process.env.NODE_ENV == 'development') console.log("api request", params)
 		let res = await axios(params)

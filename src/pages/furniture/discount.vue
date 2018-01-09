@@ -10,9 +10,47 @@
 
 		<div class="cards" v-loading="discount_loadingOne">
 			<el-card class="card">
-				<div class="title" slot="header"></div>
+				<div class="title" slot="header">
+					<h2>Основная информация</h2>
+				</div>
 
-				{{ discount_current }}
+
+				<div class="infoGrid">
+					<div>Уч. №</div>
+					<div>{{ discount_current.UCH_N }}</div>
+					<div>Фаб.н.</div>
+					<div>{{ discount_current.UN }}</div>
+					<div>Склад</div>
+					<div>{{ discount_current.mXR }}</div>
+					<div>Тип</div>
+					<div>{{ discount_current.TIP }}</div>
+					<div>Исп.</div>
+					<div>{{ discount_current.ISP }}</div>
+					<div>Дней на складе</div>
+					<div>{{ discount_current.DATE_VX }}</div>
+					<div>Ткань 1</div>
+					<div>{{ discount_current.TKAN }}</div>
+					<div>Ткань 2</div>
+					<div>{{ discount_current.cKOMP }}</div>
+					<div>Ткань 3</div>
+					<div>{{ discount_current.cKOMP1 }}</div>
+					<div>Кат</div>
+					<div>{{ discount_current.KAT }}</div>
+					<div>Примечание</div>
+					<div>{{ discount_current.COMMENT }}</div>
+					<div>Декор</div>
+					<div>{{ discount_current.DEKOR }}</div>
+					<div>Стежка</div>
+					<div>{{ discount_current.stegka }}</div>
+					<div>Цена руб.</div>
+					<div>{{ discount_current.CENA_ZAL }}</div>
+					<div class="lc">Цех</div>
+					<div class="lc">{{ discount_current.DATE_CEX }}</div>
+				</div>
+
+				<div class="buttons">
+					<el-button type="primary">Добавить в корзину</el-button>
+				</div>
 			</el-card>
 		</div>
 	</div>
@@ -200,11 +238,24 @@ export default {
 
 
 
-<style lang="less" scoped>
-	.el-main {
-		padding: 0;
+<style lang="less">
+	.oneFurnitureWrapper {
+		.el-main {
+			padding: 0;
+		}
+		.buttons {
+			margin: 0 0 10px 0;
+		}
+		.cards {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
 	}
-	.buttons {
-		margin: 0 0 10px 0;
+	@media screen and (max-width: 1250px) {
+		.oneFurnitureWrapper {
+			.cards {
+				grid-template-columns: 1fr;
+			}
+		}
 	}
 </style>

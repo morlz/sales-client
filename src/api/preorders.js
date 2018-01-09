@@ -16,7 +16,7 @@ export default {
 			}
 		})
 	},
-	async getSatuses () {
+	async getStatuses () {
 		return await core.invoke({
 			method: "GET",
 			type: "preorderstats"

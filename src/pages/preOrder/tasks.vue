@@ -4,10 +4,10 @@
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Завершение задачи №{{ currentTask.id }}</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Завершение задачи №{{ task_current.id }}</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<end-task-form v-loading="oneLoadingTask" />
+		<end-task-form v-loading="task_loadingOne" />
 	</div>
 
 	<div class="manyTasksWrapper" v-if="!isOne">
@@ -26,10 +26,10 @@
 			@sortChange="localTaskSortChange"
 		/>
 
-		<infinite-loading @infinite="tasksInfinity" ref="infiniteLoading">
+		<infinite-loading @infinite="task_infinity" ref="infiniteLoading">
 			<div class="end" slot="no-results" />
 			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="loadingBottomTasks" />
+			<div class="spinner" slot="spinner" v-loading="task_loadingBottom" />
 		</infinite-loading>
 
 		<edit-task-form/>
@@ -47,7 +47,7 @@ import fieldDescription from '@/static/fieldDescription'
 let {
 	tasksManyFieldDescription,
 	adSources,
-	taskTypes: addTaskTypes,
+	task_types: addTaskTypes,
 	clientContactsFieldDescription,
 	clientTasksFieldDescription
 } = fieldDescription
@@ -81,51 +81,44 @@ export default {
 	},
 	watch: {
 		oneId() {
-			if (this.oneId !== undefined) {
-				this.getOneTask(this.oneId)
-			} else {
-				//this.getAllTasks()
-			}
+			if (this.oneId !== undefined) 
+				this.task_getOne(this.oneId)
+
 		}
 	},
 	computed: {
 		...mapGetters([
-			'cachedTasks',
-			'loadingTasks',
-			'clientsByPhone',
-			'currentTask',
-			'loadingBottomTasks',
-			'cachedSalons',
-			'taskTypes',
-			'fileUploadUrl',
-			'loadingClientsByPhone',
-			'oneLoadingTask'
+			'task_cached',
+			'task_current',
+			'task_types',
+			'task_loading',
+			'task_loadingBottom',
+			'task_loadingOne'
 		]),
-		currentTaskCLientMainContact() {
-			return this.currentTask.contactFaces ? this.currentTask.contactFaces.find(el => el.regard == "Основной") : {}
+		task_currentCLientMainContact() {
+			return this.task_current.contactFaces ? this.task_current.contactFaces.find(el => el.regard == "Основной") : {}
 		},
 		data() {
-			return this.cachedTasks
+			return this.task_cached
 		},
 	},
 	methods: {
 		...mapActions([
-			'getAllTasks',
-			'searchClientsByPhone',
-			'getOneTask',
-			'tasksInfinity',
-			'tasksFiltersChange',
-			'tasksSortChanged'
+			'task_getOne',
+			'task_infinity',
+			'task_filtersChange',
+			'task_sortChange',
+			'task_init'
 		]),
 		localTaskFilterChange(n) {
-			this.tasksFiltersChange(n)
+			this.task_filtersChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localTaskSortChange(n) {
-			this.tasksSortChanged(n)
+			this.task_sortChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -133,14 +126,7 @@ export default {
 		}
 	},
 	mounted() {
-		if (this.oneId !== undefined) {
-			this.getOneTask(this.oneId)
-		} else {
-			//this.getAllTasks()
-		}
-		setTimeout(() => {
-			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 1e3)
+		this.task_init(this.oneId)
 	}
 }
 </script>

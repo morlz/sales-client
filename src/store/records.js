@@ -61,7 +61,7 @@ const actions = {
 			})
 	},
 	getOneRecord({ commit, dispatch }, payload){
-		commit('oneLoadingRecordSet', true)
+		commit('preorder_loadingOneSet', true)
 		api.records
 			.getOne(payload)
 			.then(({ data }) => {
@@ -74,7 +74,7 @@ const actions = {
 
 				dispatch('getSalonsByIds', salonIDs.filter(unique))
 				commit('setCurrentRecord', data)
-				commit('oneLoadingRecordSet', false)
+				commit('preorder_loadingOneSet', false)
 			})
 	},
 	searchRecordsByPhone({ commit, dispatch }, payload){
@@ -88,7 +88,7 @@ const actions = {
 				commit('loadingByPhoneRecordsSet', false)
 			})
 	},
-	getAllRecordStatuses ({ commit, dispatch }) {
+	preorder_getStatuses ({ commit, dispatch }) {
 		api.records
 			.getSatuses()
 			.then(({ data }) => {
@@ -142,7 +142,7 @@ const mutations = {
 	loadingBottomRecordsSet(store, payload) {
 		store.loadingBottom = payload
 	},
-	oneLoadingRecordSet(store, payload){
+	preorder_loadingOneSet(store, payload){
 		store.oneLoading = payload
 	},
 	loadingByPhoneRecordsSet(store, payload) {
@@ -168,11 +168,11 @@ const getters = {
 	cachedRecords: ({ cached }) => cached,
 	loadingRecords: ({ loading }) => loading,
 	loadingBottomRecords: ({ loadingBottom }) => loadingBottom,
-	oneLoadingRecord: ({ oneLoading }) => oneLoading,
+	preorder_loadingOne: ({ oneLoading }) => oneLoading,
 	recordsByPhone: ({ cached, searchByPhoneQuery }) => [], //cached.filter(el => el.phone.indexOf(searchByPhoneQuery) + 1 || el.name.toLowerCase().indexOf(searchByPhoneQuery.toLowerCase()) + 1),
 	loadingRecordsByPhone: ({ loadingByPhone }) => loadingByPhone,
 	recordFIlters: ({ searchByPhoneQuery: phone, filters }) => Object.assign({ phone }, filters),
-	recordStatuses: ({ statuses }) => statuses,
+	preorder_statuses: ({ statuses }) => statuses,
 	newPreorderAccepted: ({ searchByPhoneQuery, cached, loading }) => searchByPhoneQuery.length && !loading
 }
 

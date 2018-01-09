@@ -41,11 +41,11 @@ export default {
 	computed: {
 		...mapGetters([
 			'cachedSalons',
-			'taskTypes'
+			'task_types'
 		]),
 		data () {
 			return this.content ? this.content.map(task => {
-				task.type = this.taskTypes[task.type_id] ? this.taskTypes[task.type_id].title : '...'
+				task.type = this.task_types[task.type_id] ? this.task_types[task.type_id].title : '...'
 				let salon = this.cachedSalons.find(el => task.salon_id == el.ID_SALONA)
 				task.salon =  salon ? salon.NAME : '...'
 				return task

@@ -52,11 +52,11 @@ export default {
 		...mapGetters([
 			'cachedSalons',
 			'cachedManagers',
-			'recordStatuses'
+			'preorder_statuses'
 		]),
 		data () {
 			return this.content ? this.content.map(preorder => {
-				preorder.status = this.recordStatuses[preorder.status_id] ? this.recordStatuses[preorder.status_id].title : '...'
+				preorder.status = this.preorder_statuses[preorder.status_id] ? this.preorder_statuses[preorder.status_id].title : '...'
 				let manager = this.cachedManagers.find(el => preorder.manager_id == el.ID_M),
 					salon = this.cachedSalons.find(el => preorder.salon_id == el.ID_SALONA)
 				preorder.manager = manager ? manager.FIO : '...'

@@ -64,7 +64,7 @@ const state = {
 				},
 				{
 					name: "Предзаказы",
-					path: "/preorder/records",
+					path: "/preorder/preorders",
 					icon: "el-icon-preorder"
 				},
 				{
@@ -88,6 +88,11 @@ const state = {
 			name: "Администрирование",
 			icon: "el-icon-admin",
 			childs: [
+				{
+					name: "Персонал",
+					path: "/admin/personal",
+					icon: "el-icon-personal"
+				},
 				{
 					name: "Роли",
 					path: "/admin/roles",

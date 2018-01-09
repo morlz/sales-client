@@ -5,8 +5,8 @@ export default {
 		...mapMutations([
 			'client_edit_contactSet',
 			'client_visible_editContactFormSet',
-			'setCurrentEditedTask',
-			'updateEditTaskFormVisible'
+			'task_edit_currentSet',
+			'task_edit_visibleSet'
 		]),
 		routerGoId(e, id) {
 			id = id.id || id
@@ -23,7 +23,7 @@ export default {
 		goToPreorder (e, id) {
 			id = id.preorder_id || id
 
-			router.push({ path: `/preorder/records/${id}` })
+			router.push({ path: `/preorder/preorders/${id}` })
 		}
 	},
 	computed: {
@@ -58,8 +58,8 @@ export default {
 					},
 					click: (e, { row }) => {
 						e.stopPropagation()
-						this.setCurrentEditedTask(row)
-						this.updateEditTaskFormVisible(true)
+						this.task_edit_currentSet(row)
+						this.task_edit_visibleSet(true)
 					}
 				},
 				{

@@ -3,20 +3,20 @@
 	<div class="oneRecordWrapper" v-if="isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/records' }">Список предзаказов</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/preorder/records/${oneId}` }">Предзаказ №{{oneId}}</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/preorder/preorders' }">Список предзаказов</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/preorder/preorders/${oneId}` }">Предзаказ №{{oneId}}</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<el-form class="cards" v-loading="oneLoadingRecord">
-			<preorder-info :content="currentRecord"/>
-			<contact-faces :content="currentRecord.contactFaces" allowCreate/>
-			<tasks :content="currentRecord.tasks"/>
+		<el-form class="cards" v-loading="preorder_loadingOne">
+			<preorder-info :content="preorder_current"/>
+			<contact-faces :content="preorder_current.contactFaces" allowCreate/>
+			<tasks :content="preorder_current.tasks"/>
 
 			<el-card class="files">
 				<h2 slot="header">Прикреплённые файлы</h2>
 
 				<el-upload
-					action="fileUploadUrl"
+					action=""
 				>
 					<el-button type="primary">Загрузить файл</el-button>
 				</el-upload>
@@ -27,13 +27,13 @@
 	<div class="manyRecordsWrapper" v-if="!isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/records' }">Список предзаказов</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/preorder/preorders' }">Список предзаказов</el-breadcrumb-item>
 		</el-breadcrumb>
 		<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" v-if="currentTab == '0'" />
-		<el-tabs tab-position="top" v-model="currentTab" key="recordsTabs" class="manyRecordsTabs">
+		<el-tabs tab-position="top" v-model="currentTab" key="preordersTabs" class="manyRecordsTabs">
 			<el-tab-pane label="Все предзаказы" key="1">
 				<tabless
-					key="records"
+					key="preorders"
 					:data="data"
 					:fieldDescription="recordsManyFieldDescription"
 					:key="1"
@@ -42,15 +42,15 @@
 					@filter="localRecordFilterChange"
 					@sortChange="localRecordSortChange"
 				/>
-				<infinite-loading @infinite="recordsInfinity" ref="infiniteLoading">
+				<infinite-loading @infinite="preorder_infinity" ref="infiniteLoading">
 					<div class="end" slot="no-results" />
 					<div class="end" slot="no-more" />
-					<div class="spinner" slot="spinner" v-loading="loadingBottomRecords" />
+					<div class="spinner" slot="spinner" v-loading="preorder_loadingBottom" />
 				</infinite-loading>
 
 			</el-tab-pane>
 
-			<el-tab-pane label="Новый предзаказ" v-if="newPreorderAccepted" key="2">
+			<el-tab-pane label="Новый предзаказ" v-if="preorder_acceptedAdd" key="2">
 				<new-preorder-form @goBack="currentTab = '0'"/>
 			</el-tab-pane>
 		</el-tabs>
@@ -92,8 +92,10 @@ export default {
 		return {
 			recordsManyFieldDescription,
 			searchByPhone: "",
+			searchByPhoneQuery: "",
 			seachTimeout: false,
-			currentTab: "0"
+			currentTab: "0",
+			lastFilters: {}
 		}
 	},
 	mixins: [mixins],
@@ -110,59 +112,57 @@ export default {
 	},
 	watch: {
 		oneId () {
-			if (this.oneId !== undefined) {
-				this.getOneRecord(this.oneId)
-			} else {
-				//this.getAllRecords()
-			}
+			if (this.oneId !== undefined)
+				this.preorder_getOne(this.oneId)
 		},
 		searchByPhone (n) {
 			if (this.seachTimeout) clearTimeout (this.seachTimeout)
 
-			this.seachTimeout = setTimeout(() => {
-				this.updateRecordsSearchByPhoneQuery(n)
-				this.changeRecordsLastOffset()
-				this.recordsCacheClear()
+			this.seachTimeout = setTimeout(() => { this.searchByPhoneQuery = n }, 500)
+		},
+		additionalFilters (n) {
+			this.preorder_filtersChange (Object.assign({}, n, this.lastFilters))
 
-				this.$nextTick(() => {
-					if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-				})
-			}, 500)
+			this.$nextTick(() => {
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
 		}
 	},
 	computed: {
 		...mapGetters([
-			'cachedRecords',
-			'currentRecord',
-			'loadingBottomRecords',
-			'fileUploadUrl',
-			'newPreorderAccepted',
-			'oneLoadingRecord'
+			'preorder_cached',
+			'preorder_current',
+			'preorder_loadingBottom',
+			'preorder_acceptedAdd',
+			'preorder_loadingOne'
 		]),
 		data() {
-			return this.cachedRecords
+			return this.preorder_cached
+		},
+		additionalFilters () {
+			return {
+				phone: this.searchByPhoneQuery
+			}
 		}
 	},
 	methods: {
-		...mapActions([
-			'getOneRecord',
-			'recordsInfinity',
-			'recordsFiltersChange',
-			'recordsSortChanged',
-			'recordsCacheClear',
-		]),
-		...mapMutations([
-			'updateRecordsSearchByPhoneQuery',
-			'changeRecordsLastOffset'
+		...mapActions([,
+			'preorder_infinity',
+			'preorder_filtersChange',
+			'preorder_sortChange',
+			'preorder_init',
+			'preorder_getOne'
 		]),
 		localRecordFilterChange (n) {
-			this.recordsFiltersChange (n)
+			this.lastFilters = n
+			this.preorder_filtersChange (Object.assign({}, n, this.additionalFilters))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		localRecordSortChange (n) {
+			this.preorder_sortChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -170,15 +170,7 @@ export default {
 		}
 	},
 	mounted() {
-		if (this.oneId !== undefined) {
-			this.getOneRecord(this.oneId)
-		} else {
-			//this.getAllRecords()
-		}
-
-		setTimeout(() => {
-			if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-		}, 1e3)
+		this.preorder_init(this.oneId)
 	}
 }
 </script>

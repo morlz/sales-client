@@ -3,7 +3,7 @@
 	<h2 slot="header">Общая информация</h2>
 
 	<el-steps :active="+data.status_id" align-center finish-status="success">
-		<el-step :title="item.title" v-for="item, index in recordStatuses" :key="index"></el-step>
+		<el-step :title="item.title" v-for="item, index in preorder_statuses" :key="index"></el-step>
 	</el-steps>
 
 	<div class="infoGrid">
@@ -49,7 +49,7 @@ export default {
 	props: ['content'],
 	computed: {
 		...mapGetters([
-			'recordStatuses'
+			'preorder_statuses'
 		]),
 		data() {
 			return this.content || {}
@@ -61,19 +61,6 @@ export default {
 
 <style lang="less">
 .preorderInfo {
-    .infoGrid {
-		align-self: start;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        > div {
-            padding: 15px 0;
-			&:not(.lc) {
-				border-bottom: 1px solid #f4f4f4;
-			}
-            &:nth-child(2n+1) {
-                font-weight: bold;
-            }
-        }
-    }
+
 }
 </style>

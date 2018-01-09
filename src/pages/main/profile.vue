@@ -89,7 +89,7 @@ export default {
 	.cards {
 		display: grid;
 		grid-gap: 20px;
-		grid-template-columns: repeat(auto-fill, minmax(450px, auto));
+		grid-template-columns: 1fr 1fr;
 		.gridInfo {
 			display: grid;
 			.info {
@@ -118,6 +118,14 @@ export default {
 					}
 				}
 			}
+		}
+	}
+}
+
+@media screen and (max-width: 1250px) {
+	.mainWrapper {
+		.cards {
+			grid-template-columns: 1fr;
 		}
 	}
 }

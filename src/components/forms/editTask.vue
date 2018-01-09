@@ -45,12 +45,12 @@ export default {
 	},
 	watch: {
 		formOpen (n) {
-			this.updateEditTaskFormVisible(n)
+			this.task_edit_visibleSet(n)
 		},
-		editTaskFormVisible (n) {
+		task_edit_visible (n) {
 			this.formOpen = n
 		},
-		currentEditedTask (n) {
+		task_edit_current (n) {
 			if (!n) return
 			this.getManagersByIds([n.manager_responsible_id])
 			this.editTaskForm = Object.assign(this.editTaskForm, n)
@@ -62,20 +62,20 @@ export default {
 			'updateTask'
 		]),
 		canselEdit () {
-			this.updateEditTaskFormVisible(false)
+			this.task_edit_visibleSet(false)
 		},
 		edit () {
 			this.updateTask(this.editTaskForm)
-			this.updateEditTaskFormVisible(false)
+			this.task_edit_visibleSet(false)
 		},
 		...mapMutations([
-			'updateEditTaskFormVisible'
+			'task_edit_visibleSet'
 		])
 	},
 	computed: {
 		...mapGetters([
-			'editTaskFormVisible',
-			'currentEditedTask',
+			'task_edit_visible',
+			'task_edit_current',
 			'cachedManagers'
 		]),
 		managerResponsible() {

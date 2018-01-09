@@ -1,12 +1,8 @@
 import api from '@/api'
 
-const types = [
-	"roles",
-	"controllers",
-	"ranges"
-]
-
 const state = {
+	managers: [],
+	rolesSetup: [],
 	roles: [],
 	controllersSetup: [],
 	controllers: [],
@@ -24,16 +20,12 @@ const state = {
 }
 
 const actions = {
-	permissions_roleLevelChange({ commit, dispatch }, { e, item }) {
-		console.log(e, item);
-	},
-	permissions_controllerLevelChange({ commit, dispatch }, { e, item }) {
-		console.log(e, item);
-	},
 	permissions_init ({ commit, dispatch }) {
+		dispatch('permissions_getManagers')
 		dispatch('permissions_getRoles')
 		dispatch('permissions_getControllers')
 		//dispatch('permissions_getRanges')
+		dispatch('permissions_getRolesSetup')
 		dispatch('permissions_getControllersSetup')
 		//dispatch('permissions_getRangesSetup')
 	},
@@ -83,9 +75,11 @@ const actions = {
 
 const mutations = {
 	permissions_selectItem: (state, payload) => state.selected = payload,
+	permissions_setCachedManagers: (state, payload) => state.managers = payload,
 	permissions_setCachedRoles: (state, payload) => state.roles = payload,
 	permissions_setCachedControllers: (state, payload) => state.controllers = payload,
 	permissions_setCachedRanges: (state, payload) => state.ranges = payload,
+	permissions_setCachedRolesSetup: (state, payload) => state.rolesSetup = payload,
 	permissions_setCachedControllersSetup: (state, payload) => state.controllersSetup = payload,
 	permissions_setCachedRangesSetup: (state, payload) => state.rangesSetup = payload,
 	permissions_setAddRole: (state, payload) => state.add.role = payload,
@@ -95,30 +89,59 @@ const mutations = {
 
 const getters = {
 	permissions_selectedType: state => state.selected.type,
-	permissions_managers: state => state.managers,
+	permissions_managers: state => state.managers.map(el => {
+		el.selectable = false
+		el.selected = false
+		if (state.selected.type == "roles") {
+			el.selectable = true
+			el.checked = !!state.rolesSetup.find(itm => itm.manager_id == state.selected.id && itm.role_id == el.ID_M)
+		}
+
+		if (state.selected.type == "managers" && state.selected.id == el.ID_M)
+			el.selected = true
+
+		return el
+	}),
 	permissions_roles: state => state.roles.map(el => {
-		el.selected = state.selected.type == "roles" && el.id == state.selected.id
-		el.levelVisible = state.selected.type == "controllers"
-		
-		let relation = state.controllersSetup.find(itm => itm.action_id == state.selected.id && itm.role_id == el.id)
-		el.level = relation ? relation.access_level : 0
+		el.selectable = false
+		el.selected = false
+		if (state.selected.type == "managers") {
+			el.selectable = true
+			el.checked = !!state.rolesSetup.find(itm => itm.manager_id == state.selected.id && itm.role_id == el.id)
+		}
+
+		if (state.selected.type == "controllers") {
+			el.selectable = true
+			let relation = state.controllersSetup.find(itm => itm.action_id == state.selected.id && itm.role_id == el.id)
+			el.level = relation ? relation.access_level : 0
+		}
+
+		if (state.selected.type == "roles" && state.selected.id == el.id)
+			el.selected = true
 
 		return el
 	}),
 	permissions_controllers: state => state.controllers.map(el => {
-		el.selected = state.selected.type == "controllers" && el.id == state.selected.id
-		el.levelVisible = state.selected.type == "roles"
+		el.selectable = false
+		el.selected = false
+		if (state.selected.type == "roles") {
+			el.selectable = true
+			let relation = state.controllersSetup.find(itm => itm.role_id == state.selected.id && itm.action_id == el.id)
+			el.level = relation ? relation.access_level : 0
+		}
 
-		let relation = state.controllersSetup.find(itm => itm.role_id == state.selected.id && itm.action_id == el.id)
-		el.level = relation ? relation.access_level : 0
+		if (state.selected.type == "controllers" && state.selected.id == el.id)
+			el.selected = true
 
 		return el
 	}),
 	permissions_ranges: state => state.ranges,
 	permissions_rolesSetup: state => state.rangesSetup,
 	permissions_rangesSetup: state => state.rangesSetup,
-	permissions_rolesSliderHide: state => state.selected.type != "controllers",
-	permissions_controllersSliderHide: state => state.selected.type != "roles",
+	permissions_managersAllCheckBoxHide: state => state.selected.type != "roles",
+	permissions_rolesAllCheckBoxHide: state => state.selected.type != "managers",
+	permissions_rolesShowRangeSelect: state => state.selected.type == "controllers",
+
 }
 
 export default {

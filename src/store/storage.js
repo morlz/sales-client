@@ -61,7 +61,7 @@ const actions = {
 			})
 	},
 	storage_infinityStart({ commit, dispatch, state, getters }){
-		commit('storage_lastOffsetSet', -1)
+		commit('storage_lastOffsetSet', 0)
 		commit('storage_loadingBottomSet', true)
 		commit('storage_loadingSet', true)
 		api.storages

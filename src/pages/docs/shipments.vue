@@ -5,16 +5,35 @@
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/docs/shipments/${shipment_current}` }">{{shipment_current.ID_OTG}}</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: `/docs/shipments/${shipment_current.ID_OTG}` }">{{shipment_current.ID_OTG}}</el-breadcrumb-item>
 		</el-breadcrumb>
 
 		<div class="cards" v-loading="shipment_loadingOne">
 			<el-card class="card">
 				<div class="title" slot="header">
-
+					<h2>Основная информация</h2>
 				</div>
 
-				{{shipment_current}}
+				<div class="infoGrid">
+					<div>Номер документа</div>
+					<div>{{ shipment_current.N_DOC }}</div>
+					<div>Дата ввода</div>
+					<div>{{ shipment_current.DATEV }}</div>
+					<div>Оплата доставки</div>
+					<div>{{ shipment_current.PL_OTGR }}</div>
+					<div>Вид</div>
+					<div>{{ shipment_current.VIDDOST }}</div>
+					<div>Примечание</div>
+					<div></div>
+					<div>В работе</div>
+					<div>{{ shipment_current.DATEWORK }}</div>
+					<div class="lc">Склад</div>
+					<div class="lc">{{ shipment_current.NAME }}</div>
+				</div>
+
+				<div class="buttons">
+					<el-button type="primary">Добавить в корзину</el-button>
+				</div>
 			</el-card>
 		</div>
 
@@ -183,7 +202,19 @@ export default {
 
 
 
-<style lang="less" scoped>
+<style lang="less" >
 
-
+.oneShipmentWrapper {
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+}
+@media screen and (max-width: 1250px) {
+	.oneShipmentWrapper {
+		.cards {
+			grid-template-columns: 1fr;
+		}
+	}
+}
 </style>

@@ -59,7 +59,7 @@ const actions = {
 			})
 	},
 	invoice_infinityStart({ commit, dispatch, state, getters }){
-		commit('invoice_lastOffsetSet', -1)
+		commit('invoice_lastOffsetSet', 0)
 		commit('invoice_loadingBottomSet', true)
 		commit('invoice_loadingSet', true)
 		api.invoices

@@ -62,7 +62,7 @@ const actions = {
 			})
 	},
 	furniture_infinityStart({ commit, dispatch, state, getters }){
-		commit('furniture_lastOffsetSet', -1)
+		commit('furniture_lastOffsetSet', 0)
 		commit('furniture_loadingBottomSet', true)
 		commit('furniture_loadingSet', true)
 		api.furnitures

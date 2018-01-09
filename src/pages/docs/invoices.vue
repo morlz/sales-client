@@ -1,6 +1,6 @@
 <template>
 	<div class="mainWrapper">
-		<div class="oneClientWrapper" v-if="isOne">
+		<div class="oneInvoiceWrapper" v-if="isOne">
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
@@ -15,9 +15,27 @@
 						<h2>Основная информация</h2>
 					</div>
 
-					{{ invoice_current }}
-				</el-card>
+					<div class="infoGrid">
+						<div>Номер документа</div>
+						<div>{{ invoice_current.N_DOC }}</div>
+						<div>DATE</div>
+						<div>{{ invoice_current.DATE }}</div>
+						<div>Дата отгрузки</div>
+						<div>{{ invoice_current.PL_OTGR }}</div>
+						<div>Менеджер</div>
+						<div>{{ currentInvoiceManager }}</div>
+						<div>Клиент</div>
+						<div>{{ invoice_current.client }}</div>
+						<div>Рекламный источник</div>
+						<div>{{ invoice_current.adSource ? invoice_current.adSource.NAME : '...' }}</div>
+						<div class="lc">Склад</div>
+						<div class="lc">{{ invoice_current.storage }}</div>
+					</div>
 
+					<div class="buttons">
+						<el-button type="primary">Добавить в корзину</el-button>
+					</div>
+				</el-card>
 			</div>
 		</div>
 
@@ -126,6 +144,9 @@ export default {
 				type: this.type,
 				ID_SALON: this.currentSalon != 999 ? this.currentSalon : null
 			}, this.tabs[this.currentTab].filters)
+		},
+		currentInvoiceManager () {
+			return this.invoice_current.manager ? `${this.invoice_current.manager.FIO} ${this.invoice_current.manager.IMY} ${this.invoice_current.manager.OTCH}` : {}
 		}
 	},
 	methods: {
@@ -164,7 +185,19 @@ export default {
 
 
 
-<style lang="less" scoped>
+<style lang="less" >
 
-
+.oneInvoiceWrapper {
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+}
+@media screen and (max-width: 1250px) {
+	.oneInvoiceWrapper {
+		.cards {
+			grid-template-columns: 1fr;
+		}
+	}
+}
 </style>

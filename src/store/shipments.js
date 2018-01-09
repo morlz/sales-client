@@ -59,7 +59,7 @@ const actions = {
 			})
 	},
 	shipment_infinityStart({ commit, dispatch, state, getters }){
-		commit('shipment_lastOffsetSet', -1)
+		commit('shipment_lastOffsetSet', 0)
 		commit('shipment_loadingBottomSet', true)
 		commit('shipment_loadingSet', true)
 		api.shipments
