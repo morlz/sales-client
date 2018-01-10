@@ -6,6 +6,7 @@ import nav from '@/store/main/nav'
 import files from '@/store/main/files'
 import auth from '@/store/main/auth'
 import notify from '@/store/main/notify'
+import events from '@/store/main/events'
 
 import clients from '@/store/clients'
 import invoices from '@/store/invoices'
@@ -18,6 +19,7 @@ import salons from '@/store/salons'
 import storage from '@/store/storage'
 import discount from '@/store/discount'
 import permissions from '@/store/permissions'
+import personal from '@/store/personal'
 
 
 export default new Vuex.Store({
@@ -36,6 +38,8 @@ export default new Vuex.Store({
 		furniture,
 		permissions,
 		storage,
-		discount
+		discount,
+		events,
+		personal
 	}
 })

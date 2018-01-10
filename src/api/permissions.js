@@ -65,4 +65,63 @@ export default {
 			params
 		})
 	},
+	async createRole (name) {
+		return await core.invoke({
+			method: "post",
+			type: "roles",
+			data: {
+				name
+			}
+		})
+	},
+	async createController (name) {
+		return await core.invoke({
+			method: "post",
+			type: "actions",
+			data: {
+				name
+			}
+		})
+	},
+	async saveState (data) {
+		data = core.prepareArrays(data)
+
+		return await core.invoke({
+			method: "put",
+			type: "savestate",
+			data
+		})
+	},
+	async deleteRole (id) {
+		return await core.invoke({
+			method: "delete",
+			type: "role",
+			data: {
+				id
+			}
+		})
+	},
+	async deleteController (id) {
+		return await core.invoke({
+			method: "delete",
+			type: "action",
+			data: {
+				id
+			}
+		})
+	},
+	async updateRole (data) {
+		return await core.invoke({
+			method: "put",
+			type: "role",
+			data
+		})
+	},
+	async updateController (data) {
+		return await core.invoke({
+			method: "put",
+			type: "action",
+			data
+		})
+	},
 }

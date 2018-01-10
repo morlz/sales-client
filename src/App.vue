@@ -57,10 +57,12 @@ export default {
 		...mapActions([
 			'task_getTypes',
 			'preorder_getStatuses',
-			'authInit'
+			'authInit',
+			'event_createHandlers'
 		])
 	},
 	mounted() {
+		this.event_createHandlers()
 		this.task_getTypes()
 		this.preorder_getStatuses()
 		this.authInit()

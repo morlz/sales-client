@@ -151,6 +151,24 @@ let dataObj = {
 		{ field: "stegka", label: "Стежка" },
 		{ field: "CENA_ZAL", label: "Цена руб." },
 		{ field: "DATE_CEX", label: "Цех" },
+	],
+
+	lvls: [
+		"Нет доступа",
+		"Чтение",
+		"Создание",
+		"Обновление",
+		"Удаление"
+	],
+
+	personalFieldDescription: [
+		{ field: "LOGIN", label: "Логин" },
+		{ field: "FIO", label: "Фамилия" },
+		{ field: "IMY", label: "Имя" },
+		{ field: "OTCH", label: "Отчество" },
+		{ field: "S_DATE", label: "Дата создания" },
+		{ field: "RABOTAET", label: "Работает" },
+		{ field: "salon", label: "Салон" },
 	]
 }
 

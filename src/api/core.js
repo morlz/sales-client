@@ -1,13 +1,19 @@
 import axios from 'axios'
 import db from '@/api/tempDB'
 import cookie from '@/api/cookie'
+import EventEmitter from 'browser-event-emitter'
 
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => {
 	return new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
 }
 
-export default {
+class Core extends EventEmitter {
+	constructor () {
+		super(arguments)
+		if (process.env.NODE_ENV == 'development') console.log("[api] [core] init")
+	}
+
 	async fakeInvoke (params = {}) {
 		if (!params.data) params.data = {}
 		await _wait()
@@ -38,7 +44,8 @@ export default {
 		}
 
 		return rez
-	},
+	}
+
 	async invoke (params = {}) {
 		//await _wait(10000, 5000) //emit real server
 		if (!params.data) params.data = {}
@@ -52,10 +59,18 @@ export default {
 		if (auth && auth.token) params.params.token = auth.token
 
 		if (process.env.NODE_ENV == 'development') console.log("api request", params)
-		let res = await axios(params)
-		if (process.env.NODE_ENV == 'development') console.log("api response", res)
-		return res
-	},
+		try {
+			let res = await axios(params)
+			if (process.env.NODE_ENV == 'development') console.log("api response", res)
+			if (res.data && res.data.error) this.emit("error", res.data.error)
+			return res
+		} catch (err) {
+			if (process.env.NODE_ENV == 'development') console.log("api error", err)
+			this.emit("error", err)
+			return new Error("Network error")
+		}
+	}
+
 	prepareArrays (params) {
 		for (var prop in params) {
 			if (params.hasOwnProperty(prop)) {
@@ -65,3 +80,5 @@ export default {
 		return params
 	}
 }
+
+export default new Core()

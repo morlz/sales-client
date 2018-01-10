@@ -18,17 +18,10 @@ const actions = {
 		}
 
 		api.auth.getUserData()
-			.then(({ data }) => {
-				if (data.token) {
-					commit("updateUserAuth", data)
-					commit("updateToken", data.token)
-				}
-				commit("auchCheckingChange", false)
-			})
-			.catch(({ data, status }) => {
-				if (status == 403) {
-					commit("updateUserAuth", false)
-					commit("updateToken", "")
+			.then(res => {
+				if (res && res.data && res.data.token) {
+					commit("updateUserAuth", res.data)
+					commit("updateToken", res.data.token)
 				}
 				commit("auchCheckingChange", false)
 			})
@@ -36,7 +29,7 @@ const actions = {
 	signIn ({ commit, dispatch }, payload) {
 		api.auth.signIn(payload)
 			.then(({ data }) => {
-				if (data.token) {
+				if (data && data.token) {
 					commit("updateUserAuth", data)
 					commit("updateToken", data.token)
 				}
