@@ -19,5 +19,11 @@ export default {
 			method: "get",
 			type: "auth/userdata"
 		})
+	},
+	async getPermissions () {
+		return await core.invoke({
+			method: "get",
+			type: "auth/userpermissions"
+		})
 	}
 }

@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper">
+<div class="mainWrapper" v-if="auth_can(1, 'Preorder')">
 	<div class="oneRecordWrapper" v-if="isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
@@ -8,9 +8,9 @@
 		</el-breadcrumb>
 
 		<el-form class="cards" v-loading="preorder_loadingOne">
-			<preorder-info :content="preorder_current"/>
-			<contact-faces :content="preorder_current.contactFaces" allowCreate/>
-			<tasks :content="preorder_current.tasks"/>
+			<preorder-info :content="preorder_current" v-if="auth_can(1, 'Preorder')"/>
+			<contact-faces :content="preorder_current.contactFaces" allowCreate v-if="auth_can(1, 'ContactFace')"/>
+			<tasks :content="preorder_current.tasks" v-if="auth_can(1, 'Task')"/>
 
 			<el-card class="files">
 				<h2 slot="header">Прикреплённые файлы</h2>
@@ -50,7 +50,7 @@
 
 			</el-tab-pane>
 
-			<el-tab-pane label="Новый предзаказ" v-if="preorder_acceptedAdd" key="2">
+			<el-tab-pane label="Новый предзаказ" key="2" v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')">
 				<new-preorder-form @goBack="currentTab = '0'"/>
 			</el-tab-pane>
 		</el-tabs>

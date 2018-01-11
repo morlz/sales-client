@@ -1,5 +1,5 @@
 <template>
-	<el-card class="clientInfo">
+	<el-card class="clientInfo" v-if="auth_can(1, 'Client')">
 		<div slot="header">
 			<h2>Информация о клиенте</h2>
 		</div>
@@ -21,8 +21,11 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import mixins from '@/components/mixins'
+
 
 export default {
+	mixins: [mixins],
 	props: {
 		content: {
 			type: Object,

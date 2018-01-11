@@ -1,15 +1,24 @@
 <template>
-<el-card class="addPreorderMainFormWrapper">
+<el-card class="addPreorderMainFormWrapper" v-if="auth_can(1, 'Client')">
 	<h2 slot="header">Выбор клиента</h2>
 
 	<el-form label-width="100px">
 
 		<el-form-item label="Телефон">
-			<el-select v-model="newClient.phone" placeholder="8 (800) 555 35 35" :allow-create="!loadingClientsByPhone" remote filterable :remote-method="searchClientsByPhone" :loading="loadingClientsByPhone" :loading-text="'Загрузка...'" :no-data-text="'Клиентов не найдено'">
-				<el-option v-for="client, index in clientsByPhone" :label="client.phone" :value="client.phone" :key="index" class="clientOption">
-					<span>{{ client.fio }}</span>
-					<span>{{ client.phone }}</span>
-					<span>{{ client.salon }}</span>
+			<el-select
+				v-model="newClient.phone"
+				placeholder="8 (800) 555 35 35"
+				:allow-create="!client_loadingByPhone"
+				remote
+				filterable
+				:remote-method="client_searchByPhone"
+				:loading="client_loadingByPhone"
+				:loading-text="'Загрузка...'"
+				:no-data-text="'Клиентов не найдено'">
+				<el-option v-for="client, index in client_byPhone" :label="client.phone" :value="client.phone" :key="index" class="clientOption">
+					<div class="name">{{ client.fio }}</div>
+					<div>{{ client.phone }}</div>
+					<div class="salon">{{ client.salon }}</div>
 				</el-option>
 			</el-select>
 		</el-form-item>
@@ -37,7 +46,7 @@
 			</el-form-item>
 		</div>
 
-		<div v-else="selectedClient">
+		<div v-if="!selectedClient && auth_can(2, 'Client')">
 			<el-form-item>
 				<el-checkbox v-model="newClient.disableSMS">sms-рассылка запрещена</el-checkbox>
 			</el-form-item>
@@ -60,8 +69,6 @@
 			</el-form-item>
 		</div>
 	</el-form>
-
-
 </el-card>
 </template>
 
@@ -71,8 +78,10 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
+import mixins from '@/components/mixins'
 
 export default {
+	mixins: [mixins],
 	data() {
 		return {
 
@@ -103,19 +112,16 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'searchClientsByPhone'
-		]),
-		...mapMutations([
-
+			'client_searchByPhone'
 		])
 	},
 	computed: {
 		...mapGetters([
-			'loadingClientsByPhone',
-			'clientsByPhone'
+			'client_loadingByPhone',
+			'client_byPhone'
 		]),
 		selectedClient() {
-			return this.clientsByPhone.find(el => el.phone == this.newClient.phone)
+			return this.client_byPhone.find(el => el.phone == this.newClient.phone)
 		}
 	}
 }
@@ -124,16 +130,26 @@ export default {
 
 <style lang="less">
 .clientOption {
+	height: auto;
+	line-height: inherit;
 	display: grid;
-	grid-auto-flow: column;
-	grid-gap: 10px;
-	justify-content: space-between;
-	justify-items: start;
-	grid-template-columns: 1fr 150px 250px;
+	padding: 5px;
+	grid-template: 	"n n"
+					"p s";
+	.name {
+		grid-area: n;
+	}
+	.salon {
+		justify-self: end;
+	}
+	> div {
+		padding: 5px;
+	}
 }
 
 @media screen and (max-width: 1200px) {
     .addPreorderMainFormWrapper {
+
         }
 }
 </style>

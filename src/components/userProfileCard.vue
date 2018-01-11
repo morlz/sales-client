@@ -1,5 +1,5 @@
 <template>
-	<el-card class="card userProfileCard">
+	<el-card class="card userProfileCard" v-if="auth_can(1, 'Manager')">
 		<h2 class="title" slot="header">Основная ифнормация</h2>
 
 		<div class="gridInfo">
@@ -20,15 +20,17 @@
 
 
 		<div class="buttons">
-			<el-button type="primary">Редактировать</el-button>
+			<el-button type="primary" v-if="auth_can(3, 'RoleSetup')">Редактировать</el-button>
 		</div>
 	</el-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import mixins from '@/components/mixins'
 
 export default {
+	mixins: [mixins],
 	props: ["content"],
 	data () {
 		return {}

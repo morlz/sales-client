@@ -1,5 +1,5 @@
 <template>
-<el-card class="preorderInfo">
+<el-card class="preorderInfo" v-if="auth_can(1, 'Preorder')">
 	<h2 slot="header">Общая информация</h2>
 
 	<el-steps :active="+data.status_id" align-center finish-status="success">
@@ -41,11 +41,13 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
+import mixins from '@/components/mixins'
 
 
 
 
 export default {
+	mixins: [mixins],
 	props: ['content'],
 	computed: {
 		...mapGetters([

@@ -17,66 +17,79 @@ const state = {
 		{
 			name: "Мебель",
 			icon: "el-icon-furniture",
+			can: { lvl: 1, action: "Furniture" },
 			childs: [{
 					name: "В салоне",
 					path: "/furniture/salon",
-					icon: "el-icon-salon"
+					icon: "el-icon-salon",
+					can: { lvl: 1, action: "Furniture" }
 				},
 				{
 					name: "На складе",
 					path: "/furniture/storage",
-					icon: "el-icon-storage"
+					icon: "el-icon-storage",
+					can: { lvl: 1, action: "Furniture" }
 				},
 				{
 					name: "Дисконт",
 					path: "/furniture/discount",
-					icon: "el-icon-discount"
+					icon: "el-icon-discount",
+					can: { lvl: 1, action: "Furniture" }
 				}
 			]
 		},
 		{
 			name: 'Документы',
 			icon: "el-icon-docs",
+			can: { lvl: 1, action: "Docs" },
 			childs: [{
 					name: "Заказы",
 					path: "/docs/invoices",
-					icon: "el-icon-order"
+					icon: "el-icon-order",
+					can: { lvl: 1, action: "Invoice" }
 				},
 				{
 					name: "Перемещения",
 					path: "/docs/movements",
-					icon: "el-icon-movement"
+					icon: "el-icon-movement",
+					can: { lvl: 1, action: "Invoice" }
 				},
 				{
 					name: "Доставки",
 					path: "/docs/shipments",
-					icon: "el-icon-shipments"
+					icon: "el-icon-shipments",
+					can: { lvl: 1, action: "Shipment" }
 				},
 			]
 		},
 		{
 			name: 'Наработки',
 			icon: "el-icon-code",
+			can: { lvl: 1, action: "Developments" },
 			childs: [{
 					name: "Клиенты",
 					path: "/preorder/clients",
-					icon: "el-icon-clients"
+					icon: "el-icon-clients",
+					can: { lvl: 1, action: "Client" }
 				},
 				{
 					name: "Предзаказы",
 					path: "/preorder/preorders",
-					icon: "el-icon-preorder"
+					icon: "el-icon-preorder",
+					can: { lvl: 1, action: "Preorder" }
 				},
 				{
 					name: "Задачи",
 					path: "/preorder/tasks",
-					icon: "el-icon-list"
+					icon: "el-icon-list",
+					can: { lvl: 1, action: "Task" }
 				}
 			]
 		},
 		{
 			name: "Отчёты",
 			icon: "el-icon-report",
+			can: { lvl: 1, action: "Report" },
 			childs: [{
 					name: "Итоги продаж",
 					path: "/reports/sales",
@@ -87,16 +100,19 @@ const state = {
 		{
 			name: "Администрирование",
 			icon: "el-icon-admin",
+			can: { lvl: 1, action: "Admin" },
 			childs: [
 				{
 					name: "Персонал",
 					path: "/admin/personal",
-					icon: "el-icon-personal"
+					icon: "el-icon-personal",
+					can: { lvl: 1, action: "Manager" }
 				},
 				{
 					name: "Роли",
 					path: "/admin/roles",
-					icon: "el-icon-roles"
+					icon: "el-icon-roles",
+					can: { lvl: 1, action: "Role" }
 				},
 			]
 		},

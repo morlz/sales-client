@@ -1,5 +1,5 @@
 <template>
-	<el-card class="next card nextTask">
+	<el-card class="next card nextTask" v-if="auth_can(3, 'Task')">
 		<h2 slot="header">Следующая задача</h2>
 
 		<el-form label-width="130px">
@@ -55,6 +55,7 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
+import mixins from '@/components/mixins'
 
 let {
 	taskTypes,
@@ -62,6 +63,7 @@ let {
 
 
 export default {
+	mixins: [mixins],
 	data () {
 		return {
 			taskTypes,

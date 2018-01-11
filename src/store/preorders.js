@@ -124,7 +124,7 @@ const getters = {
 	preorder_loading: ({ loading }) => loading.list,
 	preorder_loadingBottom: ({ loading }) => loading.bottom,
 	preorder_loadingOne: ({ loading }) => loading.one,
-	preorder_acceptedAdd: ({ filters, cached, loading }) => filters.length && filters.phone.length && !loading
+	preorder_acceptedAdd: state => state.filters && state.filters.phone && state.filters.phone.length && !state.loading.list
 }
 
 export default {

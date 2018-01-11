@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper adminRolesWrapper">
+<div class="mainWrapper adminRolesWrapper" v-if="auth_can(1, 'Role')">
 	<el-breadcrumb separator="/" class="bc">
 		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 		<el-breadcrumb-item :to="{ path: '/' }">Администрирование</el-breadcrumb-item>
@@ -7,18 +7,18 @@
 	</el-breadcrumb>
 
 	<div class="saveState">
-		<el-button type="primary" @click="permissions_saveState">Сохранить текущее состояние</el-button>
+		<el-button type="primary" @click="permissions_saveState" v-if="auth_can(3, 'ActionSetup')">Сохранить текущее состояние</el-button>
 	</div>
 
 	<div class="roleBoxWrapper">
 		<div class="roleBox">
-			<div class="roles" v-loading="permissions_loading_roles">
+			<div class="roles" v-loading="permissions_loading_roles" v-if="auth_can(1, 'Role')">
 				<div class="title">
 					Список всех ролей
-					<el-input class="create" placeholder="Имя новой роли" @change="permissions_setAddRole" />
+					<el-input class="create" placeholder="Имя новой роли" @change="permissions_setAddRole" v-if="auth_can(2, 'Role')" />
 				</div>
 				<div class="button">
-					<el-button @click="permissions_createRole">Добавить роль</el-button>
+					<el-button @click="permissions_createRole" v-if="auth_can(2, 'Role')">Добавить роль</el-button>
 				</div>
 				<div class="list">
 					<div class="list__item">
@@ -32,13 +32,13 @@
 				</div>
 			</div>
 
-			<div class="controllers" v-loading="permissions_loading_controllers">
+			<div class="controllers" v-loading="permissions_loading_controllers" v-if="auth_can(1, 'Action')">
 				<div class="title">
 					Список контроллеров
-					<el-input class="create" placeholder="Имя нового контроллера" @change="permissions_setAddController" />
+					<el-input class="create" placeholder="Имя нового контроллера" @change="permissions_setAddController" v-if="auth_can(2, 'Action')" />
 				</div>
 				<div class="button">
-					<el-button @click="permissions_createController">Добавить контроллер</el-button>
+					<el-button @click="permissions_createController" v-if="auth_can(2, 'Action')">Добавить контроллер</el-button>
 				</div>
 				<div class="list">
 					<div class="list__item">
@@ -67,8 +67,10 @@ import {
 
 import permissionRole from '@/components/permissionRole.vue'
 import permissionController from '@/components/permissionController.vue'
+import mixins from '@/components/mixins'
 
 export default {
+	mixins: [mixins],
 	components: {
 		permissionRole,
 		permissionController
@@ -162,7 +164,7 @@ export default {
                     display: grid;
 					grid-gap: 10px;
                     grid-auto-flow: column;
-                    grid-template-columns: 30px 1fr 1fr 105px;
+                    grid-template-columns: 30px 1fr 1fr min-content;
                     align-items: center;
 					justify-items: center;
                     grid-gap: 10px;
@@ -172,6 +174,8 @@ export default {
                         transition: all 0.3s ease-in-out;
                     }
                     .buttons {
+						display: grid;
+						grid-auto-flow: column;
                         justify-self: end;
                     }
                     .slider {

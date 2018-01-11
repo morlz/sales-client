@@ -24,9 +24,15 @@ export default {
 			id = id.preorder_id || id
 
 			router.push({ path: `/preorder/preorders/${id}` })
+		},
+		auth_can(minlvl, action) {
+			return !!this.auth_permisiions.find(perm => perm.name == action && perm.access_level >= minlvl)
 		}
 	},
 	computed: {
+		...mapGetters([
+			'auth_permisiions'
+		]),
 		refInfinite () {
 			return this.$refs.infiniteLoading
 		},
@@ -37,8 +43,10 @@ export default {
 			return this.$route.params.id
 		},
 		afterTableContactButtons () {
-			return [
-				{
+			let rez = []
+
+			if (this.auth_can(3, 'ContactFace'))
+				rez.push({
 					class: {
 						'el-icon-edit' : true
 					},
@@ -47,12 +55,15 @@ export default {
 						this.client_edit_contactSet(row)
 						this.client_visible_editContactFormSet(true)
 					}
-				}
-			]
+				})
+
+			return rez
 		},
 		afterTableTasksButtons () {
-			return [
-				{
+			let rez = []
+
+			if (this.auth_can(3, 'Task'))
+				rez.push({
 					class: {
 						'el-icon-edit' : true
 					},
@@ -61,15 +72,18 @@ export default {
 						this.task_edit_currentSet(row)
 						this.task_edit_visibleSet(true)
 					}
-				},
-				{
+				})
+
+			if (this.auth_can(4, 'Task'))
+				rez.push({
 					name: "Завершить",
 					click: (e, { row }) => {
 						e.stopPropagation()
 						router.push({ path: `/preorder/tasks/${row.id}` })
 					}
-				}
-			]
+				})
+
+			return rez
 		}
 	}
 }

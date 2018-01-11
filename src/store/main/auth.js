@@ -2,8 +2,12 @@ import api from '@/api'
 
 const state = {
 	user: false,
+	permissions: [],
 	token: "",
-	auchChecking: false
+	loading: {
+		auth: false,
+		permissions: false
+	}
 }
 
 const actions = {
@@ -11,27 +15,31 @@ const actions = {
 		let { token } = api.cookie.getAuth()
 		if (token) {
 			commit("updateToken", token)
-			commit("auchCheckingChange", true)
+			commit("auth_loadingSet", true)
 		} else {
 			commit("updateToken", "")
 			return
 		}
 
-		api.auth.getUserData()
+		api.auth
+			.getUserData()
 			.then(res => {
 				if (res && res.data && res.data.token) {
 					commit("updateUserAuth", res.data)
 					commit("updateToken", res.data.token)
+					dispatch("auth_getPermissions")
 				}
-				commit("auchCheckingChange", false)
+				commit("auth_loadingSet", false)
 			})
 	},
 	signIn ({ commit, dispatch }, payload) {
-		api.auth.signIn(payload)
+		api.auth
+			.signIn(payload)
 			.then(({ data }) => {
 				if (data && data.token) {
 					commit("updateUserAuth", data)
 					commit("updateToken", data.token)
+					dispatch("auth_getPermissions")
 				}
 				if (data.error) dispatch('catchErrorNotify', data.error)
 			})
@@ -40,32 +48,44 @@ const actions = {
 
 	},
 	logOut ({ commit, dispatch }) {
-		api.auth.logOut()
+		api.auth
+			.logOut()
 			.then(({ data }) => {
 				console.log(data);
 			})
 		commit("updateUserAuth", false)
+		commit("auth_permissionsSet", [])
 		commit("updateToken", "")
+	},
+	auth_getPermissions ({ commit, dispatch }) {
+		commit("auth_loadingPermissionsSet", true)
+		api.auth
+			.getPermissions()
+			.then(res => {
+				if (!res.data.error) {
+					commit("auth_permissionsSet", res.data)
+					commit("auth_loadingPermissionsSet", false)
+				}
+			})
 	}
 }
 
 const mutations = {
-	updateUserAuth (state, payload) {
-		state.user = payload
-	},
+	updateUserAuth: (state, payload) => state.user = payload,
 	updateToken (state, payload) {
 		state.token = payload
 		api.cookie.setAuth({ token: payload })
 	},
-	auchCheckingChange (state, payload) {
-		state.auchChecking = payload
-	}
+	auth_loadingSet: (state, payload) => state.loading.auth = payload,
+	auth_loadingPermissionsSet: (state, payload) => state.loading.permissions = payload,
+	auth_permissionsSet: (state, payload) => state.permissions = payload,
 }
 
 const getters = {
-	logined: state => !!state.user,
+	auth_permisiions: state => state.permissions,
+	logined: state => !!state.user && !!state.permissions && state.permissions.length,
 	loginedAs: state => state.user,
-	auchChecking: state => state.auchChecking,
+	auchChecking: state => state.loading.auth || state.loading.permissions,
 	currentUserSalon: state => state.user.ID_SALONA,
 }
 

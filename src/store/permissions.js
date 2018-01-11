@@ -39,66 +39,90 @@ const state = {
 }
 
 const actions = {
-	permissions_updateRole({ commit, disaptch }, payload) {
+	permissions_updateRole({ commit, dispatch }, payload) {
 		api.permissions
 			.updateRole(payload)
 			.then(res => {
-				commit("permissions_updateRole", res.data)
+				if (!res.data.error) {
+					commit("permissions_updateRole", res.data)
+					dispatch("notify", { title: "Успешно", message: "Роль обновлена" })
+				}
 			})
 	},
-	permissions_updateController({ commit, disaptch }, payload) {
+	permissions_updateController({ commit, dispatch }, payload) {
 		api.permissions
 			.updateController(payload)
 			.then(res => {
-				commit("permissions_updateController", res.data)
+				if (!res.data.error) {
+					commit("permissions_updateController", res.data)
+					dispatch("notify", { title: "Успешно", message: "Контроллер обновлён" })
+				}
 			})
 	},
-	permissions_deleteRole({ commit, disaptch }, payload) {
+	permissions_deleteRole({ commit, dispatch }, payload) {
 		api.permissions
 			.deleteRole(payload)
 			.then(res => {
-				commit("permissions_removeCachedRole", res.data.id)
+				if (!res.data.error) {
+					commit("permissions_removeCachedRole", res.data.id)
+					dispatch("notify", { title: "Успешно", message: "Роль удалена" })
+				}
 			})
 	},
-	permissions_deleteController({ commit, disaptch }, payload) {
+	permissions_deleteController({ commit, dispatch }, payload) {
 		api.permissions
 			.deleteController(payload)
 			.then(res => {
-				commit("permissions_removeCachedController", res.data.id)
+				if (!res.data.error) {
+					commit("permissions_removeCachedController", res.data.id)
+					dispatch("notify", { title: "Успешно", message: "Контроллер удалён" })
+				}
 			})
 	},
-	permissions_saveState ({ commit, disaptch, state }) {
+	permissions_saveState ({ commit, dispatch, state }) {
 		commit("permissions_filterRemovedData")
 		api.permissions.saveState({
 			controllers: state.controllersSetup,
 			ranges: state.rangesSetup
 		})
-		.then(res => console.log(res))
+		.then(res => {
+			if (!res.data.error) {
+				dispatch("notify", { title: "Успешно", message: "Текущее состояние сохранено" })
+			}
+		})
 	},
 	permissions_createRole({ commit, dispatch, state }) {
-		if (!state.add.role) dispatch ('notify', {
-			title: "Ошибка добавления роли",
-			message: "Имя новой роли не должно быть пустым"
-		})
+		if (!state.add.role)
+			dispatch ('notify', {
+				title: "Ошибка добавления роли",
+				message: "Имя новой роли не должно быть пустым"
+			})
 
 		if (state.add.role)
 			api.permissions
 				.createRole(state.add.role)
 				.then(({ data }) => {
-					commit("permissions_appendCachedRoles", data)
+					if (!data.error) {
+						commit("permissions_appendCachedRoles", data)
+						dispatch("notify", { title: "Успешно", message: "Новая роль создана" })
+					}
 				})
 	},
 	permissions_createController({ commit, dispatch, state }) {
-		if (!state.add.controller) dispatch ('notify', {
-			title: "Ошибка добавления контролера",
-			message: "Имя нового контроленра не должно быть пустым"
-		})
+		if (!state.add.controller)
+			dispatch ('notify', {
+				title: "Ошибка добавления контролера",
+				message: "Имя нового контроленра не должно быть пустым"
+			})
 
 		if (state.add.controller)
 			api.permissions
 				.createController(state.add.controller)
 				.then(({ data }) => {
-					commit("permissions_appendCachedController", data)
+					if (!data.error) {
+						commit("permissions_appendCachedController", data)
+						dispatch("notify", { title: "Успешно", message: "Новый контроллер создан" })
+					}
 				})
 	},
 	permissions_roleLevelChange({ commit, dispatch }, { access_level, item }) {
@@ -210,6 +234,7 @@ const mutations = {
 const getters = {
 	permissions_selectedType: state => state.selected.type,
 	permissions_managers: state => state.managers,
+	personal_roles: state => state.roles,
 	permissions_roles: state => state.roles.map(el => {
 		el.selected = state.selected.type == "roles" && el.id == state.selected.id
 		el.levelVisible = state.selected.type == "controllers"

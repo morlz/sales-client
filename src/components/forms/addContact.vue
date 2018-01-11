@@ -1,5 +1,5 @@
 <template>
-<div class="addContactFormWrapper">
+<div class="addContactFormWrapper" v-if="auth_can(2, 'ContactFace')">
 	<el-dialog  :visible.sync="formOpen" :lock-scroll="false">
 		<h2 slot="title">Добавить контакт</h2>
 
@@ -38,12 +38,14 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import rules from '@/static/formRules'
+import mixins from '@/components/mixins'
 
 let {
 	contacts
 } = rules
 
 export default {
+	mixins: [mixins],
 	data () {
 		return {
 			formOpen: false,

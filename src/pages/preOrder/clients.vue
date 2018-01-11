@@ -1,5 +1,5 @@
 <template>
-	<div class="mainWrapper">
+	<div class="mainWrapper" v-if="auth_can(1, 'Client')">
 		<div class="oneClientWrapper" v-if="isOne">
 			<el-breadcrumb separator="/" class="bc">
 				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
@@ -7,10 +7,10 @@
 				<el-breadcrumb-item>{{ client_currentFIO }}</el-breadcrumb-item>
 			</el-breadcrumb>
 			<div class="cards" v-loading="client_loadingOne">
-				<client-info :content="client_current"/>
-				<contact-faces :content="client_current.contactfaces"/>
-				<tasks :content="client_current.tasks"/>
-				<preorders :content="client_current.preorders"/>
+				<client-info :content="client_current" v-if="auth_can(1, 'Client')"/>
+				<contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/>
+				<tasks :content="client_current.tasks" v-if="auth_can(1, 'Task')"/>
+				<preorders :content="client_current.preorders" v-if="auth_can(1, 'Preorder')"/>
 
 				<el-card class="orders">
 					<div slot="header">

@@ -42,8 +42,8 @@ const actions = {
 const mutations = {
 	updateCachedSalons(store, payload){
 		payload.map(el => {
-			let id = el.id || el
-			store.cached = store.cached.filter(el2 => el2.id != id)
+			let id = el.ID_SALONA || el
+			store.cached = store.cached.filter(el2 => el2.ID_SALONA != id)
 			store.cached.push(el)
 		})
 	},

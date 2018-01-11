@@ -7,12 +7,7 @@ let dataObj = {
 		{ field: "manager", label: "Ответсвенный", type: "string" },
 		{ field: "tasktype", label: "Тип", type: "string" },
 		{ field: "end_date", label: "Выполнена", type: "string" },
-		//{ field: "endManager", label: "Завершил", type: "string" },
-		//{ field: "endDate", label: "Дата завершения", type: "string" },
-		//{ field: "summ", label: "Сумма", type: "number" },
-		//{ field: "created_at", label: "Дата создания", type: "string" },
-		//{ field: "creatorManager", label: "Создатель", type: "string" },
-		{ field: "salon", label: "Салон", type: "string" },
+		{ field: "SALON", label: "Салон", type: "string" },
 	],
 
 	recordsManyFieldDescription: [

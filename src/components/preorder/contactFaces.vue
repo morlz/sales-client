@@ -1,5 +1,5 @@
 <template>
-	<el-card class="contacts">
+	<el-card class="contacts" v-if="auth_can(1, 'ContactFace')">
 		<div slot="header">
 			<h2>Контакты</h2>
 		</div>
@@ -7,9 +7,9 @@
 		<tabless :data="data" :fieldDescription="clientContactsFieldDescription" :buttons="afterTableContactButtons" :minify="true" />
 
 		<div class="buttons">
-			<el-button type="primary" @click="client_visible_addContactFormSet(true)" v-if="allowCreate">Добавить контакт</el-button>
-			<add-contact-form/>
-			<edit-contact-form/>
+			<el-button type="primary" @click="client_visible_addContactFormSet(true)" v-if="allowCreate && auth_can(2, 'ContactFace')">Добавить контакт</el-button>
+			<add-contact-form v-if="allowCreate && auth_can(2, 'ContactFace')"/>
+			<edit-contact-form v-if="auth_can(2, 'ContactFace')"/>
 		</div>
 	</el-card>
 </template>

@@ -1,5 +1,5 @@
 <template>
-<div class="editTaskFormWrapper">
+<div class="editTaskFormWrapper" v-if="auth_can(3, 'Task')">
 	<el-dialog  :visible.sync="formOpen" :lock-scroll="false">
 		<h2 slot="title">Изменить задачу</h2>
 
@@ -9,7 +9,7 @@
 			</el-form-item>
 
 			<el-form-item label="Тип задачи">
-				{{ editTaskForm.type }}
+				{{ editTaskForm.type && editTaskForm.type.title ? editTaskForm.type.title : editTaskForm.type }}
 			</el-form-item>
 
 			<el-form-item label="Ответственный">
@@ -35,8 +35,10 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import mixins from '@/components/mixins'
 
 export default {
+	mixins: [mixins],
 	data () {
 		return {
 			formOpen: false,
@@ -53,7 +55,7 @@ export default {
 		task_edit_current (n) {
 			if (!n) return
 			this.getManagersByIds([n.manager_responsible_id])
-			this.editTaskForm = Object.assign(this.editTaskForm, n)
+			this.editTaskForm = Object.assign({}, this.editTaskForm, n)
 		}
 	},
 	methods: {
@@ -79,10 +81,8 @@ export default {
 			'cachedManagers'
 		]),
 		managerResponsible() {
-			if (!this.cachedManagers || this.editTaskForm.manager_responsible_id == undefined) return '...'
-			let manager = this.cachedManagers.find(el => el.ID_M == this.editTaskForm.manager_responsible_id)
-			if (!manager) return '...'
-			return manager.FIO
+			return this.editTaskForm && this.editTaskForm.managerresponsible ?
+				`${this.editTaskForm.managerresponsible.FIO} ${this.editTaskForm.managerresponsible.IMY} ${this.editTaskForm.managerresponsible.OTCH}` : "..."
 		}
 	}
 }

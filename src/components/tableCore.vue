@@ -33,28 +33,6 @@
 
 <script>
 /*
-
-is="transition-group" name="staggered-fade" @before-enter="beforeEnter" @enter="enter" @leave="leave"
-
-
-<vue-good-table :columns="columns" :rows="rows" :sortable="true" :lineNumbers="true" :onClick="clickHandler" ref="goodTable">
-	<div slot="emptystate">
-		Список пуст.
-	</div>
-	<template slot="table-row-after" slot-scope="props" v-if="buttonRedused.length">
-		<td class="buttons">
-			<el-button size="small" @click="button.click($event, props)" v-for="button, index in buttonRedused" :key="index" :class="button.class">{{ button.name }}</el-button>
-		</td>
-	</template>
-</vue-good-table>
-
-
-
-
-
-
-
-
  *	data:Array of object
  *		anyField => string
  *

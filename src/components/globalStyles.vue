@@ -104,6 +104,35 @@ body {
 	        transition: all 0.3s ease-in-out;
 	    }
 	}
+
+	&-transfer {
+		display: grid;
+		grid-template-columns: 1fr 56px 1fr;
+		justify-items: center;
+		grid-gap: 10px;
+		&__buttons {
+			padding: 0 10px;
+			width: 36px;
+			display: grid;
+			align-items: center;
+			align-content: center;
+			grid-gap: 10px;
+			button {
+				margin: 0;
+			}
+		}
+		&-panel {
+			height: 100%;
+			display: grid;
+			grid-auto-flow: row;
+			grid-template-rows: min-content 1fr;
+			width: 100%;
+			min-width: 180px;
+			&__body, &__list {
+				height: 100%;
+			}
+		}
+	}
 }
 
 .mainWrapper {

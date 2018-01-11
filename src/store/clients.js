@@ -109,10 +109,26 @@ const actions = {
 				console.log(data);
 			})
 	},
+	client_searchByPhone({ commit, dispatch }, payload){
+		if (!payload) {
+			commit("client_byPhoneSet", [])
+			return
+		}
+		commit("client_loadingByPhoneSet", true)
+		api.clients
+			.searchByPhone(payload)
+			.then(({ data }) => {
+				if (!data.error) {
+					commit("client_byPhoneSet", data)
+					commit("client_loadingByPhoneSet", false)
+				}
+			})
+	},
 }
 
 const mutations = {
 	client_cacheSet: (state, payload) => state.cached.list = payload,
+	client_byPhoneSet: (state, payload) => state.cached.byPhone = payload,
 	client_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	client_filtersSet: (store, payload) => store.filters = payload,
 	client_sortSet: (store, payload) => store.sort = payload,
@@ -123,6 +139,7 @@ const mutations = {
 	client_loadingSet: (store, payload) => store.loading.list = payload,
 	client_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
 	client_loadingOneSet: (store, payload) => store.loading.one = payload,
+	client_loadingByPhoneSet: (store, payload) => store.loading.byPhone = payload,
 	client_visible_addContactFormSet: (store, payload) => store.visible.addContactForm = payload,
 	client_visible_editContactFormSet: (store, payload) => store.visible.editContactForm = payload,
 	client_edit_contactSet: (store, payload) => store.edit.contact = payload,
@@ -133,6 +150,7 @@ const getters = {
 	client_current: ({ cached }) => cached.current,
 	client_currentFIO: ({ cached }) => `${cached.current.lastname} ${cached.current.name}  ${cached.current.patronymic}`,
 	client_cached: ({ cached }) => cached.list,
+	client_byPhone: ({ cached }) => cached.byPhone,
 	client_loading: ({ loading }) => loading.list,
 	client_loadingBottom: ({ loading }) => loading.bottom,
 	client_loadingOne: ({ loading }) => loading.one,

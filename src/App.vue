@@ -39,8 +39,10 @@ import mainHeader from '@/components/header.vue'
 import mainAuth from '@/pages/main/auth.vue'
 import icons from '@/components/icons.vue'
 import globalStyles from '@/components/globalStyles.vue'
+import mixins from '@/components/mixins'
 
 export default {
+	mixins: [mixins],
 	name: 'app',
 	components: {
 		mainMenu,
@@ -48,6 +50,13 @@ export default {
 		mainAuth,
 		icons,
 		globalStyles
+	},
+	watch: {
+		logined (n) {
+			if (!n) return
+			if (this.auth_can(1, "TaskType")) this.task_getTypes()
+			if (this.auth_can(1, "PreorderStatus")) this.preorder_getStatuses()
+		}
 	},
 	computed: mapGetters([
 		'menuOpen',
@@ -63,8 +72,6 @@ export default {
 	},
 	mounted() {
 		this.event_createHandlers()
-		this.task_getTypes()
-		this.preorder_getStatuses()
 		this.authInit()
 	}
 }

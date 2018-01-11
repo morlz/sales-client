@@ -19,4 +19,22 @@ export default {
 			}
 		})
 	},
+	async getOneRolesSetup (id) {
+		return await core.invoke({
+			method: "get",
+			type: "rolesetup",
+			data: {
+				id
+			}
+		})
+	},
+	async saveRoleSetupState (data) {
+		data = core.prepareArrays(data)
+
+		return await core.invoke({
+			method: "put",
+			type: "rolesetup",
+			data
+		})
+	},
 }

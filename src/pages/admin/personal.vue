@@ -1,6 +1,6 @@
 <template>
-<div class="mainWrapper personalWrapper">
-	<div class="onePersonalWrapper" v-if="isOne">
+<div class="mainWrapper personalWrapper" v-if="auth_can(1, 'Manager')">
+	<div class="onePersonalWrapper" v-if="isOne" v-loading="personal_loadingOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/' }">Администрирование</el-breadcrumb-item>
@@ -9,9 +9,9 @@
 		</el-breadcrumb>
 
 		<div class="cards">
-			<user-profile-card :content="personal_current" />
+			<user-profile-card :content="personal_current"/>
 
-			<user-roles-card />
+			<user-roles-card v-if="auth_can(1, 'RoleSetup')" />
 		</div>
 	</div>
 
@@ -108,7 +108,8 @@ export default {
 			"personal_loadingBottom",
 			"personal_loading",
 			"personal_cached",
-			'personal_current'
+			'personal_current',
+			'personal_loadingOne'
 		])
 	},
 	mounted() {

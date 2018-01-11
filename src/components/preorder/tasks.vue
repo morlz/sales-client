@@ -5,7 +5,7 @@
 		</div>
 
 		<tabless :data="data" :fieldDescription="clientTasksFieldDescription" :onClick="goToPreorder" :buttons="afterTableTasksButtons" :minify="true"/>
-		<edit-task-form/>
+		<edit-task-form v-if="auth_can(3, 'Task')"/>
 	</el-card>
 </template>
 
@@ -46,8 +46,7 @@ export default {
 		data () {
 			return this.content ? this.content.map(task => {
 				task.type = this.task_types[task.type_id] ? this.task_types[task.type_id].title : '...'
-				let salon = this.cachedSalons.find(el => task.salon_id == el.ID_SALONA)
-				task.salon =  salon ? salon.NAME : '...'
+				task.salon = task.salon.NAME
 				return task
 			}) : []
 		},

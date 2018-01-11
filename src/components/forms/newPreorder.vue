@@ -1,5 +1,5 @@
 <template>
-<div class="addPreorderFormWrapper">
+<div class="addPreorderFormWrapper" v-if="auth_can(2, 'Preorder')">
 	<new-preorder-main-form/>
 	<client-select-form/>
 	<next-task-form>

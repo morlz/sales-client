@@ -12,18 +12,31 @@
 		<el-menu :default-active="dafaultActive" class="mainMenu" @select="menuClickHandler">
 			<div class="moileBackButton el-icon-back" @click="closeMenu" />
 
-			<el-menu-item v-for="item in menuItemsWithoutChilds(menuItemsWithIndexes)" :index="item.path || item.index" :key="item.index" :class="{active: dafaultActive == item.path}">
+			<el-menu-item
+				v-for="item in menuItemsWithoutChilds(menuItemsWithIndexes)"
+				:index="item.path || item.index"
+				:key="item.index"
+				:class="{active: dafaultActive == item.path}"
+				v-if="!item.can || auth_can(item.can.lvl, item.can.action)">
 				<i :class="item.icon || 'el-icon-location'" />
 				<div class="name">{{item.name}}</div>
 			</el-menu-item>
 
-			<el-submenu v-for="item in menuItemsWithChilds(menuItemsWithIndexes)" :index="item.index" :key="item.index">
+			<el-submenu v-for="item in menuItemsWithChilds(menuItemsWithIndexes)"
+			:index="item.index"
+			:key="item.index"
+			v-if="!item.can || auth_can(item.can.lvl, item.can.action)">
 				<template slot="title">
 					<i :class="item.icon || 'el-icon-location'" />
 					<div class="name"> {{ item.name }} </div>
 				</template>
 
-				<el-menu-item v-for="cItem in menuItemsWithoutChilds(item.childs)" :index="cItem.path || cItem.index" :key="cItem.index" :class="{active: dafaultActive == cItem.path}">
+				<el-menu-item
+				v-for="cItem in menuItemsWithoutChilds(item.childs)"
+				:index="cItem.path || cItem.index"
+				:key="cItem.index"
+				:class="{active: dafaultActive == cItem.path}"
+				v-if="!cItem.can || auth_can(cItem.can.lvl, cItem.can.action)">
 					<i :class="cItem.icon || 'el-icon-location'" />
 					<div class="name">{{cItem.name}}</div>
 				</el-menu-item>
@@ -38,9 +51,10 @@
 
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-
+import mixins from '@/components/mixins'
 
 export default {
+	mixins: [mixins],
 	methods: {
 		...mapMutations(['closeMenu']),
 		prepareMenuEl(item, index, prevIndex = "") {

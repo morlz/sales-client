@@ -7,12 +7,12 @@
 		</div>
 		<el-input v-if="edit" v-model="editFields.name"/>
 		<div class="buttons" v-if="!edit">
-			<el-button size="small" icon="el-icon-edit" @click="edit = true"/>
-			<el-button size="small" icon="el-icon-delete" @click="permissions_deleteController(item.id)" />
+			<el-button size="small" icon="el-icon-edit" @click="edit = true" v-if="auth_can(3, 'Action')" />
+			<el-button size="small" icon="el-icon-delete" @click="permissions_deleteController(item.id)" v-if="auth_can(4, 'Action')" />
 		</div>
 
 		<div class="buttons" v-if="edit">
-			<el-button size="small" icon="el-icon-success" @click="update"/>
+			<el-button size="small" icon="el-icon-success" @click="update" v-if="auth_can(3, 'Action')"/>
 			<el-button size="small" icon="el-icon-close" @click="edit = false"/>
 		</div>
 	</div>
@@ -21,10 +21,12 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
+import mixins from '@/components/mixins'
 
 let { lvls } = fieldDescription
 
 export default {
+	mixins: [mixins],
 	props: ["content"],
 	data () {
 		return {

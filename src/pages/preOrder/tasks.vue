@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper">
+<div class="mainWrapper" v-if="auth_can(1, 'Task')">
 	<div class="oneTaskWrapper" v-if="isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
@@ -7,7 +7,7 @@
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Завершение задачи №{{ task_current.id }}</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<end-task-form v-loading="task_loadingOne" />
+		<end-task-form v-loading="task_loadingOne" v-if="auth_can(3, 'Task')" />
 	</div>
 
 	<div class="manyTasksWrapper" v-if="!isOne">
@@ -19,7 +19,8 @@
 		<tabless
 			:data="data"
 			:fieldDescription="tasksManyFieldDescription"
-			:key="1" :buttons="afterTableTasksButtons"
+			:key="1"
+			:buttons="afterTableTasksButtons"
 			@onClick="goToPreorder"
 			ref="table"
 			@filter="localTaskFilterChange"
@@ -32,7 +33,7 @@
 			<div class="spinner" slot="spinner" v-loading="task_loadingBottom" />
 		</infinite-loading>
 
-		<edit-task-form/>
+		<edit-task-form v-if="auth_can(3, 'Task')"/>
 	</div>
 </div>
 </template>
@@ -81,7 +82,7 @@ export default {
 	},
 	watch: {
 		oneId() {
-			if (this.oneId !== undefined) 
+			if (this.oneId !== undefined)
 				this.task_getOne(this.oneId)
 
 		}

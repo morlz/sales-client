@@ -1,5 +1,5 @@
 <template>
-<div class="endTaskFormWrapper">
+<div class="endTaskFormWrapper" v-if="auth_can(3, 'Task')">
 	<div class="cards">
 		<prev-task-form />
 		<next-task-form>

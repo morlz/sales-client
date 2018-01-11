@@ -1,15 +1,15 @@
 <template>
-	<el-card class="preorders">
+	<el-card class="preorders" v-if="auth_can(1, 'Preorder')">
 		<div slot="header">
 			<h2>Предзаказы</h2>
 		</div>
 		<el-tabs>
 			<el-tab-pane label="Предстоящие">
-				<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" :minify="true" />
+				<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
 			</el-tab-pane>
 
 			<el-tab-pane label="Выполеные">
-				<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/records')" :minify="true" />
+				<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
 			</el-tab-pane>
 		</el-tabs>
 	</el-card>
