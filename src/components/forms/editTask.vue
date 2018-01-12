@@ -5,7 +5,7 @@
 
 		<el-form label-width="130px">
 			<el-form-item label="Дата контакта">
-				<el-date-picker type="date" v-model="editTaskForm.date" placeholder="Дата контакта" :editable="false" />
+				{{ editTaskForm.date }}
 			</el-form-item>
 
 			<el-form-item label="Тип задачи">
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+//<el-date-picker type="date" v-model="editTaskForm.date" placeholder="Дата контакта" :editable="false" />
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
 
@@ -61,13 +62,13 @@ export default {
 	methods: {
 		...mapActions([
 			'getManagersByIds',
-			'updateTask'
+			'task_update'
 		]),
 		canselEdit () {
 			this.task_edit_visibleSet(false)
 		},
 		edit () {
-			this.updateTask(this.editTaskForm)
+			this.task_update(this.editTaskForm)
 			this.task_edit_visibleSet(false)
 		},
 		...mapMutations([

@@ -1,8 +1,12 @@
 <template>
 	<div></div>
 </template>
-<script>export default {}</script>
+<script>
+import 'element-ui/lib/theme-chalk/index.css'
+export default {}
+</script>
 <style lang="less">
+
 @import url("../lib/FontAwesome/less/font-awesome.less");
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
@@ -32,6 +36,9 @@ body {
     margin: 0;
     height: 100%;
     color: #5a5e66;
+	font-family: 'Roboto', serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .fade {
@@ -103,35 +110,6 @@ body {
 	    span {
 	        transition: all 0.3s ease-in-out;
 	    }
-	}
-
-	&-transfer {
-		display: grid;
-		grid-template-columns: 1fr 56px 1fr;
-		justify-items: center;
-		grid-gap: 10px;
-		&__buttons {
-			padding: 0 10px;
-			width: 36px;
-			display: grid;
-			align-items: center;
-			align-content: center;
-			grid-gap: 10px;
-			button {
-				margin: 0;
-			}
-		}
-		&-panel {
-			height: 100%;
-			display: grid;
-			grid-auto-flow: row;
-			grid-template-rows: min-content 1fr;
-			width: 100%;
-			min-width: 180px;
-			&__body, &__list {
-				height: 100%;
-			}
-		}
 	}
 }
 

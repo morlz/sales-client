@@ -78,8 +78,8 @@ export default {
 			this.$refs.addContactForm.validate(valid => {
 				if (valid) {
 					this.client_addContact(Object.assign({
-						client_id: this.currentRecord.client_id,
-						preorder_id: this.currentRecord.id
+						client_id: this.preorder_current.client_id,
+						preorder_id: this.preorder_current.id
 					}, this.addContactForm))
 					this.client_visible_addContactFormSet(false)
 				}
@@ -95,7 +95,7 @@ export default {
 	computed: {
 		...mapGetters([
 			'client_visible_addContactForm',
-			'currentRecord'
+			'preorder_current'
 		])
 	}
 }

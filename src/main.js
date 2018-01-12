@@ -14,12 +14,6 @@ import { sync } from 'vuex-router-sync'
 
 const unsync = sync(store, router)
 
-
-// eslint-disable-next-line
-
-import 'element-ui/lib/theme-chalk/index.css'
-
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

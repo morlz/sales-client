@@ -14,7 +14,12 @@ const actions = {
 			title: "Код ошибки: " + payload.status,
 			message: payload.message
 		})
-	}
+	},
+	handleFormErrors({ commit, dispatch }, payload) {
+		for (var prop in payload)
+			if (payload.hasOwnProperty(prop))
+				dispatch('notify', { title: "Ошибка", message: payload[prop][0] })
+	},
 }
 
 const mutations = {

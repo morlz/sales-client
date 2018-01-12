@@ -46,7 +46,7 @@ export default {
 		data () {
 			return this.content ? this.content.map(task => {
 				task.type = this.task_types[task.type_id] ? this.task_types[task.type_id].title : '...'
-				task.salon = task.salon.NAME
+				task.salon = task.salon.NAME ? task.salon.NAME : task.salon
 				return task
 			}) : []
 		},

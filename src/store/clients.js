@@ -99,14 +99,21 @@ const actions = {
 		api.clients
 			.addContact(payload)
 			.then(({ data }) => {
-				console.log(data);
+				if (data.error) return
+				if (data.errors) dispatch('handleFormErrors', data.errors)
+
+				commit('preorder_currentContctAdd', data)
 			})
 	},
 	client_updateContact({ commit, dispatch }, payload){
 		api.clients
 			.editContact(payload)
 			.then(({ data }) => {
-				console.log(data);
+				if (data.error) return
+				if (data.errors) dispatch('handleFormErrors', data.errors)
+
+				commit('client_currentContctUpdate', data)
+				commit('preorder_currentContctUpdate', data)
 			})
 	},
 	client_searchByPhone({ commit, dispatch }, payload){
@@ -135,6 +142,7 @@ const mutations = {
 	client_lastOffsetSet: (store, payload) => store.offset.last = payload,
 	client_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
 	client_currentSet: (store, payload) => store.cached.current = payload,
+	client_currentContctUpdate: (store, payload) => api.core.assignItem(store.cached.current.contactfaces, payload),
 	client_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
 	client_loadingSet: (store, payload) => store.loading.list = payload,
 	client_loadingBottomSet: (store, payload) => store.loading.bottom = payload,

@@ -101,11 +101,25 @@ const actions = {
 				commit('task_loadingTypesSet', false)
 			})
 	},
+	task_update({ commit, dispatch }, payload){
+		api.tasks
+			.update(payload)
+			.then(({ data }) => {
+				if (data.error) return
+				commit('task_cacheUpdate', data)
+				commit('preorder_currentTaskUpdate', data)
+			})
+	},
 }
 
 const mutations = {
 	task_cacheSet: (state, payload) => state.cached.list = payload,
 	task_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	task_cacheUpdate: (state, payload) => {
+		let task = state.cached.list.find(el => el.id == payload.id)
+		if (!task) return
+		for (var prop in payload) if (payload.hasOwnProperty(prop)) task[prop] = payload[prop]
+	},
 	task_filtersSet: (store, payload) => store.filters = payload,
 	task_sortSet: (store, payload) => store.sort = payload,
 	task_lastOffsetSet: (store, payload) => store.offset.last = payload,

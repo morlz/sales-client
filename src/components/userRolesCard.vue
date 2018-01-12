@@ -61,7 +61,36 @@ export default {
 <style lang="less">
 	.userRoles {
 		.el {
-
+			&-transfer {
+				display: grid;
+				grid-template-columns: 1fr 56px 1fr;
+				justify-items: stretch;
+				grid-gap: 10px;
+				width: 100%;
+				&__buttons {
+					padding: 0 10px;
+					width: 36px;
+					display: grid;
+					align-items: center;
+					align-content: center;
+					grid-gap: 10px;
+					button {
+						margin: 0;
+					}
+				}
+				&-panel {
+					height: 100%;
+					display: grid;
+					grid-auto-flow: row;
+					grid-template-rows: ~"min-content" 1fr;
+					width: auto;
+					//min-width: 100px;
+					overflow-x: hidden;
+					&__body, &__list {
+						height: 100%;
+					}
+				}
+			}
 		}
 	}
 </style>

@@ -79,6 +79,13 @@ class Core extends EventEmitter {
 		}
 		return params
 	}
+
+	assignItem (path, payload, field = "id") {
+		if (!path) return
+		let data = path.find(el => el[field] == payload[field])
+		if (!data) return
+		for (var prop in payload) if (payload.hasOwnProperty(prop)) data[prop] = payload[prop]
+	}
 }
 
 export default new Core()
