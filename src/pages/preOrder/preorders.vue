@@ -15,9 +15,7 @@
 			<el-card class="files">
 				<h2 slot="header">Прикреплённые файлы</h2>
 
-				<el-upload
-					action=""
-				>
+				<el-upload action="">
 					<el-button type="primary">Загрузить файл</el-button>
 				</el-upload>
 			</el-card>
@@ -34,11 +32,12 @@
 			<el-tab-pane label="Все предзаказы" key="1">
 				<tabless
 					key="preorders"
+					ref="table"
 					:data="data"
 					:fieldDescription="recordsManyFieldDescription"
 					:key="1"
+					:filters="preorder_filters"
 					@onClick="routerGoId"
-					ref="table"
 					@filter="localRecordFilterChange"
 					@sortChange="localRecordSortChange"
 				/>
@@ -134,7 +133,8 @@ export default {
 			'preorder_current',
 			'preorder_loadingBottom',
 			'preorder_acceptedAdd',
-			'preorder_loadingOne'
+			'preorder_loadingOne',
+			'preorder_filters'
 		]),
 		data() {
 			return this.preorder_cached

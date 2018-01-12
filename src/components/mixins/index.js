@@ -27,6 +27,9 @@ export default {
 		},
 		auth_can(minlvl, action) {
 			return !!this.auth_permisiions.find(perm => perm.name == action && perm.access_level >= minlvl)
+		},
+		task_buttonCondition (row) {
+			return !row.end_date
 		}
 	},
 	computed: {

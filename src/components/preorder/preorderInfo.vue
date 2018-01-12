@@ -15,8 +15,6 @@
 		<div>{{ data.created_at }}</div>
 		<div>Клиент</div>
 		<div>{{ data.contactFaces ? data.contactFaces.find(el => el.regard == "Основной").fio : '...' }}</div>
-		<div>Адрес</div>
-		<div>{{ data.contactFaces ? data.contactFaces.find(el => el.regard == "Основной").address : '...' }}</div>
 		<div>Рекл. источник</div>
 		<div>{{ data.adsource ? data.adsource.NAME : '...' }}</div>
 		<div>Вероятность</div>
@@ -31,6 +29,10 @@
 		<div>{{ data.calc_summ }}</div>
 		<div class="lc">Примечание</div>
 		<div class="lc">{{ data.description }}</div>
+	</div>
+
+	<div class="buttons">
+		<el-button type="primary" icon="el-icon-edit">Редактировать</el-button>
 	</div>
 </el-card>
 </template>

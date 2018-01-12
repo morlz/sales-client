@@ -72,6 +72,7 @@
 			:data="storage_cached"
 			:fieldDescription="storageFieldDescription"
 			ref="table"
+			:filters="storage_filters"
 			@filter="localFurnitureFilterChange"
 			@sortChange="localFurnitureSortChange"
 			@onClick="routerGoId"
@@ -147,6 +148,7 @@ export default {
 			'storage_loading',
 			'storage_cached',
 			'storage_current',
+			'storage_filters',
 			'furniture_models',
 		]),
 		data () {

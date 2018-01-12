@@ -91,6 +91,7 @@
 			key="salon"
 			:data="furniture_cached"
 			:fieldDescription="furnitureSalonFieldDescription"
+			:filters="furniture_filters"
 			ref="table"
 			@filter="localFurnitureFilterChange"
 			@sortChange="localFurnitureSortChange"
@@ -178,6 +179,7 @@ export default {
 			'furniture_loading',
 			'furniture_cached',
 			'furniture_current',
+			'furniture_filters',
 			'furniture_models',
 		]),
 		data () {

@@ -27,6 +27,7 @@
 			key="personal"
 			:data="personal_cached"
 			:fieldDescription="personalFieldDescription"
+			:filters="personal_filters"
 			ref="table"
 			@filter="local_personal_filtersChange"
 			@sortChange="local_personal_sortChange"
@@ -109,7 +110,8 @@ export default {
 			"personal_loading",
 			"personal_cached",
 			'personal_current',
-			'personal_loadingOne'
+			'personal_loadingOne',
+			'personal_filters'
 		])
 	},
 	mounted() {

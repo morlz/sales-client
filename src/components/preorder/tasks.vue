@@ -4,7 +4,13 @@
 			<h2>Задачи</h2>
 		</div>
 
-		<tabless :data="data" :fieldDescription="clientTasksFieldDescription" :onClick="goToPreorder" :buttons="afterTableTasksButtons" :minify="true"/>
+		<tabless
+			:data="data"
+			:fieldDescription="clientTasksFieldDescription"
+			:onClick="goToPreorder"
+			:buttons="afterTableTasksButtons"
+			:buttonsCondition="task_buttonCondition"
+			:minify="true"/>
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
 	</el-card>
 </template>
@@ -45,7 +51,8 @@ export default {
 		]),
 		data () {
 			return this.content ? this.content.map(task => {
-				task.type = this.task_types[task.type_id] ? this.task_types[task.type_id].title : '...'
+				let type = this.task_types.find(el => el.id == task.type_id)
+				task.type = type ? type.title : '...'
 				task.salon = task.salon.NAME ? task.salon.NAME : task.salon
 				return task
 			}) : []

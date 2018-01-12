@@ -17,12 +17,14 @@
 		</el-breadcrumb>
 
 		<tabless
+			key="tasks"
+			ref="table"
 			:data="data"
 			:fieldDescription="tasksManyFieldDescription"
-			:key="1"
 			:buttons="afterTableTasksButtons"
+			:filters="task_filters"
+			:buttonsCondition="task_buttonCondition"
 			@onClick="goToPreorder"
-			ref="table"
 			@filter="localTaskFilterChange"
 			@sortChange="localTaskSortChange"
 		/>
@@ -48,7 +50,6 @@ import fieldDescription from '@/static/fieldDescription'
 let {
 	tasksManyFieldDescription,
 	adSources,
-	task_types: addTaskTypes,
 	clientContactsFieldDescription,
 	clientTasksFieldDescription
 } = fieldDescription
@@ -94,7 +95,8 @@ export default {
 			'task_types',
 			'task_loading',
 			'task_loadingBottom',
-			'task_loadingOne'
+			'task_loadingOne',
+			'task_filters'
 		]),
 		task_currentCLientMainContact() {
 			return this.task_current.contactFaces ? this.task_current.contactFaces.find(el => el.regard == "Основной") : {}

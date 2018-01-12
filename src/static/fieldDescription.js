@@ -28,13 +28,6 @@ let dataObj = {
 		{ value: "4", label: "Интернет" },
 	],
 
-	taskTypes: [
-		{ value: "1", label: "Контакт" },
-		{ value: "2", label: "Заказ" },
-		{ value: "3", label: "Отказ" },
-		{ value: "4", label: "Напоминание" },
-	],
-
 	clientManyFieldDescription: [
 		//{ field: "id", label: "№", type: "number" },
 		{ field: "fio", label: "ФИО", type: "string" },

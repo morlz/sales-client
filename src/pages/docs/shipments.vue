@@ -65,6 +65,7 @@
 			key="shipments"
 			:data="shipment_cached"
 			:fieldDescription="shipmentsFieldDescription"
+			:filters="shipment_filters"
 			ref="table"
 			@filter="localShipmentFilterChange"
 			@sortChange="localShipmentSortChange"
@@ -161,7 +162,8 @@ export default {
 			'shipment_current',
 			'shipment_loading',
 			'shipment_loadingBottom',
-			'shipment_loadingOne'
+			'shipment_loadingOne',
+			'shipment_filters'
 		]),
 		additionalFIlters() {
 			return Object.assign({}, this.filters)

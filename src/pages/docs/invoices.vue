@@ -59,6 +59,7 @@
 				key="invoices"
 				:data="invoice_cached"
 				:fieldDescription="invoicesFieldDescription"
+				:filters="invoice_filters"
 				ref="table"
 				@filter="localInvoiceFilterChange"
 				@sortChange="localInvoiceSortChange"
@@ -133,6 +134,7 @@ export default {
 			'invoice_loadingOne',
 			'invoice_cached',
 			'invoice_current',
+			'invoice_filters',
 			'salonsList',
 			'currentUserSalon'
 		]),

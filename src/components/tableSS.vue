@@ -7,6 +7,8 @@
 		:sortable="true"
 		:onClick="clickHandler"
 		:minify="minify"
+		:filters="filters"
+		:buttonsCondition="buttonsCondition"
 		@sortChange="sortChange"
 		@filterChange="filterChange">
 		<template slot="table-row-after" slot-scope="props" v-if="buttonRedused.length">
@@ -35,7 +37,7 @@
 import tableCore from '@/components/tableCore.vue'
 
 export default {
-	props: ['data', 'fieldDescription', 'onClick', 'buttons', 'minify'],
+	props: ['data', 'fieldDescription', 'onClick', 'buttons', 'minify', 'filters', 'buttonsCondition'],
 	components: {
 		tableCore
 	},

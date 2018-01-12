@@ -16,7 +16,7 @@ const state = {
 	loading: {
 		list: true,
 		one: true,
-		byPhone: true,
+		byPhone: false,
 		bottom: false
 	},
 	edit: {

@@ -21,7 +21,7 @@
 				<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
 				<td v-for="column, columnItem in columns" :class="column.type" @click="clickHandler($event, row, columnItem)"> {{ row[column.field] }} </td>
 				<td>
-					<slot name="table-row-after" :row="row" />
+					<slot name="table-row-after" :row="row" v-if="local_buttonsCondition(row)"/>
 				</td>
 			</tr>
 		</tbody>
@@ -46,7 +46,7 @@
 import Velocity from 'velocity-animate'
 
 export default {
-	props: ['columns', 'rows', 'lineNumbers', 'sortable', 'onClick', 'minify'],
+	props: ['columns', 'rows', 'lineNumbers', 'sortable', 'onClick', 'minify', 'filters', 'buttonsCondition'],
 	data() {
 		return {
 			sort: {
@@ -128,6 +128,10 @@ export default {
 		}
 	},
 	methods: {
+		local_buttonsCondition (row) {
+			if (typeof this.buttonsCondition != 'function') return true
+			return this.buttonsCondition(row)
+		},
 		clickHandler(e, row, index) {
 			if (typeof this.onClick == 'function') {
 				this.onClick(e, row, index)
@@ -184,6 +188,9 @@ export default {
 				}
 			)
 		}
+	},
+	mounted () {
+		if (this.filters) this.search = this.filters
 	}
 }
 </script>

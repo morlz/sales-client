@@ -5,44 +5,47 @@
 		<el-form label-width="130px">
 			<el-form-item label="Тип">
 				<el-select v-model="form.type">
-					<el-option v-for="item, index in taskTypes" :value="item.value" :label="item.label" :key="index" />
+					<el-option v-for="item, index in currentScenario" :value="item.id" :label="item.title" :key="index" />
 				</el-select>
 			</el-form-item>
 
 			<transition-group class="nextFormTransitionWrapper" name="fade">
-				<div v-show="form.type == 1" key="1" class="nextFormTransition">
+				<div v-show="form.type == 1 || form.type == 2" key="1" class="nextFormTransition">
 					<el-form-item label="Дата">
-						<el-date-picker type="date" v-model="form.date" placeholder="Дата выполнения задачи" />
+						<el-date-picker type="date" v-model="form.date" placeholder="Плановая дата" :id="null" />
 					</el-form-item>
 
-					<el-form-item label="Сумма расчёта">
-						<el-input v-model="form.summ" placeholder="Сумма расчёта" />
-					</el-form-item>
-
-					<el-form-item label="Описание задачи">
-						<el-input type="textarea" v-model="form.description" placeholder="Описание задачи" />
-					</el-form-item>
-				</div>
-
-				<div v-show="form.type == 2" key="2" class="nextFormTransition">
-					<el-form-item>
-						...
+					<el-form-item label="Описание">
+						<el-input type="textarea" v-model="form.description" placeholder="Описание" />
 					</el-form-item>
 				</div>
 
 				<div v-show="form.type == 3" key="3" class="nextFormTransition">
-					<el-form-item label="Описание">
-						<el-input type="textarea" v-model="form.description" placeholder="Описание" />
-					</el-form-item>
-				</div>
-
-				<div v-show="form.type == 4" key="4" class="nextFormTransition">
 					<el-form-item label="Дата">
-						<el-date-picker type="date" v-model="form.date" placeholder="Дата напоминания" />
+						<el-date-picker type="date" v-model="form.date" placeholder="Плановая дата" :id="null" />
 					</el-form-item>
 
-					<el-form-item label="Описание">
-						<el-input type="textarea" v-model="form.description" placeholder="Описание" />
+					<el-form-item label="Тип оплаты">
+						<el-select v-model="form.payment_type">
+							<el-option value="???" label="???"/>
+						</el-select>
+					</el-form-item>
+
+					<el-form-item label="Регион">
+						<el-input v-model="form.region" placeholder="Регион" />
+					</el-form-item>
+
+					<el-form-item label="Адрес">
+						<el-input v-model="form.address" placeholder="Адрес" />
+					</el-form-item>
+
+					<el-form-item label="Комментарий">
+						<el-checkbox v-model="form.internet">Интернет магазин</el-checkbox>
+						<el-checkbox v-model="form.podium">Заказ на подиум</el-checkbox>
+					</el-form-item>
+
+					<el-form-item label="Комментарий">
+						<el-input type="textarea" v-model="form.comment" placeholder="Комментарий" />
 					</el-form-item>
 				</div>
 			</transition-group>
@@ -57,42 +60,58 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
 import mixins from '@/components/mixins'
 
-let {
-	taskTypes,
-} = fieldDescription
-
-
 export default {
+	props: {
+		scenario: {
+			default: () => "CREATE_PREORDER"
+		}
+	},
 	mixins: [mixins],
 	data () {
 		return {
-			taskTypes,
 			form: {
 				//all
-				type: "1",
+				type: "",
 				date: "",
 
-				//only contact
-				summ: "",
+				//not oformleniye
+				description: "",
 
-				//only zamer
+				//only oformleniye
+				payment_type: "",
+				internet: false,
+				podium: false,
 				region: "",
 				address: "",
-				comment: "",
-				difficly: "",
-
-				//only contact, zamer, orkaz, reminder
-				description: ""
+				comment: ""
+			},
+			scenarios: {
+				END_TASK: [1, 2, 3],
+				CREATE_PREORDER: [2, 3, 4]
 			}
+		}
+	},
+	watch: {
+		local_form (n) {
+			this.task_add_nextSet(n)
 		}
 	},
 	computed: {
 		...mapGetters([
-			'task_current'
+			'task_current',
+			'task_types'
 		]),
-		data() {
-			return this.task_current || {}
+		currentScenario () {
+			return this.scenarios[this.scenario].map(el => this.task_types.find(type => type.id == el) || {})
+		},
+		local_form(){
+			return Object.assign({}, this.form)
 		}
+	},
+	methods: {
+		...mapMutations([
+			'task_add_nextSet'
+		])
 	}
 }
 </script>

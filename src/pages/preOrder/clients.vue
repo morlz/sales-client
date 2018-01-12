@@ -32,6 +32,7 @@
 				ref="table"
 				:data="client_cached"
 				:fieldDescription="clientManyFieldDescription"
+				:filters="client_filters"
 				@onClick="routerGoId"
 				@filter="localClientFilterChange"
 				@sortChange="localClientSortChange"
@@ -112,6 +113,7 @@ export default {
 			'client_loading',
 			'client_loadingOne',
 			'client_loadingBottom',
+			'client_filters',
 		]),
 		additionalFIlters () {
 			return Object.assign({}, {

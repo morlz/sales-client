@@ -78,6 +78,7 @@
 					key="salon"
 					:data="discount_cached"
 					:fieldDescription="discountFieldDescription"
+					:filters="discount_filters"
 					ref="table"
 					@filter="localFurnitureFilterChange"
 					@sortChange="localFurnitureSortChange"
@@ -177,6 +178,7 @@ export default {
 			'discount_loading',
 			'discount_cached',
 			'discount_current',
+			'discount_filters',
 			'furniture_models',
 			'furniture_loadingModels',
 			'furniture_models',

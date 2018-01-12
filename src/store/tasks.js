@@ -22,6 +22,10 @@ const state = {
 	edit: {
 		visible: false,
 		current: {}
+	},
+	add: {
+		prev: {},
+		next: {}
 	}
 }
 
@@ -110,6 +114,18 @@ const actions = {
 				commit('preorder_currentTaskUpdate', data)
 			})
 	},
+	task_create({ commit, dispatch, state }){
+		let payload = Object.assign({}, state.add)
+
+		payload.next = Object.assign({}, payload.next, { preorder_id: state.cached.current.preorder_id })
+
+		api.tasks
+			.create(payload)
+			.then(({ data }) => {
+				console.log(data);
+				if (data.error) return
+			})
+	},
 }
 
 const mutations = {
@@ -133,6 +149,8 @@ const mutations = {
 	task_loadingTypesSet: (store, payload) => store.loading.models = payload,
 	task_edit_currentSet: (store, payload) => store.edit.current = payload,
 	task_edit_visibleSet: (store, payload) => store.edit.visible = payload,
+	task_add_prevSet: (store, payload) => store.add.prev = payload,
+	task_add_nextSet: (store, payload) => store.add.next = payload,
 }
 
 const getters = {

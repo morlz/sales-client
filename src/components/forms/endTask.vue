@@ -2,9 +2,9 @@
 <div class="endTaskFormWrapper" v-if="auth_can(3, 'Task')">
 	<div class="cards">
 		<prev-task-form />
-		<next-task-form>
+		<next-task-form scenario="END_TASK">
 			<div class="buttons" slot="buttons">
-				<el-button type="primary">Создать</el-button>
+				<el-button type="primary" @click="task_create">Создать</el-button>
 				<el-button @click="goToPreorder('', task_current.preorder_id)">Вернуться к предзаказу</el-button>
 			</div>
 		</next-task-form>
@@ -27,6 +27,11 @@ export default {
 	computed: {
 		...mapGetters([
 			'task_current'
+		])
+	},
+	methods: {
+		...mapActions([
+			'task_create'
 		])
 	}
 }

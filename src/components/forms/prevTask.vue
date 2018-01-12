@@ -3,8 +3,8 @@
 		<h2 slot="header">Предыдущая задача</h2>
 
 		<el-form label-width="130px">
-			<el-form-item label="Срок">
-				<el-date-picker type="date" :value="data.date" :editable="false" />
+			<el-form-item label="Дата завершения">
+				<el-date-picker type="date" :value="data.date" :editable="false" :id="null" />
 			</el-form-item>
 
 			<el-form-item label="Тип">
@@ -39,13 +39,26 @@ export default {
 			}
 		}
 	},
+	watch: {
+		local_form (n) {
+			this.task_add_prevSet(n)
+		}
+	},
 	computed: {
 		...mapGetters([
 			'task_current'
 		]),
 		data() {
 			return this.task_current || {}
+		},
+		local_form(){
+			return Object.assign({}, this.form)
 		}
+	},
+	methods: {
+		...mapMutations([
+			'task_add_prevSet'
+		])
 	}
 }
 </script>
