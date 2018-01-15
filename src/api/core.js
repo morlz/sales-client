@@ -58,14 +58,15 @@ class Core extends EventEmitter {
 		let auth = cookie.getAuth()
 		if (auth && auth.token) params.params.token = auth.token
 
-		if (process.env.NODE_ENV == 'development') console.log("api request", params)
+		//if (process.env.NODE_ENV == 'development') console.log("api request", params)
 		try {
 			let res = await axios(params)
-			if (process.env.NODE_ENV == 'development') console.log("api response", res)
+			if (process.env.NODE_ENV == 'development') console.log("[api] req", params)
+			if (process.env.NODE_ENV == 'development') console.log("[api] res", res)
 			if (res.data && res.data.error) this.emit("error", res.data.error)
 			return res
 		} catch (err) {
-			if (process.env.NODE_ENV == 'development') console.log("api error", err)
+			if (process.env.NODE_ENV == 'development') console.log("[api] error", err)
 			this.emit("error", err)
 			return new Error("Network error")
 		}

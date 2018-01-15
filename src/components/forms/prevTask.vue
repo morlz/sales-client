@@ -11,10 +11,6 @@
 				{{ data.type ? data.type.title : '...' }}
 			</el-form-item>
 
-			<el-form-item label="Сумма расчёта">
-				{{ data.summ }}
-			</el-form-item>
-
 			<el-form-item label="Описание задачи">
 				{{ data.description }}
 			</el-form-item>
@@ -41,7 +37,7 @@ export default {
 	},
 	watch: {
 		local_form (n) {
-			this.task_add_prevSet(n)
+			this.task_add_prevSet(Object.assign({ id: this.task_current.id }, n))
 		}
 	},
 	computed: {

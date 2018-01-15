@@ -55,7 +55,7 @@ let dataObj = {
 		{ field: "date", label: "Дата", type: "string" },
 		{ field: "type", label: "Тип", type: "string" },
 		{ field: "end_date", label: "Выполнена", type: "string" },
-		{ field: "summ", label: "Сумма", type: "number" },
+		{ field: "result", label: "Результат", type: "string" },
 		{ field: "salon", label: "Салон", type: "string" },
 	],
 

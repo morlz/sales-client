@@ -10,11 +10,13 @@
 			</el-form-item>
 
 			<transition-group class="nextFormTransitionWrapper" name="fade">
-				<div v-show="form.type == 1 || form.type == 2" key="1" class="nextFormTransition">
-					<el-form-item label="Дата">
-						<el-date-picker type="date" v-model="form.date" placeholder="Плановая дата" :id="null" />
+				<div v-show="form.type == 1" key="1" class="nextFormTransition">
+					<el-form-item label="Описание">
+						<el-input type="textarea" v-model="form.description" placeholder="Описание" />
 					</el-form-item>
+				</div>
 
+				<div v-show="form.type == 2" key="1" class="nextFormTransition">
 					<el-form-item label="Описание">
 						<el-input type="textarea" v-model="form.description" placeholder="Описание" />
 					</el-form-item>
@@ -93,7 +95,9 @@ export default {
 	},
 	watch: {
 		local_form (n) {
-			this.task_add_nextSet(n)
+			let optional = {}
+			if (this.form.type == 1) optional.date = new Date()
+			this.task_add_nextSet(Object.assign({}, n, optional))
 		}
 	},
 	computed: {

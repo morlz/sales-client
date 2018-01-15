@@ -17,7 +17,8 @@ const state = {
 		list: true,
 		one: true,
 		types: true,
-		bottom: false
+		bottom: false,
+		add: false
 	},
 	edit: {
 		visible: false,
@@ -119,11 +120,18 @@ const actions = {
 
 		payload.next = Object.assign({}, payload.next, { preorder_id: state.cached.current.preorder_id })
 
+		commit('task_loadingAddSet', true)
 		api.tasks
 			.create(payload)
 			.then(({ data }) => {
-				console.log(data);
+				commit('task_loadingAddSet', false)
+
 				if (data.error) return
+				if (data.errors) dispatch('handleFormErrors', data.errors)
+				if (!data.errors) {
+					dispatch('notify', { title: "Успешно", message: "Задача создана" })
+					router.push({ path: `/preorder/preorders/${state.cached.current.preorder_id}` })
+				}
 			})
 	},
 }
@@ -147,6 +155,7 @@ const mutations = {
 	task_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
 	task_loadingOneSet: (store, payload) => store.loading.one = payload,
 	task_loadingTypesSet: (store, payload) => store.loading.models = payload,
+	task_loadingAddSet: (store, payload) => store.loading.add = payload,
 	task_edit_currentSet: (store, payload) => store.edit.current = payload,
 	task_edit_visibleSet: (store, payload) => store.edit.visible = payload,
 	task_add_prevSet: (store, payload) => store.add.prev = payload,
@@ -162,6 +171,7 @@ const getters = {
 	task_loadingBottom: ({ loading }) => loading.bottom,
 	task_loadingOne: ({ loading }) => loading.one,
 	task_loadingTypes: ({ loading }) => loading.types,
+	task_loadingAdd: ({ loading }) => loading.add,
 	task_edit_visible: ({ edit }) => edit.visible,
 	task_edit_current: ({ edit }) => edit.current,
 }

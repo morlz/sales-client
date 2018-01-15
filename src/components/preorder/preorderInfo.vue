@@ -3,7 +3,7 @@
 	<h2 slot="header">Общая информация</h2>
 
 	<el-steps :active="+data.status_id" align-center finish-status="success">
-		<el-step :title="item.title" v-for="item, index in preorder_statuses" :key="index"></el-step>
+		<el-step :title="item.title" v-for="item, index in preorder_statuses" :key="index" />
 	</el-steps>
 
 	<div class="infoGrid">
