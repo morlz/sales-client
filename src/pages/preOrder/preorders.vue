@@ -27,7 +27,7 @@
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/preorders' }">Список предзаказов</el-breadcrumb-item>
 		</el-breadcrumb>
-		<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" v-if="currentTab == '0'" />
+		<el-input v-model="searchByPhone" :value="preorder_filtersPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" v-if="currentTab == '0'" />
 		<el-tabs tab-position="top" v-model="currentTab" key="preordersTabs" class="manyRecordsTabs">
 			<el-tab-pane label="Все предзаказы" key="1">
 				<tabless
@@ -110,7 +110,7 @@ export default {
 		newPreorderForm
 	},
 	watch: {
-		oneId () {
+		oneId (n) {
 			if (this.oneId !== undefined)
 				this.preorder_getOne(this.oneId)
 		},
@@ -134,7 +134,8 @@ export default {
 			'preorder_loadingBottom',
 			'preorder_acceptedAdd',
 			'preorder_loadingOne',
-			'preorder_filters'
+			'preorder_filters',
+			'preorder_filtersPhone'
 		]),
 		data() {
 			return this.preorder_cached
@@ -143,7 +144,7 @@ export default {
 			return {
 				phone: this.searchByPhoneQuery
 			}
-		}
+		},
 	},
 	methods: {
 		...mapActions([,
@@ -171,6 +172,7 @@ export default {
 	},
 	mounted() {
 		this.preorder_init(this.oneId)
+		this.searchByPhone = this.preorder_filtersPhone
 	}
 }
 </script>

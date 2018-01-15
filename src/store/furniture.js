@@ -22,8 +22,9 @@ const state = {
 }
 
 const actions = {
-	furniture_init ({ commit, dispatch }, payload) {
+	furniture_init ({ commit, dispatch, getters }, payload) {
 		dispatch('furniture_getModels')
+		dispatch('getSalonsList', getters.currentUserSalon)
 		if (payload) {
 			dispatch('furniture_getOne', payload)
 		} else {
@@ -120,7 +121,7 @@ const getters = {
 	furniture_filters: ({ filters }) => filters,
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
-	furniture_models: ({ cached }) => [ { MODEL: "Все модели" }, ...cached.models],
+	furniture_models: ({ cached }) => [ { MODEL: "Все модели", value: "" }, ...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL }))],
 	furniture_loading: ({ loading }) => loading.list,
 	furniture_loadingBottom: ({ loading }) => loading.bottom,
 	furniture_loadingOne: ({ loading }) => loading.one,

@@ -121,6 +121,7 @@ const mutations = {
 
 const getters = {
 	preorder_filters: ({ filters }) => filters,
+	preorder_filtersPhone: ({ filters }) => filters.phone || "",
 	preorder_current: ({ cached }) => cached.current,
 	preorder_cached: ({ cached }) => cached.list,
 	preorder_statuses: ({ cached }) => cached.statuses,

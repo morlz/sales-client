@@ -148,7 +148,8 @@ const getters = {
 	},
 	menuItems ({ menuItems }) {
 		return menuItems
-	}
+	},
+	route: state => state
 }
 
 export default {

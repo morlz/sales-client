@@ -114,6 +114,7 @@ export default {
 			'client_loadingOne',
 			'client_loadingBottom',
 			'client_filters',
+			'client_filtersPhone',
 		]),
 		additionalFIlters () {
 			return Object.assign({}, {
@@ -147,6 +148,7 @@ export default {
 	},
 	mounted(){
 		this.client_init(this.oneId)
+		this.searchByPhone = this.client_filtersPhone
 	}
 }
 

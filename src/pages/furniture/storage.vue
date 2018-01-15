@@ -1,6 +1,6 @@
 <template>
 <div class="mainWrapper">
-	<div class="oneFurnitureWrapper" v-if="isOne">
+	<div class="oneStorageWrapper" v-if="isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
@@ -51,38 +51,39 @@
 	</div>
 
 
-	<div class="manyFurnitureWrapper" v-if="!isOne">
+	<div class="manyStorageWrapper" v-if="!isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: `/furniture/storage` }">На складе</el-breadcrumb-item>
 		</el-breadcrumb>
 
+		<furniture-models-switch/>
+
 		<el-tabs tab-position="top" v-model="currentTab">
 			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
 		</el-tabs>
 
-		<el-select v-model="currentFurnitureModel" filterable placeholder="Наименование" v-loading="furniture_loadingModels">
-			<el-option v-for="model, index in furniture_models" :key="index" :label="model.MODEL" :value="model.MODEL" />
-		</el-select>
+		<furniture-models-wrap :current="storage_filters.MODEL" @select="local_furniture_filtersSalonSet">
+			<tabless
+				v-loading="storage_loading"
+				key="storage"
+				:data="storage_cached"
+				:fieldDescription="storageFieldDescriptionFiltred"
+				:filters="storage_filters"
+				:select-fields="local_storage_selectFields"
+				ref="table"
+				@filter="local_storage_filterChange"
+				@sortChange="local_storage_sortChange"
+				@onClick="routerGoId"
+			/>
 
-		<tabless
-			v-loading="storage_loading"
-			key="salon"
-			:data="storage_cached"
-			:fieldDescription="storageFieldDescription"
-			ref="table"
-			:filters="storage_filters"
-			@filter="localFurnitureFilterChange"
-			@sortChange="localFurnitureSortChange"
-			@onClick="routerGoId"
-		/>
-
-		<infinite-loading @infinite="storage_infinity" ref="infiniteLoading">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="storage_loadingBottom" />
-		</infinite-loading>
+			<infinite-loading @infinite="storage_infinity" ref="infiniteLoading">
+				<div class="end" slot="no-results" />
+				<div class="end" slot="no-more" />
+				<div class="spinner" slot="spinner" v-loading="storage_loadingBottom" />
+			</infinite-loading>
+		</furniture-models-wrap>
 	</div>
 </div>
 </template>
@@ -96,6 +97,8 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS'
+import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
+import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 
@@ -108,13 +111,14 @@ let {
 export default {
 	components: {
 		tabless,
-		InfiniteLoading
+		InfiniteLoading,
+		furnitureModelsSwitch,
+		furnitureModelsWrap
 	},
 	mixins: [mixins],
 	data() {
 		return {
 			storageFieldDescription,
-			currentFurnitureModel: "Все модели",
 			lastStorageFilters: {},
 			currentTab: 0,
 			tabs: [
@@ -132,9 +136,6 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		storage_models () {
-			this.currentFurnitureModel = "Все модели"
-		},
 		oneId (n) {
 			if (n != undefined)
 				this.storage_getOne(n)
@@ -150,15 +151,23 @@ export default {
 			'storage_current',
 			'storage_filters',
 			'furniture_models',
+			'auth_settings'
 		]),
-		data () {
-			return this.cachedFurnitures
-		},
 		additionalFIlters () {
-			return Object.assign({}, {
-				model: this.currentFurnitureModel
-			}, this.tabs[this.currentTab].filters)
-		}
+			return Object.assign({}, this.tabs[this.currentTab].filters)
+		},
+		local_storage_selectFields () {
+			let rez = []
+			if (this.furniture_models)
+				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+
+			return rez
+		},
+		storageFieldDescriptionFiltred () {
+			if (this.auth_settings.showModels)
+				return this.storageFieldDescription.filter(el => el.field != 'MODEL')
+			return this.storageFieldDescription
+		},
 	},
 	methods: {
 		...mapActions([
@@ -169,7 +178,7 @@ export default {
 			'furniture_getModels',
 			'storage_getOne',
 		]),
-		localFurnitureFilterChange (n) {
+		local_storage_filterChange (n) {
 			this.lastStorageFilters = n
 			this.storage_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
@@ -177,12 +186,17 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localFurnitureSortChange (n) {
+		local_storage_sortChange (n) {
 			this.storage_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
+		},
+		local_furniture_filtersSalonSet (MODEL) {
+			if (MODEL == 'Все модели') MODEL = ""
+			let filters = { ...this.storage_filters, MODEL }
+			this.local_storage_filterChange(filters)
 		}
 	},
 	mounted () {
@@ -195,7 +209,7 @@ export default {
 
 
 <style lang="less">
-	.oneFurnitureWrapper {
+	.oneStorageWrapper {
 		.el-main {
 			padding: 0;
 		}
@@ -207,8 +221,11 @@ export default {
 			grid-template-columns: 1fr 1fr;
 		}
 	}
+	.manyStorageWrapper {
+		width: 100%;
+	}
 	@media screen and (max-width: 1250px) {
-		.oneFurnitureWrapper {
+		.oneStorageWrapper {
 			.cards {
 				grid-template-columns: 1fr;
 			}

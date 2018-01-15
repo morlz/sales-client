@@ -73,6 +73,7 @@ let dataObj = {
 	furnitureSalonFieldDescription: [
 		{ field: "id", label: "№ зак." },
 		{ field: "salon", label: "Салон" },
+		{ field: "MODEL", label: "Модель" },
 		{ field: "UN", label: "Фаб.н." },
 		{ field: "mXR", label: "М.хр." },
 		{ field: "TIP", label: "Тип" },
@@ -110,6 +111,7 @@ let dataObj = {
 	storageFieldDescription: [
 		{ field: "UCH_N", label: "Уч №" },
 		{ field: "UN", label: "Фаб. №" },
+		{ field: "MODEL", label: "Модель" },
 		{ field: "TIP", label: "Тип" },
 		{ field: "TKAN", label: "Ткань 1" },
 		{ field: "cKOMP", label: "Ткань 2" },
@@ -128,6 +130,8 @@ let dataObj = {
 		{ field: "mXR", label: "Склад" },
 		{ field: "UCH_N", label: "Уч. №" },
 		{ field: "UN", label: "Фаб.н." },
+		{ field: "salon", label: "Салон" },
+		{ field: "MODEL", label: "Модель" },
 		{ field: "TIP", label: "Тип" },
 		{ field: "ISP", label: "Исп." },
 		{ field: "TKAN", label: "Ткань 1" },

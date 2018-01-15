@@ -155,6 +155,7 @@ const mutations = {
 
 const getters = {
 	client_filters: ({ filters }) => filters,
+	client_filtersPhone: ({ filters }) => filters.phone || "",
 	client_current: ({ cached }) => cached.current,
 	client_currentFIO: ({ cached }) => `${cached.current.lastname} ${cached.current.name}  ${cached.current.patronymic}`,
 	client_cached: ({ cached }) => cached.list,

@@ -53,8 +53,8 @@ const mutations = {
 }
 
 let sortSalons = (a, b) => {
-	if (a.id == 999 || a.id == 10 || a.id == 1040) return -1
-	if (b.id == 999 || b.id == 10 || b.id == 1040) return 1
+	if (a.id == 999 || a.id == "" || a.id == 10 || a.id == 1040) return -1
+	if (b.id == 999 || b.id == "" || b.id == 10 || b.id == 1040) return 1
 
 	if (a.NAME.toLowerCase() < b.NAME.toLowerCase()) return -1
 	if (a.NAME.toLowerCase() > b.NAME.toLowerCase()) return 1
@@ -66,7 +66,15 @@ const getters = {
 	salonsList: ({ salonList }) => salonList.sort(sortSalons),
 	salonsListDiscount: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 10),
 	salonsListFurniture: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 1040 && el.id != 10),
-	salonsListLoading: ({ salonListLoading }) => salonListLoading
+	salonsListLoading: ({ salonListLoading }) => salonListLoading,
+	salon_list_discount: state => state.salonList.filter(el => el.id != 10).map(el => {
+		if (el.id == 999) el.id = ""
+		return el
+	}).sort(sortSalons),
+	salon_list_furniture: state => state.salonList.filter(el => el.id != 1040 && el.id != 10).map(el => {
+		if (el.id == 999) el.id = ""
+		return el
+	}).sort(sortSalons)
 }
 
 export default {

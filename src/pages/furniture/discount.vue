@@ -1,6 +1,6 @@
 <template>
 <div class="mainWrapper">
-	<div class="oneFurnitureWrapper" v-if="isOne">
+	<div class="oneDiscountWrapper" v-if="isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
@@ -13,7 +13,6 @@
 				<div class="title" slot="header">
 					<h2>Основная информация</h2>
 				</div>
-
 
 				<div class="infoGrid">
 					<div>Уч. №</div>
@@ -56,49 +55,44 @@
 	</div>
 
 
-	<div class="manyFurnitureWrapper" v-if="!isOne">
+	<div class="manyDiscountWrapper" v-if="!isOne">
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: `/furniture/discount` }">Дисконд</el-breadcrumb-item>
 		</el-breadcrumb>
 
-		<el-select v-model="currentSalon" filterable placeholder="Салон" v-loading="salonsListLoading">
-			<el-option v-for="salon, index in salonsListDiscount" :key="index" :label="salon.NAME" :value="salon.id" />
-		</el-select>
+		<furniture-models-switch/>
 
-		<el-select v-model="currentFurnitureModel" filterable placeholder="Наименование модели" v-loading="furniture_loadingModels">
-			<el-option v-for="model, index in furniture_models" :key="index" :label="model.MODEL" :value="model.MODEL" />
-		</el-select>
-
-		<el-tabs tab-position="top" v-model="currentTab">
-			<el-tab-pane label="Таблица">
-				<tabless
-					v-loading="discount_loading"
-					key="salon"
-					:data="discount_cached"
-					:fieldDescription="discountFieldDescription"
-					:filters="discount_filters"
-					ref="table"
-					@filter="localFurnitureFilterChange"
-					@sortChange="localFurnitureSortChange"
-					@onClick="routerGoId"
-				/>
-			</el-tab-pane>
-
-			<el-tab-pane label="Плитки">
-				<discount-tile-view
-					v-loading="discount_loading"
+		<furniture-models-wrap :current="discount_filters.MODEL" @select="local_discount_filtersSalonSet">
+			<el-tabs tab-position="top" v-model="currentTab">
+				<el-tab-pane label="Таблица">
+					<tabless
+						v-loading="discount_loading"
+						key="salon"
+						:data="discount_cached"
+						:fieldDescription="discountFieldDescriptionFilred"
+						:filters="discount_filters"
+						:select-fields="local_discount_selectFields"
+						ref="table"
+						@filter="local_discount_filterChange"
+						@sortChange="local_discount_sortChange"
+						@onClick="routerGoId"
+						@select="local_discount_handleFieldSelect"
 					/>
-			</el-tab-pane>
-		</el-tabs>
+				</el-tab-pane>
 
-		<infinite-loading @infinite="discount_infinity" ref="infiniteLoading">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="discount_loadingBottom" />
-		</infinite-loading>
+				<el-tab-pane label="Плитки">
+					<discount-tile-view v-loading="discount_loading" />
+				</el-tab-pane>
+			</el-tabs>
 
+			<infinite-loading @infinite="discount_infinity" ref="infiniteLoading">
+				<div class="end" slot="no-results" />
+				<div class="end" slot="no-more" />
+				<div class="spinner" slot="spinner" v-loading="discount_loadingBottom" />
+			</infinite-loading>
+		</furniture-models-wrap>
 	</div>
 </div>
 </template>
@@ -106,12 +100,11 @@
 
 
 <script>
-
-
-
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS'
+import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
+import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
@@ -126,14 +119,14 @@ export default {
 	components: {
 		tabless,
 		discountTileView,
-		InfiniteLoading
+		InfiniteLoading,
+		furnitureModelsSwitch,
+		furnitureModelsWrap
 	},
 	mixins: [mixins],
 	data() {
 		return {
 			discountFieldDescription,
-			currentSalon: "999",
-			currentFurnitureModel: "Все модели",
 			lastDiscountFilters: {},
 			lastDiscountSort: {},
 			currentTab: 0
@@ -158,18 +151,9 @@ export default {
 			if (n != undefined)
 				this.discount_getOne(n)
 		},
-		currentSalon (n) {
-			if (n == 999) n = null
-
-			this.furniture_getModels(this.currentSalon)
-		},
-		furniture_models () {
-			this.currentFurnitureModel = "Все модели"
-		},
 	},
 	computed: {
 		...mapGetters([
-			'salonsListDiscount',
 			'salonsListLoading',
 			'currentUserSalon',
 			'furniture_loadingModels',
@@ -182,15 +166,11 @@ export default {
 			'furniture_models',
 			'furniture_loadingModels',
 			'furniture_models',
+			'auth_settings',
+			'salon_list_discount'
 		]),
-		data () {
-			return this.cachedFurnitures
-		},
 		additionalFIlters () {
-			return Object.assign({}, {
-				salon: this.currentSalon != "999" ? this.currentSalon : null,
-				model: this.currentFurnitureModel
-			})
+			return {}
 		},
 		additionalSort () {
 			let obj2 = {}
@@ -202,6 +182,21 @@ export default {
 
 			return Object.assign({}, obj2)
 		},
+		discountFieldDescriptionFilred () {
+			if (this.auth_settings.showModels)
+				return this.discountFieldDescription.filter(el => el.field != 'MODEL')
+			return this.discountFieldDescription
+		},
+		local_discount_selectFields () {
+			let rez = []
+			if (this.salon_list_discount)
+				rez.push({ data: this.salon_list_discount, field: "salon", fields: { label: "NAME", value: "id"}, filterable: true })
+
+			if (this.furniture_models)
+				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+
+			return rez
+		},
 	},
 	methods: {
 		...mapActions([
@@ -210,10 +205,9 @@ export default {
 			'discount_filtersChange',
 			'discount_infinity',
 			'discount_getOne',
-			'getSalonsList',
 			'furniture_getModels',
 		]),
-		localFurnitureFilterChange (n) {
+		local_discount_filterChange (n) {
 			this.lastDiscountFilters = n
 			this.discount_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
@@ -221,18 +215,26 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localFurnitureSortChange (n) {
+		local_discount_sortChange (n) {
 			this.lastDiscountSort = n
 			this.discount_sortChange (Object.assign({}, n, this.additionalSort))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
+		},
+		local_discount_filtersSalonSet (MODEL) {
+			if (MODEL == 'Все модели') MODEL = ""
+			let filters = { ...this.furniture_filters, MODEL }
+			this.local_discount_filterChange(filters)
+		},
+		local_discount_handleFieldSelect (data) {
+			if (data.field != 'salon') return
+			this.furniture_getModels(data.value)
 		}
 	},
 	mounted () {
 		this.discount_init(this.oneId)
-		this.getSalonsList()
 		this.furniture_getModels()
 	}
 }
@@ -241,7 +243,7 @@ export default {
 
 
 <style lang="less">
-	.oneFurnitureWrapper {
+	.oneDiscountWrapper {
 		.el-main {
 			padding: 0;
 		}
@@ -254,7 +256,7 @@ export default {
 		}
 	}
 	@media screen and (max-width: 1250px) {
-		.oneFurnitureWrapper {
+		.oneDiscountWrapper {
 			.cards {
 				grid-template-columns: 1fr;
 			}

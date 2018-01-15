@@ -70,39 +70,33 @@
 			<el-breadcrumb-item :to="{ path: `/furniture/salon` }">В салоне</el-breadcrumb-item>
 		</el-breadcrumb>
 
+		<furniture-models-switch/>
+
 		<el-tabs tab-position="top" v-model="currentTab">
 			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
 		</el-tabs>
 
-		<transition name="fade">
-			<el-select v-model="currentSalon" filterable placeholder="Салон" v-loading="salonsListLoading" v-if="currentTab != 2">
-				<el-option v-for="salon, index in salonsListFurniture" :key="index" :label="salon.NAME" :value="salon.id" />
-			</el-select>
-		</transition>
+		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersSalonSet">
+			<tabless
+				v-loading="furniture_loading"
+				key="salon"
+				:data="furniture_cached"
+				:fieldDescription="furnitureSalonFieldDescriptionFiltred"
+				:filters="furniture_filters"
+				:select-fields="local_furniture_selectFields"
+				ref="table"
+				@filter="local_furniture_filterChange"
+				@sortChange="local_furniture_sortChange"
+				@onClick="routerGoId"
+				@select="local_furniture_handleFieldSelect"
+			/>
 
-		<transition name="fade">
-			<el-select v-model="currentFurnitureModel" filterable placeholder="Наименование" v-loading="furniture_loadingModels" v-if="currentTab == 0">
-				<el-option v-for="model, index in furniture_models" :key="index" :label="model.MODEL" :value="model.MODEL" />
-			</el-select>
-		</transition>
-
-		<tabless
-			v-loading="furniture_loading"
-			key="salon"
-			:data="furniture_cached"
-			:fieldDescription="furnitureSalonFieldDescription"
-			:filters="furniture_filters"
-			ref="table"
-			@filter="localFurnitureFilterChange"
-			@sortChange="localFurnitureSortChange"
-			@onClick="routerGoId"
-		/>
-
-		<infinite-loading @infinite="furniture_infinity" ref="infiniteLoading">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="furniture_loadingBottom" />
-		</infinite-loading>
+			<infinite-loading @infinite="furniture_infinity" ref="infiniteLoading">
+				<div class="end" slot="no-results" />
+				<div class="end" slot="no-more" />
+				<div class="spinner" slot="spinner" v-loading="furniture_loadingBottom" />
+			</infinite-loading>
+		</furniture-models-wrap>
 	</div>
 </div>
 </template>
@@ -116,6 +110,8 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS'
+import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
+import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 
@@ -128,14 +124,14 @@ let {
 export default {
 	components: {
 		tabless,
-		InfiniteLoading
+		InfiniteLoading,
+		furnitureModelsSwitch,
+		furnitureModelsWrap
 	},
 	mixins: [mixins],
 	data() {
 		return {
 			furnitureSalonFieldDescription,
-			currentSalon: 999,
-			currentFurnitureModel: "",
 			currentTab: 0,
 			tabs: [
 				{ name: "Склад", filters: { type: "storage" } },
@@ -145,23 +141,12 @@ export default {
 		}
 	},
 	watch: {
-		currentUserSalon (n) {
-			this.currentSalon = n
-		},
 		additionalFIlters (n) {
 			this.furniture_filtersChange (Object.assign({}, this.lastFurnitureFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
-		},
-		currentSalon (n) {
-			if (n == 999) n = null
-
-			this.furniture_getModels(this.currentSalon)
-		},
-		furniture_models () {
-			this.currentFurnitureModel = ""
 		},
 		oneId (n) {
 			if (n != undefined)
@@ -170,7 +155,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'salonsListFurniture',
+			'salon_list_furniture',
 			'salonsListLoading',
 			'currentUserSalon',
 			'furniture_loadingModels',
@@ -181,19 +166,32 @@ export default {
 			'furniture_current',
 			'furniture_filters',
 			'furniture_models',
+			'auth_settings',
 		]),
 		data () {
 			return this.cachedFurnitures
 		},
 		additionalFIlters () {
-			return Object.assign({
-				ID_SALONA: this.currentSalon != 999 ? this.currentSalon : null,
-				MODEL: this.currentFurnitureModel
-			}, this.tabs[this.currentTab].filters)
+			return Object.assign({}, this.tabs[this.currentTab].filters)
 		},
 		currentSalonName () {
-			return this.salonsListFurniture.find(salon => salon.id == this.furniture_current.ID_SALONA) || {}
-		}
+			return this.salon_list_furniture.find(salon => salon.id == this.furniture_current.ID_SALONA) || {}
+		},
+		local_furniture_selectFields () {
+			let rez = []
+			if (this.salon_list_furniture)
+				rez.push({ data: this.salon_list_furniture, field: "salon", fields: { label: "NAME", value: "id"}, filterable: true })
+
+			if (this.furniture_models)
+				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+
+			return rez
+		},
+		furnitureSalonFieldDescriptionFiltred () {
+			if (this.auth_settings.showModels)
+				return this.furnitureSalonFieldDescription.filter(el => el.field != 'MODEL')
+			return this.furnitureSalonFieldDescription
+		},
 	},
 	methods: {
 		...mapActions([
@@ -203,9 +201,8 @@ export default {
 			'furniture_infinity',
 			'furniture_getModels',
 			'furniture_getOne',
-			'getSalonsList'
 		]),
-		localFurnitureFilterChange (n) {
+		local_furniture_filterChange (n) {
 			this.lastFurnituresFilters = n
 			this.furniture_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
@@ -213,18 +210,25 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localFurnitureSortChange (n) {
+		local_furniture_sortChange (n) {
 			this.furniture_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
+		},
+		local_furniture_handleFieldSelect (data) {
+			if (data.field != 'salon') return
+			this.furniture_getModels(data.value)
+		},
+		local_furniture_filtersSalonSet (MODEL) {
+			if (MODEL == 'Все модели') MODEL = ""
+			let filters = { ...this.furniture_filters, MODEL }
+			this.local_furniture_filterChange(filters)
 		}
 	},
 	mounted () {
-		this.currentSalon = this.currentUserSalon
 		this.furniture_init(this.oneId)
-		this.getSalonsList()
 	}
 }
 </script>
@@ -243,6 +247,10 @@ export default {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 		}
+	}
+	.manyFurnitureWrapper {
+		width: 100%;
+
 	}
 	@media screen and (max-width: 1250px) {
 		.oneFurnitureWrapper {

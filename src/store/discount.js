@@ -26,6 +26,7 @@ const actions = {
 		if (payload) {
 			dispatch('discount_getOne', payload)
 		} else {
+			dispatch('getSalonsList')
 			dispatch('discount_infinityStart')
 		}
 	},
@@ -114,12 +115,12 @@ const getters = {
 		let models = []
 
 		store.cached.list.forEach(el => {
-			let model = models.find(m => m.model == el.model)
+			let model = models.find(m => m.model == el.MODEL)
 			if (model) {
 				model.data.push(el)
 			} else {
 				models.push({
-					model: el.model,
+					model: el.MODEL,
 					data: [el]
 				})
 			}
