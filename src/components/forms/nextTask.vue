@@ -65,6 +65,7 @@ import mixins from '@/components/mixins'
 export default {
 	props: {
 		scenario: {
+			type: String,
 			default: () => "CREATE_PREORDER"
 		}
 	},
@@ -94,7 +95,7 @@ export default {
 		}
 	},
 	watch: {
-		local_form (n) {
+		local_task_nextForm (n) {
 			let optional = {}
 			if (this.form.type == 1) optional.date = new Date()
 			this.task_add_nextSet(Object.assign({}, n, optional))
@@ -108,7 +109,7 @@ export default {
 		currentScenario () {
 			return this.scenarios[this.scenario].map(el => this.task_types.find(type => type.id == el) || {})
 		},
-		local_form(){
+		local_task_nextForm(){
 			return Object.assign({}, this.form)
 		}
 	},

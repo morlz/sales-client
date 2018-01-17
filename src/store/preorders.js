@@ -18,7 +18,8 @@ const state = {
 		one: true,
 		statuses: true,
 		bottom: false
-	}
+	},
+	add: {}
 }
 
 const actions = {
@@ -98,25 +99,39 @@ const actions = {
 				commit('preorder_loadingStatusesSet', false)
 			})
 	},
+	preorder_createNew ({ commit, dispatch, getters }) {
+		api.preorders
+			.create({
+				main: getters.preorder_add,
+				nextTask: getters.task_add_next,
+				client: getters.client_selectCurrent,
+				clientType: getters.client_selectType
+			})
+			.then(res => {
+				if (res.data.error) return;
+				console.log(res.data);
+			})
+	}
 }
 
 const mutations = {
 	preorder_cacheSet: (state, payload) => state.cached.list = payload,
 	preorder_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
-	preorder_filtersSet: (store, payload) => store.filters = payload,
-	preorder_sortSet: (store, payload) => store.sort = payload,
-	preorder_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	preorder_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
-	preorder_currentSet: (store, payload) => store.cached.current = payload,
-	preorder_currentTaskUpdate: (store, payload) => api.core.assignItem(store.cached.current.tasks, payload),
-	preorder_currentContctAdd: (store, payload) => store.cached.current.contactFaces.push(payload),
-	preorder_currentContctUpdate: (store, payload) => api.core.assignItem(store.cached.current.contactFaces, payload),
-	preorder_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
-	preorder_cachedStatusesSet: (store, payload) => store.cached.statuses = payload,
-	preorder_loadingSet: (store, payload) => store.loading.list = payload,
-	preorder_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
-	preorder_loadingOneSet: (store, payload) => store.loading.one = payload,
-	preorder_loadingStatusesSet: (store, payload) => store.loading.statuses = payload
+	preorder_filtersSet: (state, payload) => state.filters = payload,
+	preorder_sortSet: (state, payload) => state.sort = payload,
+	preorder_lastOffsetSet: (state, payload) => state.offset.last = payload,
+	preorder_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
+	preorder_currentSet: (state, payload) => state.cached.current = payload,
+	preorder_currentTaskUpdate: (state, payload) => api.core.assignItem(state.cached.current.tasks, payload),
+	preorder_currentContctAdd: (state, payload) => state.cached.current.contactFaces.push(payload),
+	preorder_currentContctUpdate: (state, payload) => api.core.assignItem(state.cached.current.contactFaces, payload),
+	preorder_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
+	preorder_cachedStatusesSet: (state, payload) => state.cached.statuses = payload,
+	preorder_loadingSet: (state, payload) => state.loading.list = payload,
+	preorder_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
+	preorder_loadingOneSet: (state, payload) => state.loading.one = payload,
+	preorder_loadingStatusesSet: (state, payload) => state.loading.statuses = payload,
+	preorder_add_set: (state, payload) => state.add = payload,
 }
 
 const getters = {
@@ -128,7 +143,8 @@ const getters = {
 	preorder_loading: ({ loading }) => loading.list,
 	preorder_loadingBottom: ({ loading }) => loading.bottom,
 	preorder_loadingOne: ({ loading }) => loading.one,
-	preorder_acceptedAdd: state => state.filters && state.filters.phone && state.filters.phone.length && !state.loading.list
+	preorder_acceptedAdd: state => state.filters && state.filters.phone && state.filters.phone.length && !state.loading.list,
+	preorder_add: state => state.add,
 }
 
 export default {

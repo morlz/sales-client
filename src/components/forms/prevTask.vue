@@ -36,7 +36,7 @@ export default {
 		}
 	},
 	watch: {
-		local_form (n) {
+		local_task_prevForm (n) {
 			this.task_add_prevSet(Object.assign({ id: this.task_current.id }, n))
 		}
 	},
@@ -47,7 +47,7 @@ export default {
 		data() {
 			return this.task_current || {}
 		},
-		local_form(){
+		local_task_prevForm(){
 			return Object.assign({}, this.form)
 		}
 	},

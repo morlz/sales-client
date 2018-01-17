@@ -174,6 +174,7 @@ const getters = {
 	task_loadingAdd: ({ loading }) => loading.add,
 	task_edit_visible: ({ edit }) => edit.visible,
 	task_edit_current: ({ edit }) => edit.current,
+	task_add_next: state => state.add.next
 }
 
 export default {

@@ -46,20 +46,25 @@ export default {
 		}
 	},
 	watch: {
-
+		local_preorder_mainForm (n) {
+			this.preorder_add_set(n)
+		}
 	},
 	methods: {
 		...mapActions([
 
 		]),
 		...mapMutations([
-
+			'preorder_add_set'
 		])
 	},
 	computed: {
 		...mapGetters([
 
-		])
+		]),
+		local_preorder_mainForm () {
+			return Object.assign({}, this.form)
+		}
 	}
 }
 </script>

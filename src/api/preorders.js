@@ -30,5 +30,13 @@ export default {
 			type: "preorders",
 			params
 		})
+	},
+	async create (params) {
+		params = core.prepareArrays(params)
+		return await core.invoke({
+			method: 'post',
+			type: 'preorders',
+			params
+		})
 	}
 }

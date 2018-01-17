@@ -2,7 +2,7 @@
 <div class="addPreorderFormWrapper" v-if="auth_can(2, 'Preorder')">
 	<new-preorder-main-form/>
 	<client-select-form/>
-	<next-task-form>
+	<next-task-form scenario="CREATE_PREORDER">
 		<div class="buttons" slot="buttons">
 			<el-button type="primary" @click="onAddForm">Создать предзаказ</el-button>
 			<el-button type="danger" @click="goBack">Отмена</el-button>
@@ -33,36 +33,17 @@ export default {
 		clientSelectForm,
 		nextTaskForm
 	},
-	data () {
-		return {
-
-		}
-	},
-	watch: {
-
-	},
 	methods: {
 		...mapActions([
-
-		]),
-		...mapMutations([
-
+			'preorder_createNew'
 		]),
 		onAddForm() {
-
+			this.preorder_createNew()
 		},
 		goBack () {
 			this.$emit("goBack")
 		}
 	},
-	computed: {
-		...mapGetters([
-
-		]),
-		data() {
-
-		}
-	}
 }
 </script>
 

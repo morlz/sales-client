@@ -197,7 +197,7 @@ export default {
 			return this.columns.map((column, index) => {
 				let selectField = this.selectFields.find(el => el.field == column.field || el.index == index)
 
-				return selectField ? { type: "select", ...column, ...selectField } : { type: "search", ...column }
+				return selectField ? { ...column, ...selectField, type: "select" } : { ...column, type: "search" }
 			})
 		}
 	},

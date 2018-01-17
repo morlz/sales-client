@@ -25,6 +25,11 @@ const state = {
 	visible: {
 		addContactForm: false,
 		editContactForm: false
+	},
+	select: {
+		new: {},
+		exist: {},
+		current: 'new'
 	}
 }
 
@@ -151,6 +156,8 @@ const mutations = {
 	client_visible_addContactFormSet: (store, payload) => store.visible.addContactForm = payload,
 	client_visible_editContactFormSet: (store, payload) => store.visible.editContactForm = payload,
 	client_edit_contactSet: (store, payload) => store.edit.contact = payload,
+	client_select_newSet: (store, payload) => [store.select.new = payload, store.select.current = 'new'],
+	client_select_existSet: (store, payload) => [store.select.exist = payload, store.select.current = 'exist'],
 }
 
 const getters = {
@@ -167,6 +174,8 @@ const getters = {
 	client_edit_currentContact: ({ edit }) => edit.contact,
 	client_visible_addContactForm: ({ visible }) => visible.addContactForm,
 	client_visible_editContactForm: ({ visible }) => visible.editContactForm,
+	client_selectCurrent: state => state.select[state.select.current],
+	client_selectType: state => state.select.current
 }
 
 export default {

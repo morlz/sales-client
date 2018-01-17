@@ -84,7 +84,6 @@ export default {
 	mixins: [mixins],
 	data() {
 		return {
-
 			newClient: {
 				phone: "",
 				fio: "",
@@ -108,11 +107,21 @@ export default {
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 				})
 			}, 500)
+		},
+		local_client_select_newClient (n) {
+			this.client_select_newSet(n)
+		},
+		local_client_select_existClient (n) {
+			this.client_select_existSet(n)
 		}
 	},
 	methods: {
 		...mapActions([
 			'client_searchByPhone'
+		]),
+		...mapMutations([
+			'client_select_newSet',
+			'client_select_existSet'
 		])
 	},
 	computed: {
@@ -122,6 +131,12 @@ export default {
 		]),
 		selectedClient() {
 			return this.client_byPhone.find(el => el.phone == this.newClient.phone)
+		},
+		local_client_select_newClient () {
+			return Object.assign({}, this.newClient)
+		},
+		local_client_select_existClient () {
+			return this.selectedClient
 		}
 	}
 }
