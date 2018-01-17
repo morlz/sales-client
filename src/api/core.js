@@ -75,7 +75,7 @@ class Core extends EventEmitter {
 	prepareArrays (params) {
 		for (var prop in params) {
 			if (params.hasOwnProperty(prop)) {
-				params[prop] = JSON.stringify(params[prop])
+				if (typeof params[prop] == 'object' || Array.isArray(params[prop])) params[prop] = JSON.stringify(params[prop])
 			}
 		}
 		return params

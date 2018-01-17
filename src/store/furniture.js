@@ -23,7 +23,7 @@ const state = {
 
 const actions = {
 	furniture_init ({ commit, dispatch, getters }, payload) {
-		dispatch('furniture_getModels')
+		dispatch('furniture_getModels', { salon: null, type: "storage" })
 		dispatch('getSalonsList', getters.currentUserSalon)
 		if (payload) {
 			dispatch('furniture_getOne', payload)
@@ -48,7 +48,8 @@ const actions = {
 				limit: state.perLoadingLimit,
 				offset: state.offset.current,
 				filters: getters.furniture_filters,
-				sort: state.sort
+				sort: state.sort,
+				type: getters.furniture_type
 			})
 			.then(({ data }) => {
 				if (!data.error) {
@@ -71,7 +72,8 @@ const actions = {
 				limit: state.perLoadingLimit,
 				offset: 0,
 				filters: getters.furniture_filters,
-				sort: state.sort
+				sort: state.sort,
+				type: getters.furniture_type
 			})
 			.then(({ data }) => {
 				if (!data.error) commit('furniture_cacheSet', data)
@@ -118,7 +120,8 @@ const mutations = {
 }
 
 const getters = {
-	furniture_filters: ({ filters }) => filters,
+	furniture_filters: ({ filters }) => ({ ...filters, type: undefined }),
+	furniture_type: ({ filters }) => filters.type,
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
 	furniture_models: ({ cached }) => [ { MODEL: "Все модели", value: "" }, ...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL }))],

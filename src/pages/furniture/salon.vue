@@ -78,12 +78,12 @@
 
 		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersSalonSet">
 			<tabless
-				v-loading="furniture_loading"
 				key="salon"
 				:data="furniture_cached"
 				:fieldDescription="furnitureSalonFieldDescriptionFiltred"
 				:filters="furniture_filters"
 				:select-fields="local_furniture_selectFields"
+				:localSort="false"
 				ref="table"
 				@filter="local_furniture_filterChange"
 				@sortChange="local_furniture_sortChange"
@@ -133,16 +133,17 @@ export default {
 		return {
 			furnitureSalonFieldDescription,
 			currentTab: 0,
+			lastFurnituresFilters: {},
 			tabs: [
-				{ name: "Склад", filters: { type: "storage" } },
-				{ name: "Все новые", filters: { type: "new" } },
-				{ name: "Продажи из других салонов", filters: { type: "selled" } },
+				{ name: "Склад", type: "storage" },
+				{ name: "Все новые", type: "new" },
+				{ name: "Продажи из других салонов", type: "selled" },
 			]
 		}
 	},
 	watch: {
 		additionalFIlters (n) {
-			this.furniture_filtersChange (Object.assign({}, this.lastFurnitureFilters, n))
+			this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -152,6 +153,9 @@ export default {
 			if (n != undefined)
 				this.furniture_getOne(n)
 		},
+		furniture_type (n) {
+			this.furniture_getModels({ salon: this.lastFurnituresFilters.ID_SALONA, type: n })
+		}
 	},
 	computed: {
 		...mapGetters([
@@ -166,13 +170,16 @@ export default {
 			'furniture_current',
 			'furniture_filters',
 			'furniture_models',
+			'furniture_type',
 			'auth_settings',
 		]),
 		data () {
 			return this.cachedFurnitures
 		},
 		additionalFIlters () {
-			return Object.assign({}, this.tabs[this.currentTab].filters)
+			return {
+				type: this.tabs[this.currentTab].type
+			}
 		},
 		currentSalonName () {
 			return this.salon_list_furniture.find(salon => salon.id == this.furniture_current.ID_SALONA) || {}
@@ -180,7 +187,7 @@ export default {
 		local_furniture_selectFields () {
 			let rez = []
 			if (this.salon_list_furniture)
-				rez.push({ data: this.salon_list_furniture, field: "salon", fields: { label: "NAME", value: "id"}, filterable: true })
+				rez.push({ data: this.salon_list_furniture, field: "td.salon.NAME", fields: { label: "NAME", value: "id"}, filterable: true })
 
 			if (this.furniture_models)
 				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
@@ -219,7 +226,7 @@ export default {
 		},
 		local_furniture_handleFieldSelect (data) {
 			if (data.field != 'salon') return
-			this.furniture_getModels(data.value)
+			this.furniture_getModels({ salon: data.value, type: this.furniture_type })
 		},
 		local_furniture_filtersSalonSet (MODEL) {
 			if (MODEL == 'Все модели') MODEL = ""

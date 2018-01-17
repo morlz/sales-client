@@ -19,12 +19,15 @@ export default {
 			}
 		})
 	},
-	async getModels (ID_SALONA) {
+	async getModels ({ salon, type }) {
 		return await core.invoke({
 			method: "get",
-			type: "furnituremodels",
+			type: "furnitures",
 			params: {
-				ID_SALONA
+				limit: 1e3,
+				type,
+				models: true,
+				salon
 			}
 		})
 	}

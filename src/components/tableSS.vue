@@ -7,7 +7,7 @@
 					<th v-if="lineNumbers && !minify" class="tableIndex">№</th>
 					<th v-for="column, index in columns" @click="thClick(column, index)" :key="index">
 						{{ column.label }}
-						<i v-if="sortable" :class="sortableIconClass(column, index)" />
+						<i :class="sortableIconClass(column, index)" />
 					</th>
 				</tr>
 				<tr v-if="!minify">
@@ -33,7 +33,7 @@
 			<tbody>
 				<tr v-for="row, index in sortedRows" :key="index" :data-index="index">
 					<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
-					<td v-for="column, columnItem in columns" :class="column.type" @click="clickHandler($event, row, columnItem)"> {{ row[column.field] }} </td>
+					<td v-for="column, columnItem in columns" :class="column.type" @click="clickHandler($event, row, columnItem)"> {{ getFieldData(row, column.field) }} </td>
 					<td>
 						<td class="buttons" v-if="local_buttonsCondition(row)">
 							<el-button
@@ -89,6 +89,10 @@ export default {
 			default: false
 		},
 		sortable: {
+			type: Boolean,
+			default: true
+		},
+		localSort: {
 			type: Boolean,
 			default: true
 		},
@@ -159,22 +163,27 @@ export default {
 					return el
 				})
 
-			return this.rows.sort((a, b) => {
-				let sortField = this.columns[this.sort.columnIndex].field,
-					returnRez = rez => {
-						return this.sort.type == 'asc' ? rez : -rez
-					},
-					fieldA = typeof a[sortField] == 'string' ? a[sortField].toLowerCase() : a[sortField],
-					fieldB = typeof b[sortField] == 'string' ? b[sortField].toLowerCase() : b[sortField]
+				let data = this.rows
 
-				if (fieldA < fieldB)
-					return returnRez(-1)
+				if (this.localSort)
+					data.sort((a, b) => {
+						let sortField = this.columns[this.sort.columnIndex].field,
+							returnRez = rez => {
+								return this.sort.type == 'asc' ? rez : -rez
+							},
+							fieldA = typeof a[sortField] == 'string' ? a[sortField].toLowerCase() : a[sortField],
+							fieldB = typeof b[sortField] == 'string' ? b[sortField].toLowerCase() : b[sortField]
 
-				if (fieldA > fieldB)
-					return returnRez(1)
+						if (fieldA < fieldB)
+							return returnRez(-1)
 
-				return 0
-			}).map(el => {
+						if (fieldA > fieldB)
+							return returnRez(1)
+
+						return 0
+					})
+
+			return data.map(el => {
 				el.gender === 1 ? 'Мужской' : 'Женский'
 				return el
 			})
@@ -228,6 +237,9 @@ export default {
 			for (var prop in this.filters)
 				if (this.filters.hasOwnProperty(prop) && this.search[prop] != this.filters[prop])
 					this.search[prop] = this.filters[prop]
+		},
+		getFieldData (row, field) {
+			return field.split(".").reduce((prev, el) => (prev[el] || ""), row)
 		}
 	},
 	mounted () {

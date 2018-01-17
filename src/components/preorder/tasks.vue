@@ -12,6 +12,10 @@
 			:buttonsCondition="task_buttonCondition"
 			:minify="true"/>
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
+
+		<div class="buttons">
+			<el-button v-if="auth_can(3, 'Task')" @click="clickEndHandle" type="primary">Добавить задачу (Завершить)</el-button>
+		</div>
 	</el-card>
 </template>
 
@@ -42,7 +46,10 @@ export default {
 
 	},
 	methods: {
-		...mapMutations([])
+		...mapMutations([]),
+		clickEndHandle () {
+			router.push({ path: `/preorder/tasks/${this.taskToEnd.id || 0}` })
+		}
 	},
 	computed: {
 		...mapGetters([
@@ -57,6 +64,9 @@ export default {
 				return task
 			}) : []
 		},
+		taskToEnd () {
+			return this.data.find(el => el.end_date == null) || {}
+		}
 	}
 }
 </script>

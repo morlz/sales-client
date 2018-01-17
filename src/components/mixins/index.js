@@ -78,15 +78,6 @@ export default {
 					}
 				})
 
-			if (this.auth_can(4, 'Task'))
-				rez.push({
-					name: "Завершить",
-					click: (e, { row }) => {
-						e.stopPropagation()
-						router.push({ path: `/preorder/tasks/${row.id}` })
-					}
-				})
-
 			return rez
 		}
 	}
