@@ -124,7 +124,7 @@ const getters = {
 	furniture_type: ({ filters }) => filters.type,
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
-	furniture_models: ({ cached }) => [ { MODEL: "Все модели", value: "" }, ...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL }))],
+	furniture_models: ({ cached }) => [ { MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) }, ...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))],
 	furniture_loading: ({ loading }) => loading.list,
 	furniture_loadingBottom: ({ loading }) => loading.bottom,
 	furniture_loadingOne: ({ loading }) => loading.one,

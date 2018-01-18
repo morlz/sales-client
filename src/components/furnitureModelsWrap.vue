@@ -6,7 +6,10 @@
 				v-for="item, index in furniture_models"
 				:class="{ selected: current == item.MODEL || (!current && item.MODEL == 'Все модели') }"
 				@click="clickHandler(item.MODEL)"
-			>{{ item.MODEL }}</div>
+			>
+				<div class="name">{{ item.MODEL }}</div>
+				<div class="count">{{ item.count }}</div>
+			</div>
 		</el-card>
 
 		<div class="content">
@@ -54,8 +57,15 @@ export default {
 	grid-template-columns: 160px 1fr;
 	grid-gap: 10px;
 	.modelList {
+		.el-card__body {
+			padding: 7px;
+		}
 		align-self: start;
 		.model {
+			display: grid;
+			grid-auto-flow: column;
+			justify-content: space-between;
+			align-items: center;
 			cursor: pointer;
 			transition: all 0.3s ease-in-out;
 			&:hover {
