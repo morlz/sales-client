@@ -86,6 +86,7 @@ export default {
 		return {
 			newClient: {
 				phone: "",
+				email: "",
 				fio: "",
 				gender: false,
 				disableSMS: false,
@@ -137,6 +138,14 @@ export default {
 		},
 		local_client_select_existClient () {
 			return this.selectedClient
+		},
+		phoneFormated: {
+			get () {
+
+			},
+			set (n) {
+
+			}
 		}
 	}
 }

@@ -33,7 +33,16 @@
 			<tbody>
 				<tr v-for="row, index in sortedRows" :key="index" :data-index="index">
 					<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
-					<td v-for="column, columnItem in columns" :class="column.type" @click="clickHandler($event, row, columnItem)"> {{ getFieldData(row, column.field) }} </td>
+					<td v-for="column, columnIndex in columns" :class="column.type" @click="clickHandler($event, row, columnIndex)">
+						<div v-if="column.type != 'array'">{{ getFieldData(row, column.field) }}</div>
+						<tabless-popover
+							v-if="column.type == 'array'"
+							:one="getFieldData(row, column.field).length < 2"
+							:arr="getFieldData(row, column.field)"
+							:fields="column.fields"
+							:label="column.label"
+							/>
+					</td>
 					<td>
 						<td class="buttons" v-if="local_buttonsCondition(row)">
 							<el-button
@@ -57,6 +66,7 @@
 
 
 <script>
+import tablessPopover from '@/components/tableSSPopover'
 
 export default {
 	props: {
@@ -100,6 +110,9 @@ export default {
 			type: Array,
 			default: () => ([])
 		}
+	},
+	components: {
+		tablessPopover
 	},
 	data () {
 		return {
@@ -238,9 +251,8 @@ export default {
 				if (this.filters.hasOwnProperty(prop) && this.search[prop] != this.filters[prop])
 					this.search[prop] = this.filters[prop]
 		},
-		getFieldData (row, field) {
-			return field.split(".").reduce((prev, el) => (prev[el] || ""), row)
-		}
+		getFieldData: (row, field) => field.split(".").reduce((prev, el) => (prev[el] || ""), row),
+		getFieldArrayCount: arr => arr.length,
 	},
 	mounted () {
 		this.applyFilters()

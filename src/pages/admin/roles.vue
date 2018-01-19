@@ -15,7 +15,7 @@
 			<div class="roles" v-loading="permissions_loading_roles" v-if="auth_can(1, 'Role')">
 				<div class="title">
 					Список всех ролей
-					<el-input class="create" placeholder="Имя новой роли" @change="permissions_setAddRole" v-if="auth_can(2, 'Role')" />
+					<el-input class="create" placeholder="Имя новой роли" @change="permissions_setAddRole" v-if="auth_can(2, 'Role')" :class="{ 'create-show': permissions_addRoleFieldShow }" />
 				</div>
 				<div class="button">
 					<el-button @click="permissions_createRole" v-if="auth_can(2, 'Role')">Добавить роль</el-button>
@@ -35,7 +35,7 @@
 			<div class="controllers" v-loading="permissions_loading_controllers" v-if="auth_can(1, 'Action')">
 				<div class="title">
 					Список контроллеров
-					<el-input class="create" placeholder="Имя нового контроллера" @change="permissions_setAddController" v-if="auth_can(2, 'Action')" />
+					<el-input class="create" placeholder="Имя нового контроллера" @change="permissions_setAddController" v-if="auth_can(2, 'Action')" :class="{ 'create-show': permissions_addControllerFieldShow }" />
 				</div>
 				<div class="button">
 					<el-button @click="permissions_createController" v-if="auth_can(2, 'Action')">Добавить контроллер</el-button>
@@ -95,7 +95,9 @@ export default {
 			'permissions_ranges',
 			'permissions_selectedType',
 			'permissions_loading_roles',
-			'permissions_loading_controllers'
+			'permissions_loading_controllers',
+			'permissions_addRoleFieldShow',
+			'permissions_addControllerFieldShow',
 		])
 	},
 	mounted() {
@@ -146,6 +148,9 @@ export default {
                             opacity: 1;
                         }
                     }
+					.create-show {
+						opacity: 1;
+					}
                 }
                 .list {
                     margin-top: 10px;

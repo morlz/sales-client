@@ -109,6 +109,7 @@ const actions = {
 			})
 			.then(res => {
 				if (res.data.error) return;
+				if (res.data.errors) dispatch('handleFormErrors', res.data.errors)
 				console.log(res.data);
 			})
 	}

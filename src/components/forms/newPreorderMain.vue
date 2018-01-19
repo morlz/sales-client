@@ -10,7 +10,7 @@
 			</el-form-item>
 
 			<el-form-item label="Бюджет">
-				<el-input v-model="form.butget" placeholder="Бюджет" />
+				<el-input v-model="form.budget" placeholder="Бюджет" />
 			</el-form-item>
 
 			<el-form-item label="Веростность">
@@ -39,7 +39,7 @@ export default {
 			adSources,
 			form: {
 				source: "",
-				butget: "",
+				budget: "",
 				chance: 3,
 				description: ""
 			}

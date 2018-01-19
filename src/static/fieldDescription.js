@@ -161,7 +161,8 @@ let dataObj = {
 		{ field: "OTCH", label: "Отчество" },
 		{ field: "S_DATE", label: "Дата создания" },
 		{ field: "RABOTAET", label: "Работает" },
-		{ field: "salon", label: "Салон" },
+		{ field: "roles", label: "Роли", type: 'array', fields: ['name'] },
+		{ field: "salon.NAME", label: "Салон" },
 	]
 }
 

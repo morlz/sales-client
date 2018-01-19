@@ -258,6 +258,8 @@ const getters = {
 	permissions_rangesSetup: state => state.rangesSetup,
 	permissions_rolesSliderHide: state => state.selected.type != "controllers",
 	permissions_controllersSliderHide: state => state.selected.type != "roles",
+	permissions_addRoleFieldShow: state => !!state.add.role.length,
+	permissions_addControllerFieldShow: state => !!state.add.controller.length,
 	permissions_loading_roles: state => state.loading.roles,
 	permissions_loading_controllers: state => state.loading.controllers,
 	permissions_loading_ranges: state => state.loading.ranges,
