@@ -1,4 +1,8 @@
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import {
+	mapGetters,
+	mapActions,
+	mapMutations
+} from 'vuex'
 
 export default {
 	methods: {
@@ -11,24 +15,29 @@ export default {
 		routerGoId(e, id) {
 			id = id.id || id
 			let path = `${router.currentRoute.fullPath}/${id}`
-			router.push({ path })
+			router.push({
+				path
+			})
 		},
 		routerGoIdPath(path) {
 			return (e, id) => {
 				id = id.id || id
-				let newPath = `${path}/${id}`
-				router.push({ path: newPath })
+				router.push({
+					path: `${path}/${id}`
+				})
 			}
 		},
-		goToPreorder (e, id) {
+		goToPreorder(e, id) {
 			id = id.preorder_id || id
 
-			router.push({ path: `/preorder/preorders/${id}` })
+			router.push({
+				path: `/preorder/preorders/${id}`
+			})
 		},
 		auth_can(minlvl, action) {
 			return !!this.auth_permisiions.find(perm => perm.name == action && perm.access_level >= minlvl)
 		},
-		task_buttonCondition (row) {
+		task_buttonCondition(row) {
 			return !row.end_date
 		}
 	},
@@ -37,7 +46,7 @@ export default {
 			'auth_permisiions',
 			'route'
 		]),
-		refInfinite () {
+		refInfinite() {
 			return this.$refs.infiniteLoading
 		},
 		isOne() {
@@ -46,15 +55,15 @@ export default {
 		oneId() {
 			return this.$route.params.id
 		},
-		afterTableContactButtons () {
+		afterTableContactButtons() {
 			let rez = []
 
 			if (this.auth_can(3, 'ContactFace'))
 				rez.push({
 					class: {
-						'el-icon-edit' : true
+						'el-icon-edit': true
 					},
-					click: (e, { row }) => {
+					click: (e, row) => {
 						e.stopPropagation()
 						this.client_edit_contactSet(row)
 						this.client_visible_editContactFormSet(true)
@@ -63,15 +72,15 @@ export default {
 
 			return rez
 		},
-		afterTableTasksButtons () {
+		afterTableTasksButtons() {
 			let rez = []
 
 			if (this.auth_can(3, 'Task'))
 				rez.push({
 					class: {
-						'el-icon-edit' : true
+						'el-icon-edit': true
 					},
-					click: (e, { row }) => {
+					click: (e, row) => {
 						e.stopPropagation()
 						this.task_edit_currentSet(row)
 						this.task_edit_visibleSet(true)

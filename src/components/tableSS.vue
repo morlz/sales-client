@@ -47,7 +47,7 @@
 						<td class="buttons" v-if="local_buttonsCondition(row)">
 							<el-button
 								size="small"
-								@click="button.click($event, props)"
+								@click="button.click($event, row)"
 								v-for="button, index in buttonRedused"
 								:key="index"
 								:class="button.class"

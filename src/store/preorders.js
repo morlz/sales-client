@@ -109,8 +109,9 @@ const actions = {
 			})
 			.then(res => {
 				if (res.data.error) return;
-				if (res.data.errors) dispatch('handleFormErrors', res.data.errors)
-				console.log(res.data);
+				if (res.data.errors) return dispatch('handleFormErrors', res.data.errors)
+				dispatch('notify', 'Предзаказ создан')
+				router.push({ path: `/preorder/preordrs/${data.preorder.id}` })
 			})
 	}
 }
