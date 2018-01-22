@@ -14,7 +14,7 @@
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
 
 		<div class="buttons">
-			<el-button v-if="auth_can(3, 'Task')" @click="clickEndHandle" type="primary">Добавить задачу (Завершить)</el-button>
+			<el-button v-if="auth_can(3, 'Task') && taskToEnd.id" @click="clickEndHandle" type="primary">Добавить задачу (Завершить)</el-button>
 		</div>
 	</el-card>
 </template>

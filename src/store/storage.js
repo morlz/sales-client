@@ -22,7 +22,8 @@ const state = {
 }
 
 const actions = {
-	storage_init ({ commit, dispatch }, payload) {
+	storage_init ({ commit, dispatch, getters }, payload) {
+		dispatch('storage_getModels', { type: getters.storage_type })
 		if (payload) {
 			dispatch('storage_getOne', payload)
 		} else {
@@ -46,7 +47,8 @@ const actions = {
 				limit: state.perLoadingLimit,
 				offset: state.offset.current,
 				filters: getters.storage_filters,
-				sort: state.sort
+				sort: state.sort,
+				type: getters.storage_type
 			})
 			.then(({ data }) => {
 				if (!data.error) {
@@ -69,7 +71,8 @@ const actions = {
 				limit: state.perLoadingLimit,
 				offset: 0,
 				filters: getters.storage_filters,
-				sort: state.sort
+				sort: state.sort,
+				type: getters.storage_type
 			})
 			.then(({ data }) => {
 				if (!data.error) commit('storage_cacheSet', data)
@@ -86,6 +89,15 @@ const actions = {
 			.then(({ data }) => {
 				commit('storage_currentSet', data)
 				commit('storage_loadingOneSet', false)
+			})
+	},
+	storage_getModels({ commit, dispatch }, payload){
+		commit('storage_loadingModelsSet', true)
+		api.storages
+			.getModels(payload)
+			.then(({ data }) => {
+				commit('storage_cachedModelsSet', data)
+				commit('storage_loadingModelsSet', false)
 			})
 	}
 }
@@ -107,10 +119,15 @@ const mutations = {
 }
 
 const getters = {
-	storage_filters: ({ filters }) => filters,
+	storage_filters: ({ filters }) => ({ ...filters, type: undefined }),
 	storage_current: ({ cached }) => cached.current,
 	storage_cached: ({ cached }) => cached.list,
-	storage_models: ({ cached }) => cached.models,
+	storage_models: ({ cached }) => [
+			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
+			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
+		]
+		.sort(api.core.sortFnFactory(model => model.value == "" ? "АААААА": model.MODEL, true)),
+	storage_type: ({ filters }) => filters.type,
 	storage_loading: ({ loading }) => loading.list,
 	storage_loadingBottom: ({ loading }) => loading.bottom,
 	storage_loadingOne: ({ loading }) => loading.one,

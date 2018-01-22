@@ -64,7 +64,7 @@
 			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
 		</el-tabs>
 
-		<furniture-models-wrap :current="storage_filters.MODEL" @select="local_furniture_filtersSalonSet">
+		<furniture-models-wrap :current="storage_filters.MODEL" @select="local_storage_filtersModelSet" :models="storage_models" :loading="storage_loadingModels">
 			<tabless
 				v-loading="storage_loading"
 				key="storage"
@@ -122,14 +122,14 @@ export default {
 			lastStorageFilters: {},
 			currentTab: 0,
 			tabs: [
-				{ name: "СГП", filters: { type: "sgp" } },
-				{ name: "Интернет", filters: { type: "internet" } },
-				{ name: "e-commerce", filters: { type: "e" } },
+				{ name: "СГП", type: "sgp" },
+				{ name: "Интернет", type: "internet" },
+				{ name: "e-commerce", type: "e" },
 			]
 		}
 	},
 	watch: {
-		additionalFIlters (n) {
+		additionalFilters (n) {
 			this.storage_filtersChange (Object.assign({}, this.lastStorageFilters, n))
 
 			this.$nextTick(() => {
@@ -139,27 +139,31 @@ export default {
 		oneId (n) {
 			if (n != undefined)
 				this.storage_getOne(n)
+		},
+		storage_type (n) {
+			this.storage_getModels({ salon: this.lastStorageFilters.ID_SALONA, type: n })
 		}
 	},
 	computed: {
 		...mapGetters([
-			'furniture_loadingModels',
+			'storage_loadingModels',
 			'storage_loadingBottom',
 			'storage_loadingOne',
 			'storage_loading',
 			'storage_cached',
 			'storage_current',
 			'storage_filters',
-			'furniture_models',
+			'storage_models',
+			'storage_type',
 			'auth_settings'
 		]),
-		additionalFIlters () {
-			return Object.assign({}, this.tabs[this.currentTab].filters)
+		additionalFilters () {
+			return { type: this.tabs[this.currentTab].type }
 		},
 		local_storage_selectFields () {
 			let rez = []
-			if (this.furniture_models)
-				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+			if (this.storage_models)
+				rez.push({ data: this.storage_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
 
 			return rez
 		},
@@ -175,7 +179,7 @@ export default {
 			'storage_sortChange',
 			'storage_filtersChange',
 			'storage_infinity',
-			'furniture_getModels',
+			'storage_getModels',
 			'storage_getOne',
 		]),
 		local_storage_filterChange (n) {
@@ -193,15 +197,14 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		local_furniture_filtersSalonSet (MODEL) {
+		local_storage_filtersModelSet (MODEL) {
 			if (MODEL == 'Все модели') MODEL = ""
-			let filters = { ...this.storage_filters, MODEL }
+			let filters = { ...this.storage_filters, MODEL, type: this.storage_type }
 			this.local_storage_filterChange(filters)
 		}
 	},
 	mounted () {
 		this.storage_init(this.oneId)
-		this.furniture_getModels()
 	}
 }
 </script>

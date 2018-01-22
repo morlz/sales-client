@@ -18,5 +18,17 @@ export default {
 				id
 			}
 		})
+	},
+	async getModels ({ filters, type }) {
+		return await core.invoke({
+			method: "get",
+			type: "storages",
+			params: {
+				limit: 1e3,
+				type,
+				models: true,
+				filters
+			}
+		})
 	}
 }

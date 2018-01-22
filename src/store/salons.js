@@ -3,10 +3,8 @@ import api from '@/api'
 const state = {
 	cached: [],
 	loading: true,
-
 	salonList: [],
 	salonListLoading: true,
-
 }
 
 const actions = {
@@ -28,7 +26,8 @@ const actions = {
 				commit('loadingSalonsSet', false)
 			})
 	},
-	getSalonsList ({ commit, dispatch }) {
+	getSalonsList ({ commit, dispatch, state }) {
+		if (state.salonList.length) return
 		commit('updateSalonsListLoading', true)
 		api.salons
 			.getList()
@@ -67,14 +66,22 @@ const getters = {
 	salonsListDiscount: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 10),
 	salonsListFurniture: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 1040 && el.id != 10),
 	salonsListLoading: ({ salonListLoading }) => salonListLoading,
-	salon_list_discount: state => state.salonList.filter(el => el.id != 10).map(el => {
-		if (el.id == 999) el.id = ""
-		return el
-	}).sort(sortSalons),
-	salon_list_furniture: state => state.salonList.filter(el => el.id != 1040 && el.id != 10).map(el => {
-		if (el.id == 999) el.id = ""
-		return el
-	}).sort(sortSalons)
+	salon_list_discount: state => state.salonList
+		.filter(el => el.ID_SALONA != 10)
+		.map(el => {
+			if (el.ID_SALONA == '999')
+				el.ID_SALONA = ''
+			return el
+		})
+		.sort(api.core.sortFnFactory(salon => salon.ID_SALONA == '' ? 'AAAAA' : salon.NAME, true)),
+	salon_list_furniture: state => state.salonList
+		.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10)
+		.map(el => {
+			if (el.ID_SALONA == '999')
+				el.ID_SALONA = undefined
+			return el
+		})
+		.sort(api.core.sortFnFactory(salon => salon.ID_SALONA == undefined ? 'AAAAA' : salon.NAME, true))
 }
 
 export default {

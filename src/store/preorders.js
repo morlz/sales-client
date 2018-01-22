@@ -110,7 +110,7 @@ const actions = {
 			.then(res => {
 				if (res.data.error) return;
 				if (res.data.errors) return dispatch('handleFormErrors', res.data.errors)
-				dispatch('notify', 'Предзаказ создан')
+				dispatch('notify', { message: 'Предзаказ создан' })
 				router.push({ path: `/preorder/preordrs/${data.preorder.id}` })
 			})
 	}

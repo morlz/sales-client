@@ -15,9 +15,10 @@
 					<th v-for="column, index in columnsSearchFields">
 						<el-input v-model="search[column.field]" class="searchByField" suffix-icon="el-icon-search" :key="index" v-if="column.type == 'search'"/>
 						<el-select
-							v-model="search[column.field]"
+							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
 							class="searchByField"
 							:key="index"
+							value=""
 							v-if="column.type == 'select'"
 							:filterable="column.filterable"
 							@change="selectChange($event, column)"

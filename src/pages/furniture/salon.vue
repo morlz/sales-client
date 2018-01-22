@@ -76,7 +76,7 @@
 			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
 		</el-tabs>
 
-		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersSalonSet">
+		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersSalonSet" :loading="furniture_loadingModels" :models="furniture_models">
 			<tabless
 				key="salon"
 				:data="furniture_cached"
@@ -142,7 +142,7 @@ export default {
 		}
 	},
 	watch: {
-		additionalFIlters (n) {
+		additionalFilters (n) {
 			this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
 
 			this.$nextTick(() => {
@@ -176,10 +176,8 @@ export default {
 		data () {
 			return this.cachedFurnitures
 		},
-		additionalFIlters () {
-			return {
-				type: this.tabs[this.currentTab].type
-			}
+		additionalFilters () {
+			return { type: this.tabs[this.currentTab].type }
 		},
 		currentSalonName () {
 			return this.salon_list_furniture.find(salon => salon.id == this.furniture_current.ID_SALONA) || {}
@@ -187,7 +185,7 @@ export default {
 		local_furniture_selectFields () {
 			let rez = []
 			if (this.salon_list_furniture)
-				rez.push({ data: this.salon_list_furniture, field: "td.salon.NAME", fields: { label: "NAME", value: "id"}, filterable: true })
+				rez.push({ data: this.salon_list_furniture, field: "td.salon.NAME", fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA' }, filterable: true })
 
 			if (this.furniture_models)
 				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
@@ -211,7 +209,7 @@ export default {
 		]),
 		local_furniture_filterChange (n) {
 			this.lastFurnituresFilters = n
-			this.furniture_filtersChange (Object.assign({}, this.additionalFIlters, n))
+			this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -225,12 +223,12 @@ export default {
 			})
 		},
 		local_furniture_handleFieldSelect (data) {
-			if (data.field != 'salon') return
-			this.furniture_getModels({ salon: data.value, type: this.furniture_type })
+			if (data.field != 'td.salon.NAME') return
+			this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': data.value }, type: this.furniture_type })
 		},
 		local_furniture_filtersSalonSet (MODEL) {
 			if (MODEL == 'Все модели') MODEL = ""
-			let filters = { ...this.furniture_filters, MODEL }
+			let filters = { ...this.furniture_filters, MODEL, type: this.furniture_type }
 			this.local_furniture_filterChange(filters)
 		}
 	},

@@ -23,7 +23,7 @@ const state = {
 
 const actions = {
 	furniture_init ({ commit, dispatch, getters }, payload) {
-		dispatch('furniture_getModels', { salon: null, type: "storage" })
+		dispatch('furniture_getModels', { type: getters.furniture_type })
 		dispatch('getSalonsList', getters.currentUserSalon)
 		if (payload) {
 			dispatch('furniture_getOne', payload)
@@ -124,7 +124,11 @@ const getters = {
 	furniture_type: ({ filters }) => filters.type,
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
-	furniture_models: ({ cached }) => [ { MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) }, ...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))],
+	furniture_models: ({ cached }) => [
+			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
+			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
+		]
+		.sort(api.core.sortFnFactory(model => model.value == "" ? "АААААА": model.MODEL, true)),
 	furniture_loading: ({ loading }) => loading.list,
 	furniture_loadingBottom: ({ loading }) => loading.bottom,
 	furniture_loadingOne: ({ loading }) => loading.one,

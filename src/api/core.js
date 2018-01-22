@@ -4,9 +4,7 @@ import cookie from '@/api/cookie'
 import EventEmitter from 'browser-event-emitter'
 
 
-let _wait = (timeMax = 2e3, timeMin = 2e2) => {
-	return new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
-}
+let _wait = (timeMax = 2e3, timeMin = 2e2) => new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
 
 class Core extends EventEmitter {
 	constructor () {
@@ -86,6 +84,18 @@ class Core extends EventEmitter {
 		let data = path.find(el => el[field] == payload[field])
 		if (!data) return
 		for (var prop in payload) if (payload.hasOwnProperty(prop)) data[prop] = payload[prop]
+	}
+
+	sortFnFactory (field, revert = false) {
+		return (a, b) => {
+			if (typeof field == 'function') {
+				if (field(a) > field(b)) return revert ? 1 : -1
+				if (field(a) < field(b)) return revert ? -1 : 1
+			}
+			if (a[field] > b[field]) return revert ? 1 : -1
+			if (a[field] < b[field]) return revert ? -1 : 1
+			return 0
+		}
 	}
 }
 

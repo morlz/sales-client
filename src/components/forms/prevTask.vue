@@ -4,7 +4,7 @@
 
 		<el-form label-width="130px">
 			<el-form-item label="Дата завершения">
-				<el-date-picker type="date" :value="data.date" :editable="false" :id="null" />
+				<el-date-picker type="date" :value="new Date()" :readonly="true" :id="null" />
 			</el-form-item>
 
 			<el-form-item label="Тип">
@@ -25,7 +25,6 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-
 
 export default {
 	data () {

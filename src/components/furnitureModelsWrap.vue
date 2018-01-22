@@ -1,9 +1,9 @@
 <template>
 	<div class="modelsWrapper" :class="{ oneColumn: !auth_settings.showModels }">
-		<el-card class="modelList" v-if="auth_settings.showModels" v-loading="furniture_loadingModels">
+		<el-card class="modelList" v-if="auth_settings.showModels" v-loading="loading">
 			<div class="title" slot="header">Модель</div>
 			<div class="model"
-				v-for="item, index in furniture_models"
+				v-for="item, index in models"
 				:class="{ selected: current == item.MODEL || (!current && item.MODEL == 'Все модели') }"
 				@click="clickHandler(item.MODEL)"
 			>
@@ -22,7 +22,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
-	props: ['current'],
+	props: {
+		current: {},
+		models: {
+			type: Array
+		},
+		loading: {
+			type: Boolean
+		}
+	},
 	methods: {
 		...mapMutations([
 			'auth_settings_showModelsSet'
@@ -34,8 +42,6 @@ export default {
 	computed: {
 		...mapGetters([
 			'auth_settings',
-			'furniture_loadingModels',
-			'furniture_models',
 		]),
 		showModels: {
 			get () {

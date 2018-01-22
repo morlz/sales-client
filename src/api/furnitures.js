@@ -19,7 +19,7 @@ export default {
 			}
 		})
 	},
-	async getModels ({ salon, type }) {
+	async getModels ({ filters, type }) {
 		return await core.invoke({
 			method: "get",
 			type: "furnitures",
@@ -27,7 +27,7 @@ export default {
 				limit: 1e3,
 				type,
 				models: true,
-				salon
+				filters
 			}
 		})
 	}
