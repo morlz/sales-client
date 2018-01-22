@@ -70,10 +70,10 @@ const getters = {
 		.filter(el => el.ID_SALONA != 10)
 		.map(el => {
 			if (el.ID_SALONA == '999')
-				el.ID_SALONA = ''
+				el.ID_SALONA = undefined
 			return el
 		})
-		.sort(api.core.sortFnFactory(salon => salon.ID_SALONA == '' ? 'AAAAA' : salon.NAME, true)),
+		.sort(api.core.sortFnFactory(salon => salon.ID_SALONA == undefined ? 'ААААА' : salon.NAME, true)),
 	salon_list_furniture: state => state.salonList
 		.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10)
 		.map(el => {

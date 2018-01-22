@@ -64,16 +64,16 @@
 
 		<furniture-models-switch/>
 
-		<furniture-models-wrap :current="discount_filters.MODEL" @select="local_discount_filtersSalonSet">
+		<furniture-models-wrap :current="discount_filters.MODEL" @select="local_discount_filtersModelSet" :loading="discount_loadingModels" :models="discount_models">
 			<el-tabs tab-position="top" v-model="currentTab">
 				<el-tab-pane label="Таблица">
 					<tabless
-						v-loading="discount_loading"
 						key="salon"
 						:data="discount_cached"
 						:fieldDescription="discountFieldDescriptionFilred"
 						:filters="discount_filters"
 						:select-fields="local_discount_selectFields"
+						:localSort="false"
 						ref="table"
 						@filter="local_discount_filterChange"
 						@sortChange="local_discount_sortChange"
@@ -133,7 +133,7 @@ export default {
 		}
 	},
 	watch: {
-		additionalFIlters (n) {
+		additionalFilters (n) {
 			this.discount_filtersChange (Object.assign({}, this.lastDiscountFilters, n))
 
 			this.$nextTick(() => {
@@ -156,20 +156,18 @@ export default {
 		...mapGetters([
 			'salonsListLoading',
 			'currentUserSalon',
-			'furniture_loadingModels',
 			'discount_loadingBottom',
 			'discount_loadingOne',
 			'discount_loading',
 			'discount_cached',
 			'discount_current',
 			'discount_filters',
-			'furniture_models',
-			'furniture_loadingModels',
-			'furniture_models',
+			'discount_models',
 			'auth_settings',
-			'salon_list_discount'
+			'salon_list_discount',
+			'discount_loadingModels'
 		]),
-		additionalFIlters () {
+		additionalFilters () {
 			return {}
 		},
 		additionalSort () {
@@ -190,10 +188,10 @@ export default {
 		local_discount_selectFields () {
 			let rez = []
 			if (this.salon_list_discount)
-				rez.push({ data: this.salon_list_discount, field: "salon", fields: { label: "NAME", value: "id"}, filterable: true })
+				rez.push({ data: this.salon_list_discount, field: "td.salon.NAME", fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA'}, filterable: true })
 
-			if (this.furniture_models)
-				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+			if (this.discount_models)
+				rez.push({ data: this.discount_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
 
 			return rez
 		},
@@ -205,11 +203,11 @@ export default {
 			'discount_filtersChange',
 			'discount_infinity',
 			'discount_getOne',
-			'furniture_getModels',
+			'discount_getModels',
 		]),
 		local_discount_filterChange (n) {
 			this.lastDiscountFilters = n
-			this.discount_filtersChange (Object.assign({}, this.additionalFIlters, n))
+			this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
@@ -223,19 +221,18 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		local_discount_filtersSalonSet (MODEL) {
+		local_discount_handleFieldSelect (data) {
+			if (data.field != 'td.salon.NAME') return
+			this.discount_getModels({ filters: { 'td.salon.ID_SALONA': data.value }})
+		},
+		local_discount_filtersModelSet (MODEL) {
 			if (MODEL == 'Все модели') MODEL = ""
-			let filters = { ...this.furniture_filters, MODEL }
+			let filters = { ...this.discount_filters, MODEL }
 			this.local_discount_filterChange(filters)
 		},
-		local_discount_handleFieldSelect (data) {
-			if (data.field != 'salon') return
-			this.furniture_getModels(data.value)
-		}
 	},
 	mounted () {
 		this.discount_init(this.oneId)
-		this.furniture_getModels()
 	}
 }
 </script>

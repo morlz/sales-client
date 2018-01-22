@@ -76,7 +76,7 @@
 			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
 		</el-tabs>
 
-		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersSalonSet" :loading="furniture_loadingModels" :models="furniture_models">
+		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersModelSet" :loading="furniture_loadingModels" :models="furniture_models">
 			<tabless
 				key="salon"
 				:data="furniture_cached"
@@ -226,7 +226,7 @@ export default {
 			if (data.field != 'td.salon.NAME') return
 			this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': data.value }, type: this.furniture_type })
 		},
-		local_furniture_filtersSalonSet (MODEL) {
+		local_furniture_filtersModelSet (MODEL) {
 			if (MODEL == 'Все модели') MODEL = ""
 			let filters = { ...this.furniture_filters, MODEL, type: this.furniture_type }
 			this.local_furniture_filterChange(filters)

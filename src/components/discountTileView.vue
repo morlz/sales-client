@@ -7,18 +7,18 @@
 			<div class="discountTileViewItem" v-for="item, itemIndex in model.data" :key="itemIndex" @click="clickHandler(item)">
 				<div class="title gr" slot="header">
 					<div class="name">
-						{{ item.NAME }}
+						{{ item.MODEL }}
 					</div>
 
 					<div class="mXR">
-						{{ item.mXR }}
+						{{ item && item.td && item.td.mestoXR ? item.td.mestoXR.NAME : '' }}
 					</div>
 				</div>
 
 				<div class="body">
 					<div class="gr">
 						<div class="tip">
-							{{ item.TIP }}
+							{{ item.td.TIP }}
 						</div>
 
 						<div class="">
@@ -31,7 +31,7 @@
 							Цена
 						</div>
 						<div class="price">
-							{{ item.CENA_ZAL }}
+							{{ item.td.CENA_ZAL }}
 						</div>
 					</div>
 

@@ -32,7 +32,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="row, index in sortedRows" :key="index" :data-index="index">
+				<tr v-for="row, index in sortedRows" :key="index" :data-index="index" class="hoverShow">
 					<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
 					<td v-for="column, columnIndex in columns" :class="column.type" @click="clickHandler($event, row, columnIndex)">
 						<div v-if="column.type != 'array'">{{ getFieldData(row, column.field) }}</div>
@@ -44,18 +44,17 @@
 							:label="column.label"
 							/>
 					</td>
-					<td>
-						<td class="buttons" v-if="local_buttonsCondition(row)">
-							<el-button
-								size="small"
-								@click="button.click($event, row)"
-								v-for="button, index in buttonRedused"
-								:key="index"
-								:class="button.class"
-							>
-								{{ button.name }}
-							</el-button>
-						</td>
+					<td class="buttons" v-if="local_buttonsCondition(row)">
+						<el-button
+							size="small"
+							@click.stop="button.click($event, row)"
+							v-for="button, index in buttonRedused"
+							:key="index"
+							:class="button.class"
+							:type="button.type"
+						>
+							{{ button.name }}
+						</el-button>
 					</td>
 				</tr>
 			</tbody>
@@ -185,8 +184,10 @@ export default {
 							returnRez = rez => {
 								return this.sort.type == 'asc' ? rez : -rez
 							},
-							fieldA = typeof a[sortField] == 'string' ? a[sortField].toLowerCase() : a[sortField],
-							fieldB = typeof b[sortField] == 'string' ? b[sortField].toLowerCase() : b[sortField]
+							sortDataA = this.getFieldData(a, sortField),
+							sortDataB = this.getFieldData(b, sortField),
+							fieldA = typeof sortDataA == 'string' ? sortDataA.toLowerCase() : sortDataA,
+							fieldB = typeof sortDataB == 'string' ? sortDataB.toLowerCase() : sortDataB
 
 						if (fieldA < fieldB)
 							return returnRez(-1)
@@ -348,6 +349,18 @@ export default {
 	            }
 	        }
 	    }
+	}
+}
+
+.hoverHide {
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.3s ease-in-out;
+}
+.hoverShow:hover {
+	.hoverHide {
+		opacity: 1;
+		pointer-events: all;
 	}
 }
 </style>

@@ -13,7 +13,8 @@ export default {
 			'task_edit_visibleSet'
 		]),
 		routerGoId(e, id) {
-			id = id.id || id
+			console.log(id);
+			id = id.id || id.ID || id.UN || id
 			let path = `${router.currentRoute.fullPath}/${id}`
 			router.push({
 				path
@@ -64,7 +65,6 @@ export default {
 						'el-icon-edit': true
 					},
 					click: (e, row) => {
-						e.stopPropagation()
 						this.client_edit_contactSet(row)
 						this.client_visible_editContactFormSet(true)
 					}
@@ -81,7 +81,6 @@ export default {
 						'el-icon-edit': true
 					},
 					click: (e, row) => {
-						e.stopPropagation()
 						this.task_edit_currentSet(row)
 						this.task_edit_visibleSet(true)
 					}

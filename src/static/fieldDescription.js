@@ -128,22 +128,22 @@ let dataObj = {
 	],
 
 	discountFieldDescription: [
-		{ field: "mXR", label: "Склад" },
+		{ field: "td.mestoXR.NAME", label: "Склад" },
 		{ field: "UCH_N", label: "Уч. №" },
 		{ field: "UN", label: "Фаб.н." },
-		{ field: "salon", label: "Салон" },
+		{ field: "td.salon.NAME", label: "Салон" },
 		{ field: "MODEL", label: "Модель" },
-		{ field: "TIP", label: "Тип" },
+		{ field: "td.TIP", label: "Тип" },
 		{ field: "ISP", label: "Исп." },
 		{ field: "TKAN", label: "Ткань 1" },
-		{ field: "cKOMP", label: "Ткань 2" },
+		{ field: "KOMP", label: "Ткань 2" },
 		{ field: "KOMP1", label: "Ткань 3" },
 		{ field: "KAT", label: "Кат." },
-		{ field: "COMMENT", label: "Примечание" },
+		//{ field: "COMMENT", label: "Примечание" },
 		{ field: "DEKOR", label: "Декор" },
-		{ field: "stegka", label: "Стежка" },
-		{ field: "CENA_ZAL", label: "Цена руб." },
-		{ field: "DATE_CEX", label: "Цех" },
+		{ field: "Vid_stegki", label: "Стежка" },
+		{ field: "td.CENA_ZAL", label: "Цена руб." },
+		{ field: "td.DATE_CEX", label: "Цех" },
 	],
 
 	lvls: [
@@ -163,6 +163,22 @@ let dataObj = {
 		{ field: "RABOTAET", label: "Работает" },
 		{ field: "roles", label: "Роли", type: 'array', fields: ['name'] },
 		{ field: "salon.NAME", label: "Салон" },
+	],
+
+	cartPopupExistFieldDescription: [
+		{ field: "ID", label: "ИД" },
+		{ field: "UN", label: "Уч №" },
+		{ field: "td.MODEL", label: "Модель" },
+		{ field: "td.TIP", label: "Тип" },
+		{ field: "td.CENA_ZAL", label: "Цена" },
+	],
+
+	cartPopupNewFieldDescription: [
+		{ field: "ID", label: "ИД" },
+		{ field: "id_zak", label: "Ид заказа" },
+		{ field: "zak.NEWNAME", label: "Модель" },
+		{ field: "zak.TIP", label: "Тип" },
+		{ field: "zak.CENA", label: "Цена" },
 	]
 }
 

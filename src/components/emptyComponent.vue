@@ -5,21 +5,28 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import {
+	mapActions,
+	mapGetters,
+	mapMutations
+} from 'vuex'
 
 export default {
-	data () {
+	data() {
+		return {}
+	},
+	components: {
 
 	},
 	watch: {
 
 	},
+	computed: {
+
+	},
 	methods: {
 
 	},
-	computed: {
-
-	}
 }
 </script>
 

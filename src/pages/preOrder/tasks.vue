@@ -4,7 +4,7 @@
 		<el-breadcrumb separator="/" class="bc">
 			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
 			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Завершение задачи №{{ task_current.id }}</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">{{ task_current.id ? `Завершение задачи № ${task_current.id}` : `Добавление новой задачи` }}</el-breadcrumb-item>
 		</el-breadcrumb>
 
 		<end-task-form v-loading="task_loadingOne" v-if="auth_can(3, 'Task')" />

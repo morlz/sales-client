@@ -20,6 +20,7 @@ import storage from '@/store/storage'
 import discount from '@/store/discount'
 import permissions from '@/store/permissions'
 import personal from '@/store/personal'
+import cart from '@/store/cart'
 
 
 export default new Vuex.Store({
@@ -40,6 +41,7 @@ export default new Vuex.Store({
 		storage,
 		discount,
 		events,
-		personal
+		personal,
+		cart
 	}
 })

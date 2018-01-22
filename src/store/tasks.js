@@ -15,7 +15,7 @@ const state = {
 	},
 	loading: {
 		list: true,
-		one: true,
+		one: false,
 		types: true,
 		bottom: false,
 		add: false
@@ -32,7 +32,7 @@ const state = {
 
 const actions = {
 	task_init ({ commit, dispatch }, payload) {
-		if (payload) {
+		if (+payload) {
 			dispatch('task_getOne', payload)
 		} else {
 			dispatch('task_infinityStart')
@@ -115,10 +115,11 @@ const actions = {
 				commit('preorder_currentTaskUpdate', data)
 			})
 	},
-	task_create({ commit, dispatch, state }){
-		let payload = Object.assign({}, state.add)
+	task_create({ commit, dispatch, state, getters }){
+		let payload = Object.assign({}, state.add),
+			preorder_id = state.cached.current.preorder_id || getters.preorder_current ? getters.preorder_current.id : null
 
-		payload.next = Object.assign({}, payload.next, { preorder_id: state.cached.current.preorder_id })
+		payload.next = Object.assign({}, payload.next, { preorder_id })
 
 		commit('task_loadingAddSet', true)
 		api.tasks
@@ -130,7 +131,7 @@ const actions = {
 				if (data.errors) dispatch('handleFormErrors', data.errors)
 				if (!data.errors) {
 					dispatch('notify', { title: "Успешно", message: "Задача создана" })
-					router.push({ path: `/preorder/preorders/${state.cached.current.preorder_id}` })
+					router.push({ path: `/preorder/preorders/${preorder_id}` })
 				}
 			})
 	},

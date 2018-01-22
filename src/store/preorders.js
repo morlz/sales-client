@@ -111,7 +111,7 @@ const actions = {
 				if (res.data.error) return;
 				if (res.data.errors) return dispatch('handleFormErrors', res.data.errors)
 				dispatch('notify', { message: 'Предзаказ создан' })
-				router.push({ path: `/preorder/preordrs/${data.preorder.id}` })
+				router.push({ path: `/preorder/preorders/${res.data.preorder.id}` })
 			})
 	}
 }

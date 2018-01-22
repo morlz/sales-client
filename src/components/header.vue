@@ -7,6 +7,7 @@
 			</div>
 		</el-popover>
 		<div class="toggleMenu" v-popover:mainMenuButtonPopover @click="toggleMenu" />
+		<cart/>
 		<profile/>
 	</header>
 </template>
@@ -16,6 +17,7 @@ import {
 	mapMutations
 } from 'vuex'
 import profile from '@/components/profile.vue'
+import cart from '@/components/cartPopup.vue'
 /**
  invoice - заказы
  SP_OTGRUZOK - доставки
@@ -46,7 +48,8 @@ export default {
 		])
 	},
 	components: {
-		profile
+		profile,
+		cart
 	}
 }
 </script>
@@ -60,7 +63,8 @@ header {
     background-color: #3c8dbc;
     display: grid;
     justify-content: space-between;
-    grid-template: "menuBtn profile";
+    grid-template: 	"menuBtn cart profile"
+				~"/" 1fr max-content max-content;
     .toggleMenu {
 		grid-area: menuBtn;
         font-family: fontAwesome;
@@ -78,6 +82,9 @@ header {
             color: #f6f6f6;
         }
     }
+	.cartWrapper {
+		grid-area: cart;
+	}
 	.profileWrapper {
 		grid-area: profile;
 	}

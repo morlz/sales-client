@@ -80,6 +80,10 @@ body {
 }
 
 .el {
+	&-loading-mask {
+		z-index: 1000;
+	}
+
 	&-tabs {
 		&__item {
 	        transition: all 0.3s ease-in-out;

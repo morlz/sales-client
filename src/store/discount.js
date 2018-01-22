@@ -23,6 +23,8 @@ const state = {
 
 const actions = {
 	discount_init ({ commit, dispatch }, payload) {
+		dispatch('discount_getModels', {})
+		dispatch('getSalonsList', getters.currentUserSalon)
 		if (payload) {
 			dispatch('discount_getOne', payload)
 		} else {
@@ -88,7 +90,16 @@ const actions = {
 				commit('discount_currentSet', data)
 				commit('discount_loadingOneSet', false)
 			})
-	}
+	},
+	discount_getModels({ commit, dispatch }, payload){
+		commit('discount_loadingModelsSet', true)
+		api.discounts
+			.getModels(payload)
+			.then(({ data }) => {
+				commit('discount_cachedModelsSet', data)
+				commit('discount_loadingModelsSet', false)
+			})
+	},
 }
 
 const mutations = {
@@ -128,7 +139,11 @@ const getters = {
 
 		return models
 	},
-	discount_models: ({ cached }) => cached.models,
+	discount_models: ({ cached }) => [
+			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
+			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
+		]
+		.sort(api.core.sortFnFactory(model => model.value == "" ? "АААААА": model.MODEL, true)),
 	discount_loading: ({ loading }) => loading.list,
 	discount_loadingBottom: ({ loading }) => loading.bottom,
 	discount_loadingOne: ({ loading }) => loading.one,

@@ -18,5 +18,16 @@ export default {
 				id
 			}
 		})
+	},
+	async getModels ({ filters }) {
+		return await core.invoke({
+			method: "get",
+			type: "discounts",
+			params: {
+				limit: 1e3,
+				models: true,
+				filters
+			}
+		})
 	}
 }
