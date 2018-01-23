@@ -160,7 +160,11 @@ export default {
 		formatedSort() {
 			return {
 				sortType: this.sort.type,
-				sortColumn: this.sort.columnIndex != -1 ? this.columns[this.sort.columnIndex].field : -1
+				sortColumn: this.sort.columnIndex != -1 ?
+					this.columns[this.sort.columnIndex].type == 'array' ?
+						this.columns[this.sort.columnIndex].field + '.' + this.columns[this.sort.columnIndex].fields[0] :
+						this.columns[this.sort.columnIndex].field
+					 : -1
 			}
 		},
 		columns() {
@@ -211,6 +215,9 @@ export default {
 
 			return this.columns.map((column, index) => {
 				let selectField = this.selectFields.find(el => el.field == column.field || el.index == index)
+
+				if (column.type == 'array')
+					return { ...column, type: 'search', field: `${column.field}.${column.fields[0]}`}
 
 				return selectField ? { ...column, ...selectField, type: "select" } : { ...column, type: "search" }
 			})

@@ -12,11 +12,11 @@ let dataObj = {
 
 	recordsManyFieldDescription: [
 		//{field: "id", label: "№", type: "number" },
-		{ field: "fio", label: "ФИО", type: "string" },
+		{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'] },
 		{ field: "created_at", label: "Дата создания", type: "string" },
-		{ field: "status", label: "Статус", type: "string" },
-		{ field: "manager", label: "Менеджер", type: "string", filterOptions: ['Вася', 'Петя'], filterDropdown: true },
-		{ field: "salon", label: "Салон", type: "string" },
+		{ field: "status.title", label: "Статус", type: "string" },
+		{ field: "manager.FIO", label: "Менеджер", type: "string" },
+		{ field: "salon.NAME", label: "Салон", type: "string" },
 		{ field: "calc_summ", label: "Сумма расчета", type: "number" },
 		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" },
 	],

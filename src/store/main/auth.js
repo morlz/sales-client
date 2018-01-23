@@ -38,13 +38,13 @@ const actions = {
 	signIn ({ commit, dispatch }, payload) {
 		api.auth
 			.signIn(payload)
-			.then(({ data }) => {
-				if (data && data.token) {
-					commit("updateUserAuth", data)
-					commit("updateToken", data.token)
+			.then(res => {
+				if (res && res.data && res.data.token) {
+					commit("updateUserAuth", res.data)
+					commit("updateToken", res.data.token)
 					dispatch("auth_getPermissions")
 				}
-				if (data.error) dispatch('catchErrorNotify', data.error)
+				if (res && res.data && res.data.error) dispatch('catchErrorNotify', res.data.error)
 			})
 	},
 	signUp () {
@@ -65,10 +65,10 @@ const actions = {
 		api.auth
 			.getPermissions()
 			.then(res => {
-				if (!res.data.error) {
-					commit("auth_permissionsSet", res.data)
-					commit("auth_loadingPermissionsSet", false)
-				}
+				if (res.data.error) return
+
+				commit("auth_permissionsSet", res.data)
+				commit("auth_loadingPermissionsSet", false)
 			})
 	}
 }

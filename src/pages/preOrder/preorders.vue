@@ -37,6 +37,7 @@
 					:fieldDescription="recordsManyFieldDescription"
 					:key="1"
 					:filters="preorder_filters"
+					:localSort="false"
 					@onClick="routerGoId"
 					@filter="localRecordFilterChange"
 					@sortChange="localRecordSortChange"
@@ -142,7 +143,7 @@ export default {
 		},
 		additionalFilters () {
 			return {
-				phone: this.searchByPhoneQuery
+				'contactFaces.phone': this.searchByPhoneQuery
 			}
 		},
 	},
