@@ -1,13 +1,13 @@
 let dataObj = {
 	tasksManyFieldDescription: [
 		//{ field: "id", label: "№", type: "string" },
-		{ field: "fio", label: "ФИО", type: "string" },
+		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'] },
 		{ field: "description", label: "Задача", type: "string" },
 		{ field: "date", label: "Дата", type: "string" },
-		{ field: "manager", label: "Ответсвенный", type: "string" },
-		{ field: "tasktype", label: "Тип", type: "string" },
+		{ field: "managerresponsible.FIO", label: "Ответсвенный", type: "string" },
+		{ field: "type.title", label: "Тип", type: "string" },
 		{ field: "end_date", label: "Выполнена", type: "string" },
-		{ field: "SALON", label: "Салон", type: "string" },
+		{ field: "salon.NAME", label: "Салон", type: "string" },
 	],
 
 	recordsManyFieldDescription: [

@@ -24,6 +24,7 @@
 			:buttons="afterTableTasksButtons"
 			:filters="task_filters"
 			:buttonsCondition="task_buttonCondition"
+			:localSort="false"
 			@onClick="goToPreorder"
 			@filter="localTaskFilterChange"
 			@sortChange="localTaskSortChange"
