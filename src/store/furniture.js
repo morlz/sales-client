@@ -39,68 +39,62 @@ const actions = {
 		commit("furniture_filtersSet", payload)
 		dispatch('furniture_infinityStart')
 	},
-	furniture_infinity({ commit, dispatch, state, getters }, payload){
+	async furniture_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current) return
 		commit('furniture_lastOffsetSet', state.offset.current)
 		commit('furniture_loadingBottomSet', true)
-		api.furnitures
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: state.offset.current,
-				filters: getters.furniture_filters,
-				sort: state.sort,
-				type: getters.furniture_type
-			})
-			.then(({ data }) => {
-				if (!data.error) {
-					commit('furniture_cacheAppend', data)
-					payload.loaded()
-					if (!data.length) payload.complete ()
-				}
-				commit('furniture_loadingSet', false)
-				commit('furniture_loadingBottomSet', false)
-				commit('furniture_currentOffsetSet')
-				if (data.error) dispatch('catchErrorNotify', data.error)
-			})
+		let res = await api.furnitures.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.furniture_filters,
+			sort: state.sort,
+			type: getters.furniture_type
+		})
+		if (res && res.data && res.data.error) return
+		if (!res.data.error) {
+			commit('furniture_cacheAppend', res.data)
+			payload.loaded()
+			if (!res.data || !res.data.length) payload.complete ()
+		}
+		commit('furniture_loadingSet', false)
+		commit('furniture_loadingBottomSet', false)
+		commit('furniture_currentOffsetSet')
 	},
-	furniture_infinityStart({ commit, dispatch, state, getters }){
+	async furniture_infinityStart({ commit, dispatch, state, getters }){
 		commit('furniture_lastOffsetSet', 0)
 		commit('furniture_loadingBottomSet', true)
 		commit('furniture_loadingSet', true)
-		api.furnitures
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: 0,
-				filters: getters.furniture_filters,
-				sort: state.sort,
-				type: getters.furniture_type
-			})
-			.then(({ data }) => {
-				if (!data.error) commit('furniture_cacheSet', data)
-				if (data.error) dispatch('catchErrorNotify', data.error)
-				commit('furniture_loadingBottomSet', false)
-				commit('furniture_loadingSet', false)
-				commit('furniture_currentOffsetSet')
-			})
+		let res = await api.furnitures.getLimited({
+			limit: state.perLoadingLimit,
+			offset: 0,
+			filters: getters.furniture_filters,
+			sort: state.sort,
+			type: getters.furniture_type
+		})
+		if (!res.data.error) commit('furniture_cacheSet', res.data)
+		if (res.data.error) dispatch('catchErrorNotify', res.data.error)
+		commit('furniture_loadingBottomSet', false)
+		commit('furniture_loadingSet', false)
+		commit('furniture_currentOffsetSet')
 	},
-	furniture_getOne({ commit, dispatch }, payload){
+	async furniture_getOne({ commit, dispatch }, payload){
 		commit('furniture_loadingOneSet', true)
-		api.furnitures
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('furniture_currentSet', data)
-				commit('furniture_loadingOneSet', false)
-			})
+		let res = await api.furnitures.getOne(payload)
+		if (res.data.error) return
+		commit('furniture_currentSet', res.data)
+		commit('furniture_loadingOneSet', false)
 	},
-	furniture_getModels({ commit, dispatch }, payload){
+	async furniture_getModels({ commit, dispatch }, payload){
 		commit('furniture_loadingModelsSet', true)
-		api.furnitures
-			.getModels(payload)
-			.then(({ data }) => {
-				commit('furniture_cachedModelsSet', data)
-				commit('furniture_loadingModelsSet', false)
-			})
+		let res = await api.furnitures.getModels(payload)
+		if (res.data.error) return
+		commit('furniture_cachedModelsSet', res.data)
+		commit('furniture_loadingModelsSet', false)
 	},
+	async furniture_addToCart({ commit, dispatch }, payload) {
+		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
+		commit('furniture_removeOneFromCache', payload)
+	}
 }
 
 const mutations = {
@@ -109,7 +103,7 @@ const mutations = {
 	furniture_filtersSet: (store, payload) => store.filters = payload,
 	furniture_sortSet: (store, payload) => store.sort = payload,
 	furniture_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	furniture_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
+	furniture_removeOneFromCache: (store, payload) => store.cached.list = store.cached.list.filter(el => el.UN != (payload.UN || payload)),
 	furniture_currentSet: (store, payload) => store.cached.current = payload,
 	furniture_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
 	furniture_cachedModelsSet: (store, payload) => store.cached.models = payload,

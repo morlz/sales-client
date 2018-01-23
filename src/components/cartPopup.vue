@@ -61,10 +61,15 @@ export default {
 			'cart_cachedCount',
 			'cart_cachedSumm',
 			'cart_loadingList',
+			'cart_removing'
 		]),
 		local_cart_cachedExistButtons () {
 			return [{
 				type: "danger",
+				loading: {
+					field: 'ID',
+					items: this.cart_removing
+				},
 				class: {
 					'el-icon-delete': true,
 					'hoverHide': true
@@ -75,6 +80,10 @@ export default {
 		local_cart_cachedNewButtons () {
 			return [{
 				type: "danger",
+				loading: {
+					field: 'ID',
+					items: this.cart_removing
+				},
 				class: {
 					'el-icon-delete': true,
 					'hoverHide': true

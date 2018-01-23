@@ -13,7 +13,6 @@ export default {
 			'task_edit_visibleSet'
 		]),
 		routerGoId(e, id) {
-			console.log(id);
 			id = id.id || id.ID || id.UN || id
 			let path = `${router.currentRoute.fullPath}/${id}`
 			router.push({

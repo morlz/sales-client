@@ -14,5 +14,11 @@ export default {
 			data
 		})
 	},
-
+	async add (data) {
+		return await core.invoke({
+			method: "post",
+			type: "carts",
+			data
+		})
+	},
 }

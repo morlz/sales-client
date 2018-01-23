@@ -52,6 +52,7 @@
 							:key="index"
 							:class="button.class"
 							:type="button.type"
+							v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(row, button.loading.field) )"
 						>
 							{{ button.name }}
 						</el-button>

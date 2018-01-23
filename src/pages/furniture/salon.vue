@@ -56,7 +56,7 @@
 				</div>
 
 				<div class="buttons">
-					<el-button type="primary">Добавить в корзину</el-button>
+					<el-button type="primary" @click="furniture_addToCart(furniture_current)">Добавить в корзину</el-button>
 				</div>
 			</el-card>
 		</div>
@@ -206,6 +206,7 @@ export default {
 			'furniture_infinity',
 			'furniture_getModels',
 			'furniture_getOne',
+			'furniture_addToCart'
 		]),
 		local_furniture_filterChange (n) {
 			this.lastFurnituresFilters = n

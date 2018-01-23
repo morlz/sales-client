@@ -33,6 +33,7 @@
 				:data="client_cached"
 				:fieldDescription="clientManyFieldDescription"
 				:filters="client_filters"
+				:localSort="false"
 				@onClick="routerGoId"
 				@filter="localClientFilterChange"
 				@sortChange="localClientSortChange"
