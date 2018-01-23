@@ -118,7 +118,7 @@ export default {
 		]),
 		additionalFIlters () {
 			return Object.assign({}, {
-				phone: this.searchByPhone2
+				'contacts.phone': this.searchByPhone2
 			})
 		}
 	},
