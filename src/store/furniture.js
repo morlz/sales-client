@@ -122,7 +122,7 @@ const getters = {
 			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
 			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
 		]
-		.sort(api.core.sortFnFactory(model => model.value == "" ? "АААААА": model.MODEL, true)),
+		.sort(api.core.sortFnFactory(model => model.value == "" ? "_": model.MODEL, true)),
 	furniture_loading: ({ loading }) => loading.list,
 	furniture_loadingBottom: ({ loading }) => loading.bottom,
 	furniture_loadingOne: ({ loading }) => loading.one,

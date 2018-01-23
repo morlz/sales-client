@@ -104,9 +104,6 @@
 
 
 <script>
-
-
-
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS'
@@ -154,7 +151,7 @@ export default {
 				this.furniture_getOne(n)
 		},
 		furniture_type (n) {
-			this.furniture_getModels({ salon: this.lastFurnituresFilters.ID_SALONA, type: n })
+			this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': this.lastFurnituresFilters['td.salon.ID_SALONA'] }, type: n })
 		}
 	},
 	computed: {
