@@ -48,7 +48,7 @@ class Core extends EventEmitter {
 		//await _wait(10000, 5000) //emit real server
 		if (!params.data) params.data = {}
 		if (!params.params) params.params = {}
-		let url = process.env.NODE_ENV == 'development' ? `http://localhost/sales-server/web/${params.type}` : `/sales-server/web/${params.type}`
+		let url = process.env.NODE_ENV == 'development' ? `http://localhost/sales-server/web/${params.type}` : `web/${params.type}`
 
 		if (params.data.id !== undefined) url += `/${params.data.id}`
 		params.url = url

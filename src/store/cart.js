@@ -33,7 +33,6 @@ const actions = {
 		}
 	},
 	async cart_removeItem ({ commit, dispatch }, payload) {
-		console.log(payload);
 		commit('cart_itemRemovingAdd', payload.id)
 		let res = await api.cart.remove(payload)
 		commit('cart_itemRemovingRemove', payload.id)
