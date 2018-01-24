@@ -14,6 +14,7 @@ import cookie from '@/api/cookie.js'
 import permissions from '@/api/permissions.js'
 import personals from '@/api/personals'
 import cart from '@/api/cart'
+import errors from '@/api/errors'
 
 export default {
 	core,
@@ -31,5 +32,6 @@ export default {
 	storages,
 	discounts,
 	personals,
-	cart
+	cart,
+	errors
 }

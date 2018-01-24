@@ -6,9 +6,18 @@ const state = {
 
 const actions = {
 	event_createHandlers ({ commit, dispatch }) {
-		api.core.on("error", err => console.log(err) || dispatch("notify", { title: `Ошибка ${err.status}`, message: err.message }))
-	},
+		api.core.on("error", err => {
+			console.log(err)
 
+			let { title } = api.errors.getStatusDescription ( err.status ),
+				notify = {
+					title: title ? title : `Ошибка ${err.status ? err.status : ''}`,
+					message: err.message
+				}
+
+			dispatch("notify", notify)
+		})
+	},
 }
 
 const mutations = {

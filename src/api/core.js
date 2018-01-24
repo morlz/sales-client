@@ -59,14 +59,14 @@ class Core extends EventEmitter {
 		//if (process.env.NODE_ENV == 'development') console.log("api request", params)
 		try {
 			let res = await axios(params)
-			if (process.env.NODE_ENV == 'development') console.log("[api] req", params)
-			if (process.env.NODE_ENV == 'development') console.log("[api] res", res)
+			//if (process.env.NODE_ENV == 'development') console.log("[api] req", params)
+			//if (process.env.NODE_ENV == 'development') console.log("[api] res", res)
 			if (res.data && res.data.error) this.emit("error", res.data.error)
-			return res
+			return res || {}
 		} catch (err) {
 			if (process.env.NODE_ENV == 'development') console.log("[api] error", err)
 			this.emit("error", err)
-			return new Error("Network error")
+			return new Error("Ошибка подключения к серверу")
 		}
 	}
 

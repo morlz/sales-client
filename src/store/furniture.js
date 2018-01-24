@@ -18,7 +18,8 @@ const state = {
 		one: true,
 		models: true,
 		bottom: false
-	}
+	},
+	new: {}
 }
 
 const actions = {

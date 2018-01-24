@@ -104,4 +104,10 @@
     .icon;
     background-image: url("../assets/group.svg");
 }
+
+.el-icon-order-poduction {
+    .icon;
+    background-image: url("../assets/industrial-robot.svg");
+}
+
 </style>
