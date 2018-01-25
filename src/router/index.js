@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import salon 		from '@/pages/furniture/salon.vue'
 import storage 		from '@/pages/furniture/storage.vue'
 import discount 	from '@/pages/furniture/discount.vue'
+import furnitureNew	from '@/pages/furniture/new.vue'
 
 import clients 		from '@/pages/preOrder/clients.vue'
 import preorders 	from '@/pages/preOrder/preorders.vue'
@@ -32,6 +33,7 @@ let routes = [
 	{ path: '/furniture/storage/:id?', component: storage },
 	{ path: '/furniture/discount/:id?', component: discount },
 	{ path: '/furniture/salon/:id?', component: salon },
+	{ path: '/furniture/new/', component: furnitureNew },
 	{ path: '/docs/invoices/:id?', component: invoices, props: { type: "invoices" } },
 	{ path: '/docs/movements/:id?', component: invoices, props: { type: "movements" } },
 	{ path: '/docs/shipments/:id?', component: shipments },

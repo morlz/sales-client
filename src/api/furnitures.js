@@ -30,5 +30,43 @@ export default {
 				filters
 			}
 		})
+	},
+	async getNewModels () {
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/new-models"
+		})
+	},
+	async getNewTypes (model_id, palermo = null) {
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/new-model-info",
+			params: {
+				model_id,
+				palermo
+			}
+		})
+	},
+	async getNewDekor (model_id) {
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/new-dekor",
+			params: {
+				model_id
+			}
+		})
+	},
+	async getNewCat () {
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/new-cat"
+		})
+	},
+	async getNewCloth (params) {
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/new-cloth",
+			params
+		})
 	}
 }
