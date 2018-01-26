@@ -1,6 +1,6 @@
 <template>
 <div class="mainAuthWrapper">
-	<div class="gradient" :style="gradientStyles"/>
+	<div class="gradient"/>
 
 	<div class="mainAuth">
 		<el-card class="centralCard" v-loading="auchChecking || logined">
@@ -107,10 +107,10 @@ export default {
 		}
 	},
 	mounted () {
-		this.interval = setInterval(this.updateGradient, 10)
+		//this.interval = setInterval(this.updateGradient, 10)
 	},
 	beforeDestroy () {
-		if (this.interval) clearInterval (this.interval)
+		//if (this.interval) clearInterval (this.interval)
 	}
 }
 </script>
@@ -140,6 +140,7 @@ export default {
 
 	.gradient {
 	    opacity: 1;
+		background: #666;
 	}
 }
 

@@ -9,7 +9,8 @@ const state = {
 		permissions: false
 	},
 	settings: {
-		showModels: true
+		showModels: true,
+		tileView: false
 	}
 }
 

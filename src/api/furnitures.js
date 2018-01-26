@@ -47,12 +47,14 @@ export default {
 			}
 		})
 	},
-	async getNewDekor (model_id) {
+	async getNewDekor ({ model_id, type_id, palermo }) {
 		return await core.invoke({
 			method: "get",
 			type: "furnitures/new-dekor",
 			params: {
-				model_id
+				model_id,
+				config_id: type_id,
+				palermo
 			}
 		})
 	},
