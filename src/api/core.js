@@ -49,7 +49,7 @@ class Core extends EventEmitter {
 		if (!params.data) params.data = {}
 		if (!params.params) params.params = {}
 		//let url = process.env.NODE_ENV == 'development' ? `http://localhost/sales-server/web/${params.type}` : `web/${params.type}`
-		let url = `${params.type}`
+		let url = `web/${params.type}`
 
 		if (params.data.id !== undefined) url += `/${params.data.id}`
 		params.url = url

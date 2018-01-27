@@ -1,5 +1,5 @@
 <template>
-<div class="appWrapper">
+<div class="appWrapper"  id="q-app">
 	<icons/>
 	<global-styles/>
 
