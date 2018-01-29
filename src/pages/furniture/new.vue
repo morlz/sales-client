@@ -69,16 +69,16 @@
 					</el-form-item>
 
 					<el-form-item label="Примечание">
-						<el-input v-model="sign" :disabled="furniture_new_active.sign" />
+						<el-input v-model="sign" type="textarea" :disabled="furniture_new_active.sign" placeholder="Формат ввода отреза x.y м., где x - метры, y - сантиметры" />
 					</el-form-item>
 
 					<el-form-item label="Количество">
-						<el-input v-model="count" :disabled="furniture_new_active.count" />
+						<el-input-number v-model.number="count" :disabled="furniture_new_active.count" />
 					</el-form-item>
 
 					<div class="priceGroup">
 						<el-form-item label="Цена">
-							<el-input v-model="price" :disabled="furniture_new_active.price" />
+							<el-input v-model.number="price" :disabled="furniture_new_active.price" />
 						</el-form-item>
 
 						<el-form-item label="Цена оптовая">
@@ -203,10 +203,10 @@ export default {
 			'furniture_new_modelSelect',
 			'furniture_new_typeSelect',
 			'furniture_new_dekorSelect',
-			'furniture_new_init'
+			'furniture_new_init',
+			'furniture_new_clothSelect'
 		]),
 		...mapMutations([
-			'furniture_new_clothSelect',
 			'furniture_new_signSet',
 			'furniture_new_countSet',
 			'furniture_new_priceSet'

@@ -39,7 +39,7 @@ const state = {
 				'3': '',
 			},
 			sign: "",
-			count: "1",
+			count: 1,
 			price: ""
 		},
 		cached: {
@@ -56,6 +56,7 @@ const state = {
 			types: false,
 			dekor: false,
 			cat: false,
+			price: false,
 		}
 	}
 }
@@ -195,6 +196,17 @@ const actions = {
 		if (res && res.data && res.data.error) return
 		commit('furniture_new_cachedClothSet', { index, data: res.data })
 	},
+	async furniture_new_getPrice ({ commit, dispatch, state, getters }, payload) {
+		commit('furniture_new_loadingPriceSet', true)
+		let res = await api.furnitures.getNewPrice({
+			model_id: state.new.selected.model,
+			config_id: state.new.selected.type,
+			maxKat: payload - 1,
+			cloth: state.new.selected.cloth[payload],
+			palermo: getters.furnitures
+		})
+		commit('furniture_new_loadingPriceSet', false)
+	},
 	furniture_new_modelSelect ({ commit, dispatch, getters }, payload) {
 		commit('furniture_new_modelSelect', payload)
 		// empty form
@@ -209,13 +221,12 @@ const actions = {
 		if (getters.furniture_new_freeTrim) return
 		// empty form
 		commit('furniture_new_dekorSelect', '')
-		commit('furniture_new_clothSelect', { index: 1, data: '' })
-		commit('furniture_new_clothSelect', { index: 2, data: '' })
-		commit('furniture_new_clothSelect', { index: 3, data: '' })
-
 	},
 	furniture_new_dekorSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_dekorSelect', payload)
+		commit('furniture_new_clothSelect', { index: 1, data: '' })
+		commit('furniture_new_clothSelect', { index: 2, data: '' })
+		commit('furniture_new_clothSelect', { index: 3, data: '' })
 	},
 	furniture_new_clothSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_clothSelect', payload)
@@ -287,6 +298,7 @@ const mutations = {
 	furniture_new_loadingDekorSet: (state, payload) => state.new.loading.dekor = payload,
 	furniture_new_loadingCatSet: (state, payload) => state.new.loading.cat = payload,
 	furniture_new_loadingClothSet: (state, payload) => state.new.loading.cloth[payload.index] = payload.data,
+	furniture_new_loadingPriceSet: (state, payload) => state.new.loading.price = payload,
 	furniture_new_modelSelect: (state, payload) => state.new.selected.model = payload,
 	furniture_new_typeSelect: (state, payload) => state.new.selected.type = payload,
 	furniture_new_dekorSelect: (state, payload) => state.new.selected.dekor = payload,
@@ -320,10 +332,10 @@ const getters = {
 		if (state.new.selected.model.length)
 			currentStep++
 
-		if (state.new.selected.type.length || (!state.new.cached.types.length && !state.new.loading.types && currentStep > 0))
+		if ((state.new.selected.type.length || (!state.new.cached.types.length && !state.new.loading.types)) && currentStep > 0)
 			currentStep++
 
-		if (state.new.selected.dekor.length || (!state.new.cached.dekor.length && !state.new.loading.dekor && currentStep > 1))
+		if ((state.new.selected.dekor.length || (!state.new.cached.dekor.length && !state.new.loading.dekor)) && currentStep > 1)
 			currentStep++
 
 		let clothFilledCount = 0

@@ -120,6 +120,12 @@ const state = {
 					icon: "el-icon-roles",
 					can: { lvl: 1, action: "Role" }
 				},
+				{
+					name: "Тестирование",
+					path: "/admin/tests",
+					icon: "el-icon-roles",
+					can: { lvl: 1, action: "Role" }
+				},
 			]
 		},
 	]

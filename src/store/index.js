@@ -21,6 +21,7 @@ import discount from '@/store/discount'
 import permissions from '@/store/permissions'
 import personal from '@/store/personal'
 import cart from '@/store/cart'
+import tests from '@/store/tests'
 
 
 export default new Vuex.Store({
@@ -42,6 +43,8 @@ export default new Vuex.Store({
 		discount,
 		events,
 		personal,
-		cart
+		cart,
+
+		tests,
 	}
 })

@@ -20,6 +20,7 @@ import home 		from '@/pages/main/home.vue'
 
 import roles 		from '@/pages/admin/roles.vue'
 import personal 	from '@/pages/admin/personal.vue'
+import tests 		from '@/pages/admin/tests.vue'
 
 
 
@@ -29,6 +30,7 @@ let routes = [
 	{ path: '/', component: home, name: 'home' },
 	{ path: '/admin/roles/:id?', component: roles },
 	{ path: '/admin/personal/:id?', component: personal },
+	{ path: '/admin/tests/', component: tests },
 	{ path: '/profile/:id?', component: profile },
 	{ path: '/furniture/storage/:id?', component: storage },
 	{ path: '/furniture/discount/:id?', component: discount },
