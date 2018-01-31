@@ -8,11 +8,11 @@
 
 			<el-form :model="form" :rules="loginFormRules" ref="loginForm">
 				<el-form-item label="Имя пользователя (Логин)" prop="login">
-					<el-input v-model="form.login" placeholder="Логин" />
+					<el-input v-model="form.login" placeholder="Логин" @keyup.enter.native="authHandler" />
 				</el-form-item>
 
 				<el-form-item label="Пароль" prop="password">
-					<el-input type="password" v-model="form.password" placeholder="Пароль" />
+					<el-input type="password" v-model="form.password" placeholder="Пароль" @keyup.enter.native="authHandler" />
 				</el-form-item>
 			</el-form>
 

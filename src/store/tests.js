@@ -50,7 +50,6 @@ const actions = {
 		}
 
 		const sl = (cloth, model, type, index, pTip = null) => {
-
 			return {
 				tkod: cloth.ITEMID,
 				mName: model.ITEMID,
@@ -67,33 +66,7 @@ const actions = {
 				index,
 				cloth: cloth.ITEMID,
 				palermo: !!+model.CRFREETRIM
-			})
-		}
-
-		const prepareTestQuery = async (cloth, model, type, index, pTip) => {
-			let p1 = sl(cloth, model, type, index, pTip),
-				p2 = nsl(cloth, model, type, index, pTip),
-				q1 = `$.post("http://sales-test.ladyagroup.ru/sl/projectSRC/phpData/Order/getKatAndPrice_all.php", ${JSON.stringify(p1)}) `,
-				q2 = ``
-
-			return await axios.post("http://sales-test.ladyagroup.ru/sl/projectSRC/phpData/Order/getKatAndPrice_all.php", p1)
-
-			console.log(p1)
-
-			//console.log(p1, p2)
-
-			/*
-			for (var prop in p1)
-				if (p1.hasOwnProperty(prop))
-					q1 += `${prop}=${p1[prop]}&`
-					*/
-			for (var prop in p2)
-				if (p2.hasOwnProperty(prop))
-					q2 += `${prop}=${p2[prop]}&`
-
-			commit('test_consolePush', q1)
-			//commit('test_consolePush', q2)
-
+			}, true)
 		}
 
 		let { data: models } = await api.furnitures.getNewModels()

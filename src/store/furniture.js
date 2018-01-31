@@ -34,13 +34,13 @@ const state = {
 			type: {},
 			dekor: "",
 			cloth: {
-				'1': '',
-				'2': '',
-				'3': '',
+				0: {},
+				1: {},
+				2: {}
 			},
-			sign: "",
+			sign: "0",
 			count: 1,
-			price: ""
+			price: "0",
 		},
 		cached: {
 			models: [],
@@ -49,12 +49,15 @@ const state = {
 			dekor: [],
 			cat: "",
 			clothCount: 0,
-			opt: "",
+			opt: "0",
+			price: "0",
 			cloth: {
-				'1': {},
-				'2': {},
-				'3': {}
-			}
+				0: {},
+				1: {},
+				2: {}
+			},
+			discount: {},
+			images: []
 		},
 		loading: {
 			models: false,
@@ -146,8 +149,7 @@ const actions = {
 	 *
 	 *	 	секция новгого заказа
 	 *		satate.new
-	 *		индекс ткани 1-3
-	 *		индекс ткани в апи 0-2
+	 *		индекс ткани 0-2
 	 *		freeTrim == палермо
 	 *
 	 */
@@ -171,9 +173,11 @@ const actions = {
 		let res = await api.furnitures.getNewTypes(state.new.selected.model, getters.furniture_new_freeTrim)
 		commit('furniture_new_loadingTypesSet', false)
 		if (res && res.data && res.data.error) return
-		let { stock, types } = res.data
+		let { stock, types, images } = res.data
 		commit('furniture_new_cachedStockSet', stock)
 		commit('furniture_new_cachedTypesSet', types)
+		commit('furniture_new_cachedSet', { type: "images", data: images })
+
 
 		//пропуск шага при отсутствии типов
 		if (!types.length)
@@ -221,7 +225,7 @@ const actions = {
 		let res = await api.furnitures.getNewCloth({
 			query: state.new.clothSearch[index],
 			id: state.new.selected.model,
-			index: index - 1, // 1 2 3 => 0 1 2
+			index,
 			stock_id: state.new.cached.stock ? state.new.cached.stock : null
 		})
 		commit('furniture_new_loadingClothSet', { index, data: false })
@@ -238,16 +242,6 @@ const actions = {
 		if (res.data && res.data.error) return
 		let { data } = res
 		commit('furniture_new_cachedClothUpdate', { index, data })
-
-		//access for roles
-		let access = [8, 37, 34].map(role_id => rootState.auth.permissions.find(el => el.role_id == role_id)).filter(el => el)[0] != undefined
-
-		commit('furniture_new_calcPrice', access)
-		return
-
-		getters.furniture_new_modelCunning ?
-			commit('furniture_new_calcPriceCunning', access) :
-			commit('furniture_new_calcPrice', access)
 	},
 	//получение получение текущей цены для ткани
 	//index == номер ткани
@@ -258,15 +252,47 @@ const actions = {
 			type_id: state.new.selected.type,
 			index,
 			cloth: state.new.selected.cloth[index].ITEMID,
-			palermo: getters.furnitures
+			palermo: getters.furniture_new_freeTrim
 		})
 		commit('furniture_new_loadingPriceSet', false)
 		if (data && data.error) return
 
 		commit('furniture_new_cachedClothSet', { index, data })
 		await dispatch('furniture_new_getClothInfo', index)
+		await dispatch('furniture_new_getDiscountPrice', index)
 	},
+	//получение дисконд цены для ткани
+	//index == номер ткани
+	async furniture_new_getDiscountPrice({ commit, dispatch, state, getters }, index){
+		let model_id = state.new.selected.model,
+			cat = getters.furniture_new_modelCunning ?
+				getters.furniture_new_cunningCatSofa
+			:	state.new.cached.cloth[getters.furniture_new_normalMaxIndex].code,
 
+			price = getters.furniture_new_modelCunning ?
+				getters.furniture_new_cunningPrice
+			:	state.new.cached.cloth[getters.furniture_new_normalMaxIndex].price,
+
+			priceOpt = getters.furniture_new_modelCunning ?
+				getters.furniture_new_cunningPriceOpt
+			:	state.new.cached.cloth[getters.furniture_new_normalMaxIndex].priceOpt
+
+		//устанавливаем цену
+		commit('furniture_new_priceSet', { r: price, opt: priceOpt })
+
+		//не используется
+		return
+
+		//если подушка и диван хитрый то скипаем
+		if (getters.furniture_new_modelCunning && !index) return
+		commit('furniture_new_loadingSet', { type: "price", data: true })
+		let res = await api.furnitures.getDiscountPrice({ model_id, cat, price })
+		commit('furniture_new_loadingSet', { type: "price", data: false })
+		if (res.data && res.data.error) return
+
+		console.log(res, cat, price, priceOpt)
+		//commit('furniture_new_priceSet', { r: state.new.cached.cloth[index].price, opt: state.new.cached.cloth[index].priceOpt })
+	},
 
 	//user action handlers
 
@@ -290,9 +316,9 @@ const actions = {
 	//on dekor select
 	furniture_new_dekorSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_dekorSelect', payload)
+		commit('furniture_new_clothSelect', { index: 0, data: '' })
 		commit('furniture_new_clothSelect', { index: 1, data: '' })
 		commit('furniture_new_clothSelect', { index: 2, data: '' })
-		commit('furniture_new_clothSelect', { index: 3, data: '' })
 	},
 	//on cloth select
 	furniture_new_clothSelect ({ commit, dispatch }, payload) {
@@ -312,7 +338,7 @@ const actions = {
 		let res = await api.furnitures.getNewCloth({
 			query,
 			id: state.new.selected.model,
-			index: index - 1,
+			index,
 			stock_id: state.new.cached.stock ? state.new.cached.stock : null,
 			offset: 0
 		})
@@ -328,7 +354,7 @@ const actions = {
 		let res = await api.furnitures.getNewCloth({
 			query: state.clothSelectForm.query,
 			id: state.new.selected.model,
-			index: index - 1,
+			index,
 			stock_id: state.new.cached.stock ? state.new.cached.stock : null,
 			offset: state.clothSelectForm.offset
 		})
@@ -366,7 +392,7 @@ const mutations = {
 	furniture_clothSelectForm_loadingListSet: (state, payload) => state.clothSelectForm.loading.list = payload,
 	furniture_clothSelectForm_loadingBottomSet: (state, payload) => state.clothSelectForm.loading.bottom = payload,
 
-	furniture_new_cachedSet: (state, payload) => state.new.cached.cloth[payload.type] = payload.data,
+	furniture_new_cachedSet: (state, payload) => state.new.cached[payload.type] = payload.data,
 	furniture_new_cachedModelsSet: (state, payload) => state.new.cached.models = payload,
 	furniture_new_cachedStockSet: (state, payload) => state.new.cached.stock = payload.ACTIONNUM || payload,
 	furniture_new_cachedTypesSet: (state, payload) => state.new.cached.types = payload,
@@ -389,63 +415,16 @@ const mutations = {
 	furniture_new_clothSelect: (state, payload) => state.new.selected.cloth[payload.index] = payload.data,
 	furniture_new_signSet: (state, payload) => state.new.selected.sign = payload,
 	furniture_new_countSet: (state, payload) => state.new.selected.count = payload,
-	furniture_new_priceSet: (state, payload) => state.new.selected.price = payload,
-	furniture_new_calcPrice: (state, access = false) => {
-		let clothArr = []
-		for (var index in state.new.cached.cloth) {
-			if (state.new.cached.cloth.hasOwnProperty(index)) {
-				let currentCloth = state.new.cached.cloth[index]
-				//check access
-				if (access || (+currentCloth.status == 1 && +currentCloth.active == 0)) {
-					//have access
-					clothArr.push(currentCloth)
-				} else {
-					//dont have access
-					api.core.emit('alert', { title: "!!!" })
-					return
-				}
-			}
+	furniture_new_priceSet: (state, { r, opt }) => {
+		if (r) {
+			state.new.selected.price = r
+			state.new.cached.price = r
 		}
-
-
-		let category = Math.max(...clothArr.map(cloth => cloth.code).filter(el => el)),
-			rPrice = Math.max(...clothArr.map(cloth => cloth.price).filter(el => el)),
-			rPriceOpt = Math.max(...clothArr.map(cloth => cloth.priceOpt).filter(el => el))
-
-
-		//resultDiscInfo = getDiscountPrice(Ext.getCmp('model-combo').getValue(), category, Ext.getCmp('invId-field').getValue(), String(getMax(priceArray)));
-		//state.new.selected.price =
-		//state.new.cached.opt =
+		if (opt) {
+			state.new.selected.opt = opt
+			state.new.cached.opt = opt
+		}
 	},
-	furniture_new_calcPriceCunning: (state, access = false) => {
-		for (var index in state.new.cached.cloth) {
-			if (state.new.cached.cloth.hasOwnProperty(index)) {
-				let currentCloth = state.new.cached.cloth[index]
-				//check access
-				if (access || (+currentCloth.status == 1 && +currentCloth.active == 0)) {
-					//have access
-
-				} else {
-					//dont have access
-				}
-			}
-		}
-
-		//find max kat sofa
-		let maxKatIndex = 0
-		for (var index in state.new.cached.cloth)
-			if (state.new.cached.cloth.hasOwnProperty(index) && index > 0)
-				state.new.cached.cloth[index].code > state.new.cached.cloth[maxKatIndex].code ? maxKatIndex = index : null
-
-
-
-		console.log(state.new.cached.cloth);
-
-
-
-
-
-	}
 }
 
 const getters = {
@@ -500,11 +479,11 @@ const getters = {
 			model: currentStep < 0,
 			type: currentStep < 1 || (!state.new.cached.types.length && !state.new.loading.types && currentStep > 0),
 			dekor: currentStep < 2 || (!state.new.cached.dekor.length && !state.new.loading.dekor && currentStep > 1),
-			cloth: {
-				'1': currentStep < 3 || +state.new.cached.clothCount < 1,
-				'2': currentStep < 3 || +state.new.cached.clothCount < 2,
-				'3': currentStep < 3 || +state.new.cached.clothCount < 3,
-			},
+			cloth: [
+				currentStep < 3 || +state.new.cached.clothCount < 1,
+				currentStep < 3 || +state.new.cached.clothCount < 2,
+				currentStep < 3 || +state.new.cached.clothCount < 3,
+			],
 			sign: currentStep < 4,
 			count: currentStep < 4,
 			price: currentStep < 4,
@@ -516,8 +495,31 @@ const getters = {
 		for (var index in state.new.cached.cloth)
 			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].r)
 				return true
+
+		return false
 	},
+	furniture_new_cunningCatSofa: state => Math.max(state.new.cached.cloth[1].code || 0, state.new.cached.cloth[2].code || 0),
+	furniture_new_cunningPrice: state => {
+		let maxIndex = (state.new.cached.cloth[1].code || 0) > (state.new.cached.cloth[2].code || 0) ? 1 : 2
+		return state.new.cached.cloth[maxIndex].price - state.new.cached.cloth[maxIndex].price2 + state.new.cached.cloth[0].price2
+	},
+	furniture_new_cunningPriceOpt: state => {
+		let maxIndex = (state.new.cached.cloth[1].code || 0) > (state.new.cached.cloth[2].code || 0) ? 1 : 2
+		return state.new.cached.cloth[maxIndex].priceOpt - state.new.cached.cloth[maxIndex].priceOpt2 + state.new.cached.cloth[0].priceOpt2
+	},
+
+	furniture_new_normalMaxIndex: state => {
+		let max = { index: 0, price: 0 }
+		for (var index in state.new.cached.cloth)
+			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].price > max.price) {
+				max.price = state.new.cached.cloth[index].price
+				max.index = index
+			}
+		return max.index
+	},
+	furniture_new_cachedImages: state => state.new.cached.images.map(imageId => `/img/${imageId.VALUERECID}`),
 	furniture_clothSelectForm: state => state.clothSelectForm,
+
 }
 
 export default {
