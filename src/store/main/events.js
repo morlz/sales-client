@@ -17,6 +17,8 @@ const actions = {
 
 			dispatch("notify", notify)
 		})
+
+		api.core.on('alert', payload => dispatch('motify', payload))
 	},
 }
 

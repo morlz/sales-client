@@ -16,6 +16,7 @@ const state = {
 
 const actions = {
 	authInit ({ commit, dispatch }) {
+		console.log(api);
 		let { token } = api.cookie.getAuth()
 		if (token) {
 			commit("updateToken", token)

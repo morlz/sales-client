@@ -73,36 +73,44 @@ export default {
 	},
 	async getNewPrice (params) {
 		params.palermo = false
-		let n = {
-			cloth: params.cloth,
-			model_id: params.model_id,
-			config_id: params.type_id,
-			palermo: params.palermo,
-			maxKat: +params.index - 1
-		}
+		params.index--
 
-		let o = {
-			tkod: params.cloth,
-			mName: params.model_id,
-			mPost: params.type_id,
-			pTip: params.palermo,
-			maxKat: +params.index - 1
-		}
+		// foramt request params
+		let [ newParams, oldParams ] = [
+			{
+				cloth: params.cloth,
+				model_id: params.model_id,
+				config_id: params.type_id,
+				palermo: params.palermo,
+				maxKat: params.index
+			},
+			{
+				tkod: params.cloth,
+				mName: params.model_id,
+				mPost: params.type_id,
+				pTip: params.palermo,
+				maxKat: params.index
+			}
+		]
 
-		let resNew = await core.invoke({
-			method: "get",
-			type: "furnitures/new-price",
-			params: n
-		})
+		//do requests
+		let [resNew, resOld] = await Promise.all([
+			//new
+			core.invoke({
+				method: "get",
+				type: "furnitures/new-price",
+				params: newParams
+			}),
+			//old
+			core.invoke({
+				method: "get",
+				type: "furnitures/old-price",
+				params: oldParams
+			})
+		])
 
-		let resOld = await core.invoke({
-			method: "get",
-			type: "furnitures/old-price",
-			params: o
-		})
-
-		let formated = {},
-			formatedNew = {}
+		//format responce
+		let formated = {}, formatedNew = {}
 
 		if (resNew.data) {
 			formatedNew = {
@@ -127,21 +135,50 @@ export default {
 			}
 		}
 
-		let [a, b] = [JSON.stringify(formated), JSON.stringify(formatedNew)]
+		//obj to string and compare
+		let [a, b] = [JSON.stringify(formated), JSON.stringify(formatedNew)],
+			dataCorrect = a == b || resOld.data == (resNew.data.error ? resNew.data.error.message : '123123123')
 
-		if (a != b && resOld.data != (resNew.data.error ? resNew.data.error.message : '123123123')) {
-			let p = ''
-			for (var prop in n)
-				if (n.hasOwnProperty(prop))
-					p += `${prop}=${n[prop]}&`
+		//is not correct notify
+		if (!dataCorrect) {
+			let path = ''
+			for (var prop in newParams)
+				if (newParams.hasOwnProperty(prop))
+					path += `${prop}=${newParams[prop]}&`
 
 
-			console.log(formated, formatedNew, resOld.data, resNew.data, params, p)
+			console.log(formated, formatedNew, resOld.data, resNew.data, params, path)
+			api.core.emit('alert', { title: "Используется старая версия", message: "Расхождение данных старой иновой версии подробнее в консоле" })
 		}
 
+		// emit default api work
+		if (dataCorrect && resNew.data.error)
+			return resNew.data
 
+		//is not correct use old
+		return dataCorrect //? formatedNew : formated
+	},
+	async getNewClothInfo (cloth) {
+		cloth = cloth.ITEMID || cloth
 
-
-		return a == b || resOld.data == (resNew.data.error ? resNew.data.error.message : '123123123')
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/cloth-info",
+			params: {
+				cloth
+			}
+		})
+	},
+	async getDiscountPrice ({ cloth, cat, order, price }) {
+		return await core.invoke({
+			method: "get",
+			type: "furnitures/discount-price",
+			params: {
+				cloth,
+				cat,
+				order,
+				price
+			}
+		})
 	}
 }

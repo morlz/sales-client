@@ -49,7 +49,12 @@ const state = {
 			dekor: [],
 			cat: "",
 			clothCount: 0,
-			opt: ""
+			opt: "",
+			cloth: {
+				'1': {},
+				'2': {},
+				'3': {}
+			}
 		},
 		loading: {
 			models: false,
@@ -57,6 +62,7 @@ const state = {
 			dekor: false,
 			cat: false,
 			price: false,
+			clothInfo: false
 		}
 	}
 }
@@ -135,10 +141,23 @@ const actions = {
 		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
 		commit('furniture_removeOneFromCache', payload)
 	},
+
+	/*
+	 *
+	 *	 	секция новгого заказа
+	 *		satate.new
+	 *		индекс ткани 1-3
+	 *		индекс ткани в апи 0-2
+	 *		freeTrim == палермо
+	 *
+	 */
+
+	//инициализация
 	async furniture_new_init ({ commit, dispatch, state }) {
 		if (!state.new.cached.models.length)
 			dispatch('furniture_new_getModels')
 	},
+	//получение всех моделей
 	async furniture_new_getModels ({ commit, dispatch }) {
 		commit('furniture_new_loadingModelsSet', true)
 		let res = await api.furnitures.getNewModels()
@@ -146,6 +165,7 @@ const actions = {
 		if (res && res.data && res.data.error) return
 		commit('furniture_new_cachedModelsSet', res.data)
 	},
+	//получение всех типов и акции выбраной модели
 	async furniture_new_getTypes ({ commit, dispatch, state, getters }) {
 		commit('furniture_new_loadingTypesSet', true)
 		let res = await api.furnitures.getNewTypes(state.new.selected.model, getters.furniture_new_freeTrim)
@@ -155,19 +175,21 @@ const actions = {
 		commit('furniture_new_cachedStockSet', stock)
 		commit('furniture_new_cachedTypesSet', types)
 
+		//пропуск шага при отсутствии типов
 		if (!types.length)
 			dispatch('furniture_new_typeSelect', '')
 
-		//если 1 элемент
+		//если 1 тип выбираем его автоматически
 		if (types.length == 1 && !getters.furniture_new_freeTrim)
-			dispatch('furniture_new_typeSelect', types[0].NAME)
+			dispatch('furniture_new_typeSelect', types[0].CONFIGID)
 
 	},
+	//получение декора и количества тканей выбраной модели
 	async furniture_new_getDekor ({ commit, dispatch, state, getters }) {
 		commit('furniture_new_loadingDekorSet', true)
-		let type_id = getters.furniture_new_freeTrim ?
-			state.new.selected.type :
-			state.new.cached.types.find(el => el['NAME'] == state.new.selected.type).CONFIGID
+
+		//разделение на палермо
+		let type_id = state.new.selected.type
 
 		let res = await api.furnitures.getNewDekor({ model_id: state.new.selected.model, type_id, palermo: getters.furniture_new_freeTrim })
 		commit('furniture_new_loadingDekorSet', false)
@@ -175,7 +197,14 @@ const actions = {
 		let { dekor, clothCount } = res.data
 		commit('furniture_new_cachedDekorSet', dekor)
 		commit('furniture_new_cachedClothCountSet', clothCount)
+
+		if (!dekor || !dekor.length)
+			dispatch('furniture_new_dekorSelect', '')
+
+		if (dekor && dekor.length == 1)
+		 	dispatch('furniture_new_dekorSelect', dekor[0].CONFIGID)
 	},
+	//получение категории тканей
 	async furniture_new_getCat ({ commit, dispatch, state }) {
 		commit('furniture_new_loadingCatSet', true)
 		let res = await api.furnitures.getNewCat(state.new.selected.model)
@@ -183,7 +212,10 @@ const actions = {
 		if (res && res.data && res.data.error) return
 		commit('furniture_new_cachedCatSet', res.data)
 	},
+	//получение ткани по индексу
+	//index == номер ткани
 	async furniture_new_getCloth ({ commit, dispatch, state }, index){
+		//поиск токо от 4 символов
 		if (state.new.clothSearch[index].length < 4) return
 		commit('furniture_new_loadingClothSet', { index, data: true })
 		let res = await api.furnitures.getNewCloth({
@@ -196,17 +228,49 @@ const actions = {
 		if (res && res.data && res.data.error) return
 		commit('furniture_new_cachedClothSet', { index, data: res.data })
 	},
-	async furniture_new_getPrice ({ commit, dispatch, state, getters }, payload) {
+	//получение информации о ткане
+	//index == номер ткани
+	async furniture_new_getClothInfo ({ commit, dispatch, state, rootState, getters }, index) {
+		commit('furniture_new_loadingSet', { type: 'clothInfo', data: true })
+		let cloth = state.new.selected.cloth[index]
+		let res = await api.furnitures.getNewClothInfo(cloth)
+		commit('furniture_new_loadingSet', { type: 'clothInfo', data: false })
+		if (res.data && res.data.error) return
+		let { data } = res
+		commit('furniture_new_cachedClothUpdate', { index, data })
+
+		//access for roles
+		let access = [8, 37, 34].map(role_id => rootState.auth.permissions.find(el => el.role_id == role_id)).filter(el => el)[0] != undefined
+
+		commit('furniture_new_calcPrice', access)
+		return
+
+		getters.furniture_new_modelCunning ?
+			commit('furniture_new_calcPriceCunning', access) :
+			commit('furniture_new_calcPrice', access)
+	},
+	//получение получение текущей цены для ткани
+	//index == номер ткани
+	async furniture_new_getPrice ({ commit, dispatch, state, getters }, index) {
 		commit('furniture_new_loadingPriceSet', true)
-		let res = await api.furnitures.getNewPrice({
+		let data = await api.furnitures.getNewPrice({
 			model_id: state.new.selected.model,
-			config_id: state.new.selected.type,
-			maxKat: payload - 1,
-			cloth: state.new.selected.cloth[payload],
+			type_id: state.new.selected.type,
+			index,
+			cloth: state.new.selected.cloth[index].ITEMID,
 			palermo: getters.furnitures
 		})
 		commit('furniture_new_loadingPriceSet', false)
+		if (data && data.error) return
+
+		commit('furniture_new_cachedClothSet', { index, data })
+		await dispatch('furniture_new_getClothInfo', index)
 	},
+
+
+	//user action handlers
+
+	//on model select
 	furniture_new_modelSelect ({ commit, dispatch, getters }, payload) {
 		commit('furniture_new_modelSelect', payload)
 		// empty form
@@ -215,6 +279,7 @@ const actions = {
 		// actions
 		dispatch('furniture_new_getTypes')
 	},
+	//on type select
 	furniture_new_typeSelect ({ commit, dispatch, getters }, payload) {
 		commit('furniture_new_typeSelect', payload)
 		dispatch('furniture_new_getDekor')
@@ -222,15 +287,25 @@ const actions = {
 		// empty form
 		commit('furniture_new_dekorSelect', '')
 	},
+	//on dekor select
 	furniture_new_dekorSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_dekorSelect', payload)
 		commit('furniture_new_clothSelect', { index: 1, data: '' })
 		commit('furniture_new_clothSelect', { index: 2, data: '' })
 		commit('furniture_new_clothSelect', { index: 3, data: '' })
 	},
+	//on cloth select
 	furniture_new_clothSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_clothSelect', payload)
+		dispatch('furniture_new_getPrice', payload.index)
 	},
+
+	/*
+	 *
+	 *		форма выбора ткани
+	 *
+	 */
+
 	async furniture_clothSearch ({ commit, dispatch, state }, { query, index, offset }) {
 		commit('furniture_clothSelectForm_querySet', query)
 		commit('furniture_clothSelectForm_loadingListSet', true)
@@ -277,36 +352,100 @@ const mutations = {
 	furniture_currentSet: (state, payload) => state.cached.current = payload,
 	furniture_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
 	furniture_cachedModelsSet: (state, payload) => state.cached.models = payload,
+
 	furniture_loadingSet: (state, payload) => state.loading.list = payload,
 	furniture_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	furniture_loadingOneSet: (state, payload) => state.loading.one = payload,
 	furniture_loadingModelsSet: (state, payload) => state.loading.models = payload,
+
+	furniture_new_clothSearch: (state, payload) => state.new.clothSearch[payload.index] = payload.data,
 	furniture_clothSelectForm_querySet: (state, payload) => state.clothSelectForm.query = payload,
 	furniture_clothSelectForm_cachedSet: (state, payload) => state.clothSelectForm.cached = payload,
 	furniture_clothSelectForm_cachedAppend: (state, payload) => state.clothSelectForm.cached = [...state.clothSelectForm.cached, ...payload],
 	furniture_clothSelectForm_offsetSet: (state, payload) => state.clothSelectForm.offset = payload,
 	furniture_clothSelectForm_loadingListSet: (state, payload) => state.clothSelectForm.loading.list = payload,
 	furniture_clothSelectForm_loadingBottomSet: (state, payload) => state.clothSelectForm.loading.bottom = payload,
+
+	furniture_new_cachedSet: (state, payload) => state.new.cached.cloth[payload.type] = payload.data,
 	furniture_new_cachedModelsSet: (state, payload) => state.new.cached.models = payload,
-	furniture_new_cachedStockSet: (state, payload) => state.new.cached.stock = payload,
+	furniture_new_cachedStockSet: (state, payload) => state.new.cached.stock = payload.ACTIONNUM || payload,
 	furniture_new_cachedTypesSet: (state, payload) => state.new.cached.types = payload,
 	furniture_new_cachedDekorSet: (state, payload) => state.new.cached.dekor = payload,
 	furniture_new_cachedClothCountSet: (state, payload) => state.new.cached.clothCount = payload,
 	furniture_new_cachedClothSet: (state, payload) => state.new.cached.cloth[payload.index] = payload.data,
+	furniture_new_cachedClothUpdate: (state, payload) => state.new.cached.cloth[payload.index] = { ...state.new.cached.cloth[payload.index], ...payload.data },
+
+	furniture_new_loadingSet: (state, payload) => state.new.loading[payload.type] = payload.data,
 	furniture_new_loadingModelsSet: (state, payload) => state.new.loading.models = payload,
 	furniture_new_loadingTypesSet: (state, payload) => state.new.loading.types = payload,
 	furniture_new_loadingDekorSet: (state, payload) => state.new.loading.dekor = payload,
 	furniture_new_loadingCatSet: (state, payload) => state.new.loading.cat = payload,
 	furniture_new_loadingClothSet: (state, payload) => state.new.loading.cloth[payload.index] = payload.data,
 	furniture_new_loadingPriceSet: (state, payload) => state.new.loading.price = payload,
+
 	furniture_new_modelSelect: (state, payload) => state.new.selected.model = payload,
 	furniture_new_typeSelect: (state, payload) => state.new.selected.type = payload,
 	furniture_new_dekorSelect: (state, payload) => state.new.selected.dekor = payload,
 	furniture_new_clothSelect: (state, payload) => state.new.selected.cloth[payload.index] = payload.data,
-	furniture_new_clothSearch: (state, payload) => state.new.clothSearch[payload.index] = payload.data,
 	furniture_new_signSet: (state, payload) => state.new.selected.sign = payload,
 	furniture_new_countSet: (state, payload) => state.new.selected.count = payload,
 	furniture_new_priceSet: (state, payload) => state.new.selected.price = payload,
+	furniture_new_calcPrice: (state, access = false) => {
+		let clothArr = []
+		for (var index in state.new.cached.cloth) {
+			if (state.new.cached.cloth.hasOwnProperty(index)) {
+				let currentCloth = state.new.cached.cloth[index]
+				//check access
+				if (access || (+currentCloth.status == 1 && +currentCloth.active == 0)) {
+					//have access
+					clothArr.push(currentCloth)
+				} else {
+					//dont have access
+					api.core.emit('alert', { title: "!!!" })
+					return
+				}
+			}
+		}
+
+
+		let category = Math.max(...clothArr.map(cloth => cloth.code).filter(el => el)),
+			rPrice = Math.max(...clothArr.map(cloth => cloth.price).filter(el => el)),
+			rPriceOpt = Math.max(...clothArr.map(cloth => cloth.priceOpt).filter(el => el))
+
+
+		//resultDiscInfo = getDiscountPrice(Ext.getCmp('model-combo').getValue(), category, Ext.getCmp('invId-field').getValue(), String(getMax(priceArray)));
+		//state.new.selected.price =
+		//state.new.cached.opt =
+	},
+	furniture_new_calcPriceCunning: (state, access = false) => {
+		for (var index in state.new.cached.cloth) {
+			if (state.new.cached.cloth.hasOwnProperty(index)) {
+				let currentCloth = state.new.cached.cloth[index]
+				//check access
+				if (access || (+currentCloth.status == 1 && +currentCloth.active == 0)) {
+					//have access
+
+				} else {
+					//dont have access
+				}
+			}
+		}
+
+		//find max kat sofa
+		let maxKatIndex = 0
+		for (var index in state.new.cached.cloth)
+			if (state.new.cached.cloth.hasOwnProperty(index) && index > 0)
+				state.new.cached.cloth[index].code > state.new.cached.cloth[maxKatIndex].code ? maxKatIndex = index : null
+
+
+
+		console.log(state.new.cached.cloth);
+
+
+
+
+
+	}
 }
 
 const getters = {
@@ -329,15 +468,19 @@ const getters = {
 	furniture_new_active: state => {
 		let currentStep = 0
 
+		// шаг выбора модели
 		if (state.new.selected.model.length)
 			currentStep++
 
+		// шаг выбора типа
 		if ((state.new.selected.type.length || (!state.new.cached.types.length && !state.new.loading.types)) && currentStep > 0)
 			currentStep++
 
+		// шаг выбора декора
 		if ((state.new.selected.dekor.length || (!state.new.cached.dekor.length && !state.new.loading.dekor)) && currentStep > 1)
 			currentStep++
 
+		// шаг заполнения тканей
 		let clothFilledCount = 0
 		for (var prop in state.new.selected.cloth)
 			if (state.new.selected.cloth.hasOwnProperty(prop) && state.new.selected.cloth[prop])
@@ -346,9 +489,12 @@ const getters = {
 		if (clothFilledCount == state.new.cached.clothCount && currentStep > 2)
 			currentStep++
 
+		// шаг заполнения доп информации
 		if (+state.new.selected.count && +state.new.selected.price && currentStep > 3)
 			currentStep++
 
+		// true == скрывать
+		// скрывать следующие шаги и отсутствующие данные
 		return {
 			currentStep,
 			model: currentStep < 0,
@@ -366,6 +512,11 @@ const getters = {
 		}
 	},
 	furniture_new_freeTrim: state => state.new.selected.model ? !!+state.new.cached.models.find(el => el.ITEMID == state.new.selected.model).CRFREETRIM : false,
+	furniture_new_modelCunning: state => {
+		for (var index in state.new.cached.cloth)
+			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].r)
+				return true
+	},
 	furniture_clothSelectForm: state => state.clothSelectForm,
 }
 

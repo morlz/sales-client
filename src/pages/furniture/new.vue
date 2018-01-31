@@ -35,7 +35,7 @@
 							:disabled="furniture_new_active.type">
 
 							<el-option v-for="item, index in furniture_new_cached.types"
-								:value="item.NAME"
+								:value="item.CONFIGID"
 								:label="item.NAME.substr(0, 80)"
 								:key="index" />
 
@@ -51,7 +51,7 @@
 					</el-form-item>
 
 					<el-form-item label="Категория" v-loading="furniture_new_loading.cat">
-						<el-input :value="123" disabled />
+						<el-input value="" disabled />
 					</el-form-item>
 
 					<el-form-item label="Декор">
@@ -125,77 +125,46 @@ export default {
 			'furniture_new_active',
 			'furniture_new_freeTrim',
 		]),
+
+		/*
+		 *		models for store
+		 */
+
 		model: {
-			get () {
-				return this.furniture_new_selected.model
-			},
-			set (n) {
-				this.furniture_new_modelSelect(n)
-			}
+			get () { return this.furniture_new_selected.model },
+			set (n) { this.furniture_new_modelSelect(n) }
 		},
 		type: {
-			get () {
-				return this.furniture_new_selected.type
-			},
-			set (n) {
-				this.furniture_new_typeSelect(n)
-			}
+			get () { return this.furniture_new_selected.type },
+			set (n) { this.furniture_new_typeSelect(n) }
 		},
 		dekor: {
-			get () {
-				return this.furniture_new_selected.dekor
-			},
-			set (n) {
-				this.furniture_new_dekorSelect(n)
-			}
+			get () { return this.furniture_new_selected.dekor },
+			set (n) { this.furniture_new_dekorSelect(n) }
 		},
 		cloth1: {
-			get () {
-				return this.furniture_new_selected.cloth[1]
-			},
-			set (data) {
-				this.furniture_new_clothSelect({ index: 1, data })
-			}
+			get () { return this.furniture_new_selected.cloth[1] },
+			set (data) { this.furniture_new_clothSelect({ index: 1, data }) }
 		},
 		cloth2: {
-			get () {
-				return this.furniture_new_selected.cloth[2]
-			},
-			set (data) {
-				this.furniture_new_clothSelect({ index: 2, data })
-			}
+			get () { return this.furniture_new_selected.cloth[2] },
+			set (data) { this.furniture_new_clothSelect({ index: 2, data }) }
 		},
 		cloth3: {
-			get () {
-				return this.furniture_new_selected.cloth[3]
-			},
-			set (data) {
-				this.furniture_new_clothSelect({ index: 3, data })
-			}
+			get () { return this.furniture_new_selected.cloth[3] },
+			set (data) { this.furniture_new_clothSelect({ index: 3, data }) }
 		},
 		sign: {
-			get () {
-				return this.furniture_new_selected.sign
-			},
-			set (n) {
-				this.furniture_new_signSet(n)
-			}
+			get () { return this.furniture_new_selected.sign },
+			set (n) { this.furniture_new_signSet(n) }
 		},
 		count: {
-			get () {
-				return this.furniture_new_selected.count
-			},
-			set (n) {
-				this.furniture_new_countSet(n)
-			}
+			get () { return this.furniture_new_selected.count },
+			set (n) { this.furniture_new_countSet(n) }
 		},
 		price: {
-			get () {
-				return this.furniture_new_selected.price
-			},
-			set (n) {
-				this.furniture_new_priceSet(n)
-			}
+			get () { return this.furniture_new_selected.price },
+			set (n) { this.furniture_new_priceSet(n) }
 		}
 	},
 	methods: {
@@ -210,10 +179,7 @@ export default {
 			'furniture_new_signSet',
 			'furniture_new_countSet',
 			'furniture_new_priceSet'
-		]),
-		local_furniture_new_clothSelect2 (data) {
-			this.furniture_new_clothSelect({ index: 2, data })
-		}
+		])
 	},
 	mounted () {
 		this.furniture_new_init()

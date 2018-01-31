@@ -56,7 +56,7 @@ const actions = {
 				mName: model.ITEMID,
 				mPost: type.CONFIGID,
 				pTip,
-				maxKat: index - 1
+				maxKat: index
 			}
 		}
 
@@ -100,12 +100,17 @@ const actions = {
 		commit('test_inc', { type: 'models', amount: models.length })
 
 		//models.sort(random)
-		models = models.splice(0, 107)
+		models = models.splice(0, 150)
 		commit('test_incT', { type: 'models', amount: models.length })
 
 		models.forEach(async model => {
-			let { types } = await getTypes(model)
+			let { types, stock } = await getTypes(model)
 			//console.log('types', types);
+
+			if (stock)
+				console.log(model)
+
+
 			commit('test_inc', { type: 'types', amount: types.length })
 			if (!types.length)
 				types.push({ CONFIGID: null })
