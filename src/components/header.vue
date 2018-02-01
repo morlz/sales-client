@@ -60,7 +60,7 @@ export default {
 <style lang="less">
 header {
     height: 50px;
-    background-color: #3c8dbc;
+    background-color: #027be3;
     display: grid;
     justify-content: space-between;
     grid-template: 	"menuBtn cart profile"
@@ -74,7 +74,7 @@ header {
         text-align: center;
         color: #f6f6f6;
         &:hover {
-            background-color: #367fa9;
+            background-color: #1565c0;
             cursor: pointer;
         }
         &:before {

@@ -97,7 +97,7 @@ export default {
 
 .mainMenuWrapper {
 	.logo {
-		background-color: #367fa9;
+		background-color: #1565c0;
 		width: 100%;
 		height: 50px;
 	}
@@ -121,7 +121,7 @@ export default {
 		transition: all 0.4s ease-in-out;
 		.mainMenu {
 			i {
-				color: #3c8dbc;
+				color: #027be3;
 			}
 			.active {
 				background: rgba(64,158,255, 0.1);

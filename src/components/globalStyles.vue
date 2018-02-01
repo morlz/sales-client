@@ -25,7 +25,8 @@ export default {}
 *::-webkit-scrollbar-thumb {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.2);
-    background-color: rgba(60,141,188, 0.8);
+    //background-color: rgba(60,141,188, 0.8);
+    background-color: rgba(2,123,227, 0.8);
 }
 
 html {

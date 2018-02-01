@@ -1,13 +1,14 @@
 <template>
 <div class="gallery">
 	<v-gallery :images="content" :index="fullScreen" @close="closeFull" />
+
 	<div class="preview" ref="prev" :style="{ height: prevHeight + 'px' }" @click="openFull(currentVisible)">
 		<img class="image"
 			:src="content[currentVisible]" alt=""
 			:style="{ opacity: currentOpacity }">
 	</div>
 
-	<div class="carusel" ref="carusel" v-if="content.length > 1">
+	<div class="carusel" ref="carusel" :class="{ hide: content.length < 2 }">
 		<div class="inner" :key="pageIndex" v-for="pageIndex in pageCount" :style="{ left: -100 * (page - pageIndex) + '%' }">
 			<div class="image"
 				v-for="index in imagesPerPage"
@@ -18,8 +19,8 @@
 		</div>
 	</div>
 
-	<div class="pages" v-if="pageCount > 1">
-		<div class="page" v-for="pageIndex in pageCount" :class="{ current: pageIndex == page }" @click="selectPage(pageIndex)"></div>
+	<div class="pages" :class="{ hide: pageCount < 2 }">
+		<div class="page" v-for="pageIndex in pageCount" :class="{ current: pageIndex == page }" @click="selectPage(pageIndex)"/>
 	</div>
 </div>
 </template>
@@ -67,6 +68,12 @@ export default {
 			}, 200)
 
 			this.currentOpacity = 0
+		},
+		content (n) {
+			console.log('c');
+			this.current = 0
+			this.currentVisible = 0
+			this.checkSize()
 		}
 	},
 	computed: {
@@ -95,8 +102,8 @@ export default {
 			this.fullScreen = -1
 		},
 		checkSize () {
-			this.width = this.$refs.carusel.clientWidth
-			this.prevHeight = this.$refs.prev.clientWidth
+			if (this.$refs.carusel) this.width = this.$refs.carusel.clientWidth
+			if (this.$refs.prev) this.prevHeight = this.$refs.prev.clientWidth
 		}
 	},
 	mounted () {
@@ -127,10 +134,12 @@ export default {
 			transition: all 0.2s ease-in-out;
 		}
 	}
+
 	.carusel {
 		width: 100%;
 		position: relative;
 		height: 100px;
+		trnasition: all 0.3s ease-in-out;
 		.inner {
 			transition: all 0.3s ease-in-out;
 			position: absolute;
@@ -164,12 +173,13 @@ export default {
 		grid-gap: 15px;
 		grid-auto-flow: column;
 		justify-content: center;
+		trnasition: all 0.3s ease-in-out;
 		.page {
 			margin: 2px;
 			width: 12px;
 			height: 12px;
 			border-radius: 100%;
-			background: #3c8dbc;
+			background: #027be3;
 			opacity: 0.6;
 			transition: all 0.3s ease-in-out;
 			cursor: pointer;
@@ -183,6 +193,12 @@ export default {
 		.current {
 			opacity: 1;
 		}
+	}
+
+	.hide {
+		height: 0;
+		opacity: 0;
+		pointer-events: none;
 	}
 }
 </style>
