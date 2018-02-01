@@ -561,7 +561,7 @@ const getters = {
 			}
 		return max.index
 	},
-	furniture_new_cachedImages: state => state.new.cached.images.map(imageId => `/img/${imageId.VALUERECID}`),
+	furniture_new_cachedImages: state => state.new.cached.images.map(imageId => api.images.getUrl(imageId.VALUERECID)),
 	furniture_clothSelectForm: state => state.clothSelectForm,
 
 }

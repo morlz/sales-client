@@ -15,6 +15,7 @@ import permissions from '@/api/permissions.js'
 import personals from '@/api/personals'
 import cart from '@/api/cart'
 import errors from '@/api/errors'
+import images from '@/api/images'
 
 export default {
 	core,
@@ -33,5 +34,6 @@ export default {
 	discounts,
 	personals,
 	cart,
+	images,
 	errors
 }

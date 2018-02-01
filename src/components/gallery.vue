@@ -70,7 +70,6 @@ export default {
 			this.currentOpacity = 0
 		},
 		content (n) {
-			console.log('c');
 			this.current = 0
 			this.currentVisible = 0
 			this.checkSize()

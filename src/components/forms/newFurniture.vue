@@ -1,5 +1,5 @@
 <template>
-	<div class="newFurnitureFormWrapper cards">
+	<div class="newFurnitureFormWrapper">
 		<el-card class="card newFurnitureForm">
 			<div class="title" slot="header">Конфигурация</div>
 
@@ -83,9 +83,9 @@
 						<div>Категория</div>
 						<div class="price" v-loading="furniture_new_loading.cat">
 							{{
-								furniture_new_modelCunning ?
+								(furniture_new_modelCunning ?
 									furniture_new_cunningCatSofa
-								:	furniture_new_cached.cloth[furniture_new_normalMaxIndex].code
+								:	furniture_new_cached.cloth[furniture_new_normalMaxIndex].code) || 0
 							}}
 						</div>
 						<div>Цена</div>
@@ -208,6 +208,7 @@ export default {
 	display: grid;
 	grid-template-columns: minmax(0, 500px) 1fr;
 	grid-gap: 20px;
+	color: #5a5e66;
 
 	.newFurnitureForm {
 		.el {

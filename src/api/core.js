@@ -2,6 +2,7 @@ import axios from 'axios'
 import db from '@/api/tempDB'
 import cookie from '@/api/cookie'
 import EventEmitter from 'browser-event-emitter'
+import path from 'path'
 
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
@@ -48,7 +49,7 @@ class Core extends EventEmitter {
 		//await _wait(10000, 5000) //emit real server
 		if (!params.data) params.data = {}
 		if (!params.params) params.params = {}
-		let url = process.env.NODE_ENV == 'development' ? `${params.type}` : `web/${params.type}`
+		let url = path.resolve(this.apiPath, params.type)
 		//let url = `${params.type}`
 
 		if (params.data.id !== undefined) url += `/${params.data.id}`
@@ -97,6 +98,10 @@ class Core extends EventEmitter {
 			if (a[field] < b[field]) return revert ? -1 : 1
 			return 0
 		}
+	}
+
+	get apiPath () {
+		return process.env.NODE_ENV == 'development' ? `` : `nsl/web`
 	}
 }
 
