@@ -30,6 +30,7 @@ const state = {
 	},
 	new: {
 		selected: {
+			edit: false,
 			model: "",
 			type: {},
 			dekor: "",
@@ -297,48 +298,44 @@ const actions = {
 	//user action handlers
 
 	//on model select
-	furniture_new_modelSelect ({ commit, dispatch, getters }, payload) {
+	async furniture_new_modelSelect ({ commit, dispatch, getters }, payload) {
 		commit('furniture_new_modelSelect', payload)
 		// empty form
 		commit('furniture_new_dekorSelect', '')
 		commit('furniture_new_typeSelect', '')
 		commit('furniture_new_priceSet', { r: '', opt: '' })
 		// actions
-		dispatch('furniture_new_getTypes')
+		await dispatch('furniture_new_getTypes')
 	},
 	//on type select
-	furniture_new_typeSelect ({ commit, dispatch, getters }, payload) {
+	async furniture_new_typeSelect ({ commit, dispatch, getters }, payload) {
 		commit('furniture_new_typeSelect', payload)
-		dispatch('furniture_new_getDekor')
+		await dispatch('furniture_new_getDekor')
 		if (getters.furniture_new_freeTrim) return
 		// empty form
 		commit('furniture_new_dekorSelect', '')
 	},
 	//on dekor select
-	furniture_new_dekorSelect ({ commit, dispatch }, payload) {
+	async furniture_new_dekorSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_dekorSelect', payload)
 		commit('furniture_new_clothSelect', { index: 0, data: '' })
 		commit('furniture_new_clothSelect', { index: 1, data: '' })
 		commit('furniture_new_clothSelect', { index: 2, data: '' })
 	},
 	//on cloth select
-	furniture_new_clothSelect ({ commit, dispatch }, payload) {
+	async furniture_new_clothSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_clothSelect', payload)
-		dispatch('furniture_new_getPrice', payload.index)
+		await dispatch('furniture_new_getPrice', payload.index)
 	},
 
 	async furniture_new_addToCart({ commit, dispatch, state, getters }) {
 		//prepared data
-
-		/*
-		'Vid_stegki' => @$this->params['stejka'],
-		*/
-
+		//'Vid_stegki' => @$this->params['stejka'],
 		let model = state.new.cached.models.find(model => state.new.selected.model == model.ITEMID),
 			type = state.new.cached.types.find(type => state.new.selected.type == type.CONFIGID) || state.new.selected.type
 				//normal type or palermo
 
-		let data = {
+		await dispatch('cart_addItem', {
 			type: 'new',
 			model: {
 				id: model.ITEMID,
@@ -364,9 +361,11 @@ const actions = {
 				r: state.new.cached.price,
 				opt: state.new.cached.opt
 			},
-		}
+		})
+	},
 
-		await dispatch('cart_addItem', data)
+	async furniture_new_loadToEdit () {
+
 	},
 
 	/*

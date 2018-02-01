@@ -66,4 +66,7 @@ export default {
 </script>
 
 <style lang="less">
+#q-app {
+	height: 100%;
+}
 </style>
