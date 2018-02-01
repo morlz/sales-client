@@ -36,7 +36,7 @@ import {
 } from 'vuex'
 import mainMenu from '@/components/mainMenu.vue'
 import mainHeader from '@/components/header.vue'
-import mainAuth from '@/pages/main/auth.vue'
+import mainAuth from '@/components/pages/main/auth.vue'
 import icons from '@/components/icons.vue'
 import globalStyles from '@/components/globalStyles.vue'
 import mixins from '@/components/mixins'

@@ -7,13 +7,18 @@
 			:style="{ opacity: currentOpacity }">
 	</div>
 
-	<div class="carusel" ref="carusel">
+	<div class="carusel" ref="carusel" v-if="content.length > 1">
 		<div class="inner" :key="pageIndex" v-for="pageIndex in pageCount" :style="{ left: -100 * (page - pageIndex) + '%' }">
-			<div class="image" v-for="index in imagesPerPage" :key="index" :style="{ 'background-image' : getUrl(index, pageIndex) }" @click="selectImage(index)"/>
+			<div class="image"
+				v-for="index in imagesPerPage"
+				:key="index"
+				:style="{ 'background-image' : `url('${getUrl(index, pageIndex)}')` }"
+				@click="selectImage(index)"
+				v-if="getUrl(index, pageIndex)"/>
 		</div>
 	</div>
 
-	<div class="pages">
+	<div class="pages" v-if="pageCount > 1">
 		<div class="page" v-for="pageIndex in pageCount" :class="{ current: pageIndex == page }" @click="selectPage(pageIndex)"></div>
 	</div>
 </div>
@@ -75,7 +80,7 @@ export default {
 	},
 	methods: {
 		getUrl (index, page) {
-			return `url('${this.content[(page -1) * this.imagesPerPage + (index - 1)]}')`
+			return this.content[(page -1) * this.imagesPerPage + (index - 1)]
 		},
 		selectImage (index) {
 			this.current = (this.page - 1) * this.imagesPerPage + index - 1
@@ -88,11 +93,18 @@ export default {
 		},
 		closeFull () {
 			this.fullScreen = -1
+		},
+		checkSize () {
+			this.width = this.$refs.carusel.clientWidth
+			this.prevHeight = this.$refs.prev.clientWidth
 		}
 	},
 	mounted () {
-		this.width = this.$refs.carusel.clientWidth
-		this.prevHeight = this.$refs.prev.clientWidth
+		this.checkSize()
+		window.addEventListener("resize", this.checkSize)
+	},
+	beforeDestroy () {
+		window.removeEventListener("resize", this.checkSize)
 	}
 }
 </script>
@@ -107,6 +119,7 @@ export default {
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
+		max-height: 500px;
 		.image {
 			max-width: 100%;
 			max-height: 100%;

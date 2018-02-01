@@ -2,25 +2,25 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 
-import salon 		from '@/pages/furniture/salon.vue'
-import storage 		from '@/pages/furniture/storage.vue'
-import discount 	from '@/pages/furniture/discount.vue'
-import furnitureNew	from '@/pages/furniture/new.vue'
+import salon 		from '@/components/pages/furniture/salon.vue'
+import storage 		from '@/components/pages/furniture/storage.vue'
+import discount 	from '@/components/pages/furniture/discount.vue'
+import furnitureNew	from '@/components/pages/furniture/new.vue'
 
-import clients 		from '@/pages/preOrder/clients.vue'
-import preorders 	from '@/pages/preOrder/preorders.vue'
-import tasks 		from '@/pages/preOrder/tasks.vue'
+import clients 		from '@/components/pages/preOrder/clients.vue'
+import preorders 	from '@/components/pages/preOrder/preorders.vue'
+import tasks 		from '@/components/pages/preOrder/tasks.vue'
 
-import invoices 	from '@/pages/docs/invoices.vue'
-import shipments 	from '@/pages/docs/shipments.vue'
+import invoices 	from '@/components/pages/docs/invoices.vue'
+import shipments 	from '@/components/pages/docs/shipments.vue'
 
-import profile 		from '@/pages/main/profile.vue'
-import p404 		from '@/pages/main/p404.vue'
-import home 		from '@/pages/main/home.vue'
+import profile 		from '@/components/pages/main/profile.vue'
+import p404 		from '@/components/pages/main/p404.vue'
+import home 		from '@/components/pages/main/home.vue'
 
-import roles 		from '@/pages/admin/roles.vue'
-import personal 	from '@/pages/admin/personal.vue'
-import tests 		from '@/pages/admin/tests.vue'
+import roles 		from '@/components/pages/admin/roles.vue'
+import personal 	from '@/components/pages/admin/personal.vue'
+import tests 		from '@/components/pages/admin/tests.vue'
 
 
 

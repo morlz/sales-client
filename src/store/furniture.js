@@ -47,7 +47,7 @@ const state = {
 			stock: {},
 			types: [],
 			dekor: [],
-			cat: "",
+			cat: "0",
 			clothCount: 0,
 			opt: "0",
 			price: "0",
@@ -477,6 +477,7 @@ const getters = {
 		return {
 			currentStep,
 			model: currentStep < 0,
+			gallery: currentStep < 1 || (!state.new.cached.images.length),
 			type: currentStep < 1 || (!state.new.cached.types.length && !state.new.loading.types && currentStep > 0),
 			dekor: currentStep < 2 || (!state.new.cached.dekor.length && !state.new.loading.dekor && currentStep > 1),
 			cloth: [
