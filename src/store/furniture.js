@@ -38,7 +38,7 @@ const state = {
 				1: {},
 				2: {}
 			},
-			sign: "0",
+			sign: "",
 			count: 1,
 			price: "0",
 		},
@@ -325,6 +325,48 @@ const actions = {
 	furniture_new_clothSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_clothSelect', payload)
 		dispatch('furniture_new_getPrice', payload.index)
+	},
+
+	async furniture_new_addToCart({ commit, dispatch, state, getters }) {
+		//prepared data
+
+		/*
+		'Vid_stegki' => @$this->params['stejka'],
+		*/
+
+		let model = state.new.cached.models.find(model => state.new.selected.model == model.ITEMID),
+			type = state.new.cached.types.find(type => state.new.selected.type == type.CONFIGID) || state.new.selected.type
+				//normal type or palermo
+
+		let data = {
+			type: 'new',
+			model: {
+				id: model.ITEMID,
+				name: model.ITEMNAME
+			},
+			TIP: {
+				id: type.CONFIGID || type,
+				name: type.NAME || type
+			},
+			cloth: [
+				state.new.selected.cloth[0].id || null,
+				state.new.selected.cloth[1].id || null,
+				state.new.selected.cloth[2].id || null
+			],
+			cat: getters.furniture_new_modelCunning ?
+					getters.furniture_new_cunningCatSofa
+				:	getters.furniture_new_cached.cloth[getters.furniture_new_normalMaxIndex].code,
+			dekor: state.new.selected.dekor,
+			comment: state.new.selected.sign,
+			discount: state.new.cached.discount,
+			count: +state.new.selected.count,
+			price: {
+				r: state.new.cached.price,
+				opt: state.new.cached.opt
+			},
+		}
+
+		await dispatch('cart_addItem', data)
 	},
 
 	/*

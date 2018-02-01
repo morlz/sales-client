@@ -95,7 +95,7 @@
 					</div>
 
 					<el-form-item>
-						<el-button type="primary" :disabled="furniture_new_active.button">Создать</el-button>
+						<el-button type="primary" :disabled="furniture_new_active.button" @click="furniture_new_addToCart">Создать</el-button>
 					</el-form-item>
 				</el-form>
 			</div>
@@ -187,7 +187,8 @@ export default {
 			'furniture_new_typeSelect',
 			'furniture_new_dekorSelect',
 			'furniture_new_init',
-			'furniture_new_clothSelect'
+			'furniture_new_clothSelect',
+			'furniture_new_addToCart'
 		]),
 		...mapMutations([
 			'furniture_new_signSet',
