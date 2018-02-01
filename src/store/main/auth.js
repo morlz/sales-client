@@ -15,7 +15,7 @@ const state = {
 }
 
 const actions = {
-	async authInit ({ commit, dispatch }) {
+	async auth_init ({ commit, dispatch }) {
 		let { token } = api.cookie.getAuth()
 		commit("updateToken", token ? token : "")
 
