@@ -196,6 +196,7 @@ export default {
 	}
 
 	.hide {
+		box-sizing: border-box;
 		height: 0;
 		opacity: 0;
 		pointer-events: none;

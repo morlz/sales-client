@@ -148,7 +148,7 @@ export default {
 					paths.n += `${prop}=${newParams[prop]}&`
 			for (var prop in oldParams)
 				if (oldParams.hasOwnProperty(prop))
-					paths.n += `${prop}=${oldParams[prop]}&`
+					paths.o += `${prop}=${oldParams[prop]}&`
 
 			console.log({
 				formated: {
@@ -163,7 +163,7 @@ export default {
 				paths
 			})
 
-			core.emit('alert', { title: "Используется старая версия", message: "Расхождение данных старой иновой версии подробнее в консоле" })
+			//core.emit('alert', { title: "Используется старая версия", message: "Расхождение данных старой иновой версии подробнее в консоле" })
 		}
 
 		// emit default api work

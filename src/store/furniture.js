@@ -302,6 +302,7 @@ const actions = {
 		// empty form
 		commit('furniture_new_dekorSelect', '')
 		commit('furniture_new_typeSelect', '')
+		commit('furniture_new_priceSet', { r: '', opt: '' })
 		// actions
 		dispatch('furniture_new_getTypes')
 	},
@@ -494,7 +495,7 @@ const getters = {
 	furniture_new_freeTrim: state => state.new.selected.model ? !!+state.new.cached.models.find(el => el.ITEMID == state.new.selected.model).CRFREETRIM : false,
 	furniture_new_modelCunning: state => {
 		for (var index in state.new.cached.cloth)
-			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].r)
+			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].r && state.new.cached.cloth[0].code > state.new.cached.cloth[index].code)
 				return true
 
 		return false

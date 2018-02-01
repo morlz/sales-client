@@ -81,7 +81,13 @@
 				<el-form>
 					<div class="priceGroup" :class="{disabled: furniture_new_active.price}">
 						<div>Категория</div>
-						<div class="price" v-loading="furniture_new_loading.cat">{{ furniture_new_cached.cat }}</div>
+						<div class="price" v-loading="furniture_new_loading.cat">
+							{{
+								furniture_new_modelCunning ?
+									furniture_new_cunningCatSofa
+								:	furniture_new_cached.cloth[furniture_new_normalMaxIndex].code
+							}}
+						</div>
 						<div>Цена</div>
 						<div class="price" v-loading="furniture_new_loading.price">{{ price }}</div>
 						<div>Цена оптовая</div>
@@ -128,7 +134,10 @@ export default {
 			'furniture_new_selected',
 			'furniture_new_active',
 			'furniture_new_freeTrim',
-			'furniture_new_cachedImages'
+			'furniture_new_cachedImages',
+			'furniture_new_modelCunning',
+			'furniture_new_cunningCatSofa',
+			'furniture_new_normalMaxIndex'
 		]),
 
 		/*
