@@ -62,9 +62,9 @@ export default {
 		line-height: 50px;
 		padding: 0 20px;
 		transition: all 0.3s ease-in-out;
-		background-color: #3c8dbc;
+		background-color: #027be3;
 		&:hover {
-			background-color: #367fa9;
+			background-color: #1565c0;
 		}
 	}
 }

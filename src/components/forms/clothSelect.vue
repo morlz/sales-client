@@ -70,6 +70,7 @@ export default {
 		},
 		async open (n) {
 			if (!n) return
+			this.local_search = ""
 			await this.furniture_clothSearch({ query: "", index: this.index })
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');

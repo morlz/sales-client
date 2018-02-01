@@ -14,7 +14,10 @@ module.exports = merge(baseWebpackConfig, {
 		rules: cssUtils.styleRules({
 			sourceMap: config.build.productionSourceMap,
 			extract: true,
-			postcss: true
+			postcss: true,
+			loaders: [
+				'less'
+			]
 		})
 	},
 	devtool: config.build.productionSourceMap ? '#source-map' : false,

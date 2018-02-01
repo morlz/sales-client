@@ -46,7 +46,7 @@ module.exports = {
 		// https://github.com/chimurai/http-proxy-middleware
 		proxyTable: {
 			'/web': {
-				target: 'http://sales-test.ladyagroup.ru/nsl/web',
+				target: 'http://sales-test.ladyagroup.ru/nsl',
 				changeOrigin: true,
 			}
 		}
