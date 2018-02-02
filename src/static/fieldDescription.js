@@ -91,11 +91,11 @@ let dataObj = {
 	invoicesFieldDescription: [
 		{ field: "N_DOC", label: "Номер документа" },
 		{ field: "DATE", label: "Дата оформления" },
-		{ field: "PL_OTGR", label: "Дата отгрузки" },
-		{ field: "manager", label: "Менеджер" },
-		{ field: "client", label: "Клиент" },
-		{ field: "adSource", label: "Рекламный источник" },
-		{ field: "storage", label: "Склад" },
+		{ field: "shipments", type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки" },
+		{ field: "manager.fio", label: "Менеджер", search: false },
+		{ field: "client.fio", label: "Клиент", search: false },
+		{ field: "adSource.NAME", label: "Рекламный источник" },
+		{ field: "storage.NAME", label: "Склад" },
 	],
 
 	shipmentsFieldDescription: [

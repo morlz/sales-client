@@ -10,12 +10,9 @@ const actions = {
 			console.log(err)
 
 			let { title } = api.errors.getStatusDescription ( err.status ),
-				notify = {
-					title: title ? title : `Ошибка ${err.status ? err.status : ''}`,
-					message: err.message
-				}
+				notify = title ? title : `Ошибка ${err.status ? err.status : ''}` + err.message
 
-			dispatch("notify", notify)
+			dispatch("alert", notify)
 		})
 
 		api.core.on('alert', payload => dispatch('notify', payload))

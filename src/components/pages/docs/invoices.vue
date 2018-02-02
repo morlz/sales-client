@@ -1,58 +1,35 @@
 <template>
 	<div class="mainWrapper">
 		<div class="oneInvoiceWrapper" v-if="isOne">
-			<el-breadcrumb separator="/" class="bc">
-				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
-				<el-breadcrumb-item>Счёт {{ invoice_current.N_DOC }}</el-breadcrumb-item>
-			</el-breadcrumb>
+			<ul class="breadcrumb">
+				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
+				<li><router-link :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</router-link></li>
+				<li><router-link :to="{ path: `/docs/${type}/${invoice_current.ID}` }">Счёт {{ invoice_current.N_DOC }}</router-link></li>
+			</ul>
 
-			<div class="cards" v-loading="invoice_loadingOne">
+			<div class="oneInvoice" v-loading="invoice_loadingOne">
+				<info-card-invoice :content="invoice_current" v-ga="`m`"/>
+				<info-card-client :content="invoice_current.client || invoice_current.clientOld" v-ga="`c`"/>
+				<invoice-card-additional :content="invoice_current" v-ga="`a`"/>
+				<info-card-zak :content="invoice_current.zak" v-ga="`z`"/>
+				<info-card-shipments :content="invoice_current.shipments" v-ga="`s`"/>
 
-				<el-card class="invoiceMainInfo">
-					<div slot="header">
-						<h2>Основная информация</h2>
-					</div>
+				<q-card v-ga="`p`">
+					<q-card-title>
+						Оплата
+					</q-card-title>
 
-					<div class="infoGrid">
-						<div>Номер документа</div>
-						<div>{{ invoice_current.N_DOC }}</div>
-						<div>DATE</div>
-						<div>{{ invoice_current.DATE }}</div>
-						<div>Дата отгрузки</div>
-						<div>{{ invoice_current.PL_OTGR }}</div>
-						<div>Менеджер</div>
-						<div>{{ currentInvoiceManager }}</div>
-						<div>Клиент</div>
-						<div>{{ invoice_current.client }}</div>
-						<div>Рекламный источник</div>
-						<div>{{ invoice_current.adSource ? invoice_current.adSource.NAME : '...' }}</div>
-						<div class="lc">Склад</div>
-						<div class="lc">{{ invoice_current.storage }}</div>
-					</div>
-
-					<div class="buttons">
-						<el-button type="primary">Добавить в корзину</el-button>
-					</div>
-				</el-card>
+					<q-card-main>
+					</q-card-main>
+				</q-card>
 			</div>
 		</div>
 
 		<div class="manyInvoicesWrapper" v-if="!isOne">
-			<el-breadcrumb separator="/" class="bc">
-				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
-			</el-breadcrumb>
-
-			<el-select v-model="currentSalon" filterable placeholder="Салон">
-				<el-option v-for="salon, index in salonsList" :value="salon.id" :label="salon.NAME" :key="index" />
-			</el-select>
-
-			<el-tabs tab-position="top" v-model="currentTab">
-				<el-tab-pane :label="tab.name" v-for="tab, index in tabs" :key="index" />
-			</el-tabs>
+			<q-tabs inverted v-model="currentTab">
+				<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
+			</q-tabs>
 
 			<tabless
 				v-loading="invoice_loading"
@@ -61,10 +38,11 @@
 				:fieldDescription="invoicesFieldDescription"
 				:filters="invoice_filters"
 				ref="table"
-				@filter="localInvoiceFilterChange"
-				@sortChange="localInvoiceSortChange"
+				@filter="local_invoice_filtersChange"
+				@sortChange="local_invoice_sortChange"
 				@onClick="routerGoId"
 			/>
+
 			<infinite-loading @infinite="invoice_infinity" ref="infiniteLoading" key="invoicesinf">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
@@ -78,11 +56,35 @@
 
 <script>
 
+/*			<el-breadcrumb separator="/" class="bc">
+				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
+				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
+			</el-breadcrumb>*/
+
+
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import tabless from '@/components/tableSS.vue'
+import InfoCardClient from '@/components/InfoCardClient.vue'
+import InfoCardInvoice from '@/components/InfoCardInvoice.vue'
+import InfoCardZak from '@/components/InfoCardZak.vue'
+import InfoCardShipments from '@/components/InfoCardShipments.vue'
+import InvoiceCardAdditional from '@/components/InvoiceCardAdditional.vue'
 import fieldDesription from '@/static/fieldDescription'
 import InfiniteLoading from 'vue-infinite-loading'
 import mixins from '@/components/mixins'
+
+import {
+	QTabs,
+	QTab,
+	QCard,
+	QCardTitle,
+	QCardMain,
+	QList,
+	QItem,
+	QItemMain,
+	QItemSide,
+} from 'quasar'
 
 let {
 	invoicesFieldDescription
@@ -94,37 +96,51 @@ export default {
 	data () {
 		return {
 			invoicesFieldDescription,
-			currentTab: 0,
+			currentTab: '',
+			lastInvoicesFilters: {},
 			tabs: [
-				{ name: "Счета", filters: {} }, // all
-				{ name: "Оплаченые", filters: { IS_PAY: "1", ISSAVE: "0",  IS_CLOSE: "0", Otkaz: "0" } },
-				{ name: "В работе", filters: { IS_PAY: "0", ISSAVE: "0", IS_CLOSE: "0", Otkaz: "0" } },
-				{ name: "Отгружено", filters: { IS_CLOSE: "1", Otkaz: "0" } },
-				{ name: "Отказ", filters: { Otkaz: "1" } },
+				{ name: "Счета", type: '' }, // all
+				{ name: "Оплаченые", type: 'paid' },
+				{ name: "В работе", type: 'inWork' },
+				{ name: "Отгружено", type: 'shipped' },
+				{ name: "Отказ", type: 'deny' },
 			],
-			currentSalon: "999",
-			lastInvoicesFilters: {}
 		}
 	},
 	mixins: [mixins],
+	directives: {
+
+	},
 	components: {
+		QTabs,
+		QTab,
+		QCard,
+		QCardTitle,
+		QCardMain,
+		QList,
+		QItem,
+		QItemMain,
+		QItemSide,
 		tabless,
-		InfiniteLoading
+		InfiniteLoading,
+		InfoCardClient,
+		InfoCardInvoice,
+		InfoCardZak,
+		InfoCardShipments,
+		InvoiceCardAdditional
 	},
 	watch: {
-		additionalFIlters (n) {
+		additionalFilters (n) {
 			this.invoice_filtersChange (Object.assign({}, this.lastInvoicesFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		oneId () {
 			if (this.oneId !== undefined)
 				this.invoice_getOne(this.oneId)
-		},
-		currentUserSalon (n) {
-			this.currentSalon = n
 		}
 	},
 	computed: {
@@ -141,11 +157,8 @@ export default {
 		data () {
 			return this.cachedInvoices
 		},
-		additionalFIlters () {
-			return Object.assign({
-				type: this.type,
-				ID_SALON: this.currentSalon != 999 ? this.currentSalon : null
-			}, this.tabs[this.currentTab].filters)
+		additionalFilters () {
+			return { type: this.currentTab, page: this.type }
 		},
 		currentInvoiceManager () {
 			return this.invoice_current.manager ? `${this.invoice_current.manager.FIO} ${this.invoice_current.manager.IMY} ${this.invoice_current.manager.OTCH}` : {}
@@ -160,45 +173,57 @@ export default {
 			'invoice_getOne',
 			'getSalonsList'
 		]),
-		localInvoiceFilterChange (n) {
+		local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n
-			this.invoice_filtersChange (Object.assign({}, this.additionalFIlters, n))
+			this.invoice_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localInvoiceSortChange (n) {
+		local_invoice_sortChange (n) {
 			this.invoice_sortChange (n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		}
 	},
 	mounted () {
-		this.currentSalon = this.currentUserSalon
-		this.getSalonsList()
-		this.invoice_init(this.oneId)
+		this.invoice_init({ id: this.oneId })
 	}
 }
 
 </script>
 
-
-
-<style lang="less" >
+<style lang="less">
 
 .oneInvoiceWrapper {
 	.cards {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 	}
+	.oneInvoice {
+		display: grid;
+		grid-template: 	"m c"
+						"m a"
+						"z z"
+						"s s"
+						"p p";
+	}
 }
-@media screen and (max-width: 1250px) {
+
+@media screen and (max-width: 1100px) {
 	.oneInvoiceWrapper {
-		.cards {
-			grid-template-columns: 1fr;
+		.oneInvoice {
+			grid-template: 	"m"
+							"c"
+							"a"
+							"z"
+							"s"
+							"p";
 		}
 	}
 }

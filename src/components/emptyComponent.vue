@@ -11,6 +11,8 @@ import {
 	mapMutations
 } from 'vuex'
 
+import {} from 'quasar'
+
 export default {
 	data() {
 		return {}

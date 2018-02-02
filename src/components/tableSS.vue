@@ -13,7 +13,13 @@
 				<tr v-if="!minify">
 					<th v-if="lineNumbers && !minify" class="tableIndex"></th>
 					<th v-for="column, index in columnsSearchFields">
-						<el-input v-model="search[column.field]" class="searchByField" suffix-icon="el-icon-search" :key="index" v-if="column.type == 'search'"/>
+						<el-input
+							v-model="search[column.field]"
+							class="searchByField"
+							suffix-icon="el-icon-search"
+							:key="index"
+							v-if="column.type == 'search'"
+							:disabled="column.search === false"/>
 						<el-select
 							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
 							class="searchByField"
@@ -68,6 +74,9 @@
 
 <script>
 import tablessPopover from '@/components/tableSSPopover'
+import {
+	QInput
+} from 'quasar'
 
 export default {
 	props: {
@@ -113,7 +122,8 @@ export default {
 		}
 	},
 	components: {
-		tablessPopover
+		tablessPopover,
+		QInput
 	},
 	data () {
 		return {

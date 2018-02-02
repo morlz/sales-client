@@ -21,7 +21,7 @@ export default {
 	props: ['one', 'arr', 'fields', 'label'],
 	computed: {
 		field () {
-			return this.fields.map(field => this.arr[0][field]).join(" ")
+			return this.fields.map(field => this.arr[0] ? this.arr[0][field] : '').join(" ")
 		},
 		popoverContent () {
 			return this.arr.map(el => this.fields.map(field => el[field]).join(" "))
