@@ -1,17 +1,33 @@
 <template>
 <div class="cartWrapper">
-	<el-popover ref="cartPopover" title="Корзина" trigger="click">
+	<el-popover ref="cartPopover" trigger="click">
 		<div class="cartItems" v-loading="cart_loadingList">
-			<el-tabs class="cartTabs">
-				<el-tab-pane label="Мебель из салона (склада)">
-					<tabless :data="cart_exist" :fieldDescription="cartPopupExistFieldDescription" :minify="true" :buttons="local_cart_cachedExistButtons" />
-				</el-tab-pane>
+			<div class="items scroll">
+				<template v-if="cart_exist.length">
+					<div class="title">Мебель из салона (склада)</div>
+					<table-collapsible :rows="cart_exist" :columns="cartPopupExistFieldDescription">
+						<template slot="buttons" slot-scope="props">
+							<q-btn
+								v-for="button, index in local_cart_cachedExistButtons"
+								:key="`${props.row.ID}-${index}`"
+								:class="button.class"
+								flat
+								@click.stop="button.click($event, props.row)"/>
+						</template>
+					</table-collapsible>
+				</template>
 
-				<el-tab-pane label="Заказные позиции">
-					<tabless :data="cart_new" :fieldDescription="cartPopupNewFieldDescription" :minify="true" :buttons="local_cart_cachedNewButtons" />
-				</el-tab-pane>
-			</el-tabs>
-			<el-button type="primary">Оформить документ</el-button>
+				<template v-if="cart_new.length">
+					<div class="title">Заказные позиции</div>
+					<table-collapsible :rows="cart_new" :columns="cartPopupNewFieldDescription"/>
+				</template>
+
+				<div class="title" v-if="!cart_exist.length && !cart_new.length">
+					Корзина пуста
+				</div>
+			</div>
+
+			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length">Оформить документ</q-btn>
 		</div>
 	</el-popover>
 	<div class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList">
@@ -21,13 +37,21 @@
 </template>
 
 <script>
+//<tabless :data="cart_exist" :fieldDescription="cartPopupExistFieldDescription" :minify="true" :buttons="local_cart_cachedExistButtons" />
+//<tabless :data="cart_new" :fieldDescription="cartPopupNewFieldDescription" :minify="true" :buttons="local_cart_cachedNewButtons" />
+
 import {
 	mapActions,
 	mapGetters,
 	mapMutations
 } from 'vuex'
 
+import {
+	QBtn
+} from 'quasar'
+
 import tabless from '@/components/tableSS.vue'
+import TableCollapsible from '@/components/TableCollapsible.vue'
 import fieldDescription from '@/static/fieldDescription'
 
 let {
@@ -43,7 +67,9 @@ export default {
 		}
 	},
 	components: {
-		tabless
+		TableCollapsible,
+		tabless,
+		QBtn
 	},
 	watch: {
 
@@ -113,14 +139,27 @@ export default {
 		&:hover {
 			background-color: #1565c0;
 		}
+
     }
 }
 .cartItems {
+	display: grid;
+	width: 700px;
 	max-height: 600px;
-	overflow-y: scroll;
-	padding-right: 10px;
-	.cartTabs {
-		margin-bottom: 10px;
+	.goButton {
+		margin-top: 15px;
+		justify-self: start;
+	}
+	.items {
+		display: grid;
+		grid-gap: 10px;
+		align-content: start;
+		overflow-y: auto;
+		padding-right: 10px;
+	}
+	.title {
+		font-size: 18px;
+		font-weight: bold;
 	}
 }
 </style>

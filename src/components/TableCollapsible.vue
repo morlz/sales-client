@@ -1,10 +1,18 @@
 <template>
 <div class="tableCollapsible">
-	<table-collapsible-head :columns="columns" />
+	<table-collapsible-head :columns="columns">
+		<template slot="buttons">
+			<slot name="buttons" :row="{}"/>
+		</template>
+	</table-collapsible-head>
 
 	<table-collapsible-body :columns="columns" :rows="rows">
 		<template slot-scope="props">
 			<slot :row="props.row"/>
+		</template>
+
+		<template slot="buttons" slot-scope="props">
+			<slot name="buttons" :row="props.row"/>
 		</template>
 	</table-collapsible-body>
 

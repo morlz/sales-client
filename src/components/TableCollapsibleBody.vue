@@ -2,8 +2,13 @@
 <div class="tableCollapsible__body">
 	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row">
 		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex">
-			{{ getRowData(row, column) }}
+			{{ getFieldData(row, column) }}
 		</div>
+
+		<div class="buttons">
+			<slot name="buttons" :row="row"/>
+		</div>
+
 		<template slot="content" slot-scope="props">
 			<slot :row="props.row"/>
 		</template>
@@ -29,11 +34,11 @@ export default {
 		TableCollapsibleRow
 	},
 	methods: {
-		getRowData (row, column) {
-			return row[column.field]
-		}
+		getFieldData: (row, { field }) => field.split(".").reduce((prev, el) => (prev[el] || ""), row)
 	},
 }
 </script>
 
-<style lang="less"></style>
+<style lang="less">
+
+</style>

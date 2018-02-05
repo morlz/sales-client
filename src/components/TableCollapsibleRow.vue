@@ -52,9 +52,14 @@ export default {
 	&__rowColumns {
 		position: relative;
 		display: grid;
+		grid-gap: 10px;
 		grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
 		padding: 15px;
 		transition: all 0.3s ease-in-out;
+	}
+
+	&__rowColumnEnd {
+		justify-self: end;
 	}
 
 	&__rowColumnsHead {

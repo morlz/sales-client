@@ -4,6 +4,7 @@
 		<div class="tableCollapsible__headColumn" v-for="column, index in columns" :key="index">
 			{{ column.label }}
 		</div>
+		<div v-if="$slots.buttons"/>
 	</table-collapsible-row>
 </div>
 </template>
@@ -17,9 +18,6 @@ export default {
 			type: Array,
 			required: true
 		}
-	},
-	data() {
-		return {}
 	},
 	components: {
 		TableCollapsibleRow
