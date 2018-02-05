@@ -1,6 +1,6 @@
 <template>
 <div class="tableCollapsible__head">
-	<table-collapsible-row>
+	<table-collapsible-row :head="true">
 		<div class="tableCollapsible__headColumn" v-for="column, index in columns" :key="index">
 			{{ column.label }}
 		</div>
@@ -9,16 +9,6 @@
 </template>
 
 <script>
-import {
-	mapActions,
-	mapGetters,
-	mapMutations
-} from 'vuex'
-
-import {
-	QCollapsible
-} from 'quasar'
-
 import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
 
 export default {
@@ -34,19 +24,8 @@ export default {
 	components: {
 		TableCollapsibleRow
 	},
-	watch: {
-
-	},
-	computed: {
-
-	},
-	methods: {
-
-	},
 }
 </script>
 
 
-<style lang="less">
-
-</style>
+<style lang="less"></style>

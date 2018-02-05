@@ -204,4 +204,17 @@ h2 {
 		}
 	}
 }
+
+.separator {
+	&-v {
+		background: #e0e0e0;
+		width: 1px;
+		height: 100%;
+	}
+	&-g {
+		background: #e0e0e0;
+		width: 100%;
+		height: 1px;
+	}
+}
 </style>

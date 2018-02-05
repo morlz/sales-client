@@ -7,24 +7,11 @@
 		<template slot="content" slot-scope="props">
 			<slot :row="props.row"/>
 		</template>
-
 	</table-collapsible-row>
 </div>
 </template>
 
 <script>
-//
-
-import {
-	mapActions,
-	mapGetters,
-	mapMutations
-} from 'vuex'
-
-import {
-	QCollapsible
-} from 'quasar'
-
 import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
 
 export default {
@@ -38,17 +25,8 @@ export default {
 			default: a => []
 		}
 	},
-	data() {
-		return {}
-	},
 	components: {
 		TableCollapsibleRow
-	},
-	watch: {
-
-	},
-	computed: {
-
 	},
 	methods: {
 		getRowData (row, column) {
@@ -58,7 +36,4 @@ export default {
 }
 </script>
 
-
-<style lang="less">
-
-</style>
+<style lang="less"></style>

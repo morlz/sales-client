@@ -1,58 +1,75 @@
 <template>
-	<div class="tableCollapsible__row" >
-		<div class="tableCollapsible__rowColumns" :style="s">
+	<div class="tableCollapsible__row">
+		<div class="tableCollapsible__rowColumns" @click="open = !head ? !open : false" v-ripple="!head" :class="{ 'cursor-pointer' : !head, tableCollapsible__rowColumnsHead: head }">
 			<slot/>
 		</div>
 
-		<div class="tableCollapsible__rowCollapcible">
-			<slot name="content" :row="row"/>
-		</div>
+		<q-slide-transition>
+			<div class="tableCollapsible__rowCollapcible" v-if="open">
+				<slot name="content" :row="row"/>
+			</div>
+		</q-slide-transition>
 	</div>
 </template>
 
 <script>
 import {
-	mapActions,
-	mapGetters,
-	mapMutations
-} from 'vuex'
-
-import {
-	QCollapsible
+	QSlideTransition,
+	Ripple
 } from 'quasar'
 
 export default {
 	props: {
 		row: {
 			type: Object
+		},
+		head: {
+			type: Boolean,
+			default: a => false
 		}
 	},
 	data() {
-		return {}
-	},
-	components: {
-
-	},
-	watch: {
-
-	},
-	computed: {
-		s () {
-			return { 'grid-template-columns' : 'repeat(auto-fit, minmax(40px, 1fr))' }
+		return {
+			open: false
 		}
 	},
-	methods: {
-
+	components: {
+		QSlideTransition
+	},
+	directives: {
+		Ripple
 	},
 }
 </script>
 
 
 <style lang="less">
-.tableCollapsible__row {
-	&Columns {
-		display: grid;
+.tableCollapsible {
+	&__row {
+
 	}
 
+	&__rowColumns {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+		padding: 15px;
+		transition: all 0.3s ease-in-out;
+	}
+
+	&__rowColumnsHead {
+		color: #027be3;
+		padding: 5px 15px;
+	}
+
+	&__rowCollapcible {
+
+	}
+}
+
+.tableCollapsible .cursor-pointer {
+	&:hover {
+		background: #ecf5ff;
+	}
 }
 </style>

@@ -1,29 +1,26 @@
 <template>
 <div class="tableCollapsible">
 	<table-collapsible-head :columns="columns" />
+
 	<table-collapsible-body :columns="columns" :rows="rows">
 		<template slot-scope="props">
 			<slot :row="props.row"/>
 		</template>
 	</table-collapsible-body>
+
+	<template v-if="footer">
+		<div class="separator-g" />
+		<table-collapsible-row>
+			<slot name="footer"/>
+		</table-collapsible-row>
+	</template>
 </div>
 </template>
 
 <script>
-
-//
-import {
-	mapActions,
-	mapGetters,
-	mapMutations
-} from 'vuex'
-
-import {
-	QCollapsible
-} from 'quasar'
-
 import TableCollapsibleHead from '@/components/TableCollapsibleHead.vue'
 import TableCollapsibleBody from '@/components/TableCollapsibleBody.vue'
+import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
 
 export default {
 	props: {
@@ -34,28 +31,19 @@ export default {
 		rows: {
 			type: Array,
 			default: a => []
+		},
+		footer: {
+			type: Boolean,
+			default: a => false
 		}
-	},
-	data() {
-		return {}
 	},
 	components: {
 		TableCollapsibleHead,
-		TableCollapsibleBody
-	},
-	watch: {
-
-	},
-	computed: {
-
-	},
-	methods: {
-
+		TableCollapsibleBody,
+		TableCollapsibleRow
 	},
 }
 </script>
 
 
-<style lang="less">
-
-</style>
+<style lang="less"></style>
