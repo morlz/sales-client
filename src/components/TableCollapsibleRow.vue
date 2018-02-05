@@ -33,12 +33,28 @@ export default {
 			open: false
 		}
 	},
+	watch: {
+		open (n) {
+			n ? this.$emit('open', this.row) : this.$emit('close', this.row)
+		}
+	},
 	components: {
 		QSlideTransition
 	},
 	directives: {
 		Ripple
 	},
+	methods: {
+		close () {
+			this.open = false
+		}
+	},
+	mounted () {
+		this.$on('wannaClose', this.close)
+	},
+	beforeDestroy () {
+		this.$off('wannaClose', this.close)
+	}
 }
 </script>
 

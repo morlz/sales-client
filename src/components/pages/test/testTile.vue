@@ -1,9 +1,16 @@
 <template>
 	<q-card class="test__moutionTile">
-
 		<q-card-title>{{ invoice.client.lastname }} {{ invoice.client.name }} {{ invoice.client.patronymic }}</q-card-title>
 		<q-card-main>
-			<table-collapsible :rows="invoice.content" :columns="invoiceFieldDescription"/>
+			<table-collapsible :rows="invoice.content" :columns="invoiceFieldDescription">
+				<template slot="startH">
+					<q-checkbox v-model="all" />
+				</template>
+
+				<template slot="start" slot-scope="props">
+					<q-checkbox v-model="props.row.selected" />
+				</template>
+			</table-collapsible>
 		</q-card-main>
 	</q-card>
 </template>
@@ -22,7 +29,8 @@ import {
 	QItemMain,
 	QCard,
 	QCardTitle,
-	QCardMain
+	QCardMain,
+	QCheckbox
 } from 'quasar'
 import { styler, spring, listen, pointer, value } from 'popmotion'
 
@@ -52,16 +60,24 @@ export default {
 		QCard,
 		QCardTitle,
 		QCardMain,
-		TableCollapsible
+		TableCollapsible,
+		QCheckbox
 	},
 	watch: {
 
 	},
 	computed: {
-
+		all: {
+			get () {
+				return !this.invoice.content.map(el => el.selected).filter(el => !el).length
+			},
+			set (n) {
+				this.invoice.content = this.invoice.content.map(el => ({ ...el, selected: n }))
+			}
+		}
 	},
 	methods: {
-
+		
 	},
 	mounted () {
 		this.styler = styler(this.$el)

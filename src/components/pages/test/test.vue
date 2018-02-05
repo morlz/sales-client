@@ -60,8 +60,8 @@ export default {
 						patronymic: "Петрович"
 					},
 					content: [
-						{ un: 123, name: "divan", weight: 300, space: 200 },
-						{ un: 124, name: "divan 2", weight: 320, space: 200 },
+						{ un: 123, name: "divan", weight: 300, space: 200, selected: false },
+						{ un: 124, name: "divan 2", weight: 320, space: 200, selected: false },
 					]
 				},
 				{
@@ -73,7 +73,7 @@ export default {
 						patronymic: "Генадич"
 					},
 					content: [
-						{ un: 123, name: "divan", weight: 300, space: 200 },
+						{ un: 123, name: "divan", weight: 300, space: 200, selected: false },
 					]
 				},
 				{
@@ -85,11 +85,11 @@ export default {
 						patronymic: "Эльдарыч"
 					},
 					content: [
-						{ un: 123, name: "divan", weight: 300, space: 400 },
-						{ un: 124, name: "divan 2", weight: 320, space: 100 },
-						{ un: 423, name: "divan 4", weight: 120, space: 2000 },
-						{ un: 5345, name: "divan 5", weight: 620, space: 5400 },
-						{ un: 67867, name: "divan 6", weight: 30020, space: 1 },
+						{ un: 123, name: "divan", weight: 300, space: 400, selected: false },
+						{ un: 124, name: "divan 2", weight: 320, space: 100, selected: false },
+						{ un: 423, name: "divan 4", weight: 120, space: 2000, selected: false },
+						{ un: 5345, name: "divan 5", weight: 620, space: 5400, selected: false },
+						{ un: 67867, name: "divan 6", weight: 30020, space: 1, selected: false },
 					]
 				}
 			],
@@ -114,12 +114,6 @@ export default {
 
 	},
 	methods: {
-		tileEnter: (el, done) => {
-			console.log(el);
-			setTimeout(() => {
-				done ? done() : null
-			}, 300)
-		},
 		p () {
 			this.invoices.push({
 				z: 1,
@@ -130,11 +124,11 @@ export default {
 					patronymic: "Эльдарыч"
 				},
 				content: [
-					{ un: 123, name: "divan", weight: 300, space: 400 },
-					{ un: 124, name: "divan 2", weight: 320, space: 100 },
-					{ un: 423, name: "divan 4", weight: 120, space: 2000 },
-					{ un: 5345, name: "divan 5", weight: 620, space: 5400 },
-					{ un: 67867, name: "divan 6", weight: 30020, space: 1 },
+					{ un: 123, name: "divan", weight: 300, space: 400, selected: false },
+					{ un: 124, name: "divan 2", weight: 320, space: 100, selected: false },
+					{ un: 423, name: "divan 4", weight: 120, space: 2000, selected: false },
+					{ un: 5345, name: "divan 5", weight: 620, space: 5400, selected: false },
+					{ un: 67867, name: "divan 6", weight: 30020, space: 1, selected: false },
 				]
 			})
 		},
