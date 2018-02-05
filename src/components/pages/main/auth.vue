@@ -3,24 +3,24 @@
 	<div class="gradient" :style="gradientStyles"/>
 
 	<div class="mainAuth">
-		<el-card class="centralCard" v-loading="auchChecking || logined">
-			<h2 class="title" slot="header">Авторизация</h2>
+		<q-card class="authTile" v-loading="auchChecking || logined">
+			<q-card-title>Авторизация</q-card-title>
 
-			<el-form :model="form" :rules="loginFormRules" ref="loginForm">
-				<el-form-item label="Имя пользователя (Логин)" prop="login">
-					<el-input v-model="form.login" placeholder="Логин" @keyup.enter.native="authHandler" />
-				</el-form-item>
+			<q-card-main>
+				<q-field icon="fa-user">
+					<q-input v-model="form.login" float-label="Имя пользователя (Логин)" @keyup.enter.native="authHandler"/>
+				</q-field>
 
-				<el-form-item label="Пароль" prop="password">
-					<el-input type="password" v-model="form.password" placeholder="Пароль" @keyup.enter.native="authHandler" />
-				</el-form-item>
-			</el-form>
+				<q-field icon="fa-key">
+					<q-input type="password" v-model="form.password" float-label="Пароль" @keyup.enter.native="authHandler"/>
+				</q-field>
+			</q-card-main>
 
-			<div class="buttons">
-				<el-button type="primary" @click="authHandler" @keyup.enter.native="authHandler">Войти</el-button>
-				<el-button disabled>Востановить пароль</el-button>
-			</div>
-		</el-card>
+			<q-card-actions>
+				<q-btn color="primary" @click="authHandler" @keyup.enter.native="authHandler">Вход</q-btn>
+				<q-btn color="secondary" disabled>Востановить пароль</q-btn>
+			</q-card-actions>
+		</q-card>
 	</div>
 </div>
 </template>
@@ -29,12 +29,22 @@
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import formRules from '@/static/formRules'
+import { QField, QInput, QCard, QCardTitle, QCardMain, QCardActions, QBtn } from 'quasar'
 
 let {
 	login: loginFormRules
 } = formRules
 
 export default {
+	components: {
+		QField,
+		QInput,
+		QCard,
+		QCardTitle,
+		QCardMain,
+		QCardActions,
+		QBtn
+	},
 	data: () => ({
 		loginFormRules,
 		form: {
@@ -58,9 +68,7 @@ export default {
 	}),
 	methods: {
 		authHandler () {
-			this.$refs.loginForm.validate(valid => {
-				if (valid) this.signIn(Object.assign({}, this.form))
-			})
+			this.signIn(Object.assign({}, this.form))
 		},
 		...mapActions([
 			'signIn'
@@ -136,6 +144,20 @@ export default {
 	            margin: 0;
 	        }
 	    }
+		.authTile {
+			width: 350px;
+			padding: 20px;
+			background: #fff;
+			.q-card-primary {
+				padding: 5px;
+			}
+			.q-card-main {
+				padding: 10px;
+				.q-field {
+					margin: 10px 0;
+				}
+			}
+		}
 	}
 
 	.gradient {

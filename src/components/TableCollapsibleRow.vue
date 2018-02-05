@@ -52,9 +52,12 @@ export default {
 	&__rowColumns {
 		position: relative;
 		display: grid;
+		min-height: 45px;
+		box-sizing: border-box;
 		grid-gap: 10px;
 		grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-		padding: 15px;
+		padding: 5px 15px;
+		align-items: center;
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -64,7 +67,6 @@ export default {
 
 	&__rowColumnsHead {
 		color: #027be3;
-		padding: 5px 15px;
 	}
 
 	&__rowCollapcible {

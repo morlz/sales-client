@@ -1,20 +1,19 @@
 <template>
-	<el-switch
-		class="showModelsSelect"
-		v-model="showModels"
-		active-text="Список моделей слева"
-		inactive-text="Список моделей в таблице">
-	</el-switch>
+	<q-toggle v-model="showModels" label="Список моделей слева"/>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { QToggle } from 'quasar'
 
 export default {
 	methods: {
 		...mapMutations([
 			'auth_settings_showModelsSet'
 		])
+	},
+	components: {
+		QToggle
 	},
 	computed: {
 		...mapGetters([

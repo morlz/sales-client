@@ -1,12 +1,12 @@
 <template>
 <div class="mainWrapper">
 	<div class="oneFurnitureWrapper" v-if="isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/salon` }">В салоне</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/salon/${furniture_current.ID}` }">{{ furniture_current.ID }}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+			<li><router-link :to="{ path: '/furniture/salon' }">В салоне</router-link></li>
+			<li><router-link :to="{ path: `/furniture/salon/${furniture_current.ID}` }">{{ furniture_current.ID }}</router-link></li>
+		</ul>
 
 		<div class="cards" v-loading="furniture_loadingOne">
 			<el-card class="card">
@@ -56,7 +56,7 @@
 				</div>
 
 				<div class="buttons">
-					<el-button type="primary" @click="furniture_addToCart(furniture_current)">Добавить в корзину</el-button>
+					<q-btn color="primary" @click="furniture_addToCart(furniture_current)">Добавить в корзину</q-btn>
 				</div>
 			</el-card>
 		</div>
@@ -64,17 +64,17 @@
 
 
 	<div class="manyFurnitureWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/salon` }">В салоне</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+			<li><router-link :to="{ path: '/furniture/salon' }">В салоне</router-link></li>
+		</ul>
 
 		<furniture-models-switch/>
 
-		<el-tabs tab-position="top" v-model="currentTab">
-			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
-		</el-tabs>
+		<q-tabs v-model="currentTab" inverted>
+			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
+		</q-tabs>
 
 		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersModelSet" :loading="furniture_loadingModels" :models="furniture_models">
 			<tabless
@@ -112,6 +112,8 @@ import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 
+import { QTabs, QTab, QBtn } from 'quasar'
+
 let {
 	furnitureSalonFieldDescription
 } = fieldDesription
@@ -123,13 +125,16 @@ export default {
 		tabless,
 		InfiniteLoading,
 		furnitureModelsSwitch,
-		furnitureModelsWrap
+		furnitureModelsWrap,
+		QTabs,
+		QTab,
+		QBtn
 	},
 	mixins: [mixins],
 	data() {
 		return {
 			furnitureSalonFieldDescription,
-			currentTab: 0,
+			currentTab: 'storage',
 			lastFurnituresFilters: {},
 			tabs: [
 				{ name: "Склад", type: "storage" },
@@ -174,7 +179,7 @@ export default {
 			return this.cachedFurnitures
 		},
 		additionalFilters () {
-			return { type: this.tabs[this.currentTab].type }
+			return { type: this.currentTab }
 		},
 		currentSalonName () {
 			return this.salon_list_furniture.find(salon => salon.id == this.furniture_current.ID_SALONA) || {}

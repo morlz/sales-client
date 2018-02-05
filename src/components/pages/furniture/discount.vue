@@ -1,12 +1,12 @@
 <template>
 <div class="mainWrapper">
 	<div class="oneDiscountWrapper" v-if="isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/discount` }">Дисконд</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/discount/${discount_current.ID}` }">{{ discount_current.ID }}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+			<li><router-link :to="{ path: '/furniture/discount' }">В салоне</router-link></li>
+			<li><router-link :to="{ path: `/furniture/discount/${discount_current.UN}` }">{{ discount_current.UN }}</router-link></li>
+		</ul>
 
 		<div class="cards" v-loading="discount_loadingOne">
 			<el-card class="card">
@@ -48,7 +48,7 @@
 				</div>
 
 				<div class="buttons">
-					<el-button type="primary">Добавить в корзину</el-button>
+					<q-btn color="primary">Добавить в корзину</q-btn>
 				</div>
 			</el-card>
 		</div>
@@ -56,17 +56,20 @@
 
 
 	<div class="manyDiscountWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/discount` }">Дисконд</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+			<li><router-link :to="{ path: '/furniture/discount' }">В салоне</router-link></li>
+		</ul>
 
 		<furniture-models-switch/>
 
 		<furniture-models-wrap :current="discount_filters.MODEL" @select="local_discount_filtersModelSet" :loading="discount_loadingModels" :models="discount_models">
-			<el-tabs tab-position="top" v-model="currentTab">
-				<el-tab-pane label="Таблица">
+			<q-tabs inverted v-model="currentTab" no-pane-border>
+				<q-tab name="table" label="Таблица" slot="title"/>
+				<q-tab name="tile" label="Плитки" slot="title"/>
+
+				<q-tab-pane name="table">
 					<tabless
 						key="salon"
 						:data="discount_cached"
@@ -80,12 +83,13 @@
 						@onClick="routerGoId"
 						@select="local_discount_handleFieldSelect"
 					/>
-				</el-tab-pane>
+				</q-tab-pane>
 
-				<el-tab-pane label="Плитки">
+				<q-tab-pane name="tile">
 					<discount-tile-view v-loading="discount_loading" />
-				</el-tab-pane>
-			</el-tabs>
+				</q-tab-pane>
+
+			</q-tabs>
 
 			<infinite-loading @infinite="discount_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
@@ -108,7 +112,7 @@ import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
-
+import { QTabs, QTab, QTabPane, QBtn } from 'quasar'
 let {
 	discountFieldDescription
 } = fieldDesription
@@ -121,7 +125,11 @@ export default {
 		discountTileView,
 		InfiniteLoading,
 		furnitureModelsSwitch,
-		furnitureModelsWrap
+		furnitureModelsWrap,
+		QTabs,
+		QTab,
+		QTabPane,
+		QBtn
 	},
 	mixins: [mixins],
 	data() {
@@ -129,7 +137,7 @@ export default {
 			discountFieldDescription,
 			lastDiscountFilters: {},
 			lastDiscountSort: {},
-			currentTab: 0
+			currentTab: 'table'
 		}
 	},
 	watch: {
@@ -172,7 +180,7 @@ export default {
 		},
 		additionalSort () {
 			let obj2 = {}
-			if (this.currentTab == 1)
+			if (this.currentTab == 'tile')
 				obj2 = {
 					"sortType" : "asc",
 					"sortColumn" : "model"

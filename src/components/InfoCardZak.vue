@@ -64,6 +64,11 @@
 								<template slot="label">Ткань 3</template>
 								{{ props.row.KOMP1 }}
 							</table-two-collumns-row>
+
+							<table-two-collumns-row v-if="props.row.COMMENT">
+								<template slot="label">Примечание</template>
+								{{ props.row.COMMENT }}
+							</table-two-collumns-row>
 						</table-two-collumns>
 
 						<div class="separator-g" v-ga="`sg2`"/>

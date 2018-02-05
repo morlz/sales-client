@@ -19,7 +19,16 @@
 
 				<template v-if="cart_new.length">
 					<div class="title">Заказные позиции</div>
-					<table-collapsible :rows="cart_new" :columns="cartPopupNewFieldDescription"/>
+					<table-collapsible :rows="cart_new" :columns="cartPopupNewFieldDescription">
+						<template slot="buttons" slot-scope="props">
+							<q-btn
+								v-for="button, index in local_cart_cachedNewButtons"
+								:key="`${props.row.ID}-${index}`"
+								:class="button.class"
+								flat
+								@click.stop="button.click($event, props.row)"/>
+						</template>
+					</table-collapsible>
 				</template>
 
 				<div class="title" v-if="!cart_exist.length && !cart_new.length">
@@ -97,8 +106,7 @@ export default {
 					items: this.cart_removing
 				},
 				class: {
-					'el-icon-delete': true,
-					'hoverHide': true
+					'el-icon-delete': true
 				},
 				click: (e, row) => this.cart_removeItem({ id: row.ID, type: 'exist' })
 			}]
@@ -111,8 +119,7 @@ export default {
 					items: this.cart_removing
 				},
 				class: {
-					'el-icon-delete': true,
-					'hoverHide': true
+					'el-icon-delete': true
 				},
 				click: (e, row) => this.cart_removeItem({ id: row.ID, type: 'new' })
 			}]
@@ -144,7 +151,7 @@ export default {
 }
 .cartItems {
 	display: grid;
-	width: 700px;
+	width: 800px;
 	max-height: 600px;
 	.goButton {
 		margin-top: 15px;

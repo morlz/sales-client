@@ -5,7 +5,7 @@
 			{{ getFieldData(row, column) }}
 		</div>
 
-		<div class="buttons">
+		<div class="buttons tableCollapsible__rowColumnEnd">
 			<slot name="buttons" :row="row"/>
 		</div>
 

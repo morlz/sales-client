@@ -1,10 +1,10 @@
 <template>
 <div class="mainWrapper furnitureNewWrapper">
-	<el-breadcrumb separator="/" class="bc">
-		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: `/furniture/new` }">Заказать изготовление</el-breadcrumb-item>
-	</el-breadcrumb>
+	<ul class="breadcrumb">
+		<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+		<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+		<li><router-link :to="{ path: '/furniture/new' }">Заказать изготовление</router-link></li>
+	</ul>
 
 	<div class="newFurniture">
 		<newFurnitureForm />

@@ -15,10 +15,10 @@
 				<div class="salon">{{ loginedAs.UPOST }}</div>
 			</div>
 			<div class="buttons">
-				<el-button>Задачи</el-button>
-				<el-button>Заказы</el-button>
-				<el-button @click="goToProfile">Профиль</el-button>
-				<el-button type="danger" @click="logOut">Выйти</el-button>
+				<q-btn flat>Задачи</q-btn>
+				<q-btn flat>Заказы</q-btn>
+				<q-btn flat @click="goToProfile">Профиль</q-btn>
+				<q-btn flat color="negative" @click="logOut">Выйти</q-btn>
 			</div>
 		</div>
 	</el-popover>
@@ -29,8 +29,12 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { QBtn } from 'quasar'
 
 export default {
+	components: {
+		QBtn
+	},
 	methods: {
 		...mapMutations([]),
 		...mapActions([

@@ -1,12 +1,12 @@
 <template>
 <div class="mainWrapper">
 	<div class="oneStorageWrapper" v-if="isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/storage` }">На складе</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/storage/${storage_current.ID}` }">{{ storage_current.ID }}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+			<li><router-link :to="{ path: '/furniture/salon' }">На складе</router-link></li>
+			<li><router-link :to="{ path: `/furniture/storage/${storage_current.ID}` }">{{ storage_current.ID }}</router-link></li>
+		</ul>
 
 		<div class="cards" v-loading="storage_loadingOne">
 			<el-card class="card">
@@ -44,7 +44,7 @@
 				</div>
 
 				<div class="buttons">
-					<el-button type="primary">Добавить в корзину</el-button>
+					<q-btn color="primary">Добавить в корзину</q-btn>
 				</div>
 			</el-card>
 		</div>
@@ -52,17 +52,17 @@
 
 
 	<div class="manyStorageWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Мебель</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/furniture/storage` }">На складе</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
+			<li><router-link :to="{ path: '/furniture/salon' }">На складе</router-link></li>
+		</ul>
 
 		<furniture-models-switch/>
 
-		<el-tabs tab-position="top" v-model="currentTab">
-			<el-tab-pane v-for="tab, index in tabs" :label="tab.name" :key="index" />
-		</el-tabs>
+		<q-tabs v-model="currentTab" inverted>
+			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
+		</q-tabs>
 
 		<furniture-models-wrap :current="storage_filters.MODEL" @select="local_storage_filtersModelSet" :models="storage_models" :loading="storage_loadingModels">
 			<tabless
@@ -101,6 +101,8 @@ import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
+import { QTab, QTabs, QBtn } from 'quasar'
+
 
 let {
 	storageFieldDescription
@@ -113,14 +115,17 @@ export default {
 		tabless,
 		InfiniteLoading,
 		furnitureModelsSwitch,
-		furnitureModelsWrap
+		furnitureModelsWrap,
+		QTab,
+		QTabs,
+		QBtn
 	},
 	mixins: [mixins],
 	data() {
 		return {
 			storageFieldDescription,
 			lastStorageFilters: {},
-			currentTab: 0,
+			currentTab: 'sgp',
 			tabs: [
 				{ name: "СГП", type: "sgp" },
 				{ name: "Интернет", type: "internet" },
@@ -158,7 +163,7 @@ export default {
 			'auth_settings'
 		]),
 		additionalFilters () {
-			return { type: this.tabs[this.currentTab].type }
+			return { type: this.currentTab }
 		},
 		local_storage_selectFields () {
 			let rez = []

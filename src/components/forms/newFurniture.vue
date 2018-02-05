@@ -1,9 +1,10 @@
 <template>
 	<div class="newFurnitureFormWrapper">
-		<el-card class="card newFurnitureForm">
-			<div class="title" slot="header">Конфигурация</div>
 
-			<div class="mainForm">
+		<q-card class="card newFurnitureForm">
+			<q-card-title>Конфигурация</q-card-title>
+
+			<q-card-main class="mainForm">
 				<el-form label-position="top">
 					<el-steps direction="vertical" :active="furniture_new_active.currentStep" finish-status="success">
 						<el-step title="Модель">
@@ -67,39 +68,41 @@
 						</el-step>
 					</el-steps>
 				</el-form>
-			</div>
-		</el-card>
+			</q-card-main>
+		</q-card>
 
-		<el-card class="card additioal">
-			<div class="title" slot="header">Информация</div>
+		<q-card class="card additioal">
+			<q-card-title>Информация</q-card-title>
 
-			<div class="images" v-if="!furniture_new_active.gallery">
-				<gallery :content="furniture_new_cachedImages"/>
-			</div>
+			<q-card-main>
+				<div class="images" v-if="!furniture_new_active.gallery">
+					<gallery :content="furniture_new_cachedImages"/>
+				</div>
 
-			<div class="blank">
-				<el-form>
-					<div class="priceGroup" :class="{disabled: furniture_new_active.price}">
-						<div>Категория</div>
-						<div class="price" v-loading="furniture_new_loading.cat">
-							{{
-								(furniture_new_modelCunning ?
-									furniture_new_cunningCatSofa
-								:	furniture_new_cached.cloth[furniture_new_normalMaxIndex].code) || 0
-							}}
+				<div class="blank">
+					<el-form>
+						<div class="priceGroup" :class="{disabled: furniture_new_active.price}">
+							<div>Категория</div>
+							<div class="price" v-loading="furniture_new_loading.cat">
+								{{
+									(furniture_new_modelCunning ?
+										furniture_new_cunningCatSofa
+									:	furniture_new_cached.cloth[furniture_new_normalMaxIndex].code) || 0
+								}}
+							</div>
+							<div>Цена</div>
+							<div class="price" v-loading="furniture_new_loading.price">{{ price }}</div>
+							<div>Цена оптовая</div>
+							<div class="price" v-loading="furniture_new_loading.price">{{ furniture_new_cached.opt }}</div>
 						</div>
-						<div>Цена</div>
-						<div class="price" v-loading="furniture_new_loading.price">{{ price }}</div>
-						<div>Цена оптовая</div>
-						<div class="price" v-loading="furniture_new_loading.price">{{ furniture_new_cached.opt }}</div>
-					</div>
 
-					<el-form-item>
-						<el-button type="primary" :disabled="furniture_new_active.button" @click="furniture_new_addToCart">Создать</el-button>
-					</el-form-item>
-				</el-form>
-			</div>
-		</el-card>
+						<el-form-item>
+							<el-button type="primary" :disabled="furniture_new_active.button" @click="furniture_new_addToCart">Создать</el-button>
+						</el-form-item>
+					</el-form>
+				</div>
+			</q-card-main>
+		</q-card>
 	</div>
 </template>
 
@@ -114,6 +117,7 @@ import {
 import clothSelectForm from '@/components/forms/clothSelect.vue'
 import palermoConstructForm from '@/components/forms/palermoConstruct.vue'
 import gallery from '@/components/gallery.vue'
+import { QCard, QCardTitle, QCardMain } from 'quasar'
 
 export default {
 	data() {
@@ -122,7 +126,10 @@ export default {
 	components: {
 		clothSelectForm,
 		palermoConstructForm,
-		gallery
+		gallery,
+		QCard,
+		QCardTitle,
+		QCardMain
 	},
 	watch: {
 
@@ -207,7 +214,7 @@ export default {
 .newFurnitureFormWrapper {
 	display: grid;
 	grid-template-columns: minmax(0, 500px) 1fr;
-	grid-gap: 20px;
+	grid-gap: 10px;
 	color: #5a5e66;
 
 	.newFurnitureForm {

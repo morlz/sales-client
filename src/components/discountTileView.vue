@@ -45,8 +45,6 @@
 		</div>
 	</div>
 
-
-
 </div>
 </template>
 
@@ -62,7 +60,7 @@ export default {
 	},
 	methods: {
 		clickHandler (item) {
-			router.push({ path: `/furniture/discount/${item.id}` })
+			router.push({ path: `/furniture/discount/${item.UN}` })
 		}
 	},
 	computed: {
@@ -88,8 +86,10 @@ export default {
 				cursor: pointer;
 				padding: 10px;
 				border: 1px solid #e6ebf5;
-				-webkit-box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-				box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+				border-radius: 2px;
+    			box-shadow: 0 1px 5px rgba(0,0,0,0.2),
+							0 2px 2px rgba(0,0,0,0.14),
+							0 3px 1px -2px rgba(0,0,0,0.12);
 
 				> div {
 					padding: 10px;
@@ -122,14 +122,16 @@ export default {
 					padding: 0;
 					.comment {
 						position: absolute;
-						width: ~"calc(100% + 40px)";
+						width: ~"calc(100% + 60px)";
 						top: -40px;
 						left: -30px;
 						opacity: 0;
 						transition: all 0.3s ease-in-out;
 						pointer-events: none;
 						padding: 10px;
-						box-shadow: 0 2px 12px 0 rgba(0,0,0,.2);
+						box-shadow: 0 1px 5px rgba(0,0,0,0.2),
+									0 2px 2px rgba(0,0,0,0.14),
+									0 3px 1px -2px rgba(0,0,0,0.12);
 						transform: scale(0.8);
 					}
 				}

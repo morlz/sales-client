@@ -1,16 +1,19 @@
 <template>
 	<div class="modelsWrapper" :class="{ oneColumn: !auth_settings.showModels }">
-		<el-card class="modelList" v-if="auth_settings.showModels" v-loading="loading">
-			<div class="title" slot="header">Модель</div>
-			<div class="model"
-				v-for="item, index in models"
-				:class="{ selected: current == item.MODEL || (!current && item.MODEL == 'Все модели') }"
-				@click="clickHandler(item.MODEL)"
-			>
-				<div class="name">{{ item.MODEL }}</div>
-				<div class="count">{{ item.count }}</div>
-			</div>
-		</el-card>
+		<q-card class="modelList" v-if="auth_settings.showModels" v-loading="loading">
+			<q-card-title>Модель</q-card-title>
+
+			<q-card-main>
+				<div class="model"
+					v-for="item, index in models"
+					:class="{ selected: current == item.MODEL || (!current && item.MODEL == 'Все модели') }"
+					@click="clickHandler(item.MODEL)"
+				>
+					<div class="name">{{ item.MODEL }}</div>
+					<div class="count">{{ item.count }}</div>
+				</div>
+			</q-card-main>
+		</q-card>
 
 		<div class="content">
 			<slot/>
@@ -20,6 +23,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { QCard, QCardTitle, QCardMain } from 'quasar'
 
 export default {
 	props: {
@@ -30,6 +34,11 @@ export default {
 		loading: {
 			type: Boolean
 		}
+	},
+	components: {
+		QCard,
+		QCardTitle,
+		QCardMain
 	},
 	methods: {
 		...mapMutations([
@@ -60,7 +69,7 @@ export default {
 .modelsWrapper {
 	width: 100%;
 	display: grid;
-	grid-template-columns: 160px 1fr;
+	grid-template-columns: 180px 1fr;
 	grid-gap: 10px;
 	.modelList {
 		.el-card__body {
