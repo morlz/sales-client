@@ -41,6 +41,10 @@ const state = {
 					path: '/furniture/new',
 					icon: 'el-icon-order-poduction',
 					can: { lvl: 2, action: "Furniture" }
+				},
+				{
+					name: 'Тест',
+					path: '/test/test1',
 				}
 			]
 		},

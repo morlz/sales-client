@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 
+import test1		from '@/components/pages/test/test.vue'
+
 import salon 		from '@/components/pages/furniture/salon.vue'
 import storage 		from '@/components/pages/furniture/storage.vue'
 import discount 	from '@/components/pages/furniture/discount.vue'
@@ -28,6 +30,7 @@ Vue.use(Router)
 
 let routes = [
 	{ path: '/', component: home, name: 'home' },
+	{ path: '/test/test1', component: test1 },
 	{ path: '/admin/roles/:id?', component: roles },
 	{ path: '/admin/personal/:id?', component: personal },
 	{ path: '/admin/tests/', component: tests },
