@@ -3,8 +3,9 @@
 		<q-card-title>{{ invoice.client.lastname }} {{ invoice.client.name }} {{ invoice.client.patronymic }}</q-card-title>
 		<q-card-main>
 			<table-collapsible :rows="invoice.content" :columns="invoiceFieldDescription">
-				<template slot="startH">
-					<q-checkbox v-model="all" />
+				<template slot="startH" >
+					<q-checkbox v-model="all" v-if="invoice.content.length > 1" />
+					<div v-else="invoice.content.length > 1" />
 				</template>
 
 				<template slot="start" slot-scope="props">
@@ -77,7 +78,7 @@ export default {
 		}
 	},
 	methods: {
-		
+
 	},
 	mounted () {
 		this.styler = styler(this.$el)

@@ -1,9 +1,7 @@
 <template>
 <div class="tableCollapsible__body">
 	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows" :border-open="borderOpen">
-		<div class="tableCollapsible__rowColumnStart" v-if="$slots.start">
-			<slot name="start" :row="row"/>
-		</div>
+		<slot name="start" :row="row" class="tableCollapsible__rowColumnStart"/>
 
 		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex">
 			{{ getFieldData(row, column) }}

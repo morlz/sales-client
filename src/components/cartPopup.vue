@@ -153,20 +153,21 @@ export default {
 	display: grid;
 	width: 800px;
 	max-height: 600px;
-	.goButton {
-		margin-top: 15px;
-		justify-self: start;
-	}
+	grid-gap: 15px;
 	.items {
 		display: grid;
 		grid-gap: 10px;
 		align-content: start;
 		overflow-y: auto;
 		padding-right: 10px;
+		max-height: 500px;
 	}
 	.title {
 		font-size: 18px;
 		font-weight: bold;
+	}
+	.goButton {
+		justify-self: start;
 	}
 }
 </style>
