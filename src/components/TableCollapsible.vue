@@ -10,7 +10,7 @@
 		</template>
 	</table-collapsible-head>
 
-	<table-collapsible-body :columns="columns" :rows="rows" :accordion="accordion">
+	<table-collapsible-body :columns="columns" :rows="rows" :accordion="accordion" :borderOpen="borderOpen">
 		<template slot="start" slot-scope="props">
 			<slot name="start" :row="props.row"/>
 		</template>
@@ -53,6 +53,10 @@ export default {
 			default: a => false
 		},
 		accordion: {
+			type: Boolean,
+			default: a => false
+		},
+		borderOpen: {
 			type: Boolean,
 			default: a => false
 		}

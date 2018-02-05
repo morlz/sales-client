@@ -5,7 +5,7 @@
 		</q-card-title>
 
 		<q-card-main>
-			<table-collapsible :columns="c" :rows="data" accordion>
+			<table-collapsible :columns="c" :rows="data" accordion border-open>
 				<template slot-scope="props">
 					<div class="collabsibleContent">
 						<div class="separator-g" v-ga="`sg1`"/>

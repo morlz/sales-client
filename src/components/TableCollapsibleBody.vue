@@ -1,7 +1,7 @@
 <template>
 <div class="tableCollapsible__body">
-	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows">
-		<div class="tableCollapsible__rowColumnStart">
+	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows" :border-open="borderOpen">
+		<div class="tableCollapsible__rowColumnStart" v-if="$slots.start">
 			<slot name="start" :row="row"/>
 		</div>
 
@@ -34,6 +34,10 @@ export default {
 			default: a => []
 		},
 		accordion: {
+			type: Boolean,
+			default: a => false
+		},
+		borderOpen: {
 			type: Boolean,
 			default: a => false
 		}

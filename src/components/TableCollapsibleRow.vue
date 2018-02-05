@@ -1,6 +1,14 @@
 <template>
-	<div class="tableCollapsible__row">
-		<div class="tableCollapsible__rowColumns" @click="open = !head ? !open : false" v-ripple="!head" :class="{ 'cursor-pointer' : !head, tableCollapsible__rowColumnsHead: head }">
+	<div class="tableCollapsible__row" :class="{ tableCollapsible__rowOpenBordered: open && borderOpen }">
+		<div
+			class="tableCollapsible__rowColumns"
+			@click="open = !head ? !open : false"
+			v-ripple="!head"
+			:class="{
+				'cursor-pointer': !head,
+				tableCollapsible__rowColumnsHead: head,
+				tableCollapsible__rowColumnOpen: open,
+			}">
 			<slot/>
 		</div>
 
@@ -24,6 +32,10 @@ export default {
 			type: Object
 		},
 		head: {
+			type: Boolean,
+			default: a => false
+		},
+		borderOpen: {
 			type: Boolean,
 			default: a => false
 		}
@@ -62,7 +74,8 @@ export default {
 <style lang="less">
 .tableCollapsible {
 	&__row {
-
+		border: 1px solid transparent;
+		transition: all 0.3s ease-in-out;
 	}
 
 	&__rowColumns {
@@ -87,6 +100,10 @@ export default {
 
 	&__rowCollapcible {
 
+	}
+
+	&__rowOpenBordered {
+		border: 1px solid rgba(2,123,227, 0.5);
 	}
 }
 
