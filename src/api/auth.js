@@ -1,4 +1,5 @@
 import core from '@/api/core'
+import { LocalStorage } from 'quasar'
 
 export default {
 	async signIn (params) {
@@ -25,5 +26,14 @@ export default {
 			method: "get",
 			type: "auth/userpermissions"
 		})
+	},
+	getToken () {
+		return LocalStorage.get.item('token')
+	},
+	setToken (n) {
+		LocalStorage.set('token', n)
+	},
+	unsetToken () {
+		LocalStorage.remove('token')
 	}
 }

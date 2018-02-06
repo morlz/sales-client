@@ -3,6 +3,7 @@ import db from '@/api/tempDB'
 import cookie from '@/api/cookie'
 import EventEmitter from 'browser-event-emitter'
 import path from 'path'
+import auth from '@/api/auth'
 
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
@@ -55,8 +56,8 @@ class Core extends EventEmitter {
 		if (params.data.id !== undefined) url += `/${params.data.id}`
 		params.url = url
 
-		let auth = cookie.getAuth()
-		if (auth && auth.token) params.params.token = auth.token
+		let token = auth.getToken()
+		if (token) params.params.token = token
 
 		//if (process.env.NODE_ENV == 'development') console.log("api request", params)
 		try {

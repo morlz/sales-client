@@ -16,13 +16,21 @@ const state = {
 
 const actions = {
 	async auth_init ({ commit, dispatch }) {
-		let { token } = api.cookie.getAuth()
+		let token = api.auth.getToken()
+
 		commit("updateToken", token ? token : "")
+		if (!token) return
 
 		commit("auth_loadingSet", true)
 		let res = await api.auth.getUserData()
 		commit("auth_loadingSet", false)
-		if (res.data && res.data.error) return
+
+		if (res.data && res.data.error) {
+			if (res.data.error.status == 403)
+				commit ('updateToken')
+			return
+		}
+
 		if (res && res.data && res.data.token) {
 			commit("updateUserAuth", res.data)
 			commit("updateToken", res.data.token)
@@ -45,7 +53,7 @@ const actions = {
 		await api.auth.logOut()
 		commit("updateUserAuth", false)
 		commit("auth_permissionsSet", [])
-		commit("updateToken", "")
+		commit("updateToken")
 	},
 	async auth_getPermissions ({ commit, dispatch }) {
 		commit("auth_loadingPermissionsSet", true)
@@ -60,7 +68,7 @@ const mutations = {
 	updateUserAuth: (state, payload) => state.user = payload,
 	updateToken (state, payload) {
 		state.token = payload
-		api.cookie.setAuth({ token: payload })
+		payload ? api.auth.setToken(payload) : api.auth.unsetToken()
 	},
 	auth_loadingSet: (state, payload) => state.loading.auth = payload,
 	auth_loadingPermissionsSet: (state, payload) => state.loading.permissions = payload,
