@@ -6,7 +6,7 @@
 		</template>
 
 		<template slot="end">
-			<slot name="buttons" :row="{}"/>
+			<slot name="end" :row="{}"/>
 		</template>
 	</table-collapsible-head>
 
@@ -20,7 +20,7 @@
 		</template>
 
 		<template slot="end" slot-scope="props">
-			<slot name="buttons" :row="props.row"/>
+			<slot name="end" :row="props.row"/>
 		</template>
 	</table-collapsible-body>
 

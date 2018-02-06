@@ -6,28 +6,28 @@
 				<template v-if="cart_exist.length">
 					<div class="title">Мебель из салона (склада)</div>
 					<table-collapsible :rows="cart_exist" :columns="cartPopupExistFieldDescription">
-						<template slot="buttons" slot-scope="props">
+						<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
 							<q-btn
 								v-for="button, index in local_cart_cachedExistButtons"
 								:key="`${props.row.ID}-${index}`"
 								:class="button.class"
 								flat
 								@click.stop="button.click($event, props.row)"/>
-						</template>
+						</div>
 					</table-collapsible>
 				</template>
 
 				<template v-if="cart_new.length">
 					<div class="title">Заказные позиции</div>
 					<table-collapsible :rows="cart_new" :columns="cartPopupNewFieldDescription">
-						<template slot="buttons" slot-scope="props">
+						<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
 							<q-btn
 								v-for="button, index in local_cart_cachedNewButtons"
 								:key="`${props.row.ID}-${index}`"
 								:class="button.class"
 								flat
 								@click.stop="button.click($event, props.row)"/>
-						</template>
+						</div>
 					</table-collapsible>
 				</template>
 

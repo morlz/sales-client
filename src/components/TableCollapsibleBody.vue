@@ -7,9 +7,7 @@
 			{{ getFieldData(row, column) }}
 		</div>
 
-		<div class="buttons tableCollapsible__rowColumnEnd">
-			<slot name="end" :row="row"/>
-		</div>
+		<slot name="end" class="tableCollapsible__rowColumnEnd" :row="row"/>
 
 		<template slot="content" slot-scope="props">
 			<slot :row="props.row"/>
@@ -50,6 +48,9 @@ export default {
 				this.$refs.rows.map((vm, vmIndex) => index != vmIndex ? vm.$emit('wannaClose'): null)
 		}
 	},
+	mounted () {
+
+	}
 }
 </script>
 

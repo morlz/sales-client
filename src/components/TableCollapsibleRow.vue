@@ -1,5 +1,5 @@
 <template>
-	<div class="tableCollapsible__row" :class="{ tableCollapsible__rowOpenBordered: open && borderOpen }">
+	<div class="tableCollapsible__row" :class="{ tableCollapsible__rowOpenBordered: open && borderOpen, tableCollapsible__rowHover: !head }">
 		<div
 			class="tableCollapsible__rowColumns"
 			@click="open = !head ? !open : false"
@@ -105,11 +105,15 @@ export default {
 	&__rowOpenBordered {
 		border: 1px solid rgba(2,123,227, 0.5);
 	}
-}
 
-.tableCollapsible .cursor-pointer {
-	&:hover {
-		background: #ecf5ff;
+	&__rowOpen {
+
+	}
+
+	&__rowHover {
+		&:hover {
+			background: #ecf5ff;
+		}
 	}
 }
 </style>

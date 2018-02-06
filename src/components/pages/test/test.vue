@@ -3,6 +3,8 @@
 	<div class="test__layout">
 		<q-toolbar color="orange" v-ga="'h'">
 			<q-toolbar-title @click="p">Тест</q-toolbar-title>
+
+			<q-btn flat icon="list" @click="showInvoices = !showInvoices">Заказы</q-btn>
 		</q-toolbar>
 
 		<div class="test__autoSelect" v-ga="'as'" v-show="false">
@@ -13,14 +15,50 @@
 			</q-list>
 		</div>
 
+
 		<div class="test__workSpace" v-ga="'ws'">
-			<test-tile :invoice="invoice" v-for="invoice, index in invoices" :key="index" @drag="setActive(index)" :style="{ 'z-index' : invoice.z }"/>
+			<draggable :list="invoices" :options="draggableOptions" class="test__workSpaceInner" ref="workSpace" :style="wsStyle">
+
+				<test-tile
+					v-for="invoice, index in invoices"
+					:key="JSON.stringify(invoice.client)"
+					:invoice="invoice"
+					:wsCords="cords"
+					@drag="setActive(index)"
+					@hide="hide(index)"/>
+
+				<template slot="footer">
+					<div class="test__workSpaceGrid"/>
+
+				</template>
+			</draggable>
 		</div>
+
+
+		<q-transition
+			enter="zoomInRight"
+			leave="zoomOutRight">
+			<q-card class="test__availableInvoices" v-if="showInvoices">
+				<q-card-title>Заказы</q-card-title>
+
+				<q-card-main class="test__availableInvoicesList">
+					<draggable :list="available" :options="draggableOptions">
+						<div class="test__availableInvoicesItem" v-for="item, index in available">
+							{{ item.client ? item.client.name : '' }}
+						</div>
+					</draggable>
+				</q-card-main>
+			</q-card>
+		</q-transition>
 	</div>
 </div>
 </template>
 
 <script>
+
+import 'quasar-extras/animate/zoomInRight.css'
+import 'quasar-extras/animate/zoomOutRight.css'
+
 import {
 	mapActions,
 	mapGetters,
@@ -35,10 +73,30 @@ import {
 	QItemMain,
 	QCard,
 	QCardTitle,
-	QCardMain
+	QCardMain,
+	QBtn,
+	QTransition
 } from 'quasar'
-import { pointer } from 'popmotion'
+import { styler, spring, listen, pointer, value } from 'popmotion'
 import testTile from '@/components/pages/test/testTile.vue'
+import draggable from 'vuedraggable'
+
+const attachTouchEvent = (elem, e) => {
+	if (elem.addEventListener) {
+		if ('onwheel' in document) {
+		// IE9+, FF17+, Ch31+
+			elem.addEventListener("wheel", e)
+		} else if ('onmousewheel' in document) {
+		// устаревший вариант события
+			elem.addEventListener("mousewheel", e)
+		} else {
+		// Firefox < 17
+			elem.addEventListener("MozMousePixelScroll", e)
+		}
+	} else { // IE8-
+		elem.attachEvent("onmousewheel", e)
+	}
+}
 
 
 export default {
@@ -50,7 +108,8 @@ export default {
 				{ name: "aaa3", space: "500", maxWeight: "200" },
 				{ name: "aaa4", space: "3600", maxWeight: "800" },
 			],
-			invoices: [
+			invoices: [],
+			available: [
 				{
 					z: 1,
 					show: false,
@@ -93,7 +152,12 @@ export default {
 					]
 				}
 			],
-			dragZIndexMax: 100
+			dragZIndexMax: 100,
+			cords: { x: 0, y: 0 },
+			mouse: { x: 0, y: 0 },
+			xy: false,
+			wsScale: 1,
+			showInvoices: true
 		}
 	},
 	components: {
@@ -105,13 +169,29 @@ export default {
 		QCard,
 		QCardTitle,
 		QCardMain,
-		testTile
+		testTile,
+		draggable,
+		QBtn,
+		QTransition
 	},
 	watch: {
 
 	},
 	computed: {
+		draggableOptions () {
+			return {
+				group: 'people'
+			}
+		},
+		wsStyle () {
+			let cords = {
+				x: this.cords.x / this.wsScale,
+				y: this.cords.y / this.wsScale
+			}
 
+			return { 'transform' : `scale(${this.wsScale})
+									translate(${cords.x}px, ${cords.y}px)` }
+		}
 	},
 	methods: {
 		p () {
@@ -134,8 +214,34 @@ export default {
 		},
 		setActive (index) {
 			this.invoices[index].z = ++this.dragZIndexMax
-		}
+		},
+		userHasScrolled ({ wheelDeltaY }) {
+			this.wsScale += wheelDeltaY > 0 ? 0.1 : -this.wsScale / 10
+		},
+		hide (index) {
+			this.available.push(...this.invoices.splice(index, 1))
+		},
 	},
+	mounted () {
+		setTimeout(() => {
+			this.xy = value(this.cords, v => this.cords = v)
+			listen(this.$refs.workSpace.$el, 'mousedown touchstart')
+				.start(e => {
+					e.preventDefault()
+					this.$emit('drag')
+					pointer(this.xy.get()).start(this.xy)
+				})
+
+
+
+			listen(document, 'mouseup touchend').start(a => this.xy.stop())
+		}, 300)
+
+		//attachTouchEvent(window, this.userHasScrolled)
+	},
+	beforeDestroy () {
+
+	}
 }
 </script>
 
@@ -146,9 +252,11 @@ export default {
 	&__layout {
 		height: 100%;
 		display: grid;
-		grid-template: 	"h	h"	50px
-						"as	ws"	1fr
-					~"/" min-content 1fr;
+		position: relative;
+		overflow: hidden;
+		grid-template: 	"h"	 50px
+						"ws" 1fr
+					~"/" 1fr;
 	}
 
 	&__autoSelect {
@@ -157,19 +265,63 @@ export default {
 
 	&__workSpace {
 		height: 100%;
+		width: 100%;
 		position: relative;
-		display: grid;
-		align-content: start;
-		grid-template-columns: repeat(auto-fit, minmax(300px, auto));
+		overflow: hidden;
+	}
+
+	&__workSpaceInner {
+		position: relative;
+		width: 100%;
+		height: 100%;
 	}
 
 	&__moutionTile {
-		position: relative;
+		position: absolute;
 		color: black;
 		background: #F9FBE7;
 		cursor: move;
+		max-width: 500px;
+	}
+
+	&__availableInvoices {
+		position: absolute;
+		right: 0;
+		top: 50px;
+		width: 200px;
+		background: #fff;
+		z-index: 99999;
+		padding: 10px;
+	}
+
+	&__availableInvoicesList {
+		max-height: 700px;
+		overflow-y: auto;
+	}
+
+	&__availableInvoicesItem {
+		padding: 5px;
+		cursor: move;
+	}
+
+	&__workSpaceGrid {
+		position: absolute;
+		width: 1e6px;
+		height: 1e6px;
+		margin: ~"-5e5px 0 0 -5e5px";
+		top: 0;
+		left: 0;
+		background:
+			repeating-linear-gradient(
+				transparent, transparent 20px, yellowgreen 21px
+			),
+			repeating-linear-gradient(
+				90deg,
+				transparent, transparent 20px, yellowgreen 21px
+			);
 	}
 }
+
 .appWrapper .app .main {
 	padding: 0;
 	margin: 0;
