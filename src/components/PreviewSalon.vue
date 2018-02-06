@@ -1,7 +1,6 @@
 <template>
-<q-chip square color="positive">
-	{{ data.NAME }}
-	<q-popover ref="salonPreviewPopover">
+<div class="previewSalon">
+	<el-popover ref="previewSalonPopover" popper-class="el-popover-empty">
 		<q-card class="salonPreviewPopoverCard">
 			<q-card-title>
 				{{ data.NAME }}
@@ -47,8 +46,13 @@
 				</router-link>
 			</q-card-actions>
 		</q-card>
-	</q-popover>
-</q-chip>
+	</el-popover>
+	<q-chip square color="positive" v-popover:previewSalonPopover class="previewSalon__chip">
+		{{ data.NAME }}
+	</q-chip>
+</div>
+
+
 </template>
 
 <script>
@@ -119,11 +123,10 @@ export default {
 
 
 <style lang="less">
-.salonPreviewButtonWrapper {
-    cursor: pointer;
-}
-.salonPreviewChip {
-    cursor: pointer;
+.previewSalon {
+	&__chip {
+		cursor: pointer;
+	}
 }
 .salonPreviewPopoverCard {
     margin: 0;

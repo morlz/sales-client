@@ -1,7 +1,6 @@
 <template>
-<q-chip square color="positive">
-	{{ fio }}
-	<q-popover ref="managerPreviewPopover">
+<div class="previewManager">
+	<el-popover ref="previewManagerPopover" popper-class="el-popover-empty">
 		<q-card class="managerPreviewPopoverCard">
 			<q-card-title>
 				{{ fio }}
@@ -35,8 +34,14 @@
 				</router-link>
 			</q-card-actions>
 		</q-card>
-	</q-popover>
-</q-chip>
+	</el-popover>
+
+	<q-chip square color="positive" v-popover:previewManagerPopover class="previewManager__chip">
+		{{ fio }}
+	</q-chip>
+</div>
+
+
 </template>
 
 <script>
@@ -108,12 +113,12 @@ export default {
 
 
 <style lang="less">
-.managerPreviewButtonWrapper {
-    cursor: pointer;
+.previewManager {
+	&__chip {
+		cursor: pointer;
+	}
 }
-.managerPreviewChip {
-    cursor: pointer;
-}
+
 .managerPreviewPopoverCard {
     margin: 0;
     width: 500px;

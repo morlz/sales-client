@@ -117,6 +117,11 @@ body {
 	        transition: all 0.3s ease-in-out;
 	    }
 	}
+
+	&-popover-empty {
+		padding: 0;
+		box-shadow: 0;
+	}
 }
 //
 
