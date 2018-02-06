@@ -1,11 +1,11 @@
 <template>
-	<q-card>
+	<q-card class="infoCardInvoice">
 		<q-card-title>
 			Информация о заказе
 		</q-card-title>
 
 		<q-card-main>
-			<q-list highlight no-border	>
+			<q-list highlight no-border>
 				<q-item>
 					<q-item-side>Номер докумнта</q-item-side>
 					<q-item-main/>
@@ -40,6 +40,11 @@
 				</q-item>
 			</q-list>
 		</q-card-main>
+
+		<q-card-actions class="infoCardInvoice_actions">
+			<q-btn color="primary">Отправить в 1С</q-btn>
+			<q-btn color="primary" @click="print_run({ template: 'invoice', data, invoice: data.ID })">Печать</q-btn>
+		</q-card-actions>
 	</q-card>
 </template>
 
@@ -50,13 +55,15 @@ import {
 	QCard,
 	QCardTitle,
 	QCardMain,
+	QCardActions,
 	QList,
 	QItem,
 	QItemMain,
 	QItemSide,
 	QItemTile,
 	QItemSeparator,
-	QCollapsible
+	QCollapsible,
+	QBtn
 } from 'quasar'
 
 import PreviewManager from '@/components/PreviewManager.vue'
@@ -72,6 +79,7 @@ export default {
 		QCard,
 		QCardTitle,
 		QCardMain,
+		QCardActions,
 		QList,
 		QItem,
 		QItemMain,
@@ -79,6 +87,7 @@ export default {
 		QItemTile,
 		QItemSeparator,
 		QCollapsible,
+		QBtn,
 		PreviewManager
 	},
 	data () {
@@ -88,7 +97,9 @@ export default {
 
 	},
 	methods: {
-
+		...mapActions([
+			'print_run'
+		])
 	},
 	computed: {
 		data () {
@@ -103,6 +114,17 @@ export default {
 
 
 <style lang="less">
+.infoCardInvoice {
+	display: grid;
+	grid-auto-flow: row;
+	grid-template-rows: min-content 1fr max-content;
 
+	&_actions {
+		margin: 10px;
+		display: grid;
+		grid-auto-flow: column;
+		grid-gap: 10px;
+	}
+}
 
 </style>
