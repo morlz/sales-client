@@ -207,16 +207,14 @@ export default {
 	data () {
 		return {
 			colsZak: [
-				{ field: "MODEL", label: "Модель" },
-				{ field: "TIP", label: "Тип" },
+				{ fields: ["TIP", "MODEL"], label: "Наименование" },
 				{ field: "KAT", label: "Категория" },
 				{ field: "CENA", label: "Цена" },
 				{ field: "Vid_stejki", label: "Стёжка" },
 				{ field: "DEKOR", label: "Декор" },
 			],
 			colsTd: [
-				{ field: "furniture.MODEL", label: "Модель" },
-				{ field: "furniture.TIP", label: "Тип" },
+				{ fields: ["furniture.TIP", "furniture.MODEL"], label: "Наименование" },
 				{ field: "furniture.KAT", label: "Категория" },
 				{ field: "CENA", label: "Цена" },
 				{ field: "furniture.Vid_stejki", label: "Стёжка" },

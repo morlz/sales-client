@@ -42,7 +42,12 @@ export default {
 		TableCollapsibleRow
 	},
 	methods: {
-		getFieldData: (row, { field }) => field.split(".").reduce((prev, el) => (prev[el] || ""), row),
+		getFieldData: (row, { field, fields }) => {
+			if (field)
+				return field.split(".").reduce((prev, el) => (prev[el] || ""), row)
+			if (fields)
+				return fields.map(field => field.split(".").reduce((prev, el) => (prev[el] || ""), row)).join(' ')
+		},
 		openHandler (index) {
 			if (this.$refs.rows && this.accordion)
 				this.$refs.rows.map((vm, vmIndex) => index != vmIndex ? vm.$emit('wannaClose'): null)
