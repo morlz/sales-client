@@ -12,8 +12,8 @@
 				<info-card-invoice :content="invoice_current" v-ga="`m`"/>
 				<info-card-client :content="invoice_current.client || invoice_current.clientOld" v-ga="`c`"/>
 				<invoice-card-additional :content="invoice_current" v-ga="`a`"/>
-				<info-card-zak :content="invoice_current.zak" v-ga="`z`"/>
-				<info-card-shipments :content="invoice_current.shipments" v-ga="`s`"/>
+				<info-card-zak-td :content="invoice_current" v-ga="`z`"/>
+				<!-- <info-card-shipments :content="invoice_current.shipments" v-ga="`s`"/> -->
 
 				<q-card v-ga="`p`">
 					<q-card-title>
@@ -67,7 +67,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import tabless from '@/components/tableSS.vue'
 import InfoCardClient from '@/components/InfoCardClient.vue'
 import InfoCardInvoice from '@/components/InfoCardInvoice.vue'
-import InfoCardZak from '@/components/InfoCardZak.vue'
+import InfoCardZakTd from '@/components/InfoCardZakTd.vue'
 import InfoCardShipments from '@/components/InfoCardShipments.vue'
 import InvoiceCardAdditional from '@/components/InvoiceCardAdditional.vue'
 import fieldDesription from '@/static/fieldDescription'
@@ -125,7 +125,7 @@ export default {
 		InfiniteLoading,
 		InfoCardClient,
 		InfoCardInvoice,
-		InfoCardZak,
+		InfoCardZakTd,
 		InfoCardShipments,
 		InvoiceCardAdditional
 	},

@@ -28,7 +28,8 @@ const actions = {
 			tpl = state.cached.templates.find(el => el.name == template)
 		}
 
-		if (!tpl) return
+		if (!tpl)
+			return dispatch('alert', `Шаблон не найден`)
 
 		try {
 			let rawHtml = Mustache.render(tpl.html, data)
@@ -42,10 +43,10 @@ const actions = {
 		if (!printPage)
 			return dispatch('alert', 'Ошибка при создании окна! Возможно запрещены всплвающие окна!')
 		printPage.document.write(payload)
-		//printPage.document.close()
+		printPage.document.close()
 		printPage.focus()
 		printPage.print()
-		//printPage.close()
+		printPage.close()
 	}
 }
 

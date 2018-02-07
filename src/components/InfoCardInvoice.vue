@@ -43,7 +43,7 @@
 
 		<q-card-actions class="infoCardInvoice_actions">
 			<q-btn color="primary">Отправить в 1С</q-btn>
-			<q-btn color="primary" @click="print_run({ template: 'invoice', data, invoice: data.ID })">Печать</q-btn>
+			<q-btn color="primary" @click="invoice_print(data)">Печать</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
@@ -98,7 +98,7 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'print_run'
+			'invoice_print'
 		])
 	},
 	computed: {

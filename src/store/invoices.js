@@ -1,4 +1,5 @@
 import api from '@/api'
+import reduceInvoice from '@/lib/reducers/invoice'
 
 const state = {
 	filters: [],
@@ -84,6 +85,11 @@ const actions = {
 		if (res.data && res.data.error) return
 		commit('invoice_currentSet', res.data)
 	},
+	invoice_print({ commit, dispatch }, payload) {
+		payload = reduceInvoice(payload)
+		console.log({ ...payload })
+		dispatch('print_run', { template: 'invoice', data: payload })
+	}
 }
 
 const mutations = {

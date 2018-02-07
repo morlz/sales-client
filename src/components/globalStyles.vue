@@ -135,7 +135,11 @@ body {
 			&:nth-child(3) {
 				font-weight: bold;
 			}
-
+			&-left {
+				&:nth-shild(2) {
+					text-align: right;
+				}
+			}
 		}
 	}
 	&-list {
