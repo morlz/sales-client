@@ -1,12 +1,6 @@
 <template>
 <div class="menu">
-	<app-menu-item v-for="item, index in onlyAllowedItems"
-		:content="item"
-		:prefix="`${index}|${onlyAllowedItems.length}`"
-		:key="index"
-		@in="mouseInHandler($event, index)"
-		@out="mouseOutHandler($event, index)"
-		ref="childs"/>
+	<app-menu-item :content="onlyAllowedItems" initial/>
 </div>
 </template>
 
@@ -54,7 +48,6 @@ export default {
 			return el
 		},
 		mouseInHandler (e, index) {
-			console.log(e, index);
 			this.$refs.childs.map((vm, vmIndex) => {
 				vm.$emit('name.show', vmIndex * 50)
 			})
@@ -80,7 +73,7 @@ export default {
 
 
 		onlyAllowedItems () {
-			return this.onlyCan({ childs: this.menuItems }).childs
+			return this.onlyCan({ childs: this.menuItems, name: "Menu" })
 		}
 
 	}
@@ -89,6 +82,10 @@ export default {
 
 
 <style lang="less">
+.menu {
+	width: 70px;
+}
+
 
 .mainMenuWrapper {
 	.logo {

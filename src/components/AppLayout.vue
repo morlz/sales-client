@@ -55,6 +55,12 @@ export default {
 
 
 <style lang="less">
+.menuWrapper {
+	overflow: visible;
+	width: 80px;
+}
+
+
 .appWrapper {
     height: 100%;
     .app {
