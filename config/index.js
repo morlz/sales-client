@@ -19,7 +19,8 @@ module.exports = {
 
 	build: {
 		env: require('./prod.env'),
-		publicPath: '',
+		publicPath: '/nsl/web/assets/',
+		filesPath: path.resolve(__dirname, '../', '../', 'sales-server', 'web'),
 		productionSourceMap: false,
 
 		// Remove unused CSS
@@ -27,6 +28,7 @@ module.exports = {
 		purifyCSS: true
 	},
 	dev: {
+		filesPath: path.resolve(__dirname, '../', 'dist'),
 		env: require('./dev.env'),
 		cssSourceMap: true,
 		// auto open browser or not

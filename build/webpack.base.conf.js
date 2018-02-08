@@ -20,8 +20,8 @@ module.exports = {
 	entry: {
 		app: './src/main.js'
 	},
-	output: {
-		path: path.resolve(__dirname, '../dist'),
+	output: {						//htdocs  src
+		path: config[env.prod ? 'build' : 'dev'].filesPath + '\\assets',
 		publicPath: config[env.prod ? 'build' : 'dev'].publicPath,
 		filename: 'js/[name].js',
 		chunkFilename: 'js/[id].[chunkhash].js'

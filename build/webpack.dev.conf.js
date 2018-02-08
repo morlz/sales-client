@@ -17,7 +17,8 @@ module.exports = merge(baseWebpackConfig, {
 	devtool: '#cheap-module-eval-source-map',
 	devServer: {
 		historyApiFallback: true,
-		noInfo: true
+		noInfo: true,
+		host: '0.0.0.0'
 	},
 	module: {
 		rules: cssUtils.styleRules({
