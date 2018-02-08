@@ -3,8 +3,8 @@
 		<app-layout>
 			<icons slot="icons"/>
 			<global-styles slot="styles"/>
-			<main-menu slot="menu"/>
-			<main-header slot="header"/>
+			<app-menu slot="menu"/>
+			<app-header slot="header"/>
 
 			<transition name="fade" key="routerTransition">
 				<router-view/>
@@ -21,21 +21,21 @@ import {
 	mapGetters
 } from 'vuex'
 
-import mainMenu from '@/components/mainMenu.vue'
-import mainHeader from '@/components/header.vue'
+import AppMenu from '@/components/AppMenu.vue'
+import AppHeader from '@/components/AppHeader.vue'
 import mainAuth from '@/components/pages/main/auth.vue'
 import icons from '@/components/icons.vue'
 import globalStyles from '@/components/globalStyles.vue'
 import mixins from '@/components/mixins'
-import appLayout from '@/components/appLayout'
+import AppLayout from '@/components/AppLayout'
 
 export default {
 	mixins: [mixins],
 	name: 'app',
 	components: {
-		appLayout,
-		mainMenu,
-		mainHeader,
+		AppLayout,
+		AppMenu,
+		AppHeader,
 		mainAuth,
 		icons,
 		globalStyles

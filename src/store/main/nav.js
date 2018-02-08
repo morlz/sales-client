@@ -4,7 +4,8 @@ const state = {
 	menuOpen: false,
 	menuFixed: false,
 	menuFixedState: true,
-	menuItems: [{
+	menuItems: [
+		{
 			name: 'Главная',
 			path: "/",
 			icon: "el-icon-home"
@@ -162,9 +163,7 @@ const getters = {
 		if (menuFixed) return menuFixedState
 		return menuOpen
 	},
-	menuItems ({ menuItems }) {
-		return menuItems
-	},
+	menuItems: state => state.menuItems,
 	route: state => state
 }
 

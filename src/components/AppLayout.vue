@@ -4,20 +4,14 @@
 	<slot name="styles"/>
 
 	<transition name="fadeZoom" appear key="mainTransition">
-		<div class="app" :class="{ menuOpenMain: menuOpen }" v-if="logined">
-			<div class="menu">
-				<slot name="menu"/>
-			</div>
-			<div class="mainContentWrapper">
-				<div class="header">
-					<slot name="header"/>
-				</div>
+		<q-layout view="lhh LpR lff" v-if="logined">
+			<slot name="menu" slot="left"/>
+			<slot name="header" slot="header"/>
 
-				<div class="main">
-					<slot/>
-				</div>
-			</div>
-		</div>
+			<slot/>
+
+			<slot name="footer" slot="footer"/>
+		</q-layout>
 	</transition>
 
 	<transition name="fadeZoom" appear key="authTransition">
@@ -35,12 +29,14 @@ import {
 	mapMutations
 } from 'vuex'
 
+import { QLayout } from 'quasar'
+
 export default {
 	data() {
 		return {}
 	},
 	components: {
-
+		QLayout
 	},
 	watch: {
 
