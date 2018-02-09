@@ -114,9 +114,6 @@ export default {
 		}
 	},
 	mixins: [mixins],
-	directives: {
-
-	},
 	components: {
 		QTabs,
 		QTab,
@@ -198,7 +195,7 @@ export default {
 		}
 	},
 	mounted () {
-		this.invoice_init({ id: this.oneId })
+		this.invoice_init(this.oneId)
 	}
 }
 

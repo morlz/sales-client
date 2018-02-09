@@ -99,13 +99,13 @@ let dataObj = {
 	],
 
 	shipmentsFieldDescription: [
-		{ field: "N_DOC", label: "№ Док" },
+		{ field: "invoice.N_DOC", label: "№ Док" },
 		{ field: "DATEV", label: "Дата ввода" },
 		{ field: "PL_OTGR", label: "Оплата доставки" },
 		{ field: "VIDDOST", label: "Вид" },
 		{ field: "", label: "Примечание" },
 		{ field: "DATEWORK", label: "В работе" },
-		{ field: "NAME", label: "Склад" },
+		{ field: "salon.NAME", label: "Склад" },
 	],
 
 	storageFieldDescription: [

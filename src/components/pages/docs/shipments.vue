@@ -32,7 +32,7 @@
 				</div>
 
 				<div class="buttons">
-					<el-button type="primary">Добавить в корзину</el-button>
+
 				</div>
 			</el-card>
 		</div>
@@ -46,19 +46,7 @@
 			<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
 		</ul>
 
-		<el-select v-model="filters.ID_SALONA" filterable placeholder="Салон" v-loading="salonsListLoading">
-			<el-option v-for="salon, index in salonsList" :value="salon.id" :label="salon.NAME" :key="index" />
-		</el-select>
 
-		<el-date-picker
-			v-model="filters.dateRange"
-			type="daterange"
-			unlink-panels
-			range-separator="До"
-			start-placeholder="Дата начала"
-			end-placeholder="Дата конца"
-			:picker-options="datePickerOptions"
-		/>
 
 		<tabless
 			v-loading="shipment_loading"
@@ -67,8 +55,8 @@
 			:fieldDescription="shipmentsFieldDescription"
 			:filters="shipment_filters"
 			ref="table"
-			@filter="localShipmentFilterChange"
-			@sortChange="localShipmentSortChange"
+			@filter="local_shipment_filterChange"
+			@sortChange="local_shipment_sortChange"
 			@onClick="routerGoId"
 		/>
 		<infinite-loading @infinite="shipment_infinity" ref="infiniteLoading" key="shipmentsinf">
@@ -83,6 +71,17 @@
 
 
 <script>
+/*
+<el-date-picker
+	v-model="filters.dateRange"
+	type="daterange"
+	unlink-panels
+	range-separator="До"
+	start-placeholder="Дата начала"
+	end-placeholder="Дата конца"
+	:picker-options="datePickerOptions"
+/>
+*/
 import {
 	mapGetters,
 	mapActions,
@@ -103,10 +102,8 @@ export default {
 	data() {
 		return {
 			shipmentsFieldDescription,
-			filters: {
-				dateRange: "",
-				ID_SALONA: "999"
-			},
+			lastShipmentsFilters: {},
+
 			datePickerOptions: {
 				shortcuts: [{
 					text: 'Неделя',
@@ -142,15 +139,17 @@ export default {
 		InfiniteLoading
 	},
 	watch: {
-		additionalFIlters(n) {
+		additionalFilters(n) {
 			this.shipment_filtersChange(Object.assign({}, this.lastShipmentsFilters, n))
+
+			this.$nextTick(() => {
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+			})
 		},
 		oneId() {
 			if (this.oneId !== undefined)
 				this.shipment_getOne(this.oneId)
-		},
-		currentUserSalon (n) {
-			this.filters.ID_SALONA = n
 		}
 	},
 	computed: {
@@ -165,8 +164,8 @@ export default {
 			'shipment_loadingOne',
 			'shipment_filters'
 		]),
-		additionalFIlters() {
-			return Object.assign({}, this.filters)
+		additionalFilters () {
+			return {}
 		}
 	},
 	methods: {
@@ -178,15 +177,15 @@ export default {
 			'shipment_filtersChange',
 			'shipment_getOne',
 		]),
-		localShipmentFilterChange(n) {
+		local_shipment_filterChange(n) {
 			this.lastShipmentsFilters = n
-			this.shipment_filtersChange(Object.assign({}, this.additionalFIlters, n))
+			this.shipment_filtersChange(Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localShipmentSortChange(n) {
+		local_shipment_sortChange(n) {
 			this.shipment_sortChange(n)
 
 			this.$nextTick(() => {
@@ -195,8 +194,8 @@ export default {
 		}
 	},
 	mounted() {
-		this.filters.ID_SALONA = this.currentUserSalon
-		this.getSalonsList()
+		//this.filters.ID_SALONA = this.currentUserSalon
+		//this.getSalonsList()
 		this.shipment_init(this.oneId)
 	}
 }

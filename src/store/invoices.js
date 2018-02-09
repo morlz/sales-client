@@ -23,8 +23,8 @@ const state = {
 const actions = {
 	async invoice_init ({ commit, dispatch, getters }, payload) {
 		dispatch('getSalonsList', getters.currentUserSalon)
-		if (payload.id) {
-			await dispatch('invoice_getOne', payload.id)
+		if (payload) {
+			await dispatch('invoice_getOne', payload)
 		} else {
 			await dispatch('invoice_infinityStart')
 		}
