@@ -4,7 +4,7 @@
 	<slot name="styles"/>
 
 	<transition name="fadeZoom" appear key="mainTransition">
-		<q-layout view="lhh LpR lff" v-if="logined">
+		<q-layout view="lhh LpR lff" v-if="logined" :left-class="{ menuWrapper: true }">
 			<slot name="menu" slot="left"/>
 			<slot name="header" slot="header"/>
 
@@ -57,7 +57,15 @@ export default {
 <style lang="less">
 .menuWrapper {
 	overflow: visible;
+
 	width: 80px;
+}
+.layout-aside.fixed {
+	z-index: 3000;
+}
+
+.mainWrapper {
+	padding: 10px;
 }
 
 
@@ -66,11 +74,6 @@ export default {
     .app {
         transition: all 0.3s ease-in-out;
         height: 100%;
-        .menu {
-            width: 80px;
-            float: left;
-            transition: all 0.3s ease-in-out;
-        }
 
         .mainContentWrapper {
             width: ~"calc(100% - 80px)";
@@ -88,15 +91,6 @@ export default {
             color: #5a5e66;
         }
     }
-
-	.menuOpenMain {
-	    .menu {
-	        width: 300px;
-	    }
-	    .mainContentWrapper {
-	        width: ~"calc(100% - 300px)";
-	    }
-	}
 }
 
 @media screen and (max-width: 768px) {
