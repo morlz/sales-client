@@ -27,6 +27,12 @@
 		</div>
 
 		<div class="manyInvoicesWrapper" v-if="!isOne">
+			<ul class="breadcrumb">
+				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
+				<li><router-link :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</router-link></li>
+			</ul>
+
 			<q-tabs inverted v-model="currentTab">
 				<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
 			</q-tabs>

@@ -1,12 +1,12 @@
 <template>
 <div class="mainWrapper">
 	<div class="oneShipmentWrapper" v-if="isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/docs/shipments/${shipment_current.ID_OTG}` }">{{shipment_current.ID_OTG}}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Документы</router-link></li>
+			<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
+			<li><router-link :to="{ path: `/docs/shipments/${shipment_current.ID_OTG}` }">Счёт {{ shipment_current.ID_OTG }}</router-link></li>
+		</ul>
 
 		<div class="cards" v-loading="shipment_loadingOne">
 			<el-card class="card">
@@ -40,11 +40,11 @@
 	</div>
 
 	<div class="manyShipmntsWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/docs/shipments` }">Доставки</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Документы</router-link></li>
+			<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
+		</ul>
 
 		<el-select v-model="filters.ID_SALONA" filterable placeholder="Салон" v-loading="salonsListLoading">
 			<el-option v-for="salon, index in salonsList" :value="salon.id" :label="salon.NAME" :key="index" />

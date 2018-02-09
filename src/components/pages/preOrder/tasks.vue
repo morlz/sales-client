@@ -1,20 +1,20 @@
 <template>
 <div class="mainWrapper" v-if="auth_can(1, 'Task')">
 	<div class="oneTaskWrapper" v-if="isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">{{ task_current.id ? `Завершение задачи № ${task_current.id}` : `Добавление новой задачи` }}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: `/preorder/tasks` }">Список задач</router-link></li>
+			<li><router-link :to="{ path: `/preorder/tasks` }">{{ task_current.id ? `Завершение задачи № ${task_current.id}` : `Добавление новой задачи` }}</router-link></li>
+		</ul>
 
 		<end-task-form v-loading="task_loadingOne" v-if="auth_can(3, 'Task')" />
 	</div>
 
 	<div class="manyTasksWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/tasks' }">Список задач</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: `/preorder/tasks` }">Список задач</router-link></li>
+		</ul>
 
 		<tabless
 			key="tasks"

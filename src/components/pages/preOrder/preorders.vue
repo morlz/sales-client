@@ -1,11 +1,11 @@
 <template>
 <div class="mainWrapper" v-if="auth_can(1, 'Preorder')">
 	<div class="oneRecordWrapper" v-if="isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/preorders' }">Список предзаказов</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/preorder/preorders/${oneId}` }">Предзаказ №{{oneId}}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: `/preorder/preorders` }">Список предзаказов</router-link></li>
+			<li><router-link :to="{ path: `/preorder/preorders/${oneId}` }">Предзаказ №{{oneId}}</router-link></li>
+		</ul>
 
 		<el-form class="cards" v-loading="preorder_loadingOne">
 			<preorder-info :content="preorder_current" v-if="auth_can(1, 'Preorder')"/>
@@ -23,10 +23,12 @@
 	</div>
 
 	<div class="manyRecordsWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/preorder/preorders' }">Список предзаказов</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb bc">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: `/preorder/preorders` }">Список предзаказов</router-link></li>
+		</ul>
+
+
 		<el-input v-model="searchByPhone" :value="preorder_filtersPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" v-if="currentTab == '0'" />
 		<el-tabs tab-position="top" v-model="currentTab" key="preordersTabs" class="manyRecordsTabs">
 			<el-tab-pane label="Все предзаказы" key="1">

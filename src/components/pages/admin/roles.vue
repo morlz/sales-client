@@ -1,13 +1,13 @@
 <template>
 <div class="mainWrapper adminRolesWrapper" v-if="auth_can(1, 'Role')">
-	<el-breadcrumb separator="/" class="bc">
-		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: '/' }">Администрирование</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: `/admin/roles` }">Роли</el-breadcrumb-item>
-	</el-breadcrumb>
+	<ul class="breadcrumb">
+		<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+		<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
+		<li><router-link :to="{ path: `/admin/roles` }">Роли</router-link></li>
+	</ul>
 
 	<div class="saveState">
-		<el-button type="primary" @click="permissions_saveState" v-if="auth_can(3, 'ActionSetup')">Сохранить текущее состояние</el-button>
+		<q-btn color="primary" @click="permissions_saveState" v-if="auth_can(3, 'ActionSetup')">Сохранить текущее состояние</q-btn>
 	</div>
 
 	<div class="roleBoxWrapper">
@@ -18,7 +18,7 @@
 					<el-input class="create" placeholder="Имя новой роли" @change="permissions_setAddRole" v-if="auth_can(2, 'Role')" :class="{ 'create-show': permissions_addRoleFieldShow }" />
 				</div>
 				<div class="button">
-					<el-button @click="permissions_createRole" v-if="auth_can(2, 'Role')">Добавить роль</el-button>
+					<q-btn @click="permissions_createRole" v-if="auth_can(2, 'Role')">Добавить роль</q-btn>
 				</div>
 				<div class="list">
 					<div class="list__item">
@@ -38,7 +38,7 @@
 					<el-input class="create" placeholder="Имя нового контроллера" @change="permissions_setAddController" v-if="auth_can(2, 'Action')" :class="{ 'create-show': permissions_addControllerFieldShow }" />
 				</div>
 				<div class="button">
-					<el-button @click="permissions_createController" v-if="auth_can(2, 'Action')">Добавить контроллер</el-button>
+					<q-btn @click="permissions_createController" v-if="auth_can(2, 'Action')">Добавить контроллер</q-btn>
 				</div>
 				<div class="list">
 					<div class="list__item">
@@ -69,9 +69,12 @@ import permissionRole from '@/components/permissionRole.vue'
 import permissionController from '@/components/permissionController.vue'
 import mixins from '@/components/mixins'
 
+import { QBtn } from 'quasar'
+
 export default {
 	mixins: [mixins],
 	components: {
+		QBtn,
 		permissionRole,
 		permissionController
 	},
@@ -128,7 +131,9 @@ export default {
             transition: all 0.3s ease-in-out;
             > div {
                 display: grid;
-                grid-template: "t b" "l l" ~"/" 1fr min-content;
+                grid-template: "t b"
+								"l l"
+						~"/" 1fr max-content;
                 align-content: start;
                 grid-gap: 10px;
                 padding: 10px;

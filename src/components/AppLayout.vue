@@ -57,7 +57,6 @@ export default {
 <style lang="less">
 .menuWrapper {
 	overflow: visible;
-
 	width: 80px;
 }
 .layout-aside.fixed {

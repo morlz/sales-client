@@ -1,10 +1,10 @@
 <template>
 <div class="mainWrapper adminTestsWrapper">
-	<el-breadcrumb separator="/" class="bc">
-		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: '/' }">Администрирование</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: `/admin/tests` }">Тестирование</el-breadcrumb-item>
-	</el-breadcrumb>
+	<ul class="breadcrumb">
+		<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+		<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
+		<li><router-link :to="{ path: `/admin/tests` }">Тестирование</router-link></li>
+	</ul>
 
 	<div class="adminTests">
 		<div class="testList">

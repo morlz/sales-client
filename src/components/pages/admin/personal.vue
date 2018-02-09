@@ -1,12 +1,12 @@
 <template>
 <div class="mainWrapper personalWrapper" v-if="auth_can(1, 'Manager')">
 	<div class="onePersonalWrapper" v-if="isOne" v-loading="personal_loadingOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Администрирование</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/admin/personal` }">Персонал</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/admin/personal/${personal_current.id}` }">{{ personal_current.FIO }}</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
+			<li><router-link :to="{ path: `/admin/personal` }">Персонал</router-link></li>
+			<li><router-link :to="{ path: `/admin/personal/${personal_current.id}` }">{{ personal_current.FIO }}</router-link></li>
+		</ul>
 
 		<div class="cards">
 			<user-profile-card :content="personal_current"/>
@@ -16,11 +16,11 @@
 	</div>
 
 	<div class="manyPersoalWrapper" v-if="!isOne">
-		<el-breadcrumb separator="/" class="bc">
-			<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: '/' }">Администрирование</el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ path: `/admin/personal` }">Персонал</el-breadcrumb-item>
-		</el-breadcrumb>
+		<ul class="breadcrumb">
+			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+			<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
+			<li><router-link :to="{ path: `/admin/personal` }">Персонал</router-link></li>
+		</ul>
 
 		<tabless
 			v-loading="personal_loading"

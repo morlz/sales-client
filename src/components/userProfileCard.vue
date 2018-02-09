@@ -20,7 +20,7 @@
 
 
 		<div class="buttons">
-			<el-button type="primary" v-if="auth_can(3, 'RoleSetup')">Редактировать</el-button>
+			<QBtn color="primary" v-if="auth_can(3, 'RoleSetup')">Редактировать</QBtn>
 		</div>
 	</el-card>
 </template>
@@ -28,18 +28,18 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
+import { QBtn } from 'quasar'
 
 export default {
 	mixins: [mixins],
-	props: ["content"],
-	data () {
-		return {}
+	props: {
+		content: {
+			type: Object,
+			required: true
+		}
 	},
-	watch: {
-
-	},
-	methods: {
-
+	components: {
+		QBtn
 	},
 	computed: {
 		data () {

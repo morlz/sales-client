@@ -9,7 +9,7 @@
 		/>
 
 		<div class="buttons">
-			<el-button type="primary" @click="personal_saveRoleSetupState" v-if="auth_can(3, 'RoleSetup')">Сохранить выбраные роли</el-button>
+			<QBtn color="primary" @click="personal_saveRoleSetupState" v-if="auth_can(3, 'RoleSetup')">Сохранить выбраные роли</QBtn>
 		</div>
 	</el-card>
 </template>
@@ -17,11 +17,12 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
+import { QBtn } from 'quasar'
 
 export default {
 	mixins: [mixins],
-	data () {
-		return {}
+	components: {
+		QBtn
 	},
 	methods: {
 		...mapActions([

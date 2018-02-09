@@ -1,11 +1,13 @@
 <template>
 	<div class="mainWrapper" v-if="auth_can(1, 'Client')">
 		<div class="oneClientWrapper" v-if="isOne">
-			<el-breadcrumb separator="/" class="bc">
-				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: '/preorder/clients' }">Список клиентов</el-breadcrumb-item>
-				<el-breadcrumb-item>{{ client_currentFIO }}</el-breadcrumb-item>
-			</el-breadcrumb>
+			<ul class="breadcrumb">
+				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+				<li><router-link :to="{ path: `/preorder/clients` }">Список клиентов</router-link></li>
+				<li><router-link :to="{ path: `/preorder/clients/${client_current.id}` }">{{ client_currentFIO }}</router-link></li>
+			</ul>
+
+
 			<div class="cards" v-loading="client_loadingOne">
 				<client-info :content="client_current" v-if="auth_can(1, 'Client')"/>
 				<contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/>
@@ -21,10 +23,11 @@
 		</div>
 
 		<div class="manyClientsWrapper" v-else="!isOne">
-			<el-breadcrumb separator="/" class="bc">
-				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: '/preorder/clients' }">Список клиентов</el-breadcrumb-item>
-			</el-breadcrumb>
+			<ul class="breadcrumb bc">
+				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+				<li><router-link :to="{ path: `/preorder/clients` }">Список клиентов</router-link></li>
+			</ul>
+
 			<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
 			<tabless
 				v-loading="client_loading"
