@@ -16,7 +16,7 @@
 	</transition>
 
 	<q-slide-transition>
-		<div class="menuItem__childs" v-if="content.childs" v-show="childsShow">
+		<div class="menuItem__childs" v-if="content.childs" v-show="childsShow" @click.stop>
 			<app-menu-item
 				v-for="item, index in content.childs"
 				ref="childs"
@@ -27,8 +27,7 @@
 				@spread="spreadHandler($event, index)"
 				@spreadTop="spreadTopHandler($event, index)"
 				@spreadBottom="spreadBottomHandler($event, index)"
-				@current="childCurrentRouteHandler"
-				@click.stop="eventCap"/>
+				@current="childCurrentRouteHandler"/>
 		</div>
 	</q-slide-transition>
 </div>
@@ -88,7 +87,7 @@ export default {
 	},
 	computed: {
 		...mapGetters ([
-			'main_view_mobile',
+			'app_view_mobile',
 			'nav_open'
 		]),
 		nameStyles () {
@@ -99,7 +98,7 @@ export default {
 				width: `${this.nameWidth}px`,
 				'padding-left': `${this.iconPaddingLeft}px`,
 				'padding-right': `${this.iconPaddingRight}px`,
-				'box-shadow': this.main_view_mobile ? 'none' : '2px 4px 3px -1px rgba(0, 0, 0, 0.2)'
+				'box-shadow': this.app_view_mobile ? 'none' : '2px 4px 3px -1px rgba(0, 0, 0, 0.2)'
 			}
 		},
 		iconStyle () {
@@ -118,7 +117,7 @@ export default {
 			return p
 		},
 		iconRipple () {
-			return typeof this.content.click == 'function' && this.main_view_mobile
+			return typeof this.content.click == 'function' && this.app_view_mobile
 		},
 		nameWidth () {
 			return 220
@@ -160,11 +159,11 @@ export default {
 			return throttle(this.mouseLeave, 50)
 		},
 		mouseEnter (e) {
-			if (this.main_view_mobile) return
+			if (this.app_view_mobile) return
 			this.$emit('spread', true)
 		},
 		mouseLeave (e) {
-			if (this.main_view_mobile) return
+			if (this.app_view_mobile) return
 			this.$emit('spread', false)
 		},
 		showName (delay = 0) {
@@ -315,7 +314,7 @@ export default {
 		if (this.currentRouteItem)
 			this.$emit('current')
 
-		if (this.main_view_mobile)
+		if (this.app_view_mobile)
 			this.$emit('name.show')
 	}
 }

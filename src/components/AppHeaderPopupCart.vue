@@ -41,8 +41,8 @@
 	</el-popover>
 
 	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat>
-		<q-icon name="shopping_cart" v-if="main_view_mobile"/>
-		<template v-if="!main_view_mobile">
+		<q-icon name="shopping_cart" v-if="app_view_mobile"/>
+		<template v-if="!app_view_mobile">
 			Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
 		</template>
 	</q-btn>
@@ -97,7 +97,7 @@ export default {
 			'cart_cachedSumm',
 			'cart_loadingList',
 			'cart_removing',
-			'main_view_mobile'
+			'app_view_mobile'
 		]),
 		local_cart_cachedExistButtons () {
 			return [{

@@ -1,8 +1,7 @@
 <template>
 	<q-toolbar class="header">
-		<q-btn class="header__menuToggle" @click="nav_openToggle" v-if="main_view_mobile" flat/>
-		<q-toolbar-title>
-		</q-toolbar-title>
+		<q-btn class="header__menuToggle" @click="nav_openToggle" v-if="app_view_mobile" flat/>
+		<q-toolbar-title> {{ route.meta.name }}</q-toolbar-title>
 		<app-header-popup-cart class="header__popupCart"/>
 		<app-header-popup-profile class="header__popupProfile"/>
 	</q-toolbar>
@@ -12,7 +11,8 @@
 import {
 	mapMutations,
 	mapGetters,
-	mapActions
+	mapActions,
+	mapState
 } from 'vuex'
 import AppHeaderPopupProfile from '@/components/AppHeaderPopupProfile.vue'
 import AppHeaderPopupCart from '@/components/AppHeaderPopupCart.vue'
@@ -47,8 +47,11 @@ export default {
 		}
 	},
 	computed: {
+		...mapState([
+			'route'
+		]),
 		...mapGetters([
-			'main_view_mobile'
+			'app_view_mobile'
 		])
 	},
 	methods: {

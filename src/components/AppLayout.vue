@@ -3,7 +3,7 @@
 	<slot name="icons"/>
 	<slot name="styles"/>
 
-	<q-window-resize-observable @resize="main_view_resize" />
+	<q-window-resize-observable @resize="app_view_resize" />
 
 	<transition name="fadeZoom" appear key="mainTransition">
 		<q-layout view="lhh LpR lff" v-if="logined" :left-style="menuWrapperStyle" :left-class="{ menuWrapper: true }" v-model="open" ref="layout">
@@ -49,7 +49,7 @@ export default {
 			this.nav_openLeftSet(n)
 		},
 		nav_open (n) {
-			if (!this.main_view_mobile) return
+			if (!this.app_view_mobile) return
 			if (!this.layoutLoaded) return
 			if (this.$refs.layout.leftState.openedSmall != n.left)
 				this.$refs.layout.leftState.openedSmall = n.left
@@ -69,7 +69,7 @@ export default {
 		...mapGetters([
 			'logined',
 			'nav_open',
-			'main_view_mobile'
+			'app_view_mobile'
 		]),
 		open: {
 			get () {
@@ -87,14 +87,14 @@ export default {
 		},
 		menuWrapperStyle () {
 			return {
-				width: this.main_view_mobile ? '300px' : '80px'
+				width: this.app_view_mobile ? '300px' : '80px'
 			}
 		}
 	},
 	methods: {
 		...mapMutations([
 			'nav_openSet',
-			'main_view_resize',
+			'app_view_resize',
 			'nav_openLeftSet'
 		])
 	},

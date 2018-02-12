@@ -47,20 +47,22 @@ export default {
 			if (this.auth_can(1, "PreorderStatus")) this.preorder_getStatuses()
 		}
 	},
-	computed: mapGetters([
-		'logined'
-	]),
+	computed: {
+		...mapGetters([
+			'logined',
+		])
+	},
 	methods: {
 		...mapActions([
 			'task_getTypes',
 			'preorder_getStatuses',
 			'auth_init',
-			'event_createHandlers'
+			'event_createHandlers',
+			'app_init'
 		])
 	},
 	mounted() {
-		this.event_createHandlers()
-		this.auth_init()
+		this.app_init()
 	}
 }
 </script>

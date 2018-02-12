@@ -24,8 +24,8 @@
 	</el-popover>
 
 	<QBtn v-popover:popoverProfie class="name" flat>
-		<q-icon name="account_circle" v-if="main_view_mobile"/>
-		{{ main_view_mobile ? '' : fio }}
+		<q-icon name="account_circle" v-if="app_view_mobile"/>
+		{{ app_view_mobile ? '' : fio }}
 	</QBtn>
 </div>
 </template>
@@ -51,7 +51,7 @@ export default {
 	computed: {
 		...mapGetters([
 			'loginedAs',
-			'main_view_mobile'
+			'app_view_mobile'
 		]),
 		fio () {
 			return `${this.loginedAs.FIO} ${this.loginedAs.IMY} ${this.loginedAs.OTCH}`

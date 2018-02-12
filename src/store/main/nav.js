@@ -160,7 +160,7 @@ const mutations = {
 }
 
 const getters = {
-	nav_open: (state, getters) => ({ ...state.open, left: state.open.left || getters.main_view_desktop }),
+	nav_open: (state, getters) => ({ ...state.open, left: state.open.left || getters.app_view_desktop }),
 	nav_items: state => state.menuItems
 }
 

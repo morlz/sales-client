@@ -34,19 +34,19 @@ export default {
 		...mapGetters([
 			'nav_items',
 			'nav_open',
-			'main_view_mobile'
+			'app_view_mobile'
 		]),
 		onlyAllowedItems () {
 			return this.onlyCan({
 				childs: this.nav_items,
 				name: "Menu",
-				icon: this.main_view_mobile ? 'el-icon-back' : undefined,
+				icon: this.app_view_mobile ? 'el-icon-back' : undefined,
 				click: e => this.nav_openLeftSet(false)
 			})
 		},
 		menuStyles () {
 			return {
-				'pointer-events': this.main_view_mobile && this.nav_open.left ? 'all': 'none'
+				'pointer-events': this.app_view_mobile && this.nav_open.left ? 'all': 'none'
 			}
 		}
 	},
