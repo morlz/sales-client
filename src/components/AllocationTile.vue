@@ -1,10 +1,10 @@
 <template>
-	<q-card class="test__moutionTile" :style="tileStyle">
+	<q-card class="allocation__moutionTile" :style="tileStyle">
 		<q-card-title>
 			<template v-if="invoice.client">
 				{{ invoice.client.lastname }} {{ invoice.client.name }} {{ invoice.client.patronymic }}
 			</template>
-			<q-btn slot="right" flat color="negative" @click="hide" class="test__moutionTileHideBtn">Скрыть</q-btn>
+			<q-btn slot="right" flat color="negative" @click="hide" class="allocation__moutionTileHideBtn">Скрыть</q-btn>
         </div>
 		</q-card-title>
 		<q-card-main>
@@ -130,7 +130,7 @@ export default {
 
 
 <style lang="less">
-.test {
+.allocation {
 	&__moutionTileHideBtn {
 		margin-left: 10px;
 	}

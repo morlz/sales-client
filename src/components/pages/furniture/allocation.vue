@@ -1,13 +1,13 @@
 <template>
-<div class="test">
-	<div class="test__layout">
+<div class="allocation">
+	<div class="allocation__layout">
 		<q-toolbar color="orange" v-ga="'h'">
 			<q-toolbar-title @click="p">Тест</q-toolbar-title>
 
 			<q-btn flat icon="list" @click="showInvoices = !showInvoices">Заказы</q-btn>
 		</q-toolbar>
 
-		<div class="test__autoSelect" v-ga="'as'" v-show="false">
+		<div class="allocation__autoSelect" v-ga="'as'" v-show="false">
 			<q-list>
 				<q-item v-for="auto, index in autos" :key="index">
 					<q-item-main>{{ auto.name }}</q-item-main>
@@ -16,10 +16,10 @@
 		</div>
 
 
-		<div class="test__workSpace" v-ga="'ws'">
-			<draggable :list="invoices" :options="draggableOptions" class="test__workSpaceInner" ref="workSpace" :style="wsStyle">
+		<div class="allocation__workSpace" v-ga="'ws'">
+			<draggable :list="invoices" :options="draggableOptions" class="allocation__workSpaceInner" ref="workSpace" :style="wsStyle">
 
-				<test-tile
+				<allocation-tile
 					v-for="invoice, index in invoices"
 					:key="JSON.stringify(invoice.client)"
 					:invoice="invoice"
@@ -28,7 +28,7 @@
 					@hide="hide(index)"/>
 
 				<template slot="footer">
-					<div class="test__workSpaceGrid"/>
+					<div class="allocation__workSpaceGrid"/>
 
 				</template>
 			</draggable>
@@ -38,12 +38,12 @@
 		<q-transition
 			enter="zoomInRight"
 			leave="zoomOutRight">
-			<q-card class="test__availableInvoices" v-if="showInvoices">
+			<q-card class="allocation__availableInvoices" v-if="showInvoices">
 				<q-card-title>Заказы</q-card-title>
 
-				<q-card-main class="test__availableInvoicesList">
+				<q-card-main class="allocation__availableInvoicesList">
 					<draggable :list="available" :options="draggableOptions">
-						<div class="test__availableInvoicesItem" v-for="item, index in available">
+						<div class="allocation__availableInvoicesItem" v-for="item, index in available">
 							{{ item.client ? item.client.name : '' }}
 						</div>
 					</draggable>
@@ -78,7 +78,7 @@ import {
 	QTransition
 } from 'quasar'
 import { styler, spring, listen, pointer, value } from 'popmotion'
-import testTile from '@/components/pages/test/testTile.vue'
+import AllocationTile from '@/components/AllocationTile.vue'
 import draggable from 'vuedraggable'
 
 const attachTouchEvent = (elem, e) => {
@@ -100,6 +100,20 @@ const attachTouchEvent = (elem, e) => {
 
 
 export default {
+	components: {
+		QToolbar,
+		QToolbarTitle,
+		QList,
+		QItem,
+		QItemMain,
+		QCard,
+		QCardTitle,
+		QCardMain,
+		AllocationTile,
+		draggable,
+		QBtn,
+		QTransition
+	},
 	data() {
 		return {
 			autos: [
@@ -159,20 +173,6 @@ export default {
 			wsScale: 1,
 			showInvoices: true
 		}
-	},
-	components: {
-		QToolbar,
-		QToolbarTitle,
-		QList,
-		QItem,
-		QItemMain,
-		QCard,
-		QCardTitle,
-		QCardMain,
-		testTile,
-		draggable,
-		QBtn,
-		QTransition
 	},
 	watch: {
 
@@ -247,7 +247,7 @@ export default {
 
 
 <style lang="less">
-.test {
+.allocation {
 	height: 100%;
 	&__layout {
 		height: 100%;

@@ -162,6 +162,16 @@ body.with-layout-side-opened {
 	}
 }
 
+.layout {
+	height: 100%;
+	&-page {
+		height: 100%;
+		&-container {
+			height: 100%;
+		}
+	}
+}
+
 .qCards {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));

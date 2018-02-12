@@ -45,8 +45,9 @@ const state = {
 					can: { lvl: 2, action: "Furniture" }
 				},
 				{
-					name: 'Тест',
-					path: '/test/test1',
+					name: 'Распределение грузов',
+					path: '/furniture/allocation',
+					icon: 'el-icon-allocation',
 				}
 			]
 		},
@@ -145,18 +146,6 @@ const mutations = {
 	nav_openSet: (state, payload) => state.open = payload,
 	nav_openLeftSet: (state, payload) => state.open.left = payload,
 	nav_openToggle: state => state.open.left = !state.open.left,
-	openMenu (state) {
-		state.menuOpen = true
-	},
-	closeMenu (state) {
-		state.menuOpen = false
-	},
-	changeMenuFixed (state, payload) {
-		state.menuFixed = payload
-	},
-	changeMenuFixedState (state, payload) {
-		state.menuFixedState = payload
-	}
 }
 
 const getters = {

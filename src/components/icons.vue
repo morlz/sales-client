@@ -110,4 +110,9 @@
     background-image: url("../assets/industrial-robot.svg");
 }
 
+.el-icon-allocation {
+    .icon;
+    background-image: url("../assets/allocation.svg");
+}
+
 </style>
