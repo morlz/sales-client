@@ -12,7 +12,10 @@
 	</div>
 
 	<transition :css="false" @enter="showNameAnimation" @leave="hideNameAnimation">
-		<div class="menuItem__name" :style="nameStyles" v-show="nameShow" v-if="!initial">{{ content.name }}</div>
+		<div class="menuItem__name" :style="nameStyles" v-show="nameShow" v-if="!initial">
+			{{ content.name }}
+			<q-icon :name="openStateIcon" v-if="openStateIcon" class="menuItem__openStateButton"/>
+		</div>
 	</transition>
 
 	<q-slide-transition>
@@ -38,7 +41,7 @@
 import { mapGetters } from 'vuex'
 import { tween, timeline, easing } from 'popmotion'
 import throttle from 'lodash.throttle'
-import { QSlideTransition, QSideLink, Ripple } from 'quasar'
+import { QSlideTransition, QSideLink, Ripple, QIcon } from 'quasar'
 
 export default {
 	name: 'AppMenuItem',
@@ -62,7 +65,8 @@ export default {
 	},
 	components: {
 		QSlideTransition,
-		QSideLink
+		QSideLink,
+		QIcon
 	},
 	directives: {
 		Ripple
@@ -133,6 +137,13 @@ export default {
 		},
 		nameShow () {
 			return this.name.show
+		},
+		openStateIcon () {
+			return 	this.content.childs ?
+						this.open ?
+							'keyboard_arrow_up'
+						:	'keyboard_arrow_down'
+					:	false
 		}
 	},
 	methods: {
@@ -391,6 +402,12 @@ export default {
 		position: relative;
 		width: 310px;
 		pointer-events: none;
+	}
+
+	&__openStateButton {
+		position: absolute;
+		top: ~"calc(50% - 8px)";
+		right: 10px;
 	}
 }
 </style>
