@@ -175,6 +175,7 @@ body.with-layout-side-opened {
 
 .mainWrapper {
     height: 100%;
+	width: 100%;
     .bc {
         height: 40px;
         line-height: 40px;

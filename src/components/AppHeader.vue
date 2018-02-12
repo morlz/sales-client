@@ -21,7 +21,7 @@ import AppHeaderPopupCart from '@/components/AppHeaderPopupCart.vue'
  SP_OTGRUZOK - доставки
  */
 
-import { QToolbar, QBtn } from 'quasar'
+import { QToolbar, QToolbarTitle, QBtn } from 'quasar'
 
 
 export default {
@@ -35,6 +35,7 @@ export default {
 		AppHeaderPopupProfile,
 		AppHeaderPopupCart,
 		QToolbar,
+		QToolbarTitle,
 		QBtn
 	},
 	watch: {

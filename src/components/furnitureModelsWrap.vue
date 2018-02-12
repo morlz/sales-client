@@ -91,6 +91,9 @@ export default {
 			color: #409EFF;
 		}
 	}
+	.content {
+
+	}
 }
 
 .oneColumn {

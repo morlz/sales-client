@@ -3,7 +3,9 @@
 	<slot name="icons"/>
 	<slot name="styles"/>
 
-	<transition name="fadeZoom" appear key="mainTransition" @left-breakpoint="main_view_resize">
+	<q-window-resize-observable @resize="main_view_resize" />
+
+	<transition name="fadeZoom" appear key="mainTransition">
 		<q-layout view="lhh LpR lff" v-if="logined" :left-style="menuWrapperStyle" :left-class="{ menuWrapper: true }" v-model="open" ref="layout">
 			<slot name="menu" slot="left"/>
 			<slot name="header" slot="header"/>
@@ -29,7 +31,7 @@ import {
 	mapMutations
 } from 'vuex'
 
-import { QLayout } from 'quasar'
+import { QLayout, QWindowResizeObservable } from 'quasar'
 
 export default {
 	data() {
@@ -39,7 +41,8 @@ export default {
 		}
 	},
 	components: {
-		QLayout
+		QLayout,
+		QWindowResizeObservable
 	},
 	watch: {
 		local_nav_open (n) {

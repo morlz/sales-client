@@ -11,7 +11,10 @@ import events from '@/store/main/events'
 
 
 const state = {
-
+	viewport: {
+		width: dom.style(document.body, 'width').replace(/[^.\d]+/g,""),
+		height: dom.style(document.body, 'height').replace(/[^.\d]+/g,""),
+	}
 }
 
 const actions = {
@@ -19,11 +22,11 @@ const actions = {
 }
 
 const mutations = {
-	main_view_resize: (state, payload) => console.log('r', payload)
+	main_view_resize: (state, payload) => state.viewport = payload
 }
 
 const getters = {
-	main_view_width: state => dom.style(document.body, 'width').replace(/[^.\d]+/g,""),
+	main_view_width: state => state.viewport.width,
 	main_view_desktop: (state, getters) => getters.main_view_width > 996,
 	main_view_mobile: (state, getters) => getters.main_view_width <= 996,
 }
