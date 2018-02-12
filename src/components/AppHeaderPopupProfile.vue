@@ -23,17 +23,21 @@
 		</div>
 	</el-popover>
 
-	<div v-popover:popoverProfie class="name">{{ fio }}</div>
+	<QBtn v-popover:popoverProfie class="name" flat>
+		<q-icon name="account_circle" v-if="main_view_mobile"/>
+		{{ main_view_mobile ? '' : fio }}
+	</QBtn>
 </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { QBtn } from 'quasar'
+import { QBtn, QIcon } from 'quasar'
 
 export default {
 	components: {
-		QBtn
+		QBtn,
+		QIcon
 	},
 	methods: {
 		...mapMutations([]),
@@ -46,7 +50,8 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'loginedAs'
+			'loginedAs',
+			'main_view_mobile'
 		]),
 		fio () {
 			return `${this.loginedAs.FIO} ${this.loginedAs.IMY} ${this.loginedAs.OTCH}`
@@ -62,11 +67,7 @@ export default {
 		cursor: pointer;
 		box-sizing: border-box;
 		color: #fff;
-		height: 50px;
-		line-height: 50px;
-		padding: 0 20px;
 		transition: all 0.3s ease-in-out;
-		background-color: #027be3;
 		&:hover {
 			background-color: #1565c0;
 		}

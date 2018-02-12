@@ -39,9 +39,13 @@
 			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length">Оформить документ</q-btn>
 		</div>
 	</el-popover>
-	<div class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList">
-		Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
-	</div>
+
+	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat>
+		<q-icon name="shopping_cart" v-if="main_view_mobile"/>
+		<template v-if="!main_view_mobile">
+			Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
+		</template>
+	</q-btn>
 </div>
 </template>
 
@@ -55,13 +59,11 @@ import {
 	mapMutations
 } from 'vuex'
 
-import {
-	QBtn
-} from 'quasar'
-
 import tabless from '@/components/tableSS.vue'
 import TableCollapsible from '@/components/TableCollapsible.vue'
 import fieldDescription from '@/static/fieldDescription'
+
+import { QBtn, QIcon } from 'quasar'
 
 let {
 	cartPopupExistFieldDescription,
@@ -78,10 +80,8 @@ export default {
 	components: {
 		TableCollapsible,
 		tabless,
-		QBtn
-	},
-	watch: {
-
+		QBtn,
+		QIcon
 	},
 	methods: {
 		...mapActions([
@@ -96,7 +96,8 @@ export default {
 			'cart_cachedCount',
 			'cart_cachedSumm',
 			'cart_loadingList',
-			'cart_removing'
+			'cart_removing',
+			'main_view_mobile'
 		]),
 		local_cart_cachedExistButtons () {
 			return [{
@@ -138,15 +139,11 @@ export default {
         cursor: pointer;
         box-sizing: border-box;
         color: #fff;
-        height: 50px;
-        line-height: 50px;
-        padding: 0 20px;
         transition: all 0.3s ease-in-out;
         background-color: #027be3;
 		&:hover {
 			background-color: #1565c0;
 		}
-
     }
 }
 .cartItems {

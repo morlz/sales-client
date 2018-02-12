@@ -1,9 +1,11 @@
 <template>
-	<header>
-		<div class="toggleMenu" @click="nav_openToggle" v-if="main_view_mobile"/>
-		<cart/>
-		<profile/>
-	</header>
+	<q-toolbar class="header">
+		<q-btn class="header__menuToggle" @click="nav_openToggle" v-if="main_view_mobile" flat/>
+		<q-toolbar-title>
+		</q-toolbar-title>
+		<app-header-popup-cart class="header__popupCart"/>
+		<app-header-popup-profile class="header__popupProfile"/>
+	</q-toolbar>
 </template>
 
 <script>
@@ -12,13 +14,14 @@ import {
 	mapGetters,
 	mapActions
 } from 'vuex'
-import profile from '@/components/profile.vue'
-import cart from '@/components/cartPopup.vue'
+import AppHeaderPopupProfile from '@/components/AppHeaderPopupProfile.vue'
+import AppHeaderPopupCart from '@/components/AppHeaderPopupCart.vue'
 /**
  invoice - заказы
  SP_OTGRUZOK - доставки
  */
 
+import { QToolbar, QBtn } from 'quasar'
 
 
 export default {
@@ -27,6 +30,12 @@ export default {
 			autoMenuCollapce: false,
 			autoBenuCollapceState: true
 		}
+	},
+	components: {
+		AppHeaderPopupProfile,
+		AppHeaderPopupCart,
+		QToolbar,
+		QBtn
 	},
 	watch: {
 		autoMenuCollapce (n) {
@@ -48,10 +57,6 @@ export default {
 			'changeMenuFixedState'
 		])
 	},
-	components: {
-		profile,
-		cart
-	}
 }
 </script>
 
@@ -59,35 +64,22 @@ export default {
 
 
 <style lang="less">
-header {
-    height: 50px;
-    background-color: #027be3;
-    display: grid;
-    justify-content: space-between;
-    grid-template: 	"menuBtn cart profile"
-				~"/" 1fr max-content max-content;
-    .toggleMenu {
-		grid-area: menuBtn;
-        font-family: fontAwesome;
-        transition: all 0.3s ease-in-out;
-        line-height: 50px;
-        width: 50px;
-        text-align: center;
-        color: #f6f6f6;
-        &:hover {
-            background-color: #1565c0;
-            cursor: pointer;
-        }
-        &:before {
+
+.header {
+	display: grid;
+	grid-template-columns: max-content 1fr max-content max-content;
+
+	&__menuToggle {
+		&:before {
+			font-family: fontAwesome;
             content: "\f0c9";
             color: #f6f6f6;
+			font-size: 18px;
         }
-    }
-	.cartWrapper {
-		grid-area: cart;
 	}
-	.profileWrapper {
-		grid-area: profile;
+
+	&__popupProfile, &__popupCart {
+		justify-self: end;
 	}
 }
 </style>
