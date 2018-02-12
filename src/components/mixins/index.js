@@ -43,8 +43,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'auth_permisiions',
-			'route'
+			'auth_permisiions'
 		]),
 		refInfinite() {
 			return this.$refs.infiniteLoading

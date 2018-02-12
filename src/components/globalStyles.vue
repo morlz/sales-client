@@ -43,6 +43,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+body.with-layout-side-opened {
+	overflow: auto;
+}
+
 .fade {
 	&-enter {
 		opacity: 0;

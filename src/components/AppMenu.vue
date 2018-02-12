@@ -1,5 +1,5 @@
 <template>
-<div class="menu">
+<div class="menu" :style="menuStyles">
 	<app-menu-item :content="onlyAllowedItems" initial/>
 </div>
 </template>
@@ -16,6 +16,9 @@ export default {
 		AppMenuItem
 	},
 	methods: {
+		...mapMutations([
+			'nav_openLeftSet'
+		]),
 		onlyCan (el) {
 			el = { ...el }
 			if (el.can && !this.auth_can(el.can.lvl, el.can.action))
@@ -25,15 +28,33 @@ export default {
 				el.childs = el.childs.map(this.onlyCan).filter(el => el)
 
 			return el
-		},
+		}
 	},
 	computed: {
 		...mapGetters([
-			'menuItems'
+			'nav_items',
+			'nav_open',
+			'main_view_mobile'
 		]),
 		onlyAllowedItems () {
-			return this.onlyCan({ childs: this.menuItems, name: "Menu" })
+			return this.onlyCan({
+				childs: this.nav_items,
+				name: "Menu",
+				icon: this.main_view_mobile ? 'el-icon-back' : undefined,
+				click: e => this.nav_openLeftSet(false)
+			})
+		},
+		menuStyles () {
+			return {
+				'pointer-events': this.main_view_mobile && this.nav_open.left ? 'all': 'none'
+			}
 		}
+	},
+	mounted () {
+
+	},
+	beforeDestroy () {
+
 	}
 }
 </script>
@@ -41,8 +62,14 @@ export default {
 
 <style lang="less">
 .menu {
-	width: 70px;
+	width: 310px;
 	position: relative;
 	z-index: 3000;
+	height: 100%;
+	overflow-y: scroll;
+	&::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+	}
 }
 </style>

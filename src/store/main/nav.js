@@ -1,9 +1,10 @@
 import api from '@/api'
 
 const state = {
-	menuOpen: false,
-	menuFixed: false,
-	menuFixedState: true,
+	open: {
+		left: false,
+		right: false
+	},
 	menuItems: [
 		{
 			name: 'Главная',
@@ -141,9 +142,9 @@ const actions = {
 }
 
 const mutations = {
-	toggleMenu (state) {
-		state.menuOpen = !state.menuOpen
-	},
+	nav_openSet: (state, payload) => state.open = payload,
+	nav_openLeftSet: (state, payload) => state.open.left = payload,
+	nav_openToggle: state => state.open.left = !state.open.left,
 	openMenu (state) {
 		state.menuOpen = true
 	},
@@ -159,12 +160,8 @@ const mutations = {
 }
 
 const getters = {
-	menuOpen ({ menuOpen, menuFixed, menuFixedState }) {
-		if (menuFixed) return menuFixedState
-		return menuOpen
-	},
-	menuItems: state => state.menuItems,
-	route: state => state
+	nav_open: (state, getters) => ({ ...state.open, left: state.open.left || getters.main_view_desktop }),
+	nav_items: state => state.menuItems
 }
 
 export default {

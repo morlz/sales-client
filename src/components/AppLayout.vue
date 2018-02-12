@@ -3,8 +3,8 @@
 	<slot name="icons"/>
 	<slot name="styles"/>
 
-	<transition name="fadeZoom" appear key="mainTransition">
-		<q-layout view="lhh LpR lff" v-if="logined" :left-class="{ menuWrapper: true }">
+	<transition name="fadeZoom" appear key="mainTransition" @left-breakpoint="main_view_resize">
+		<q-layout view="lhh LpR lff" v-if="logined" :left-style="menuWrapperStyle" :left-class="{ menuWrapper: true }" v-model="open" ref="layout">
 			<slot name="menu" slot="left"/>
 			<slot name="header" slot="header"/>
 
@@ -33,23 +33,75 @@ import { QLayout } from 'quasar'
 
 export default {
 	data() {
-		return {}
+		return {
+			layoutLoaded: false,
+			layoutLoadedCheckInterval: false,
+		}
 	},
 	components: {
 		QLayout
 	},
 	watch: {
+		local_nav_open (n) {
+			this.nav_openLeftSet(n)
+		},
+		nav_open (n) {
+			if (!this.main_view_mobile) return
+			if (!this.layoutLoaded) return
+			if (this.$refs.layout.leftState.openedSmall != n.left)
+				this.$refs.layout.leftState.openedSmall = n.left
 
+			let pos = n.left ? 0 : -300
+			if (this.$refs.layout.leftState.position != pos)
+				this.$refs.layout.leftState.position = pos
+
+			if (this.$refs.layout.backdrop.percentage != +n.left)
+				this.$refs.layout.backdrop.percentage = +n.left
+
+			if (this.$refs.layout.backdrop.touchEvent != true)
+				this.$refs.layout.backdrop.touchEvent = true
+		}
 	},
 	computed: {
 		...mapGetters([
 			'logined',
-			'menuOpen'
-		])
+			'nav_open',
+			'main_view_mobile'
+		]),
+		open: {
+			get () {
+				return this.nav_open
+			},
+			set (n) {
+				this.nav_openSet(n)
+			}
+		},
+		local_nav_open () {
+			if (!this.layoutLoaded)
+				return false
+
+			return this.$refs.layout.leftState.openedSmall
+		},
+		menuWrapperStyle () {
+			return {
+				width: this.main_view_mobile ? '300px' : '80px'
+			}
+		}
 	},
 	methods: {
-
+		...mapMutations([
+			'nav_openSet',
+			'main_view_resize',
+			'nav_openLeftSet'
+		])
 	},
+	mounted() {
+		this.layoutLoadedCheckInterval = setInterval(() => {
+			if (!this.$refs.layout) return
+			clearTimeout(this.layoutLoadedCheckInterval)
+			this.layoutLoaded = true
+		}, 30)
+	}
 }
 </script>
 
@@ -57,8 +109,12 @@ export default {
 <style lang="less">
 .menuWrapper {
 	overflow: visible;
-	width: 80px;
+	&::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+	}
 }
+
 .layout-aside.fixed {
 	z-index: 3000;
 }

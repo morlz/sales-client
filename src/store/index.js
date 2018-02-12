@@ -2,11 +2,8 @@ import Vuex from 'vuex'
 import Vue from 'vue'
 Vue.use(Vuex)
 
-import nav from '@/store/main/nav'
-import files from '@/store/main/files'
-import auth from '@/store/main/auth'
-import notify from '@/store/main/notify'
-import events from '@/store/main/events'
+
+import main from '@/store/main'
 
 import clients from '@/store/clients'
 import invoices from '@/store/invoices'
@@ -28,22 +25,18 @@ import tests from '@/store/tests'
 
 export default new Vuex.Store({
 	modules: {
-		nav,
+		main,
 		clients,
 		invoices,
 		preorders,
 		tasks,
 		managers,
 		salons,
-		files,
-		auth,
-		notify,
 		shipments,
 		furniture,
 		permissions,
 		storage,
 		discount,
-		events,
 		personal,
 		cart,
 		print,

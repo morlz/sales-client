@@ -1,29 +1,34 @@
 <template>
-<div class="menuItem"
+<div
+	class="menuItem"
+	:is="isLink"
+	:to="content.path || ''"
 	:class="{ currentRouteItem }"
 	@click.stop="clickHandler"
 	@mouseover.stop="mouseEnterThrottled()($event)"
 	@mouseout.stop="mouseLeaveThrottled()($event)">
-	<div class="menuItem__icon" :style="iconStyle" :class="{ 'menuItem__icon-initial' : initial }">
+	<div class="menuItem__icon" :style="iconStyle" :class="{ 'menuItem__icon-initial' : initial }" v-ripple="iconRipple">
 		<i :class="content.icon"/>
 	</div>
 
 	<transition :css="false" @enter="showNameAnimation" @leave="hideNameAnimation">
-		<div class="menuItem__name" :style="nameStyles" v-show="name.show" v-if="!initial">{{ content.name }}</div>
+		<div class="menuItem__name" :style="nameStyles" v-show="nameShow" v-if="!initial">{{ content.name }}</div>
 	</transition>
 
 	<q-slide-transition>
-		<div class="menuItem__childs" v-show="content.childs && (open || initial)">
-			<app-menu-item v-for="item, index in content.childs"
+		<div class="menuItem__childs" v-if="content.childs" v-show="childsShow">
+			<app-menu-item
+				v-for="item, index in content.childs"
+				ref="childs"
 				:key="currentIndex + '-' + index"
 				:currentIndex="currentIndex + '-' + index"
 				:content="item"
 				:recursion-count="recursionCount + 1"
-				ref="childs"
 				@spread="spreadHandler($event, index)"
 				@spreadTop="spreadTopHandler($event, index)"
 				@spreadBottom="spreadBottomHandler($event, index)"
-				@current="childCurrentRouteHandler"/>
+				@current="childCurrentRouteHandler"
+				@click.stop="eventCap"/>
 		</div>
 	</q-slide-transition>
 </div>
@@ -31,9 +36,10 @@
 
 <script>
 
+import { mapGetters } from 'vuex'
 import { tween, timeline, easing } from 'popmotion'
 import throttle from 'lodash.throttle'
-import { QSlideTransition } from 'quasar'
+import { QSlideTransition, QSideLink, Ripple } from 'quasar'
 
 export default {
 	name: 'AppMenuItem',
@@ -56,7 +62,11 @@ export default {
 		}
 	},
 	components: {
-		QSlideTransition
+		QSlideTransition,
+		QSideLink
+	},
+	directives: {
+		Ripple
 	},
 	data () {
 		return {
@@ -77,15 +87,19 @@ export default {
 		}
 	},
 	computed: {
+		...mapGetters ([
+			'main_view_mobile',
+			'nav_open'
+		]),
 		nameStyles () {
 			return {
 				left: `${this.name.styles.left}px`,
 				transform: `scale(${this.name.styles.scale})`,
 				opacity: this.name.styles.opacity,
 				width: `${this.nameWidth}px`,
-				'box-shadow': this.name.show ? `2px 4px 3px -1px rgba(0, 0, 0, 0.2)` : '0 0 5px 1px rgba(0, 0, 0, 0.2)',
 				'padding-left': `${this.iconPaddingLeft}px`,
-				'padding-right': `${this.iconPaddingRight}px`
+				'padding-right': `${this.iconPaddingRight}px`,
+				'box-shadow': this.main_view_mobile ? 'none' : '2px 4px 3px -1px rgba(0, 0, 0, 0.2)'
 			}
 		},
 		iconStyle () {
@@ -103,19 +117,35 @@ export default {
 			if (p < 0) return 0
 			return p
 		},
+		iconRipple () {
+			return typeof this.content.click == 'function' && this.main_view_mobile
+		},
 		nameWidth () {
 			return 220
 		},
 		currentRouteItem () {
 			return this.$route.path == this.content.path
+		},
+		isLink () {
+			return this.content.path ? QSideLink : 'div'
+		},
+		childsShow () {
+			return this.open || this.initial
+		},
+		nameShow () {
+			return this.name.show
 		}
 	},
 	methods: {
 		clickHandler (e) {
+			if (typeof this.content.click == 'function')
+				return this.content.click(e, this.content)
+
 			if (this.initial) return
 			this.open ? this.$emit('close') : this.$emit('open')
 			if (this.content.path)
 				router.push(this.content.path)
+
 		},
 		_open () {
 			this.open = true
@@ -130,9 +160,11 @@ export default {
 			return throttle(this.mouseLeave, 50)
 		},
 		mouseEnter (e) {
+			if (this.main_view_mobile) return
 			this.$emit('spread', true)
 		},
 		mouseLeave (e) {
+			if (this.main_view_mobile) return
 			this.$emit('spread', false)
 		},
 		showName (delay = 0) {
@@ -259,15 +291,11 @@ export default {
 		},
 		//child emit spread top
 		spreadTopHandler (e, index) {
-			setTimeout(() => {
-				this.spreadTop(e, index)
-			}, this.speed)
+			setTimeout(a => this.spreadTop(e, index), this.speed)
 		},
 		//child emit spread bottom
 		spreadBottomHandler (e, index) {
-			setTimeout(() => {
-				this.spreadBottom(e, index)
-			}, this.speed)
+			setTimeout(a => this.spreadBottom(e, index), this.speed)
 		},
 		applySelf (e) {
 			e ? this.$emit('name.show') : this.$emit('name.hide')
@@ -286,10 +314,12 @@ export default {
 		this.$on('applyBottom', this.applyBottom)
 		if (this.currentRouteItem)
 			this.$emit('current')
+
+		if (this.main_view_mobile)
+			this.$emit('name.show')
 	}
 }
 </script>
-
 
 <style lang="less">
 @menuItem-width: 50px;
@@ -301,7 +331,7 @@ export default {
 .currentRouteItem {
 	.menuItem {
 		&__icon, &__name {
-			background: rgba(210, 210, 210,0.95);
+			background: rgba(210, 210, 210, 0.95);
 		}
 	}
 }
@@ -351,7 +381,6 @@ export default {
 
 		//border: 1px solid red;
 		box-sizing: border-box;
-		box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2);
 		background: rgba(255, 255, 255, 0.95);
 		z-index: 2000;
 		pointer-events: all;

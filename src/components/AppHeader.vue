@@ -1,12 +1,6 @@
 <template>
 	<header>
-		<el-popover ref="mainMenuButtonPopover" trigger="hover" placement="bottom-start" >
-			<div class="mainMenuButtonPopover">
-				<el-checkbox v-model="autoMenuCollapce">Зафиксировать меню</el-checkbox>
-				<el-switch v-model="autoBenuCollapceState" active-text="Открыто" inactive-text="Закрыто" :disabled="!autoMenuCollapce" class="menuCollapceSwitcher" />
-			</div>
-		</el-popover>
-		<div class="toggleMenu" v-popover:mainMenuButtonPopover @click="toggleMenu" />
+		<div class="toggleMenu" @click="nav_openToggle" v-if="main_view_mobile"/>
 		<cart/>
 		<profile/>
 	</header>
@@ -14,7 +8,9 @@
 
 <script>
 import {
-	mapMutations
+	mapMutations,
+	mapGetters,
+	mapActions
 } from 'vuex'
 import profile from '@/components/profile.vue'
 import cart from '@/components/cartPopup.vue'
@@ -40,9 +36,14 @@ export default {
 			this.changeMenuFixedState(n)
 		}
 	},
+	computed: {
+		...mapGetters([
+			'main_view_mobile'
+		])
+	},
 	methods: {
 		...mapMutations([
-			'toggleMenu',
+			'nav_openToggle',
 			'changeMenuFixed',
 			'changeMenuFixedState'
 		])
@@ -87,16 +88,6 @@ header {
 	}
 	.profileWrapper {
 		grid-area: profile;
-	}
-}
-
-.mainMenuButtonPopover {
-	display: grid;
-	justify-content: center;
-	grid-gap: 10px;
-	grid-auto-flow: row;
-	.menuCollapceSwitcher {
-		transition: opacity 0.3s ease-in-out;
 	}
 }
 </style>
