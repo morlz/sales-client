@@ -24,6 +24,14 @@
 			<li>Провалено: {{ test_count.f }}</li>
 		</ul>
 
+		<div class="">
+			<filter-date v-model="date" />
+		</div>
+
+		<div class="">
+			{{ date }}
+		</div>
+
 		<div class="console">
 			<div class="item" v-for="item, index in test_console" :key="index">
 				{{ item }}
@@ -44,10 +52,17 @@ import {
 
 import mixins from '@/components/mixins'
 
+import FilterDate from '@/components/filters/Date.vue'
+
 export default {
 	mixins: [mixins],
 	components: {
-
+		FilterDate
+	},
+	data () {
+		return {
+			date: {}
+		}
 	},
 	methods: {
 		...mapActions([
