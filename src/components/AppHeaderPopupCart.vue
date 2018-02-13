@@ -36,7 +36,7 @@
 				</div>
 			</div>
 
-			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length">Оформить документ</q-btn>
+			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length" @click="goToCreateInvoice">Оформить документ</q-btn>
 		</div>
 	</el-popover>
 
@@ -87,7 +87,10 @@ export default {
 		...mapActions([
 			'cart_init',
 			'cart_removeItem'
-		])
+		]),
+		goToCreateInvoice () {
+			router.push('/docs/createInvoice')
+		}
 	},
 	computed: {
 		...mapGetters([

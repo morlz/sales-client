@@ -1,7 +1,7 @@
 <template>
 <q-chip square color="positive">
 	{{ fio }}
-	<q-popover ref="clientPreviewPopover">
+	<q-popover ref="clientPreviewPopover" popper-class="el-popover-empty">
 		<q-card class="clientPreviewPopoverCard">
 			<q-card-title>
 				{{ fio }}

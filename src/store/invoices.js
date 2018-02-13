@@ -17,6 +17,37 @@ const state = {
 		list: true,
 		one: true,
 		bottom: false
+	},
+	new: {
+		selected: {
+			podium: false,
+			nonCache: false,
+			internet: false,
+			adSource: "",
+			invoiceSource: "1",
+			client: {
+				phone: "",
+				fio: "",
+				address: "",
+				email: ""
+			},
+			shipment: {
+				date: "",
+				address: ""
+			}
+		},
+		cached: {
+			adSources: []
+		},
+		loading: {
+			adSources: false,
+			create: false
+		},
+		invoiceSource: [
+			{ label: "Сайт", value: "1" },
+			{ label: "Звнонок", value: "2" },
+			{ label: "Салон", value: "3" },
+		]
 	}
 }
 
@@ -89,21 +120,48 @@ const actions = {
 		payload = reduceInvoice(payload)
 		console.log({ ...payload })
 		dispatch('print_run', { template: 'invoice', data: payload })
+	},
+	async invoice_new_init ({ commit, dispatch }) {
+		await dispatch('invoice_new_getAdSources')
+	},
+	async invoice_new_getAdSources ({ commit, dispatch }) {
+		commit('invoice_new_loadingSet', { type: 'adSources', data: true })
+		let res = await api.invoices.getAdSources()
+		commit('invoice_new_loadingSet', { type: 'adSources', data: false })
+		if (res.data && res.data.error) return
+		commit('invoice_new_cachedSet', { type: 'adSources', data: res.data })
+	},
+	async invoice_new_create ({ commit, dispatch, state }) {
+		commit('invoice_new_loadingSet', { type: 'create', data: true })
+		let res = await api.invoices.create(state.new.selected)
+		commit('invoice_new_loadingSet', { type: 'create', data: false })
+		if (res.data && res.data.error) return
+		if (res.data && res.data.errors) {
+			console.log(res.data.errors)
+			return
+		}
+		dispatch('notify', 'Заказ создан')
+		console.log(res.data)
 	}
 }
 
 const mutations = {
 	invoice_cacheSet: (state, payload) => state.cached.list = payload,
 	invoice_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
-	invoice_filtersSet: (store, payload) => store.filters = payload,
-	invoice_sortSet: (store, payload) => store.sort = payload,
-	invoice_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	invoice_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
-	invoice_currentSet: (store, payload) => store.cached.current = payload,
-	invoice_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
-	invoice_loadingSet: (store, payload) => store.loading.list = payload,
-	invoice_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
-	invoice_loadingOneSet: (store, payload) => store.loading.one = payload,
+	invoice_filtersSet: (state, payload) => state.filters = payload,
+	invoice_sortSet: (state, payload) => state.sort = payload,
+	invoice_lastOffsetSet: (state, payload) => state.offset.last = payload,
+	invoice_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
+	invoice_currentSet: (state, payload) => state.cached.current = payload,
+	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
+	invoice_loadingSet: (state, payload) => state.loading.list = payload,
+	invoice_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
+	invoice_loadingOneSet: (state, payload) => state.loading.one = payload,
+
+	invoice_new_selectedSet: (state, payload) => state.new.selected = payload,
+	invoice_new_loadingSet: (state, payload) => state.new.loading[payload.type] = payload.data,
+	invoice_new_cachedSet: (state, payload) => state.new.cached[payload.type] = payload.data,
+
 }
 
 const getters = {
@@ -126,6 +184,12 @@ const getters = {
 	invoice_loading: ({ loading }) => loading.list,
 	invoice_loadingBottom: ({ loading }) => loading.bottom,
 	invoice_loadingOne: ({ loading }) => loading.one,
+
+	invoice_new_invoiceSource: state => state.new.invoiceSource,
+	invoice_new_selected: state => state.new.selected,
+	invoice_new_cached: state => state.new.cached,
+	invoice_new_loading: state => state.new.loading,
+	invoice_new_adSources: state => state.new.cached.adSources.map(el => ({ label: el.NAME , value: el.ID }))
 }
 
 export default {

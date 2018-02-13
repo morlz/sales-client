@@ -1,5 +1,6 @@
 <template>
 	<div id="q-app">
+		<q-ajax-bar />
 		<app-layout>
 			<icons slot="icons"/>
 			<global-styles slot="styles"/>
@@ -29,6 +30,8 @@ import globalStyles from '@/components/globalStyles.vue'
 import mixins from '@/components/mixins'
 import AppLayout from '@/components/AppLayout'
 
+import { QAjaxBar } from 'quasar'
+
 export default {
 	mixins: [mixins],
 	name: 'app',
@@ -38,7 +41,8 @@ export default {
 		AppHeader,
 		mainAuth,
 		icons,
-		globalStyles
+		globalStyles,
+		QAjaxBar
 	},
 	watch: {
 		logined (n) {

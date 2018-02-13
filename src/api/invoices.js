@@ -19,4 +19,17 @@ export default {
 			}
 		})
 	},
+	async getAdSources () {
+		return await core.invoke({
+			method: "get",
+			type: "invoices/ad-sources"
+		})
+	},
+	async create (data) {
+		return await core.invoke({
+			method: "post",
+			type: "invoices",
+			data
+		})
+	}
 }

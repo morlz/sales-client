@@ -121,20 +121,16 @@ const actions = {
 				commit('preorder_currentContctUpdate', data)
 			})
 	},
-	client_searchByPhone({ commit, dispatch }, payload){
-		if (!payload) {
-			commit("client_byPhoneSet", [])
-			return
-		}
+	async client_searchByPhone({ commit, dispatch }, payload){
+		commit('client_select_existUnset')
+		if (!payload)
+			return commit("client_byPhoneSet", [])
+
 		commit("client_loadingByPhoneSet", true)
-		api.clients
-			.searchByPhone(payload)
-			.then(({ data }) => {
-				if (!data.error) {
-					commit("client_byPhoneSet", data)
-					commit("client_loadingByPhoneSet", false)
-				}
-			})
+		let res = await api.clients.searchByPhone(payload)
+		commit("client_loadingByPhoneSet", false)
+		if (res.data && res.data.error) return
+		commit("client_byPhoneSet", res.data)
 	},
 }
 
@@ -142,22 +138,23 @@ const mutations = {
 	client_cacheSet: (state, payload) => state.cached.list = payload,
 	client_byPhoneSet: (state, payload) => state.cached.byPhone = payload,
 	client_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
-	client_filtersSet: (store, payload) => store.filters = payload,
-	client_sortSet: (store, payload) => store.sort = payload,
-	client_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	client_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
-	client_currentSet: (store, payload) => store.cached.current = payload,
-	client_currentContctUpdate: (store, payload) => api.core.assignItem(store.cached.current.contactfaces, payload),
-	client_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
-	client_loadingSet: (store, payload) => store.loading.list = payload,
-	client_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
-	client_loadingOneSet: (store, payload) => store.loading.one = payload,
-	client_loadingByPhoneSet: (store, payload) => store.loading.byPhone = payload,
-	client_visible_addContactFormSet: (store, payload) => store.visible.addContactForm = payload,
-	client_visible_editContactFormSet: (store, payload) => store.visible.editContactForm = payload,
-	client_edit_contactSet: (store, payload) => store.edit.contact = payload,
-	client_select_newSet: (store, payload) => [store.select.new = payload, store.select.current = 'new'],
-	client_select_existSet: (store, payload) => [store.select.exist = payload, store.select.current = 'exist'],
+	client_filtersSet: (state, payload) => state.filters = payload,
+	client_sortSet: (state, payload) => state.sort = payload,
+	client_lastOffsetSet: (state, payload) => state.offset.last = payload,
+	client_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
+	client_currentSet: (state, payload) => state.cached.current = payload,
+	client_currentContctUpdate: (state, payload) => api.core.assignItem(state.cached.current.contactfaces, payload),
+	client_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
+	client_loadingSet: (state, payload) => state.loading.list = payload,
+	client_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
+	client_loadingOneSet: (state, payload) => state.loading.one = payload,
+	client_loadingByPhoneSet: (state, payload) => state.loading.byPhone = payload,
+	client_visible_addContactFormSet: (state, payload) => state.visible.addContactForm = payload,
+	client_visible_editContactFormSet: (state, payload) => state.visible.editContactForm = payload,
+	client_edit_contactSet: (state, payload) => state.edit.contact = payload,
+	client_select_newSet: (state, payload) => [state.select.new = payload, state.select.current = 'new'],
+	client_select_existSet: (state, payload) => [state.select.exist = payload, state.select.current = 'exist'],
+	client_select_existUnset: state => state.select.exist = {}
 }
 
 const getters = {
@@ -175,7 +172,9 @@ const getters = {
 	client_visible_addContactForm: ({ visible }) => visible.addContactForm,
 	client_visible_editContactForm: ({ visible }) => visible.editContactForm,
 	client_selectCurrent: state => state.select[state.select.current],
-	client_selectType: state => state.select.current
+	client_selectType: state => state.select.current,
+	client_selected: state => state.select[state.select.current],
+	client_selectedValid: state => !!state.select.new.fio && state.select.new.fio.split(' ').filter(el => el).length > 1 || !!state.select.exist.id
 }
 
 export default {

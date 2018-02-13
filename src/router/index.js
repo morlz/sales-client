@@ -13,6 +13,7 @@ import clients 			from '@/components/pages/preOrder/clients.vue'
 import preorders 		from '@/components/pages/preOrder/preorders.vue'
 import tasks 			from '@/components/pages/preOrder/tasks.vue'
 
+import createInvoice 	from '@/components/pages/docs/createInvoice.vue'
 import invoices 		from '@/components/pages/docs/invoices.vue'
 import shipments 		from '@/components/pages/docs/shipments.vue'
 
@@ -42,6 +43,7 @@ let routes = [
 	{ path: '/furniture/discount/:id?', 	component: discount, 			meta: { name: "Мебель дисконд" } },
 	{ path: '/furniture/salon/:id?', 		component: salon, 				meta: { name: "Мебель в салоне" } },
 	{ path: '/furniture/new/', 				component: furnitureNew, 		meta: { name: "Заказ на изготовление" } },
+	{ path: '/docs/createInvoice', 			component: createInvoice, 		meta: { name: "Оформление заказа" }, },
 	{ path: '/docs/invoices/:id?', 			component: invoices, 			meta: { name: "Выставленые счета" }, 						props: { type: "invoices" } },
 	{ path: '/docs/movements/:id?', 		component: invoices, 			meta: { name: "Перемещения" },								props: { type: "movements" } },
 	{ path: '/docs/shipments/:id?', 		component: shipments, 			meta: { name: "Доставки" } },

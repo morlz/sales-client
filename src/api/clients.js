@@ -22,7 +22,7 @@ export default {
 	async searchByPhone (phone) {
 		let params = core.prepareArrays({
 			filters: {
-				phone
+				'contactfaces.phone': phone
 			}
 		})
 
