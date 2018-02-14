@@ -6,7 +6,7 @@
 	</ul>
 
 	<div class="createInvoiceForm">
-		<q-stepper ref="stepper" vertical class="createInvoiceForm__stepper">
+		<q-stepper ref="stepper" vertical class="createInvoiceForm__stepper" v-model="step">
 			<q-step title="Вид оплаты и рекламный источник" name="pay">
 				<q-field class="createInvoiceForm__podium">
 					<q-toggle v-model="form.podium" label="Заказ на подиум"/>
@@ -35,18 +35,20 @@
 				</q-slide-transition>
 
 				<q-stepper-navigation>
-					<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!(form.adSource || form.podium)">Продолжить</q-btn>
+					<q-btn color="primary" @click="nextFromPay" :disabled="!(form.adSource || form.podium)">Продолжить</q-btn>
 				</q-stepper-navigation>
 			</q-step>
 
-			<q-step title="Оформление клиента" name="client">
-				<form-select-client/>
+			<q-slide-transition>
+				<q-step title="Оформление клиента" name="client" v-if="!form.podium">
+					<form-select-client/>
 
-				<q-stepper-navigation>
-					<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!client_select_selected">Продолжить</q-btn>
-					<q-btn color="secondary" flat @click="$refs.stepper.previous()">Назад</q-btn>
-				</q-stepper-navigation>
-			</q-step>
+					<q-stepper-navigation>
+						<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!client_select_selected">Продолжить</q-btn>
+						<q-btn color="secondary" flat @click="$refs.stepper.previous()">Назад</q-btn>
+					</q-stepper-navigation>
+				</q-step>
+			</q-slide-transition>
 
 			<q-step title="Оформление доставки" name="shipment">
 				<q-field>
@@ -54,12 +56,15 @@
 				</q-field>
 
 				<q-field helper="Адресс доставки">
-					<q-input v-model="form.shipment.address" float-label="Адресс"/>
+					<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
 				</q-field>
+
+
+				<form-select-address v-model="addrOpen"/>
 
 				<q-stepper-navigation>
 					<q-btn color="primary" @click="invoice_new_create">Создать заказ</q-btn>
-					<q-btn color="secondary" flat @click="$refs.stepper.previous()">Назад</q-btn>
+					<q-btn color="secondary" flat @click="backFromShipment">Назад</q-btn>
 				</q-stepper-navigation>
 			</q-step>
 		</q-stepper>
@@ -77,12 +82,15 @@ import {
 } from 'vuex'
 
 import FormSelectClient from '@/components/forms/SelectClient'
+import FormSelectAddress from '@/components/forms/SelectAddress'
 
 import { QStepper, QStep, QField, QInput, QToggle, QSelect, QStepperNavigation, QBtn, QDatetime, QOptionGroup, QSlideTransition, extend } from 'quasar'
 
 export default {
 	data() {
 		return {
+			step: "pay",
+			addrOpen: false,
 			form: {
 				podium: false,
 				nonCache: false,
@@ -108,7 +116,8 @@ export default {
 		QDatetime,
 		QOptionGroup,
 		QSlideTransition,
-		FormSelectClient
+		FormSelectClient,
+		FormSelectAddress
 	},
 	watch: {
 		formData (n) {
@@ -127,7 +136,6 @@ export default {
 		formData () {
 			return extend(true, {}, this.form)
 		}
-
 	},
 	methods: {
 		...mapMutations([
@@ -136,7 +144,17 @@ export default {
 		...mapActions([
 			'invoice_new_init',
 			'invoice_new_create'
-		])
+		]),
+		nextFromPay () {
+			if (this.form.podium) //skip client
+				return this.step = "shipment"
+			this.$refs.stepper.next()
+		},
+		backFromShipment () {
+			if (this.form.podium) //skip client
+				return this.step = "pay"
+			this.$refs.stepper.previous()
+		}
 	},
 	mounted () {
 		this.invoice_new_init()

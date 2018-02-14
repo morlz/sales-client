@@ -27,6 +27,7 @@ const actions = {
 	async client_select_searchByPhone({ commit, dispatch }, payload){
 		payload = payload.replace(/\D/g, ``)
 		commit('client_select_phoneSet', payload)
+		commit('client_select_existSet', {})
 		if (!payload)
 			return commit("client_select_cacheSet", [])
 
@@ -59,7 +60,7 @@ const getters = {
 	client_select_loading: state => state.loading,
 	client_select_phone: state => phoneFormat(state.phone),
 	client_select_valid: state => !!state.new.fio && state.new.fio.split(' ').filter(el => el).length > 1 || !!state.exist.id,
-	client_select_selected: state => !!(state.new.fio || state.exist.id) && state.phone,
+	client_select_selected: state => !!(state[state.current].fio || state[state.current].id) && state.phone,
 	client_select_currentState: (state, getters) => {
 		return {
 			search: true,

@@ -19,7 +19,16 @@ import router from '@/router'
 import store from '@/store'
 import App from '@/App'
 import { sync } from 'vuex-router-sync'
+import * as VueGoogleMaps from 'vue2-google-maps'
 
+//google maps config
+const load = {
+	key: 'AIzaSyAATHorjelWuNs0vz9wLrEhtGkwQa5NiQc',
+	//v: 'OPTIONAL VERSION NUMBER',
+	libraries: 'places',
+}
+
+Vue.use(VueGoogleMaps, { load })
 Vue.use(ElementUI, { locale })
 Vue.use(Quasar) // Install Quasar Framework
 
@@ -28,7 +37,7 @@ if (__THEME === 'mat')
 
 import 'quasar-extras/material-icons'
 // import 'quasar-extras/ionicons'
- import 'quasar-extras/fontawesome'
+import 'quasar-extras/fontawesome'
 // import 'quasar-extras/animate'
 
 const unsync = sync(store, router)

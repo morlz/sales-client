@@ -25,12 +25,6 @@ const state = {
 			internet: false,
 			adSource: "",
 			invoiceSource: "1",
-			client: {
-				phone: "",
-				fio: "",
-				address: "",
-				email: ""
-			},
 			shipment: {
 				date: "",
 				address: ""
@@ -131,9 +125,13 @@ const actions = {
 		if (res.data && res.data.error) return
 		commit('invoice_new_cachedSet', { type: 'adSources', data: res.data })
 	},
-	async invoice_new_create ({ commit, dispatch, state }) {
+	async invoice_new_create ({ commit, dispatch, state, getters }) {
 		commit('invoice_new_loadingSet', { type: 'create', data: true })
-		let res = await api.invoices.create(state.new.selected)
+		let res = await api.invoices.create({
+			...state.new.selected,
+			client: getters.client_select_current,
+			type: getters.client_select_type
+		})
 		commit('invoice_new_loadingSet', { type: 'create', data: false })
 		if (res.data && res.data.error) return
 		if (res.data && res.data.errors) {
