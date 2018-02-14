@@ -1,5 +1,7 @@
 import api from '@/api'
 
+import select from '@/store/clients/select'
+
 const state = {
 	filters: [],
 	sort: [],
@@ -25,11 +27,6 @@ const state = {
 	visible: {
 		addContactForm: false,
 		editContactForm: false
-	},
-	select: {
-		new: {},
-		exist: {},
-		current: 'new'
 	}
 }
 
@@ -120,18 +117,7 @@ const actions = {
 				commit('client_currentContctUpdate', data)
 				commit('preorder_currentContctUpdate', data)
 			})
-	},
-	async client_searchByPhone({ commit, dispatch }, payload){
-		commit('client_select_existUnset')
-		if (!payload)
-			return commit("client_byPhoneSet", [])
-
-		commit("client_loadingByPhoneSet", true)
-		let res = await api.clients.searchByPhone(payload)
-		commit("client_loadingByPhoneSet", false)
-		if (res.data && res.data.error) return
-		commit("client_byPhoneSet", res.data)
-	},
+	}
 }
 
 const mutations = {
@@ -152,9 +138,6 @@ const mutations = {
 	client_visible_addContactFormSet: (state, payload) => state.visible.addContactForm = payload,
 	client_visible_editContactFormSet: (state, payload) => state.visible.editContactForm = payload,
 	client_edit_contactSet: (state, payload) => state.edit.contact = payload,
-	client_select_newSet: (state, payload) => [state.select.new = payload, state.select.current = 'new'],
-	client_select_existSet: (state, payload) => [state.select.exist = payload, state.select.current = 'exist'],
-	client_select_existUnset: state => state.select.exist = {}
 }
 
 const getters = {
@@ -171,15 +154,16 @@ const getters = {
 	client_edit_currentContact: ({ edit }) => edit.contact,
 	client_visible_addContactForm: ({ visible }) => visible.addContactForm,
 	client_visible_editContactForm: ({ visible }) => visible.editContactForm,
-	client_selectCurrent: state => state.select[state.select.current],
-	client_selectType: state => state.select.current,
-	client_selected: state => state.select[state.select.current],
-	client_selectedValid: state => !!state.select.new.fio && state.select.new.fio.split(' ').filter(el => el).length > 1 || !!state.select.exist.id
 }
+
+
 
 export default {
 	state,
 	actions,
 	mutations,
-	getters
+	getters,
+	modules: {
+		select
+	}
 }

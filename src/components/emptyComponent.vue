@@ -14,11 +14,11 @@ import {
 import {} from 'quasar'
 
 export default {
-	data() {
-		return {}
-	},
 	components: {
 
+	},
+	data() {
+		return {}
 	},
 	watch: {
 

@@ -43,7 +43,7 @@
 				<form-select-client/>
 
 				<q-stepper-navigation>
-					<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!client_selectedValid">Продолжить</q-btn>
+					<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!client_select_selected">Продолжить</q-btn>
 					<q-btn color="secondary" flat @click="$refs.stepper.previous()">Назад</q-btn>
 				</q-stepper-navigation>
 			</q-step>
@@ -76,7 +76,7 @@ import {
 	mapMutations
 } from 'vuex'
 
-import FormSelectClient from '@/components/forms/clientSelect.vue'
+import FormSelectClient from '@/components/forms/SelectClient'
 
 import { QStepper, QStep, QField, QInput, QToggle, QSelect, QStepperNavigation, QBtn, QDatetime, QOptionGroup, QSlideTransition, extend } from 'quasar'
 
@@ -122,11 +122,12 @@ export default {
 			'invoice_new_loading',
 			'invoice_new_invoiceSource',
 			'invoice_new_adSources',
-			'client_selectedValid'
+			'client_select_selected'
 		]),
 		formData () {
 			return extend(true, {}, this.form)
 		}
+
 	},
 	methods: {
 		...mapMutations([

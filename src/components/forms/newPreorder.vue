@@ -18,7 +18,7 @@ import fieldDescription from '@/static/fieldDescription'
 import mixins from '@/components/mixins'
 
 import newPreorderMainForm from '@/components/forms/newPreorderMain.vue'
-import clientSelectForm from '@/components/forms/clientSelect.vue'
+import clientSelectForm from '@/components/forms/SelectClient'
 import nextTaskForm from '@/components/forms/nextTask.vue'
 
 let {

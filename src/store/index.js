@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 import main from '@/store/main'
 
-import clients from '@/store/clients'
+import clients from '@/store/clients/index'
 import invoices from '@/store/invoices'
 import shipments from '@/store/shipments'
 import furniture from '@/store/furniture'
