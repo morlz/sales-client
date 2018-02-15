@@ -106,4 +106,10 @@ class Core extends EventEmitter {
 	}
 }
 
-export default new Core()
+const core = new Core()
+const { sortFnFactory } = core
+
+export default core
+export {
+	sortFnFactory
+}

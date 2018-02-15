@@ -52,7 +52,7 @@
 
 			</el-tab-pane>
 
-			<el-tab-pane label="Новый предзаказ" key="2" v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')">
+			<el-tab-pane label="Новый предзаказ" key="2">
 				<new-preorder-form @goBack="currentTab = '0'"/>
 			</el-tab-pane>
 		</el-tabs>
@@ -64,6 +64,7 @@
 <script>
 // счета
 
+//v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')"
 
 import fieldDescription from '@/static/fieldDescription'
 

@@ -59,7 +59,6 @@
 					<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
 				</q-field>
 
-
 				<form-select-address v-model="addrOpen"/>
 
 				<q-stepper-navigation>
