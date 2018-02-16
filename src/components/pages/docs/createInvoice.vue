@@ -59,7 +59,7 @@
 					<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
 				</q-field>
 
-				<form-select-address v-model="addrOpen"/>
+				<form-select-address v-model="addrOpen" @select="addressSelectHandler"/>
 
 				<q-stepper-navigation>
 					<q-btn color="primary" @click="invoice_new_create">Создать заказ</q-btn>
@@ -153,6 +153,9 @@ export default {
 			if (this.form.podium) //skip client
 				return this.step = "pay"
 			this.$refs.stepper.previous()
+		},
+		addressSelectHandler (e) {
+			this.form.shipment.address = e
 		}
 	},
 	mounted () {

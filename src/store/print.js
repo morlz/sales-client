@@ -31,6 +31,8 @@ const actions = {
 		if (!tpl)
 			return dispatch('alert', `Шаблон не найден`)
 
+			console.log(data);
+
 		try {
 			let rawHtml = Mustache.render(tpl.html, data)
 			dispatch('print_crateWindow', rawHtml)

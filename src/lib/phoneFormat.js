@@ -2,10 +2,10 @@
 const re = /(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/
 
 const handle = (all, a, b, c, d, e) =>
-	( a ? a + " (" : "" ) +
-	( b ? b + ") " : "" ) +
-	( c ? c + "-" : "" ) +
-	( d ? d + "-" : "" ) +
+	(a ? a + " (" : "") +
+	(b ? b + ") " : "") +
+	(c ? c + "-" : "") +
+	(d ? d + "-" : "") +
 	e
 
 export default phone => phone.replace(re, handle)
