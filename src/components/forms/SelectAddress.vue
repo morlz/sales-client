@@ -10,7 +10,7 @@
 				Выбор адреса
 			</q-toolbar-title>
 
-			<div class="seectAddress__cords">
+			<div class="seectAddress__cords" v-if="!app_view_mobile">
 				<q-input type="number" v-model.number="map.zoom" color="positive" inverted prefix="Масштаб: " class="seectAddress__cord" :min="0" :max="20" />
 				<q-input type="number" v-model.number="marker.lat" color="positive" inverted prefix="Широта: " class="seectAddress__cord" />
 				<q-input type="number" v-model.number="marker.lng" color="positive" inverted prefix="Долгота: " class="seectAddress__cord" />
@@ -18,51 +18,58 @@
 		</q-toolbar>
 
 		<div class="seectAddress__form" v-if="modal">
-			<q-field helper="Поиск по карте">
-				<select-address-autocomplete v-model="place" :geocode="geocode" :animation="!!map.animation"/>
-			</q-field>
-
-			<q-field>
-				<q-input v-model="addrCountry" float-label="Страна" />
-			</q-field>
-
-			<q-field>
-				<q-input v-model="addrRegion" float-label="Область" />
-			</q-field>
-
-			<q-field>
-				<q-input v-model="addrDistrict" float-label="Район" />
-			</q-field>
-
-			<q-field>
-				<q-input v-model="addrCity" float-label="Город" />
-			</q-field>
-
-			<q-field>
-				<q-input v-model="addrStreet" float-label="Улица" />
-			</q-field>
-
-			<div class="seectAddress__horGroup1">
-				<q-field>
-					<q-input v-model="addrHouse" float-label="Дом" />
+			<div class="seectAddress__inner">
+				<q-field helper="Поиск по карте">
+					<select-address-autocomplete v-model="place" :geocode="geocode" :animation="!!map.animation" @mouseover.native="mouseInHandler" ref="ac" />
 				</q-field>
 
-				<q-field>
-					<q-input v-model="addrEntrance" float-label="Подезд" />
-				</q-field>
+				<q-slide-transition>
+					<div class="seectAddress__additional" v-show="true">
+						<q-field>
+							<q-input v-model="addrCountry" float-label="Страна" />
+						</q-field>
+
+						<q-field>
+							<q-input v-model="addrRegion" float-label="Область" />
+						</q-field>
+
+						<q-field>
+							<q-input v-model="addrDistrict" float-label="Район" />
+						</q-field>
+
+						<q-field>
+							<q-input v-model="addrCity" float-label="Город" />
+						</q-field>
+
+						<q-field>
+							<q-input v-model="addrStreet" float-label="Улица" />
+						</q-field>
+
+						<div class="seectAddress__horGroup1">
+							<q-field>
+								<q-input v-model="addrHouse" float-label="Дом (и корпус)" />
+							</q-field>
+
+							<q-field>
+								<q-input v-model="addrEntrance" float-label="Подезд" />
+							</q-field>
+						</div>
+
+						<div class="seectAddress__horGroup2">
+							<q-field>
+								<q-input v-model="addrFloor" float-label="Этаж" />
+							</q-field>
+
+							<q-field>
+								<q-input v-model="addrApartament" float-label="Квартира" />
+							</q-field>
+						</div>
+
+						<q-field helper="Будет выбрран этот адрес">{{ addr ? addr : 'Пусто' }}</q-field>
+					</div>
+				</q-slide-transition>
 			</div>
 
-			<div class="seectAddress__horGroup2">
-				<q-field>
-					<q-input v-model="addrFloor" float-label="Этаж" />
-				</q-field>
-
-				<q-field>
-					<q-input v-model="addrApartament" float-label="Квартира" />
-				</q-field>
-			</div>
-
-			<q-field helper="Будет выбрран этот адрес">{{ addr ? addr : 'Пусто' }}</q-field>
 
 			<div class="seectAddress__buttons">
 				<q-btn color="primary" @click="save">Сохранить</q-btn>
@@ -92,7 +99,8 @@ import {
 	QIcon,
 	QInput,
 	QField,
-	QToolbarTitle
+	QToolbarTitle,
+	QSlideTransition
 } from 'quasar'
 
 import SelectAddressAutocomplete from '@/components/forms/SelectAddressAutocomplete'
@@ -125,6 +133,9 @@ export default {
 		value: {
 			type: Boolean,
 			required: true
+		},
+		initial: {
+			type: String
 		}
 	},
 	components: {
@@ -136,7 +147,8 @@ export default {
 		QInput,
 		QField,
 		QToolbarTitle,
-		SelectAddressAutocomplete
+		SelectAddressAutocomplete,
+		QSlideTransition
 	},
 	data() {
 		return {
@@ -373,7 +385,6 @@ export default {
 		async getCordsInfo (location) {
 			let res = await this.geocode({ location })
 			if (!(res && res.data && res.data[0])) return
-			console.log(res.data[0]);
 			this.setSplitedAddr(res.data[0].address_components)
 			this.selected.onMapPartShort = res.data[0].formatted_address
 		},
@@ -414,9 +425,14 @@ export default {
 		save () {
 			this.$emit('select', this.addr)
 			this.modal = false
+		},
+		mouseInHandler (e) {
+			if (this.selected.onMapPart != this.addrM)
+				this.selected.onMapPart = this.addrM
 		}
 	},
 	mounted() {
+		this.selected.onMapPart = this.initial
 		this.map.show = true
 	},
 	beforeDestroy() {
@@ -427,9 +443,20 @@ export default {
 
 
 <style lang="less">
+.modal {
+	height: 100%;
+	width: 100%;
+}
 .seectAddress {
-    width: 90%;
-    height: 100%;
+	height: 100%;
+	width: 95%;
+
+	.absolute-full {
+		height: 100%;
+		width: 100%;
+		display: grid;
+		grid-template-rows: 50px 1fr;
+	}
 
     &-mobile {
         width: 100%;
@@ -443,8 +470,9 @@ export default {
     }
 
     &__layout {
-        height: ~"calc(100% - 50px)";
         display: grid;
+		grid-template-rows: 1fr;
+		grid-gap: 10px;
         grid-template-columns: 300px 1fr;
         &-mobile {
             grid-template-columns: 1fr;
@@ -464,18 +492,27 @@ export default {
 	}
 
     &__form {
-        height: 100%;
-        overflow-x: auto;
+		margin: 10px 0;
         box-sizing: border-box;
+		overflow-y: auto;
         padding: 8px;
+		display: grid;
+		align-content: space-between;
     }
+
+	&__inner {
+		height: 100%;
+		.q-field:first-child {
+			margin-top: 0;
+		}
+	}
 
     &__buttons {
         align-self: end;
         display: grid;
         grid-auto-flow: column;
         grid-gap: 15px;
-        padding: 20px;
+        padding: 10px;
     }
 
     &__cords {
@@ -497,7 +534,6 @@ export default {
         margin: 0;
         padding: 5px;
         min-height: 20px;
-
     }
 }
 

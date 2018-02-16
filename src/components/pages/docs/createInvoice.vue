@@ -59,7 +59,7 @@
 					<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
 				</q-field>
 
-				<form-select-address v-model="addrOpen" @select="addressSelectHandler"/>
+				<form-select-address v-model="addrOpen" @select="addressSelectHandler" :initial="form.shipment.address"/>
 
 				<q-stepper-navigation>
 					<q-btn color="primary" @click="invoice_new_create">Создать заказ</q-btn>
