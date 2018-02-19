@@ -1,6 +1,6 @@
 <template>
-	<div class="modelsWrapper" :class="{ oneColumn: !auth_settings.showModels }">
-		<q-card class="modelList" v-if="auth_settings.showModels" v-loading="loading">
+	<div class="modelsWrapper" :class="{ oneColumn: !main_auth_settings.showModels }">
+		<q-card class="modelList" v-if="main_auth_settings.showModels" v-loading="loading">
 			<q-card-title>Модель</q-card-title>
 
 			<q-card-main>
@@ -42,7 +42,7 @@ export default {
 	},
 	methods: {
 		...mapMutations([
-			'auth_settings_showModelsSet'
+			'main_auth_settings_set'
 		]),
 		clickHandler (data) {
 			this.$emit("select", data)
@@ -50,14 +50,14 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'auth_settings',
+			'main_auth_settings',
 		]),
 		showModels: {
 			get () {
-				return this.auth_settings.showModels
+				return this.main_auth_settings.showModels
 			},
 			set (n) {
-				this.auth_settings_showModelsSet(n)
+				this.main_auth_settings_set({ type: 'showModels', data: n })
 			}
 		}
 	}

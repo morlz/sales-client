@@ -171,7 +171,7 @@ export default {
 			'discount_current',
 			'discount_filters',
 			'discount_models',
-			'auth_settings',
+			'main_auth_settings',
 			'salon_list_discount',
 			'discount_loadingModels'
 		]),
@@ -189,7 +189,7 @@ export default {
 			return Object.assign({}, obj2)
 		},
 		discountFieldDescriptionFilred () {
-			if (this.auth_settings.showModels)
+			if (this.main_auth_settings.showModels)
 				return this.discountFieldDescription.filter(el => el.field != 'MODEL')
 			return this.discountFieldDescription
 		},

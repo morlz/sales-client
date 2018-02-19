@@ -160,7 +160,7 @@ export default {
 			'storage_filters',
 			'storage_models',
 			'storage_type',
-			'auth_settings'
+			'main_auth_settings'
 		]),
 		additionalFilters () {
 			return { type: this.currentTab }
@@ -173,7 +173,7 @@ export default {
 			return rez
 		},
 		storageFieldDescriptionFiltred () {
-			if (this.auth_settings.showModels)
+			if (this.main_auth_settings.showModels)
 				return this.storageFieldDescription.filter(el => el.field != 'MODEL')
 			return this.storageFieldDescription
 		},

@@ -53,9 +53,9 @@ const mutations = {
 }
 
 const getters = {
-	client_select_current: state => state[state.current],
+	client_select_current: state => state.current == 'new' ? { ...state[state.current], phone: state.phone } : state[state.current],
 	client_select_type: state => state.current,
-	client_select: state => state[state.current],
+	client_select: (state, getters) => getters.client_select_current,
 	client_select_cached: state => state.cached,
 	client_select_loading: state => state.loading,
 	client_select_phone: state => phoneFormat(state.phone),

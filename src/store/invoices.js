@@ -134,12 +134,13 @@ const actions = {
 		})
 		commit('invoice_new_loadingSet', { type: 'create', data: false })
 		if (res.data && res.data.error) return
-		if (res.data && res.data.errors) {
-			console.log(res.data.errors)
-			return
-		}
-		dispatch('notify', 'Заказ создан')
-		console.log(res.data)
+		if (res.data && res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		if (res.data.invoice)
+			dispatch('notify', 'Заказ создан')
+
+		console.log(res.data);
 	}
 }
 
@@ -159,7 +160,6 @@ const mutations = {
 	invoice_new_selectedSet: (state, payload) => state.new.selected = payload,
 	invoice_new_loadingSet: (state, payload) => state.new.loading[payload.type] = payload.data,
 	invoice_new_cachedSet: (state, payload) => state.new.cached[payload.type] = payload.data,
-
 }
 
 const getters = {

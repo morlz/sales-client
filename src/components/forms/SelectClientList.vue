@@ -22,14 +22,14 @@
 					{{ contact }}
 				</q-item-tile>
 			</q-item-main>
-			<q-item-side>
+			<q-item-side class="clientList__salon">
 				{{ client.salon.NAME }}
 			</q-item-side>
 		</q-item>
 
 
 		<template v-if="client_select_cached.list.length == 30">
-			Показано {{ client_select_cached.list.length }} клиентов. Тут пока не бесконечной прокрутки :(
+			Показано {{ client_select_cached.list.length }} клиентов. Тут пока нет бесконечной прокрутки :(
 		</template>
 	</q-list>
 </template>
@@ -90,6 +90,9 @@ export default {
 		&-selected {
 			background: #ecf5ff;
 		}
+	}
+	&__salon {
+		text-align: right;
 	}
 }
 </style>

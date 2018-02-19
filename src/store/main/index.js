@@ -34,7 +34,8 @@ const mutations = {
 const getters = {
 	app_view_width: state => state.viewport.width,
 	app_view_desktop: (state, getters) => getters.app_view_width > 996,
-	app_view_mobile: (state, getters) => getters.app_view_width <= 996,
+	app_view_tablet: (state, getters) => getters.app_view_width <= 996 && getters.app_view_width > 650,
+	app_view_mobile: (state, getters) => getters.app_view_width <= 650,
 }
 
 const modules = [

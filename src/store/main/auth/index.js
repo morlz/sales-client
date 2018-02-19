@@ -1,4 +1,6 @@
 import api from '@/api'
+import settings from '@/store/main/auth/settings'
+
 
 const state = {
 	user: false,
@@ -7,10 +9,6 @@ const state = {
 	loading: {
 		auth: false,
 		permissions: false
-	},
-	settings: {
-		showModels: true,
-		tileView: false
 	}
 }
 
@@ -73,7 +71,6 @@ const mutations = {
 	auth_loadingSet: (state, payload) => state.loading.auth = payload,
 	auth_loadingPermissionsSet: (state, payload) => state.loading.permissions = payload,
 	auth_permissionsSet: (state, payload) => state.permissions = payload || [],
-	auth_settings_showModelsSet: (state, payload) => state.settings.showModels = payload,
 }
 
 const getters = {
@@ -82,12 +79,16 @@ const getters = {
 	loginedAs: state => state.user,
 	auchChecking: state => state.loading.auth || state.loading.permissions,
 	currentUserSalon: state => state.user.ID_SALONA,
-	auth_settings: state => state.settings,
+}
+
+const modules = {
+	settings
 }
 
 export default {
 	state,
 	actions,
 	mutations,
-	getters
+	getters,
+	modules
 }

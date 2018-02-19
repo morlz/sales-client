@@ -13,6 +13,12 @@
 				</q-field>
 
 				<q-slide-transition>
+					<div v-if="form.podium">
+						В разработке
+					</div>
+				</q-slide-transition>
+
+				<q-slide-transition>
 					<div v-if="!form.podium" class="createInvoiceForm__slide">
 						<q-field>
 							<q-toggle v-model="form.internet" label="Интернет магазин"/>
@@ -35,12 +41,12 @@
 				</q-slide-transition>
 
 				<q-stepper-navigation>
-					<q-btn color="primary" @click="nextFromPay" :disabled="!(form.adSource || form.podium)">Продолжить</q-btn>
+					<q-btn color="primary" @click="nextFromPay" :disabled="!form.adSource || form.podium">Продолжить</q-btn>
 				</q-stepper-navigation>
 			</q-step>
 
 			<q-slide-transition>
-				<q-step title="Оформление клиента" name="client" v-if="!form.podium">
+				<q-step title="Оформление клиента" name="client" v-if="!form.podium" class="createInvoiceForm__clientStep">
 					<form-select-client/>
 
 					<q-stepper-navigation>
@@ -52,17 +58,26 @@
 
 			<q-step title="Оформление доставки" name="shipment">
 				<q-field>
-					<q-datetime v-model="form.shipment.date" float-label="Дата доставки"/>
+					<q-datetime
+						v-model="form.shipment.date"
+							:month-names="i18n_months"
+							:day-names="i18n_days"
+							float-label="Дата доставки"
+							ok-label="Ок"
+							cancel-label="Отменить"
+							clear-label="Очистить"/>
 				</q-field>
 
-				<q-field helper="Адресс доставки">
-					<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
-				</q-field>
+				<template v-if="!form.podium">
+					<q-field helper="Адресс доставки">
+						<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
+					</q-field>
 
-				<form-select-address v-model="addrOpen" @select="addressSelectHandler" :initial="form.shipment.address"/>
+					<form-select-address v-model="addrOpen" @select="addressSelectHandler" :initial="address"/>
+				</template>
 
 				<q-stepper-navigation>
-					<q-btn color="primary" @click="invoice_new_create">Создать заказ</q-btn>
+					<q-btn color="primary" @click="invoice_new_create" :disabled="!(form.shipment.date && (form.shipment.address || form.podium))">Создать заказ</q-btn>
 					<q-btn color="secondary" flat @click="backFromShipment">Назад</q-btn>
 				</q-stepper-navigation>
 			</q-step>
@@ -98,7 +113,9 @@ export default {
 				invoiceSource: "1",
 				shipment: {
 					date: "",
-					address: ""
+					address: "",
+					lat: 0,
+					lng: 0
 				}
 			}
 		}
@@ -130,10 +147,19 @@ export default {
 			'invoice_new_loading',
 			'invoice_new_invoiceSource',
 			'invoice_new_adSources',
-			'client_select_selected'
+			'client_select_selected',
+			'i18n_months',
+			'i18n_days'
 		]),
 		formData () {
 			return extend(true, {}, this.form)
+		},
+		address () {
+			return {
+				address: this.form.shipment.address,
+				lat: this.form.shipment.lat,
+				lng: this.form.shipment.lng,
+			}
 		}
 	},
 	methods: {
@@ -154,8 +180,10 @@ export default {
 				return this.step = "pay"
 			this.$refs.stepper.previous()
 		},
-		addressSelectHandler (e) {
-			this.form.shipment.address = e
+		addressSelectHandler ({ address, lat, lng }) {
+			this.form.shipment.address = address
+			this.form.shipment.lat = lat
+			this.form.shipment.lng = lng
 		}
 	},
 	mounted () {
@@ -188,6 +216,15 @@ export default {
 	&__invoiceSources {
 		&:extend(.createInvoiceForm__slide);
 		overflow: hidden;
+	}
+
+	&__clientStep {
+		.q-stepper-tab {
+			padding-bottom: 6px;
+		}
+		.q-stepper-step-inner {
+			padding: 0 0 24px 20px;
+		}
 	}
 }
 </style>

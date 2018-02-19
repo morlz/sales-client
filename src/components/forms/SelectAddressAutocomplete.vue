@@ -1,38 +1,21 @@
 <template>
-<q-input float-label="Адресс" v-model="inputModel" @focus="focusHander" @blur="blurHandler" autofocus/>
+<q-input float-label="Адресс" v-model="inputModel" @blur="blurHandler" autofocus @click="focusHander">
+	<q-autocomplete
+		ref="ac"
+		@search="search"
+		@selected="selected"
+		:min-characters="3"/>
+</q-input>
 </template>
 
 <script>
-
-/*
-<div class="q-field row no-wrap items-start q-field-floating q-field-no-label">
-	<div class="row col">
-		<div class="q-field-content col-xs-12 col-sm">
-			<div :class="wrapClass" class="q-if row no-wrap items-center relative-position q-input q-if-has-label text-primary autocomplete" @click="clickHandler">
-				<div class="q-if-inner col row no-wrap items-center relative-position">
-					<div :class="floatLabelClass" class="q-if-label ellipsis full-width absolute self-start">Адресс</div>
-					<autocomplete @input.native="inputChange" @place_changed="placeChanged" @focus.native="focus" @blur.native="blur" :value="inputModel" :component-restrictions="componentRestrictions" type="text" select-first-on-enter class="col q-input-target text-left autocomplete__input"
-					    placeholder="" ref="ac" />
-				</div>
-			</div>
-			<div class="q-field-bottom row no-wrap">
-				<div class="q-field-helper col">Полный адресс на карте</div>
-			</div>
-		</div>
-	</div>
-</div>
-*/
 import {
 	mapActions,
 	mapGetters,
 	mapMutations
 } from 'vuex'
 
-import { QInput } from 'quasar'
-
-import {
-	Autocomplete
-} from 'vue2-google-maps'
+import { QInput, QAutocomplete } from 'quasar'
 
 export default {
 	props: {
@@ -52,12 +35,12 @@ export default {
 		}
 	},
 	components: {
-		QInput
+		QInput,
+		QAutocomplete
 	},
 	data() {
 		return {
 			focus: false,
-			searchModel: "",
 			inputModel: "",
 			throttleTimeout: false
 		}
@@ -73,20 +56,10 @@ export default {
 			if (this.focus || this.animation) return
 			this.setValueToModel()
 		},
-		inputModel (n) {
-			if (this.throttleTimeout)
-				clearTimeout(this.throttleTimeout)
-
-			this.throttleTimeout = setTimeout(a => this.searchModel = n, 1000)
-		},
-		async searchModel (address) {
-			if (!address) return
-			let res = await this.geocode({ address })
-			if (res && res.data && res.data[0]) this.$emit('input', res.data[0])
-		}
 	},
 	methods: {
 		focusHander (e) {
+			if (!this.focus) this.$emit('trigger')
 			this.focus = true
 		},
 		blurHandler (e) {
@@ -95,12 +68,23 @@ export default {
 		},
 		setValueToModel () {
 			if (this.inputModel == this.value) return
-
 			this.inputModel = this.value
-		}
+		},
+		async search (address, done) {
+			let res = await this.geocode({ address })
+			if (!res && !res.data) return
+			done(res.data.map(el => ({ ...el, value: el.formatted_address, label: el.formatted_address })))
+		},
+		selected (e) {
+			this.$emit('input', e)
+		},
 	},
 	mounted() {
 		this.inputModel = this.value
+		this.$on('trigger', a => {
+			if (!this.$refs.ac) return
+			this.$refs.ac.trigger()
+		})
 	}
 }
 </script>

@@ -89,9 +89,14 @@ export default {
 			speed: 30
 		}
 	},
+	watch: {
+		app_view_desktop (n) {
+			n ? this.$emit('name.hide') : this.$emit('name.show')
+		}
+	},
 	computed: {
 		...mapGetters ([
-			'app_view_mobile',
+			'app_view_desktop',
 			'nav_open'
 		]),
 		nameStyles () {
@@ -102,7 +107,7 @@ export default {
 				width: `${this.nameWidth}px`,
 				'padding-left': `${this.iconPaddingLeft}px`,
 				'padding-right': `${this.iconPaddingRight}px`,
-				'box-shadow': this.app_view_mobile ? 'none' : '2px 4px 3px -1px rgba(0, 0, 0, 0.2)'
+				'box-shadow': !this.app_view_desktop ? 'none' : '2px 4px 3px -1px rgba(0, 0, 0, 0.2)'
 			}
 		},
 		iconStyle () {
@@ -121,7 +126,7 @@ export default {
 			return p
 		},
 		iconRipple () {
-			return typeof this.content.click == 'function' && this.app_view_mobile
+			return typeof this.content.click == 'function' && !this.app_view_desktop
 		},
 		nameWidth () {
 			return 220
@@ -170,11 +175,11 @@ export default {
 			return throttle(this.mouseLeave, 50)
 		},
 		mouseEnter (e) {
-			if (this.app_view_mobile) return
+			if (!this.app_view_desktop) return
 			this.$emit('spread', true)
 		},
 		mouseLeave (e) {
-			if (this.app_view_mobile) return
+			if (!this.app_view_desktop) return
 			this.$emit('spread', false)
 		},
 		showName (delay = 0) {
@@ -325,7 +330,7 @@ export default {
 		if (this.currentRouteItem)
 			this.$emit('current')
 
-		if (this.app_view_mobile)
+		if (!this.app_view_desktop)
 			this.$emit('name.show')
 	}
 }

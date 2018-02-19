@@ -173,7 +173,7 @@ export default {
 			'furniture_filters',
 			'furniture_models',
 			'furniture_type',
-			'auth_settings',
+			'main_auth_settings',
 		]),
 		data () {
 			return this.cachedFurnitures
@@ -195,7 +195,7 @@ export default {
 			return rez
 		},
 		furnitureSalonFieldDescriptionFiltred () {
-			if (this.auth_settings.showModels)
+			if (this.main_auth_settings.showModels)
 				return this.furnitureSalonFieldDescription.filter(el => el.field != 'MODEL')
 			return this.furnitureSalonFieldDescription
 		},

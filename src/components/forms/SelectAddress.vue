@@ -2,9 +2,7 @@
 <q-modal ref="modal" v-model="modal" :content-classes="modalClass">
 	<q-modal-layout :content-class="layoutClass">
 		<q-toolbar slot="header">
-			<q-btn flat @click="$refs.modal.close()">
-				<q-icon name="keyboard_arrow_left" />
-			</q-btn>
+			<q-btn flat @click="$refs.modal.close()" icon="keyboard_arrow_left"/>
 
 			<q-toolbar-title>
 				Выбор адреса
@@ -15,16 +13,21 @@
 				<q-input type="number" v-model.number="marker.lat" color="positive" inverted prefix="Широта: " class="seectAddress__cord" />
 				<q-input type="number" v-model.number="marker.lng" color="positive" inverted prefix="Долгота: " class="seectAddress__cord" />
 			</div>
+
+			<q-btn v-if="app_view_mobile" flat icon="save" @click="save">Сохранить</q-btn>
 		</q-toolbar>
 
-		<div class="seectAddress__form" v-if="modal">
+		<div class="seectAddress__form" v-if="modal" :class="{ 'seectAddress__form-mobile': app_view_mobile }">
 			<div class="seectAddress__inner">
-				<q-field helper="Поиск по карте">
-					<select-address-autocomplete v-model="place" :geocode="geocode" :animation="!!map.animation" @mouseover.native="mouseInHandler" ref="ac" />
+				<q-field :helper="app_view_mobile ? '' : 'Поиск по карте'" class="seectAddress__search":class="{ 'seectAddress__search-mobile': app_view_mobile }">
+					<select-address-autocomplete v-model="place" :geocode="geocode" :animation="!!map.animation" ref="ac" />
+					<q-btn flat v-if="app_view_mobile" @click="additional.show = !additional.show">
+						<q-icon :name="mobileViewIcon"/>
+					</q-btn>
 				</q-field>
 
 				<q-slide-transition>
-					<div class="seectAddress__additional" v-show="true">
+					<div class="seectAddress__additional" :class="{ 'seectAddress__additional-mobile': app_view_mobile }" v-show="ahowAdditional">
 						<q-field>
 							<q-input v-model="addrCountry" float-label="Страна" />
 						</q-field>
@@ -71,13 +74,13 @@
 			</div>
 
 
-			<div class="seectAddress__buttons">
+			<div class="seectAddress__buttons" v-if="!app_view_mobile">
 				<q-btn color="primary" @click="save">Сохранить</q-btn>
 				<q-btn color="secondary" flat @click="modal = false">Отменить</q-btn>
 			</div>
 		</div>
 
-		<gmap-map v-if="modal" class="seectAddress__map" ref="map" :center="map.center" :zoom="map.zoom" @click="chickHandler" @zoom_changed="zoomChanged" @center_changed="centerChanged">
+		<gmap-map v-if="modal" class="seectAddress__map" ref="map" :center="map.center" :zoom="map.zoom" @dblclick="chickHandler" @zoom_changed="zoomChanged" @center_changed="centerChanged">
 			<gmap-marker v-if="marker.lng && marker.lat" :position="marker" />
 		</gmap-map>
 	</q-modal-layout>
@@ -135,7 +138,8 @@ export default {
 			required: true
 		},
 		initial: {
-			type: String
+			type: Object,
+			default: a => ({ address: "", lat: 0, lng: 0 })
 		}
 	},
 	components: {
@@ -152,6 +156,9 @@ export default {
 	},
 	data() {
 		return {
+			additional: {
+				show: false
+			},
 			map: {
 				show: false,
 				center: {
@@ -173,17 +180,13 @@ export default {
 				onMapPart: "",
 				onMapPartShort: "",
 				onMapPartSplited: [],
-				nonMapPartSplited: [],
-				marker: false
+				nonMapPartSplited: []
 			},
 			geocoder: new google.maps.Geocoder()
 		}
 	},
 	watch: {
 		addrM(n, o) {
-			if (this.selected.marker)
-				return this.selected.marker = false
-
 			this.selected.onMapPart = n
 		}
 	},
@@ -206,10 +209,11 @@ export default {
 			return 'seectAddress__layout' + (this.app_view_mobile ? '-mobile' : '')
 		},
 		addr() {
-			return [this.selected.onMapPartShort, this.addrNM].filter(el => el).join(', ')
+			//this.selected.onMapPartShort
+			return [this.addrM, this.addrNM].filter(el => el).join(', ')
 		},
 		addrM() {
-			return this.selected.onMapPartSplited.map(el => el.long_name).filter(el => el).reverse().join(', ')
+			return [...new Set(this.selected.onMapPartSplited.map(el => el.long_name))].filter(el => el).reverse().join(', ')
 		},
 		addrNM() {
 			return this.selected.nonMapPartSplited.sort(sortFnFactory('index', true)).map(el => el.long_name).filter(el => el).join(', ')
@@ -307,7 +311,7 @@ export default {
 					lng: +e.geometry.location.lng().toFixed(6)
 				}
 
-				let zoom = this.selected.onMapPartSplited.length * 2.5
+				let zoom = this.selected.onMapPartSplited.length * 2.4
 
 				let tl = [{
 						track: 'center',
@@ -340,6 +344,12 @@ export default {
 
 				this.marker = cords
 			}
+		},
+		ahowAdditional () {
+			return !this.app_view_mobile || this.additional.show
+		},
+		mobileViewIcon () {
+			return this.additional.show ? `keyboard_arrow_up` : `fa-sliders`
 		}
 	},
 	methods: {
@@ -370,13 +380,13 @@ export default {
 				data.long_name = long_name
 		},
 		async chickHandler(e) {
-			this.selected.marker = true
 			let cords = {
 				lat: +e.latLng.lat().toFixed(6),
 				lng: +e.latLng.lng().toFixed(6)
 			}
 			this.marker = cords
 			await this.getCordsInfo(cords)
+			this.map.zoom = this.map.zoom - 1
 		},
 		zoomChanged (e) {
 			if (this.map.zoom != e)
@@ -413,7 +423,7 @@ export default {
 
 			const reduce = el =>
 				el.types.indexOf(prop) + 1 ?
-					({ ...el, long_name: prefixes[prop].prefix + el.long_name })
+					({ ...el, long_name: prefixes[prop].prefix + el.long_name.replace(prefixes[prop].reg, '') })
 				:	el
 
 			for (var prop in prefixes)
@@ -423,22 +433,25 @@ export default {
 			this.selected.onMapPartSplited = address_components
 		},
 		save () {
-			this.$emit('select', this.addr)
+			this.$emit('select', {
+				...this.marker,
+				address: this.addr
+			})
 			this.modal = false
-		},
-		mouseInHandler (e) {
-			if (this.selected.onMapPart != this.addrM)
-				this.selected.onMapPart = this.addrM
 		}
 	},
 	mounted() {
-		this.selected.onMapPart = this.initial
+		this.selected.onMapPart = this.initial.address
 		this.map.show = true
+		if (!this.initial.lat || !this.initial.lng) return
+		this.map.center.lat = this.initial.lat
+		this.map.center.lng = this.initial.lng
 	},
 	beforeDestroy() {
 		this.map.show = false
 	}
 }
+
 </script>
 
 
@@ -462,7 +475,16 @@ export default {
         width: 100%;
         height: auto;
         min-height: 100%;
+		grid-template-columns: 1fr;
+		grid-template-rows: 50px 50px 1fr;
     }
+
+	&__search-mobile {
+		.q-field-content {
+			display: grid;
+			grid-template: 1fr min-content ~"/" 1fr min-content;
+		}
+	}
 
     &__map {
         width: 100%;
@@ -475,7 +497,9 @@ export default {
 		grid-gap: 10px;
         grid-template-columns: 300px 1fr;
         &-mobile {
+			display: grid;
             grid-template-columns: 1fr;
+			grid-template-rows: max-content 1fr;
         }
     }
 
@@ -483,12 +507,36 @@ export default {
         display: grid;
         grid-template-columns: 2fr 1fr;
         grid-gap: 15px;
+		margin-top: 16px;
+		.q-field {
+			margin-top: 0;
+		}
     }
 
 	&__horGroup2 {
 		display: grid;
 		grid-auto-flow: column;
 		grid-gap: 15px;
+		margin-top: 8px;
+		.q-field {
+			margin-top: 0;
+		}
+	}
+
+	&__additional {
+		margin: 0;
+		width: 100%;
+		box-sizing: border-box;
+		&-mobile {
+			position: absolute;
+			z-index: 1000;
+			background: #fff;
+			left: 0;
+			margin: 0;
+			> div {
+				margin: 8px;
+			}
+		}
 	}
 
     &__form {
@@ -498,6 +546,10 @@ export default {
         padding: 8px;
 		display: grid;
 		align-content: space-between;
+		&-mobile {
+			padding: 0 8px;
+			margin: 10px 0 0 0;
+		}
     }
 
 	&__inner {

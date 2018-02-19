@@ -13,32 +13,7 @@
 
 			<main-auth slot="auth"/>
 		</app-layout>
-
-
-<div class="m1wrp" style="display: none;">
-	<div class="m1">
-		<div class="m1_c">
-			<div class="m1_scr">
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadssdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasdasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasfsdfadsfsadfasdd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasfsdfadsfsadfasdd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasfsdfadsfsadfasdd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-sdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasfsdfadsfsadfasdd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd fsdfadsfsadfasd fasd f
-fsadfasd fasd fsdfadsfsadfasd fasd f
-			</div>
-		</div>
-		<div class="m1_c2">
-			<div class="m1_scr2">
-
-			</div>
-		</div>
 	</div>
-</div>
 </div>
 
 
@@ -104,32 +79,4 @@ export default {
 #q-app {
 	height: 100%;
 }
-
-
-.m1wrp {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.5);
-	z-index: 9999999999999;
-	.m1 {
-		position: absolute;
-		top: 5%;
-		left: 5%;
-		width: 90%;
-		height: 90%;
-		background: #fff;
-		&_c {
-			height: 100%;
-		}
-		&_scr {
-			width: 300px;
-			overflow-y: auto;
-			height: 100%;
-		}
-	}
-}
-
 </style>

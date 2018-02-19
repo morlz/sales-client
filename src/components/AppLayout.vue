@@ -49,7 +49,7 @@ export default {
 			this.nav_openLeftSet(n)
 		},
 		nav_open (n) {
-			if (!this.app_view_mobile) return
+			if (this.app_view_desktop) return
 			if (!this.layoutLoaded) return
 			if (this.$refs.layout.leftState.openedSmall != n.left)
 				this.$refs.layout.leftState.openedSmall = n.left
@@ -69,7 +69,8 @@ export default {
 		...mapGetters([
 			'logined',
 			'nav_open',
-			'app_view_mobile'
+			'app_view_mobile',
+			'app_view_desktop'
 		]),
 		open: {
 			get () {
@@ -87,7 +88,7 @@ export default {
 		},
 		menuWrapperStyle () {
 			return {
-				width: this.app_view_mobile ? '300px' : '80px'
+				width: !this.app_view_desktop ? '300px' : '80px'
 			}
 		}
 	},
