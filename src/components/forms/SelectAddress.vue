@@ -210,7 +210,7 @@ export default {
 		},
 		addr() {
 			//this.selected.onMapPartShort
-			return [this.addrM, this.addrNM].filter(el => el).join(', ')
+			return [this.addrM, this.addrNM].filter(el => el).join(', ') || this.selected.onMapPart
 		},
 		addrM() {
 			return [...new Set(this.selected.onMapPartSplited.map(el => el.long_name))].filter(el => el).reverse().join(', ')
@@ -441,6 +441,16 @@ export default {
 		}
 	},
 	mounted() {
+		if (this.initial.lat && this.initial.lng) {
+			let cords = {
+				lat: this.initial.lat,
+				lng: this.initial.lng
+			}
+			this.map.center = cords
+			this.marker = cords
+
+		}
+
 		this.selected.onMapPart = this.initial.address
 		this.map.show = true
 		if (!this.initial.lat || !this.initial.lng) return

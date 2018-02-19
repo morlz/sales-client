@@ -70,7 +70,7 @@
 
 				<template v-if="!form.podium">
 					<q-field helper="Адресс доставки">
-						<q-input v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
+						<q-input type="textarea" v-model="form.shipment.address" float-label="Адресс" @click="addrOpen = true"/>
 					</q-field>
 
 					<form-select-address v-model="addrOpen" @select="addressSelectHandler" :initial="address"/>

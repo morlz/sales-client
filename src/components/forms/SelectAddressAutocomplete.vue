@@ -1,5 +1,5 @@
 <template>
-<q-input float-label="Адресс" v-model="inputModel" @blur="blurHandler" autofocus @click="focusHander">
+<q-input type="textarea" float-label="Адресс" v-model="inputModel" @blur="blurHandler" autofocus @click="focusHander">
 	<q-autocomplete
 		ref="ac"
 		@search="search"
