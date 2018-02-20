@@ -133,7 +133,7 @@ const actions = {
 			type: getters.client_select_type
 		})
 		commit('invoice_new_loadingSet', { type: 'create', data: false })
-		if (res.data && res.data.error) return
+		if (!res.data || res.data && res.data.error) return
 		if (res.data && res.data.errors)
 			return dispatch('handleFormErrors', res.data.errors)
 

@@ -59,8 +59,8 @@ const getters = {
 	client_select_cached: state => state.cached,
 	client_select_loading: state => state.loading,
 	client_select_phone: state => phoneFormat(state.phone),
-	client_select_valid: state => !!state.new.fio && state.new.fio.split(' ').filter(el => el).length > 1 || !!state.exist.id,
-	client_select_selected: state => !!(state[state.current].fio || state[state.current].id) && state.phone,
+	client_select_valid: state => state.new.fio && state.new.fio.split(' ').length > 1 || !!state.exist.id,
+	client_select_selected: (state, getters) => getters.client_select_valid && state.phone,
 	client_select_currentState: (state, getters) => {
 		return {
 			search: true,

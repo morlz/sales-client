@@ -4,7 +4,7 @@
 			<q-toggle v-model="disableSMS" label="sms-рассылка запрещена"/>
 		</q-field>
 
-		<q-field>
+		<q-field helper="Фамилия, имя и отчество полностью">
 			<q-input v-model="fio" float-label="ФИО" />
 		</q-field>
 
@@ -55,7 +55,7 @@ export default {
 		},
 		fio: {
 			get () { return this.$store.state.clients.select.new.fio },
-			set (data) { this.client_select_newUpdate({ type: 'fio', data }) }
+			set (data) { this.client_select_newUpdate({ type: 'fio', data: data.trim()}) }
 		},
 		gender: {
 			get () { return this.$store.state.clients.select.new.gender },
