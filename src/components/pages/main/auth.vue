@@ -8,16 +8,16 @@
 
 			<q-card-main>
 				<q-field icon="fa-user">
-					<q-input v-model="form.login" float-label="Имя пользователя (Логин)" @keyup.enter.native="authHandler"/>
+					<q-input v-model="login" float-label="Имя пользователя (Логин)" @keyup.enter.native="authHandler"/>
 				</q-field>
 
 				<q-field icon="fa-key">
-					<q-input type="password" v-model="form.password" float-label="Пароль" @keyup.enter.native="authHandler"/>
+					<q-input type="password" v-model="pass" float-label="Пароль" @keyup.enter.native="authHandler"/>
 				</q-field>
 			</q-card-main>
 
 			<q-card-actions>
-				<q-btn color="primary" @click="authHandler" @keyup.enter.native="authHandler">Вход</q-btn>
+				<q-btn color="primary" @click="auth_signIn" @keyup.enter.native="authHandler">Вход</q-btn>
 				<q-btn color="secondary" disabled>Востановить пароль</q-btn>
 			</q-card-actions>
 		</q-card>
@@ -31,10 +31,6 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import formRules from '@/static/formRules'
 import { QField, QInput, QCard, QCardTitle, QCardMain, QCardActions, QBtn } from 'quasar'
 
-let {
-	login: loginFormRules
-} = formRules
-
 export default {
 	components: {
 		QField,
@@ -45,33 +41,34 @@ export default {
 		QCardActions,
 		QBtn
 	},
-	data: () => ({
-		loginFormRules,
-		form: {
-			login: "",
-			password: ""
-		},
-		colors: [
-			[60, 255, 60],
-			[62, 35, 255],
-			[255, 35, 98],
-			[45, 175, 230],
-			[255, 0, 255],
-			[255, 128, 0]
-		],
-		interval: false,
-		gradientSpeed: 0.002,
-		step: 0,
-		colorIndices: [0, 1, 2, 3],
-		color1: "rgb(0, 0, 0)",
-		color2: "rgb(0, 0, 0)",
-	}),
+	data () {
+		return {
+			colors: [
+				[60, 255, 60],
+				[62, 35, 255],
+				[255, 35, 98],
+				[45, 175, 230],
+				[255, 0, 255],
+				[255, 128, 0]
+			],
+			interval: false,
+			gradientSpeed: 0.003,
+			step: 0,
+			colorIndices: [0, 1, 2, 3],
+			color1: "rgb(0, 0, 0)",
+			color2: "rgb(0, 0, 0)",
+		}
+	},
+	watch: {
+		app_view_desktop (n) {
+			this.interval = n ?
+					setInterval(this.updateGradient, 10)
+				:	clearInterval (this.interval)
+		}
+	},
 	methods: {
-		authHandler () {
-			this.signIn(Object.assign({}, this.form))
-		},
 		...mapActions([
-			'signIn'
+			'auth_signIn'
 		]),
 		updateGradient() {
 			var c0_0 = this.colors[this.colorIndices[0]];
@@ -106,16 +103,35 @@ export default {
 	computed: {
 		...mapGetters([
 			'auchChecking',
-			'logined'
+			'logined',
+			'app_view_desktop'
 		]),
 		gradientStyles() {
 			return {
 				"background" : `linear-gradient(to left, ${this.color1} 0%, ${this.color2} 100%)`
 			}
+		},
+		login: {
+			get () {
+				return this.$store.getters.auth_form.login
+			},
+			set (data) {
+				this.$store.commit('auth_fromSet', { type: 'login', data })
+			}
+		},
+		pass: {
+			get () {
+				return this.$store.getters.auth_form.password
+			},
+			set (data) {
+				this.$store.commit('auth_fromSet', { type: 'password', data })
+			}
 		}
 	},
 	mounted () {
-		this.interval = setInterval(this.updateGradient, 10)
+		if (this.app_view_desktop)
+			this.interval = setInterval(this.updateGradient, 50)
+		this.updateGradient()
 	},
 	beforeDestroy () {
 		if (this.interval) clearInterval (this.interval)

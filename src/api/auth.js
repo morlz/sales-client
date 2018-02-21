@@ -21,10 +21,11 @@ export default {
 			type: "auth/userdata"
 		})
 	},
-	async getPermissions () {
+	async getPermissions (data) {
 		return await core.invoke({
-			method: "get",
-			type: "auth/userpermissions"
+			method: "post",
+			type: "auth/userpermissions",
+			data
 		})
 	},
 	getToken () {
