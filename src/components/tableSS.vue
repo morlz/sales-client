@@ -5,13 +5,15 @@
 			<thead>
 				<tr>
 					<th v-if="lineNumbers && !minify" class="tableIndex">№</th>
-					<th v-for="column, index in columns" @click="thClick(column, index)" :key="index">
+					<th v-for="column, index in columns" @click="thClick(column, index)" :key="index" ref="ths"
+						:width="columnWidths.find(el => el.index == index) ? columnWidths.find(el => el.index == index).width + 'px' : 'auto'">
+
 						{{ column.label }}
 						<i :class="sortableIconClass(column, index)" />
 					</th>
 				</tr>
 				<tr v-if="!minify">
-					<th v-if="lineNumbers && !minify" class="tableIndex"></th>
+					<th v-if="lineNumbers && !minify" class="tableIndex"/>
 					<th v-for="column, index in columnsSearchFields">
 						<el-input
 							v-model="search[column.field]"
@@ -41,14 +43,16 @@
 				<tr v-for="row, index in sortedRows" :key="index" :data-index="index" class="hoverShow">
 					<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
 					<td v-for="column, columnIndex in columns" :class="column.type" @click="clickHandler($event, row, columnIndex)">
-						<div v-if="column.type != 'array'">{{ getFieldData(row, column.field) }}</div>
-						<tabless-popover
-							v-if="column.type == 'array'"
-							:one="getFieldData(row, column.field).length < 2"
-							:arr="getFieldData(row, column.field)"
-							:fields="column.fields"
-							:label="column.label"
-							/>
+						<slot :name="column.field" :row="row" :column="column">
+							<div v-if="column.type != 'array'">{{ getFieldData(row, column.field) }}</div>
+							<tabless-popover
+								v-if="column.type == 'array'"
+								:one="getFieldData(row, column.field).length < 2"
+								:arr="getFieldData(row, column.field)"
+								:fields="column.fields"
+								:label="column.label"
+								/>
+						</slot>
 					</td>
 					<td class="buttons" v-if="local_buttonsCondition(row)">
 						<el-button
@@ -73,6 +77,7 @@
 
 
 <script>
+//<div class="thDelimiter" @mousedown.stop="delimiterMouseDown($event, index)" v-if="false"/>
 import tablessPopover from '@/components/tableSSPopover'
 import {
 	QInput
@@ -133,7 +138,11 @@ export default {
 			},
 			search: {},
 			searchInputTimeout: false,
-			filterChangeFirst: true
+			filterChangeFirst: true,
+			delimiter: {
+				mooving: -1
+			},
+			columnWidths: []
 		}
 	},
 	watch: {
@@ -273,9 +282,31 @@ export default {
 		},
 		getFieldData: (row, field) => field.split(".").reduce((prev, el) => (prev[el] || ""), row),
 		getFieldArrayCount: arr => arr.length,
+		delimiterMouseMoveHandler (e) {
+			if (this.delimiter.mooving == -1) return
+			let moving = this.columnWidths.find(el => el.index == this.delimiter.mooving)
+			moving.width = moving.width + e.movementX
+		},
+		delimiterMouseDown (e, index) {
+			if (!this.columnWidths.find(el => el.index == index))
+				this.columnWidths.push({ index, width: this.$refs.ths[index].offsetWidth })
+
+			this.delimiter.mooving = index
+			window.addEventListener('mouseup', this.delimiterMouseUp, { once: true })
+		},
+		delimiterMouseUp (e) {
+			this.delimiter.mooving = -1
+		}
 	},
 	mounted () {
 		this.applyFilters()
+		setTimeout(() => {
+			console.log(this);
+		}, 1000)
+		//window.addEventListener('mousemove', this.delimiterMouseMoveHandler)
+	},
+	beforeDestroy() {
+		//window.removeEventListener('mousemove', this.delimiterMouseMoveHandler)
 	}
 }
 </script>
@@ -301,8 +332,9 @@ export default {
 	                    white-space: nowrap;
 	                    padding: 5px;
 	                    color: #337ab7;
-	                    transition: all 0.3s ease-in-out;
+	                    transition: color 0.3s ease-in-out;
 	                    border-bottom: 2px solid #f4f4f4;
+						position: relative;
 	                    &:hover {
 	                        color: rgb(114, 175, 210);
 	                        > .sortIcon {
@@ -332,6 +364,16 @@ export default {
 								height: 100%;
 								padding: 4px;
 							}
+						}
+						.thDelimiter {
+							position: absolute;
+							height: 100%;
+							background: red;
+							width: 3px;
+							top: 0;
+							right: 0;
+							z-index: 500;
+							cursor: move;
 						}
 	                }
 	            }

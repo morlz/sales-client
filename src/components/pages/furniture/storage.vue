@@ -76,7 +76,20 @@
 				@filter="local_storage_filterChange"
 				@sortChange="local_storage_sortChange"
 				@onClick="routerGoId"
-			/>
+			>
+				<template slot="cloth1" slot-scope="props">
+					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline/>
+					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+				</template>
+				<template slot="cloth2" slot-scope="props">
+					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline/>
+					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+				</template>
+				<template slot="cloth3" slot-scope="props">
+					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline/>
+					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+				</template>
+			</tabless>
 
 			<infinite-loading @infinite="storage_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
@@ -99,6 +112,7 @@ import mixins from '@/components/mixins'
 import tabless from '@/components/tableSS'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
+import PreviewCloth from '@/components/PreviewCloth'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 import { QTab, QTabs, QBtn } from 'quasar'
@@ -118,7 +132,8 @@ export default {
 		furnitureModelsWrap,
 		QTab,
 		QTabs,
-		QBtn
+		QBtn,
+		PreviewCloth
 	},
 	mixins: [mixins],
 	data() {

@@ -80,16 +80,29 @@
 			<tabless
 				key="salon"
 				:data="furniture_cached"
-				:fieldDescription="furnitureSalonFieldDescriptionFiltred"
+				:field-description="furnitureSalonFieldDescriptionFiltred"
 				:filters="furniture_filters"
 				:select-fields="local_furniture_selectFields"
-				:localSort="false"
+				:local-sort="false"
 				ref="table"
 				@filter="local_furniture_filterChange"
 				@sortChange="local_furniture_sortChange"
 				@onClick="routerGoId"
 				@select="local_furniture_handleFieldSelect"
-			/>
+			>
+				<template slot="cloth1" slot-scope="props">
+					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline/>
+					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+				</template>
+				<template slot="cloth2" slot-scope="props">
+					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline/>
+					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+				</template>
+				<template slot="cloth3" slot-scope="props">
+					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline/>
+					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+				</template>
+			</tabless>
 
 			<infinite-loading @infinite="furniture_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
@@ -111,6 +124,7 @@ import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
+import PreviewCloth from '@/components/PreviewCloth'
 
 import { QTabs, QTab, QBtn } from 'quasar'
 
@@ -128,7 +142,8 @@ export default {
 		furnitureModelsWrap,
 		QTabs,
 		QTab,
-		QBtn
+		QBtn,
+		PreviewCloth
 	},
 	mixins: [mixins],
 	data() {

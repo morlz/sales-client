@@ -38,7 +38,14 @@
 		</q-card>
 	</el-popover>
 
-	<q-chip square color="positive" v-popover:previewClothPopover class="previewCloth__chip">
+	<q-chip
+		square
+		color="positive"
+		v-popover:previewClothPopover
+		class="previewCloth__chip"
+		@click.stop
+		:style="{ whiteSpace: inline ? 'nowrap' : undefined }">
+
 		{{ data.NAME }}
 	</q-chip>
 </div>
@@ -74,6 +81,10 @@ export default {
 		content: {
 			type: Object,
 			default: a => ({})
+		},
+		inline: {
+			type: Boolean,
+			default: a => false
 		}
 	},
 	data() {

@@ -82,7 +82,20 @@
 						@sortChange="local_discount_sortChange"
 						@onClick="routerGoId"
 						@select="local_discount_handleFieldSelect"
-					/>
+					>
+						<template slot="cloth1" slot-scope="props">
+							<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline/>
+							<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+						</template>
+						<template slot="cloth2" slot-scope="props">
+							<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline/>
+							<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+						</template>
+						<template slot="cloth3" slot-scope="props">
+							<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline/>
+							<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+						</template>
+					</tabless>
 				</q-tab-pane>
 
 				<q-tab-pane name="tile">
@@ -112,6 +125,7 @@ import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
+import PreviewCloth from '@/components/PreviewCloth'
 import { QTabs, QTab, QTabPane, QBtn } from 'quasar'
 let {
 	discountFieldDescription
@@ -129,7 +143,8 @@ export default {
 		QTabs,
 		QTab,
 		QTabPane,
-		QBtn
+		QBtn,
+		PreviewCloth
 	},
 	mixins: [mixins],
 	data() {
