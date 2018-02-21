@@ -126,6 +126,7 @@ export default {
 .previewCloth {
 	&__chip {
 		cursor: pointer;
+		user-select: none;
 	}
 }
 

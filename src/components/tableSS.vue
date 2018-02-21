@@ -64,17 +64,19 @@
 						</slot>
 					</td>
 					<td class="buttons" v-if="local_buttonsCondition(row)">
-						<el-button
-							size="small"
-							@click.stop="button.click($event, row)"
-							v-for="button, index in buttonRedused"
-							:key="index"
-							:class="button.class"
-							:type="button.type"
-							v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(row, button.loading.field) )"
-						>
-							{{ button.name }}
-						</el-button>
+						<slot name="buttons" :row="row">
+							<el-button
+								size="small"
+								@click.stop="button.click($event, row)"
+								v-for="button, index in buttonRedused"
+								:key="index"
+								:class="button.class"
+								:type="button.type"
+								v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(row, button.loading.field) )"
+							>
+								{{ button.name }}
+							</el-button>
+						</slot>
 					</td>
 				</tr>
 			</tbody>
@@ -409,11 +411,11 @@ export default {
 							padding-left: 10px;
 						}
 	                    padding: 3px;
-	                    .buttons {
-	                        display: grid;
-	                        grid-auto-flow: column;
-	                    }
 	                }
+					.buttons {
+						white-space: nowrap;
+						vertical-align: middle;
+					}
 	                transition: all 0.3s ease-in-out;
 	                .tableIndex {
 	                    vertical-align: middle;
