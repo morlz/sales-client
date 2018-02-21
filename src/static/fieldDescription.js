@@ -191,7 +191,6 @@ let dataObj = {
 	],
 
 	cartPopupExistFieldDescription: [
-		{ field: "ID", label: "ИД" },
 		{ field: "UN", label: "Уч №" },
 		{ field: "td.MODEL", label: "Модель" },
 		{ field: "td.TIP", label: "Тип" },
@@ -199,7 +198,6 @@ let dataObj = {
 	],
 
 	cartPopupNewFieldDescription: [
-		{ field: "ID", label: "ИД" },
 		{ field: "id_zak", label: "Ид заказа" },
 		{ field: "zak.NEWNAME", label: "Модель" },
 		{ field: "zak.TIP", label: "Тип" },

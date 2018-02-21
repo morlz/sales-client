@@ -1,46 +1,28 @@
 <template>
 <div class="cartWrapper">
-	<el-popover ref="cartPopover" trigger="click">
+	<el-popover ref="cartPopover" :trigger="app_view_desktop ? 'click' : 'manual'">
 		<div class="cartItems" v-loading="cart_loadingList">
-			<div class="items scroll">
-				<template v-if="cart_exist.length">
-					<div class="title">Мебель из салона (склада)</div>
-					<table-collapsible :rows="cart_exist" :columns="cartPopupExistFieldDescription">
-						<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
-							<q-btn
-								v-for="button, index in local_cart_cachedExistButtons"
-								:key="`${props.row.ID}-${index}`"
-								:class="button.class"
-								flat
-								@click.stop="button.click($event, props.row)"/>
-						</div>
-					</table-collapsible>
-				</template>
-
-				<template v-if="cart_new.length">
-					<div class="title">Заказные позиции</div>
-					<table-collapsible :rows="cart_new" :columns="cartPopupNewFieldDescription">
-						<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
-							<q-btn
-								v-for="button, index in local_cart_cachedNewButtons"
-								:key="`${props.row.ID}-${index}`"
-								:class="button.class"
-								flat
-								@click.stop="button.click($event, props.row)"/>
-						</div>
-					</table-collapsible>
-				</template>
-
-				<div class="title" v-if="!cart_exist.length && !cart_new.length">
-					Корзина пуста
-				</div>
-			</div>
+			<app-header-popup-cart-content/>
 
 			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length" @click="goToCreateInvoice">Оформить документ</q-btn>
 		</div>
 	</el-popover>
 
-	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat>
+	<q-modal maximized v-if="!app_view_desktop" v-model="modal" ref="modal" class="cartModal">
+		<q-modal-layout>
+			<q-toolbar slot="header">
+				<q-btn flat>
+					<q-icon name="keyboard_arrow_left" @click="modal = false"/>
+				</q-btn>
+				<q-toolbar-title>{{cart_cachedSumm}} руб. {{cart_cachedCount}} шт.</q-toolbar-title>
+				<q-btn flat icon-right="redo" @click="goToCreateInvoice" v-if="cart_exist.length || cart_new.length">Оформить</q-btn>
+			</q-toolbar>
+
+			<app-header-popup-cart-content class="cartModal__content"/>
+		</q-modal-layout>
+	</q-modal>
+
+	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat @click="modal = !modal">
 		<q-icon name="shopping_cart" v-if="app_view_mobile"/>
 		<template v-if="!app_view_mobile">
 			Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
@@ -50,9 +32,6 @@
 </template>
 
 <script>
-//<tabless :data="cart_exist" :fieldDescription="cartPopupExistFieldDescription" :minify="true" :buttons="local_cart_cachedExistButtons" />
-//<tabless :data="cart_new" :fieldDescription="cartPopupNewFieldDescription" :minify="true" :buttons="local_cart_cachedNewButtons" />
-
 import {
 	mapActions,
 	mapGetters,
@@ -61,27 +40,26 @@ import {
 
 import tabless from '@/components/tableSS.vue'
 import TableCollapsible from '@/components/TableCollapsible.vue'
-import fieldDescription from '@/static/fieldDescription'
+import AppHeaderPopupCartContent from '@/components/AppHeaderPopupCartContent'
 
-import { QBtn, QIcon } from 'quasar'
-
-let {
-	cartPopupExistFieldDescription,
-	cartPopupNewFieldDescription
-} = fieldDescription
+import { QBtn, QIcon, QModal, QModalLayout, QToolbar, QToolbarTitle } from 'quasar'
 
 export default {
 	data() {
 		return {
-			cartPopupExistFieldDescription,
-			cartPopupNewFieldDescription
+			modal: false,
 		}
 	},
 	components: {
 		TableCollapsible,
 		tabless,
 		QBtn,
-		QIcon
+		QIcon,
+		QModal,
+		QModalLayout,
+		QToolbar,
+		QToolbarTitle,
+		AppHeaderPopupCartContent
 	},
 	methods: {
 		...mapActions([
@@ -89,7 +67,8 @@ export default {
 			'cart_removeItem'
 		]),
 		goToCreateInvoice () {
-			router.push('/docs/createInvoice')
+			this.$refs.modal.$once('close', a => router.push('/docs/createInvoice'))
+			this.modal = false
 		}
 	},
 	computed: {
@@ -99,35 +78,9 @@ export default {
 			'cart_cachedCount',
 			'cart_cachedSumm',
 			'cart_loadingList',
-			'cart_removing',
-			'app_view_mobile'
+			'app_view_mobile',
+			'app_view_desktop'
 		]),
-		local_cart_cachedExistButtons () {
-			return [{
-				type: "danger",
-				loading: {
-					field: 'ID',
-					items: this.cart_removing
-				},
-				class: {
-					'el-icon-delete': true
-				},
-				click: (e, row) => this.cart_removeItem({ id: row.ID, type: 'exist' })
-			}]
-		},
-		local_cart_cachedNewButtons () {
-			return [{
-				type: "danger",
-				loading: {
-					field: 'ID',
-					items: this.cart_removing
-				},
-				class: {
-					'el-icon-delete': true
-				},
-				click: (e, row) => this.cart_removeItem({ id: row.ID, type: 'new' })
-			}]
-		}
 	},
 	mounted () {
 		this.cart_init()
@@ -168,6 +121,12 @@ export default {
 	}
 	.goButton {
 		justify-self: start;
+	}
+}
+
+.cartModal {
+	&__content {
+		padding: 10px 0 10px 10px;
 	}
 }
 </style>
