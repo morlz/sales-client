@@ -20,6 +20,7 @@
     "font-awesome": "^4.7.0",
     "js-cookie": "^2.2.0",
     "lodash.throttle": "^4.1.1",
+    "moment": "^2.20.1",
     "mustache": "^2.3.0",
     "popmotion": "^8.1.10",
     "quasar-extras": "0.x",

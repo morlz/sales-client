@@ -176,7 +176,9 @@ const getters = {
 							`${tmp.client.lastName} ${tmp.client.name} ${tmp.client.patronymic}`
 						:	`${tmp.client.FIO} ${tmp.client.IMY} ${tmp.client.OTCH}`
 
-		tmp.manager.fio = `${tmp.manager.FIO} ${tmp.manager.IMY} ${tmp.manager.OTCH}`
+		tmp.manager = tmp.manager ?
+				  { ...tmp.manager, fio: tmp.manager.FIO ? `${tmp.manager.FIO} ${tmp.manager.IMY} ${tmp.manager.OTCH}` : '' }
+			:	null
 		return tmp
 	}),
 	invoice_loading: ({ loading }) => loading.list,

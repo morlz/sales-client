@@ -27,7 +27,7 @@
 					<q-item-side>Дата оформления</q-item-side>
 					<q-item-main/>
 					<q-item-side>
-						{{ data.DATE }}
+						{{ date(data.DATE) }}
 					</q-item-side>
 				</q-item>
 
@@ -35,7 +35,7 @@
 					<q-item-side>Дата отгрузки</q-item-side>
 					<q-item-main/>
 					<q-item-side>
-						{{ data.shipments[0].PL_OTGR }}
+						{{ date(data.shipments[0].PL_OTGR) }}
 					</q-item-side>
 				</q-item>
 			</q-list>
@@ -51,6 +51,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
+import moment from 'moment'
 import {
 	QCard,
 	QCardTitle,
@@ -99,7 +100,10 @@ export default {
 	methods: {
 		...mapActions([
 			'invoice_print'
-		])
+		]),
+		date (d) {
+			return moment(d).isValid() ? moment(d).format("DD-MM-YYYY") : d
+		}
 	},
 	computed: {
 		data () {

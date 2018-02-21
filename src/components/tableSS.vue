@@ -42,13 +42,22 @@
 			<tbody>
 				<tr v-for="row, index in sortedRows" :key="index" :data-index="index" class="hoverShow">
 					<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
-					<td v-for="column, columnIndex in columns" :class="column.type" @click="clickHandler($event, row, columnIndex)">
+					<td
+						v-for="column, columnIndex in columns"
+						:class="column.type"
+						@click="clickHandler($event, row, columnIndex)"
+						:style="{
+							textAlign: column.align ? column.align : undefined,
+							whiteSpace: column.inline ? 'nowrap' : undefined
+						}">
+
 						<slot :name="column.field" :row="row" :column="column">
-							<div v-if="column.type != 'array'">{{ getFieldData(row, column.field) }}</div>
+							<div v-if="column.type != 'array'">{{ getFieldData(row, column.field, column.format) }}</div>
 							<tabless-popover
 								v-if="column.type == 'array'"
-								:one="getFieldData(row, column.field).length < 2"
-								:arr="getFieldData(row, column.field)"
+								:one="getFieldData(row, column.field, column.format).length < 2"
+								:arr="getFieldData(row, column.field, column.format)"
+								:column="column"
 								:fields="column.fields"
 								:label="column.label"
 								/>
@@ -280,7 +289,22 @@ export default {
 				if (this.filters.hasOwnProperty(prop) && this.search[prop] != this.filters[prop])
 					this.search[prop] = this.filters[prop]
 		},
-		getFieldData: (row, field) => field.split(".").reduce((prev, el) => (prev[el] || ""), row),
+		getFieldData (row, field, format = {}) {
+			return this.fieldDataFormat(
+				format.get,
+				field.split(".").reduce((prev, el) => (prev[el] || ""), row)
+			)
+		},
+		fieldDataFormat (format, fieldData) {
+			if (!format || typeof format != 'function')
+				return fieldData
+
+			let r = Array.isArray(fieldData) ?
+							fieldData.map(el => this.fieldDataFormat(format, el))
+						:	format(fieldData)
+
+			return r
+		},
 		getFieldArrayCount: arr => arr.length,
 		delimiterMouseMoveHandler (e) {
 			if (this.delimiter.mooving == -1) return
@@ -300,9 +324,6 @@ export default {
 	},
 	mounted () {
 		this.applyFilters()
-		setTimeout(() => {
-			console.log(this);
-		}, 1000)
 		//window.addEventListener('mousemove', this.delimiterMouseMoveHandler)
 	},
 	beforeDestroy() {

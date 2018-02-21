@@ -1,19 +1,27 @@
+import moment from 'moment'
+
 let dataObj = {
 	tasksManyFieldDescription: [
 		//{ field: "id", label: "№", type: "string" },
 		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'] },
 		{ field: "description", label: "Задача", type: "string" },
-		{ field: "date", label: "Дата", type: "string" },
+		{ field: "date", label: "Дата", type: "string", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
 		{ field: "managerresponsible.FIO", label: "Ответсвенный", type: "string" },
 		{ field: "type.title", label: "Тип", type: "string" },
-		{ field: "end_date", label: "Выполнена", type: "string" },
+		{ field: "end_date", label: "Выполнена", type: "string", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+		} },
 		{ field: "salon.NAME", label: "Салон", type: "string" },
 	],
 
 	recordsManyFieldDescription: [
 		//{field: "id", label: "№", type: "number" },
 		{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'] },
-		{ field: "created_at", label: "Дата создания", type: "string" },
+		{ field: "created_at", label: "Дата создания", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+		}},
 		{ field: "status.title", label: "Статус", type: "string" },
 		{ field: "manager.FIO", label: "Менеджер", type: "string" },
 		{ field: "salon.NAME", label: "Салон", type: "string" },
@@ -33,7 +41,9 @@ let dataObj = {
 		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'] },
 		{ field: "manager.FIO", label: "Менеджер", type: "string" },
 		{ field: "salon.NAME", label: "Салон", type: "string" },
-		{ field: "created_at", label: "Создан", type: "string" },
+		{ field: "created_at", label: "Создан", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+		} },
 		{ field: "notactive", label: "Неактивен", type: "string" },
 	],
 
@@ -76,8 +86,11 @@ let dataObj = {
 		{ field: "MODEL", label: "Модель" },
 		{ field: "UN", label: "Фаб.н." },
 		{ field: "td.mestoXR.NAME", label: "М.хр." },
-		{ field: "td.TIP", label: "Тип" },
-		{ field: "td.DATE_VX", label: "Дней на складе" },
+		{ field: "td.TIP", label: "Тип", inline: true },
+		{ field: "td.DATE_VX", label: "Дней на складе", search: false, align: 'right', format: {
+			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
+			set: data => undefined
+		} },
 		{ field: "cloth1", label: "Ткань 1" },
 		{ field: "cloth2", label: "Ткань 2" },
 		{ field: "cloth3", label: "Ткань 3" },
@@ -89,8 +102,12 @@ let dataObj = {
 
 	invoicesFieldDescription: [
 		{ field: "N_DOC", label: "Номер документа" },
-		{ field: "DATE", label: "Дата оформления" },
-		{ field: "shipments", type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки" },
+		{ field: "DATE", label: "Дата оформления", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
+		{ field: "shipments", type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+			get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
+		} },
 		{ field: "manager.fio", label: "Менеджер", search: false },
 		{ field: "client.fio", label: "Клиент", search: false },
 		{ field: "adSource.NAME", label: "Рекламный источник" },
@@ -99,11 +116,17 @@ let dataObj = {
 
 	shipmentsFieldDescription: [
 		{ field: "invoice.N_DOC", label: "№ Док" },
-		{ field: "DATEV", label: "Дата ввода" },
-		{ field: "PL_OTGR", label: "Оплата доставки" },
+		{ field: "DATEV", label: "Дата ввода", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
+		{ field: "PL_OTGR", label: "Оплата доставки", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
 		{ field: "VIDDOST", label: "Вид" },
 		{ field: "", label: "Примечание" },
-		{ field: "DATEWORK", label: "В работе" },
+		{ field: "DATEWORK", label: "В работе", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
 		{ field: "salon.NAME", label: "Склад" },
 	],
 
@@ -111,7 +134,8 @@ let dataObj = {
 		{ field: "UN", label: "Фаб. №" },
 		{ field: "MODEL", label: "Модель" },
 		{ field: "td.mestoXR.NAME", label: "Место. хр." },
-		{ field: "td.TIP", label: "Тип" },
+		{ field: "td.ModelPriceR", label: "Цена (р)" },
+		{ field: "td.TIP", label: "Тип", inline: true },
 		{ field: "cloth1", label: "Ткань 1" },
 		{ field: "cloth2", label: "Ткань 2" },
 		{ field: "cloth3", label: "Ткань 3" },
@@ -121,7 +145,9 @@ let dataObj = {
 		{ field: "Vid_stegki", label: "Стежка" },
 		{ field: "NAKC", label: "Акция" },
 		{ field: "td.Sostoynie", label: "Сост." },
-		{ field: "td.DATE_CEX", label: "Цех" },
+		{ field: "td.DATE_CEX", label: "Цех", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
 		{ field: "invoice.N_DOC", label: "Номер заказа" },
 	],
 
@@ -130,7 +156,7 @@ let dataObj = {
 		{ field: "UN", label: "Фаб.н." },
 		{ field: "td.salon.NAME", label: "Салон" },
 		{ field: "MODEL", label: "Модель" },
-		{ field: "td.TIP", label: "Тип" },
+		{ field: "td.TIP", label: "Тип", inline: true },
 		{ field: "ISP", label: "Исп." },
 		{ field: "cloth1", label: "Ткань 1" },
 		{ field: "cloth2", label: "Ткань 2" },
@@ -140,7 +166,9 @@ let dataObj = {
 		{ field: "DEKOR", label: "Декор" },
 		{ field: "Vid_stegki", label: "Стежка" },
 		{ field: "td.CENA_ZAL", label: "Цена руб." },
-		{ field: "td.DATE_CEX", label: "Цех" },
+		{ field: "td.DATE_CEX", label: "Цех", inline: true, format: {
+			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		} },
 	],
 
 	lvls: [
