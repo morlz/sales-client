@@ -106,7 +106,7 @@ export default {
 			lastInvoicesFilters: {},
 			tabs: [
 				{ name: "Счета", type: '' }, // all
-				{ name: "Оплаченые", type: 'paid' },
+				//{ name: "Оплаченые", type: 'paid' },
 				{ name: "В работе", type: 'inWork' },
 				{ name: "Отгружено", type: 'shipped' },
 				{ name: "Отказ", type: 'deny' },

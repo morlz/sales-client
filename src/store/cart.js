@@ -26,6 +26,7 @@ const actions = {
 	async cart_addItem ({ commit, dispatch }, payload) {
 		let res = await api.cart.add(payload)
 		if (res && res.data && res.data.error) return
+		if (!res || !res.data) return console.warn('0', res);
 		if (res.data.type) {
 			commit('cart_cachedListAppend', { [res.data.type] : [res.data] })
 			dispatch('notify', { title: "Успешно", message: "Добавлено в корзину" })

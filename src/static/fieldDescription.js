@@ -81,11 +81,9 @@ let dataObj = {
 	],
 
 	furnitureSalonFieldDescription: [
-		{ field: "td.ID", label: "№ зак." },
 		{ field: "td.salon.NAME", label: "Салон" },
 		{ field: "MODEL", label: "Модель" },
 		{ field: "UN", label: "Фаб.н." },
-		{ field: "td.mestoXR.NAME", label: "М.хр." },
 		{ field: "td.TIP", label: "Тип", inline: true },
 		{ field: "td.DATE_VX", label: "Дней на складе", search: false, align: 'right', format: {
 			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day

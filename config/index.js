@@ -49,6 +49,7 @@ module.exports = {
 		proxyTable: {
 			'/web': {
 				target: 'http://sales-test.ladyagroup.ru/nsl',
+				//target: 'http://127.0.0.1/sales-server/',
 				changeOrigin: true,
 			}
 		}

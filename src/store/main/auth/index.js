@@ -5,6 +5,7 @@ import settings from '@/store/main/auth/settings'
 const state = {
 	user: false,
 	permissions: [],
+	salons: [],
 	token: "",
 	loading: {
 		auth: false,
@@ -88,7 +89,9 @@ const actions = {
 		let res = await api.auth.getPermissions(info)
 		commit("auth_loadingPermissionsSet", false)
 		if (res.data && res.data.error) return
-		commit("auth_permissionsSet", res.data)
+
+		commit("auth_permissionsSet", res.data.permissions)
+		commit("auth_salonsSet", res.data.salons)
 	},
 	auth_getGeolocation() {
 		return new Promise((resolve, reject) => window.navigator.geolocation.getCurrentPosition(resolve, reject))
@@ -104,6 +107,7 @@ const mutations = {
 	auth_loadingSet: (state, payload) => state.loading.auth = payload,
 	auth_loadingPermissionsSet: (state, payload) => state.loading.permissions = payload,
 	auth_permissionsSet: (state, payload) => state.permissions = payload || [],
+	auth_salonsSet: (state, payload) => state.salons = payload || [],
 	auth_fromSet: (state, payload) => state.form[payload.type] = payload.data
 }
 
