@@ -22,12 +22,12 @@ const state = {
 }
 
 const actions = {
-	storage_init ({ commit, dispatch, getters }, payload) {
+	async storage_init ({ commit, dispatch, getters }, payload) {
 		dispatch('storage_getModels', { type: getters.storage_type })
 		if (payload) {
 			dispatch('storage_getOne', payload)
 		} else {
-			dispatch('storage_infinityStart')
+			await dispatch('storage_infinityStart')
 		}
 	},
 	storage_sortChange({ commit, dispatch }, payload){
@@ -38,69 +38,62 @@ const actions = {
 		commit("storage_filtersSet", payload)
 		dispatch('storage_infinityStart')
 	},
-	storage_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)
-			return setTimeout(a => payload.loaded(), 5e2)
-			
+	async storage_infinity({ commit, dispatch, state, getters }, payload){
+		if (state.offset.last == state.offset.current) return
+
 		commit('storage_lastOffsetSet', state.offset.current)
 		commit('storage_loadingBottomSet', true)
-		api.storages
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: state.offset.current,
-				filters: getters.storage_filters,
-				sort: state.sort,
-				type: getters.storage_type
-			})
-			.then(({ data }) => {
-				if (!data.error) {
-					commit('storage_cacheAppend', data)
-					payload.loaded()
-					if (!data.length) payload.complete ()
-				}
-				commit('storage_loadingSet', false)
-				commit('storage_loadingBottomSet', false)
-				commit('storage_currentOffsetSet')
-				if (data.error) dispatch('catchErrorNotify', data.error)
-			})
+		let res = await api.storages.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.storage_filters,
+			sort: state.sort,
+			type: getters.storage_type
+		})
+		commit('storage_loadingSet', false)
+		commit('storage_loadingBottomSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('storage_cacheAppend', res.data)
+		commit('storage_currentOffsetSet')
+		payload.loaded()
+		if (!res.data.length)
+			payload.complete()
 	},
-	storage_infinityStart({ commit, dispatch, state, getters }){
+	async storage_infinityStart({ commit, dispatch, state, getters }){
 		commit('storage_lastOffsetSet', 0)
+		commit('storage_currentOffsetSet', 0)
 		commit('storage_loadingBottomSet', true)
 		commit('storage_loadingSet', true)
-		api.storages
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: 0,
-				filters: getters.storage_filters,
-				sort: state.sort,
-				type: getters.storage_type
-			})
-			.then(({ data }) => {
-				if (!data.error) commit('storage_cacheSet', data)
-				if (data.error) dispatch('catchErrorNotify', data.error)
-				commit('storage_loadingBottomSet', false)
-				commit('storage_loadingSet', false)
-				commit('storage_currentOffsetSet')
-			})
+		let res = await api.storages.getLimited({
+			limit: state.perLoadingLimit,
+			offset: 0,
+			filters: getters.storage_filters,
+			sort: state.sort,
+			type: getters.storage_type
+		})
+		commit('storage_loadingBottomSet', false)
+		commit('storage_loadingSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('storage_cacheSet', res.data)
+		commit('storage_currentOffsetSet')
 	},
-	storage_getOne({ commit, dispatch }, payload){
+	async storage_getOne({ commit, dispatch }, payload){
 		commit('storage_loadingOneSet', true)
-		api.storages
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('storage_currentSet', data)
-				commit('storage_loadingOneSet', false)
-			})
+		let res = await api.storages.getOne(payload)
+		commit('storage_loadingOneSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('storage_currentSet', res.data)
 	},
-	storage_getModels({ commit, dispatch }, payload){
+	async storage_getModels({ commit, dispatch }, payload){
 		commit('storage_loadingModelsSet', true)
-		api.storages
-			.getModels(payload)
-			.then(({ data }) => {
-				commit('storage_cachedModelsSet', data)
-				commit('storage_loadingModelsSet', false)
-			})
+		let res = await api.storages.getModels(payload)
+		commit('storage_loadingModelsSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('storage_cachedModelsSet', res.data)
 	}
 }
 
@@ -112,7 +105,7 @@ const mutations = {
 	storage_lastOffsetSet: (store, payload) => store.offset.last = payload,
 	storage_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
 	storage_currentSet: (store, payload) => store.cached.current = payload,
-	storage_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	storage_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
 	storage_cachedModelsSet: (store, payload) => store.cached.models = payload,
 	storage_loadingSet: (store, payload) => store.loading.list = payload,
 	storage_loadingBottomSet: (store, payload) => store.loading.bottom = payload,

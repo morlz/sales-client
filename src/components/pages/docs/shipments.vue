@@ -182,21 +182,23 @@ export default {
 			this.shipment_filtersChange(Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_shipment_sortChange(n) {
 			this.shipment_sortChange(n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		}
 	},
-	mounted() {
-		//this.filters.ID_SALONA = this.currentUserSalon
-		//this.getSalonsList()
-		this.shipment_init(this.oneId)
+	async mounted() {
+		await this.shipment_init(this.oneId)
+		if (this.$refs.infiniteLoading)
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	}
 }
 </script>

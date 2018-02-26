@@ -182,7 +182,7 @@ export default {
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_invoice_sortChange (n) {
@@ -190,12 +190,14 @@ export default {
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		}
 	},
-	mounted () {
-		this.invoice_init(this.oneId)
+	async mounted () {
+		await this.invoice_init(this.oneId)
+		if (this.$refs.infiniteLoading)
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	}
 }
 

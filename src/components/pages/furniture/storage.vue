@@ -224,8 +224,10 @@ export default {
 			this.local_storage_filterChange(filters)
 		}
 	},
-	mounted () {
-		this.storage_init(this.oneId)
+	async mounted () {
+		await this.storage_init(this.oneId)
+		if (this.$refs.infiniteLoading)
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	}
 }
 </script>

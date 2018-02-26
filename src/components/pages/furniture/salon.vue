@@ -239,14 +239,16 @@ export default {
 			this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_furniture_sortChange (n) {
 			this.furniture_sortChange (n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_furniture_handleFieldSelect (data) {
@@ -259,8 +261,10 @@ export default {
 			this.local_furniture_filterChange(filters)
 		}
 	},
-	mounted () {
-		this.furniture_init(this.oneId)
+	async mounted () {
+		await this.furniture_init(this.oneId)
+		if (this.$refs.infiniteLoading)
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	}
 }
 </script>

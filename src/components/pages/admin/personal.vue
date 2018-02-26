@@ -86,21 +86,18 @@ export default {
 			'personal_sortChange',
 			'personal_init'
 		]),
-		...mapMutations([
-
-		]),
 		local_personal_filtersChange (n) {
 			this.personal_filtersChange(n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_personal_sortChange (n) {
 			this.personal_sortChange(n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		}
 	},
@@ -114,8 +111,10 @@ export default {
 			'personal_filters'
 		])
 	},
-	mounted() {
-		this.personal_init(this.oneId)
+	async mounted() {
+		await this.personal_init(this.oneId)
+		if (this.$refs.infiniteLoading)
+			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	}
 }
 </script>
@@ -129,7 +128,6 @@ export default {
 		grid-gap: 10px;
 		padding: 10px;
 		grid-template-columns: 1fr 1fr;
-
 	}
 }
 

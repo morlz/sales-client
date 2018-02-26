@@ -12,21 +12,20 @@ const state = {
 }
 
 const actions = {
-	cart_init({ dispatch }){
-		dispatch('cart_getAll')
+	async cart_init({ dispatch }){
+		await dispatch('cart_getAll')
 	},
 	async cart_getAll({ commit, dispatch }){
 		commit('cart_loadingListSet', true)
 		let res = await api.cart.getAll()
-		if (res.data.error) return
+		if (!res.data || res.data.error) return
 
 		commit('cart_cachedListSet', res.data)
 		commit('cart_loadingListSet', false)
 	},
 	async cart_addItem ({ commit, dispatch }, payload) {
 		let res = await api.cart.add(payload)
-		if (res && res.data && res.data.error) return
-		if (!res || !res.data) return console.warn('0', res);
+		if (!res.data || res.data.error) return
 		if (res.data.type) {
 			commit('cart_cachedListAppend', { [res.data.type] : [res.data] })
 			dispatch('notify', { title: "Успешно", message: "Добавлено в корзину" })
@@ -37,7 +36,7 @@ const actions = {
 		commit('cart_itemRemovingAdd', payload.id)
 		let res = await api.cart.remove(payload)
 		commit('cart_itemRemovingRemove', payload.id)
-		if (res.data && res.data.error) return
+		if (!res.data || res.data.error) return
 
 		commit('cart_removeItemFromCache', { type: payload.type, ID: res.data.ID })
 	}

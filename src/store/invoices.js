@@ -63,8 +63,7 @@ const actions = {
 		await dispatch('invoice_infinityStart')
 	},
 	async invoice_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)
-			return setTimeout(a => payload.loaded(), 5e2)
+		if (state.offset.last == state.offset.current) return
 
 		commit('invoice_lastOffsetSet', state.offset.current)
 		commit('invoice_loadingBottomSet', true)
@@ -78,14 +77,17 @@ const actions = {
 		})
 		commit('invoice_loadingSet', false)
 		commit('invoice_loadingBottomSet', false)
-		payload.loaded()
 		if (res.data && res.data.error) return
 		commit('invoice_cacheAppend', res.data)
 		commit('invoice_currentOffsetSet')
-		if (!res.data.length) payload.complete ()
+
+		payload.loaded()
+		if (!res.data.length)
+			payload.complete()
 	},
 	async invoice_infinityStart({ commit, dispatch, state, getters }){
 		commit('invoice_lastOffsetSet', 0)
+		commit('invoice_currentOffsetSet', 0)
 		commit('invoice_loadingBottomSet', true)
 		commit('invoice_loadingSet', true)
 		let res = await api.invoices.getLimited({
@@ -151,7 +153,7 @@ const mutations = {
 	invoice_lastOffsetSet: (state, payload) => state.offset.last = payload,
 	invoice_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
 	invoice_currentSet: (state, payload) => state.cached.current = payload,
-	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
+	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	invoice_loadingSet: (state, payload) => state.loading.list = payload,
 	invoice_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	invoice_loadingOneSet: (state, payload) => state.loading.one = payload,

@@ -22,14 +22,14 @@ const state = {
 }
 
 const actions = {
-	discount_init ({ commit, dispatch }, payload) {
+	async discount_init ({ commit, dispatch }, payload) {
 		dispatch('discount_getModels', {})
 		dispatch('getSalonsList', getters.currentUserSalon)
 		if (payload) {
-			dispatch('discount_getOne', payload)
+			await dispatch('discount_getOne', payload)
 		} else {
 			dispatch('getSalonsList')
-			dispatch('discount_infinityStart')
+			await dispatch('discount_infinityStart')
 		}
 	},
 	discount_sortChange({ commit, dispatch }, payload){
@@ -40,49 +40,45 @@ const actions = {
 		commit("discount_filtersSet", payload)
 		dispatch('discount_infinityStart')
 	},
-	discount_infinity({ commit, dispatch, state, getters }, payload){
+	async discount_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current)
 			return setTimeout(a => payload.loaded(), 5e2)
 
 		commit('discount_lastOffsetSet', state.offset.current)
 		commit('discount_loadingBottomSet', true)
-		api.discounts
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: state.offset.current,
-				filters: getters.discount_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) {
-					commit('discount_cacheAppend', data)
-					payload.loaded()
-					if (!data.length) payload.complete ()
-				}
-				commit('discount_loadingSet', false)
-				commit('discount_loadingBottomSet', false)
-				commit('discount_currentOffsetSet')
-				if (data.error) dispatch('catchErrorNotify', data.error)
-			})
+		let res = await api.discounts.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.discount_filters,
+			sort: state.sort
+		})
+		commit('discount_loadingBottomSet', false)
+		commit('discount_loadingSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('discount_cacheAppend', res.data)
+		commit('discount_currentOffsetSet')
+		payload.loaded()
+		if (!res.data.length)
+			payload.complete()
 	},
-	discount_infinityStart({ commit, dispatch, state, getters }){
+	async discount_infinityStart({ commit, dispatch, state, getters }){
 		commit('discount_lastOffsetSet', -1)
+		commit('discount_currentOffsetSet', -1)
 		commit('discount_loadingBottomSet', true)
 		commit('discount_loadingSet', true)
-		api.discounts
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: 0,
-				filters: getters.discount_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) commit('discount_cacheSet', data)
-				if (data.error) dispatch('catchErrorNotify', data.error)
-				commit('discount_loadingBottomSet', false)
-				commit('discount_loadingSet', false)
-				commit('discount_currentOffsetSet')
-			})
+		let res = await api.discounts.getLimited({
+			limit: state.perLoadingLimit,
+			offset: 0,
+			filters: getters.discount_filters,
+			sort: state.sort
+		})
+		commit('discount_loadingBottomSet', false)
+		commit('discount_loadingSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('discount_cacheSet', res.data)
+		commit('discount_currentOffsetSet')
 	},
 	discount_getOne({ commit, dispatch }, payload){
 		commit('discount_loadingOneSet', true)

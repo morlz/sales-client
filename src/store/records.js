@@ -43,7 +43,7 @@ const actions = {
 	recordsInfinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current)
 			return setTimeout(a => payload.loaded(), 5e2)
-			
+
 		commit('changeRecordsLastOffset', state.offset)
 		commit('loadingBottomRecordsSet', true)
 		api.records
@@ -157,7 +157,7 @@ const mutations = {
 		store.current = payload
 	},
 	setCurrentOffsetRecords(store, payload) {
-		store.offset = payload || store.cached.length
+		store.offset = payload !== undefined ? payload : store.cached.length
 	},
 	setPreorderStatuses(store, payload){
 		store.statuses = payload

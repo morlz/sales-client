@@ -37,9 +37,8 @@ const actions = {
 		await dispatch('shipment_infinityStart')
 	},
 	async shipment_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)
-			return setTimeout(a => payload.loaded(), 5e2)
-			
+		if (state.offset.last == state.offset.current) return
+
 		commit('shipment_lastOffsetSet', state.offset.current)
 		commit('shipment_loadingBottomSet', true)
 		let res = await api.shipments.getLimited({
@@ -50,14 +49,17 @@ const actions = {
 		})
 		commit('shipment_loadingSet', false)
 		commit('shipment_loadingBottomSet', false)
-		payload.loaded()
 		if (res.data && res.data.error) return
+
 		commit('shipment_cacheAppend', res.data)
 		commit('shipment_currentOffsetSet')
-		if (!res.data.length) payload.complete ()
+		payload.loaded()
+		if (!res.data.length)
+			payload.complete()
 	},
 	async shipment_infinityStart({ commit, dispatch, state, getters }){
 		commit('shipment_lastOffsetSet', 0)
+		commit('shipment_currentOffsetSet', 0)
 		commit('shipment_loadingBottomSet', true)
 		commit('shipment_loadingSet', true)
 		let res = await api.shipments .getLimited({
@@ -89,7 +91,7 @@ const mutations = {
 	shipment_lastOffsetSet: (store, payload) => store.offset.last = payload,
 	shipment_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
 	shipment_currentSet: (store, payload) => store.cached.current = payload,
-	shipment_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	shipment_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
 	shipment_loadingSet: (store, payload) => store.loading.list = payload,
 	shipment_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
 	shipment_loadingOneSet: (store, payload) => store.loading.one = payload,

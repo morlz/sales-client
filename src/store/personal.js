@@ -22,22 +22,21 @@ const state = {
 }
 
 const actions = {
-	personal_saveRoleSetupState ({ commit, dispatch, state }) {
-		api.personals
-			.saveRoleSetupState({
-				id: +state.cached.current.ID_M,
-				rolesSetup: state.cached.currentRolesSetup
-			})
-			.then(res => {
-				if (!res.data.error) dispatch("notify", { title: "Успешно", message: "Роли сохранены" })
-			})
+	async personal_saveRoleSetupState ({ commit, dispatch, state }) {
+		let res = await api.personals.saveRoleSetupState({
+			id: +state.cached.current.ID_M,
+			rolesSetup: state.cached.currentRolesSetup
+		})
+
+		if (!res.data || rs.data.error) return
+		dispatch("notify", { title: "Успешно", message: "Роли сохранены" })
 	},
-	personal_init ({ commit, dispatch }, payload) {
+	async personal_init ({ commit, dispatch }, payload) {
 		if (payload) {
 			dispatch('personal_getOne', payload)
 			dispatch('permissions_getRoles')
 		} else {
-			dispatch('personal_infinityStart')
+			await dispatch('personal_infinityStart')
 		}
 	},
 	personal_sortChange({ commit, dispatch }, payload){
@@ -48,49 +47,43 @@ const actions = {
 		commit("personal_filtersSet", payload)
 		dispatch('personal_infinityStart')
 	},
-	personal_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)
-			return setTimeout(a => payload.loaded(), 5e2)
-
+	async personal_infinity({ commit, dispatch, state, getters }, payload){
+		if (state.offset.last == state.offset.current)return
 		commit('personal_lastOffsetSet', state.offset.current)
 		commit('personal_loadingBottomSet', true)
-		api.personals
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: state.offset.current,
-				filters: getters.personal_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) {
-					commit('personal_cacheAppend', data)
-					payload.loaded()
-					if (!data.length) payload.complete ()
-				}
-				commit('personal_loadingSet', false)
-				commit('personal_loadingBottomSet', false)
-				commit('personal_currentOffsetSet')
-				if (data.error) dispatch('catchErrorNotify', data.error)
-			})
+		let res = await api.personals.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.personal_filters,
+			sort: state.sort
+		})
+		commit('personal_loadingSet', false)
+		commit('personal_loadingBottomSet', false)
+		if(!res.data || res.data.error) return
+
+		commit('personal_cacheAppend', res.data)
+		commit('personal_currentOffsetSet')
+		payload.loaded()
+		if (!res.data.length)
+			payload.complete()
 	},
-	personal_infinityStart({ commit, dispatch, state, getters }){
+	async personal_infinityStart({ commit, dispatch, state, getters }){
 		commit('personal_lastOffsetSet', 0)
+		commit('personal_currentOffsetSet', 0)
 		commit('personal_loadingBottomSet', true)
 		commit('personal_loadingSet', true)
-		api.personals
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: 0,
-				filters: getters.personal_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) commit('personal_cacheSet', data)
-				if (data.error) dispatch('catchErrorNotify', data.error)
-				commit('personal_loadingBottomSet', false)
-				commit('personal_loadingSet', false)
-				commit('personal_currentOffsetSet')
-			})
+		let res = await api.personals.getLimited({
+			limit: state.perLoadingLimit,
+			offset: 0,
+			filters: getters.personal_filters,
+			sort: state.sort
+		})
+		commit('personal_loadingBottomSet', false)
+		commit('personal_loadingSet', false)
+
+		if (!res.data || res.data.error) return
+		commit('personal_cacheSet', res.data)
+		commit('personal_currentOffsetSet')
 	},
 	personal_getOne({ commit, dispatch }, payload){
 		commit('personal_loadingOneSet', true)
@@ -119,7 +112,7 @@ const mutations = {
 	personal_lastOffsetSet: (store, payload) => store.offset.last = payload,
 	personal_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
 	personal_currentSet: (store, payload) => store.cached.current = payload,
-	personal_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	personal_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
 	personal_currentRolesSetupSet: (store, payload) => store.cached.currentRolesSetup = payload,
 	personal_loadingSet: (store, payload) => store.loading.list = payload,
 	personal_loadingBottomSet: (store, payload) => store.loading.bottom = payload,

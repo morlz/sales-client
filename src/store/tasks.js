@@ -31,11 +31,11 @@ const state = {
 }
 
 const actions = {
-	task_init ({ commit, dispatch }, payload) {
+	async task_init ({ commit, dispatch }, payload) {
 		if (+payload) {
-			dispatch('task_getOne', payload)
+			await dispatch('task_getOne', payload)
 		} else {
-			dispatch('task_infinityStart')
+			await dispatch('task_infinityStart')
 		}
 	},
 	task_sortChange({ commit, dispatch }, payload){
@@ -46,96 +46,84 @@ const actions = {
 		commit("task_filtersSet", payload)
 		dispatch('task_infinityStart')
 	},
-	task_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)
-			return setTimeout(a => payload.loaded(), 5e2)
-			
+	async task_infinity({ commit, dispatch, state, getters }, payload){
+		if (state.offset.last == state.offset.current) return
+
 		commit('task_lastOffsetSet', state.offset.current)
 		commit('task_loadingBottomSet', true)
-		api.tasks
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: state.offset.current,
-				filters: getters.task_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) {
-					commit('task_cacheAppend', data)
-					payload.loaded()
-					if (!data.length) payload.complete ()
-				}
-				commit('task_loadingSet', false)
-				commit('task_loadingBottomSet', false)
-				commit('task_currentOffsetSet')
-				if (data.error) dispatch('catchErrorNotify', data.error)
-			})
+		let res = await api.tasks.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.task_filters,
+			sort: state.sort
+		})
+		commit('task_loadingSet', false)
+		commit('task_loadingBottomSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('task_cacheAppend', res.data)
+		commit('task_currentOffsetSet')
+		payload.loaded()
+		if (!res.data.length)
+			payload.complete()
 	},
-	task_infinityStart({ commit, dispatch, state, getters }){
+	async task_infinityStart({ commit, dispatch, state, getters }){
 		commit('task_lastOffsetSet', 0)
+		commit('task_currentOffsetSet', 0)
 		commit('task_loadingBottomSet', true)
 		commit('task_loadingSet', true)
-		api.tasks
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: 0,
-				filters: getters.task_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) commit('task_cacheSet', data)
-				if (data.error) dispatch('catchErrorNotify', data.error)
-				commit('task_loadingBottomSet', false)
-				commit('task_loadingSet', false)
-				commit('task_currentOffsetSet')
-			})
+		let res = await api.tasks.getLimited({
+			limit: state.perLoadingLimit,
+			offset: 0,
+			filters: getters.task_filters,
+			sort: state.sort
+		})
+		commit('task_loadingBottomSet', false)
+		commit('task_loadingSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('task_cacheSet', res.data)
+		commit('task_currentOffsetSet')
 	},
-	task_getOne({ commit, dispatch }, payload){
+	async task_getOne({ commit, dispatch }, payload){
 		commit('task_loadingOneSet', true)
-		api.tasks
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('task_currentSet', data)
-				commit('task_loadingOneSet', false)
-			})
+		let res = await api.tasks.getOne(payload)
+			commit('task_loadingOneSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('task_currentSet', res.data)
 	},
-	task_getTypes({ commit, dispatch }, payload){
+	async task_getTypes({ commit, dispatch }, payload){
 		commit('task_loadingTypesSet', true)
-		api.tasks
-			.getAllTypes(payload)
-			.then(({ data }) => {
-				commit('task_cachedTypesSet', data)
-				commit('task_loadingTypesSet', false)
-			})
+		let res = await api.tasks.getAllTypes(payload)
+		commit('task_loadingTypesSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('task_cachedTypesSet', res.data)
 	},
-	task_update({ commit, dispatch }, payload){
-		api.tasks
-			.update(payload)
-			.then(({ data }) => {
-				if (data.error) return
-				commit('task_cacheUpdate', data)
-				commit('preorder_currentTaskUpdate', data)
-			})
+	async task_update({ commit, dispatch }, payload){
+		let res = await api.tasks.update(payload)
+		if (!res.data || res.data.error) return
+
+		commit('task_cacheUpdate', res.data)
+		commit('preorder_currentTaskUpdate', res.data)
 	},
-	task_create({ commit, dispatch, state, getters }){
+	async task_create({ commit, dispatch, state, getters }){
 		let payload = Object.assign({}, state.add),
 			preorder_id = state.cached.current.preorder_id || getters.preorder_current ? getters.preorder_current.id : null
 
 		payload.next = Object.assign({}, payload.next, { preorder_id })
 
 		commit('task_loadingAddSet', true)
-		api.tasks
-			.create(payload)
-			.then(({ data }) => {
-				commit('task_loadingAddSet', false)
+		let res = await api.tasks.create(payload)
+		commit('task_loadingAddSet', false)
+		if (!res.data || res.data.error) return
 
-				if (data.error) return
-				if (data.errors) dispatch('handleFormErrors', data.errors)
-				if (!data.errors) {
-					dispatch('notify', { title: "Успешно", message: "Задача создана" })
-					router.push({ path: `/preorder/preorders/${preorder_id}` })
-				}
-			})
+		if (data.errors)
+			return dispatch('handleFormErrors', data.errors)
+
+		dispatch('notify', { title: "Успешно", message: "Задача создана" })
+		router.push({ path: `/preorder/preorders/${preorder_id}` })
 	},
 }
 
@@ -152,7 +140,7 @@ const mutations = {
 	task_lastOffsetSet: (store, payload) => store.offset.last = payload,
 	task_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
 	task_currentSet: (store, payload) => store.cached.current = payload,
-	task_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
+	task_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
 	task_cachedTypesSet: (store, payload) => store.cached.types = payload,
 	task_loadingSet: (store, payload) => store.loading.list = payload,
 	task_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
