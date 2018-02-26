@@ -52,7 +52,8 @@
 						}">
 
 						<slot :name="column.field" :row="row" :column="column">
-							<div v-if="column.type != 'array'">{{ getFieldData(row, column.field, column.format) }}</div>
+							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(row, column.field, column.format) }}</div>
+							<div v-if="column.type == 'html'" v-html="getFieldData(row, column.field, column.format)"/>
 							<tabless-popover
 								v-if="column.type == 'array'"
 								:one="getFieldData(row, column.field, column.format).length < 2"
@@ -294,18 +295,17 @@ export default {
 		getFieldData (row, field, format = {}) {
 			return this.fieldDataFormat(
 				format.get,
-				field.split(".").reduce((prev, el) => (prev[el] || ""), row)
+				field.split(".").reduce((prev, el) => (prev[el] || ""), row),
+				row
 			)
 		},
-		fieldDataFormat (format, fieldData) {
+		fieldDataFormat (format, fieldData, row) {
 			if (!format || typeof format != 'function')
 				return fieldData
 
-			let r = Array.isArray(fieldData) ?
-							fieldData.map(el => this.fieldDataFormat(format, el))
-						:	format(fieldData)
-
-			return r
+			return Array.isArray(fieldData) ?
+							fieldData.map(el => this.fieldDataFormat(format, el, row))
+						:	format(fieldData, row)
 		},
 		getFieldArrayCount: arr => arr.length,
 		delimiterMouseMoveHandler (e) {

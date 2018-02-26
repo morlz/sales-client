@@ -95,7 +95,9 @@ let dataObj = {
 		{ field: "KAT", label: "Кат" },
 		{ field: "DEKOR", label: "Декор" },
 		{ field: "Vid_stegki", label: "Стежка" },
-		{ field: "td.CENA_ZAL", label: "Цена руб." },
+		{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", format: {
+			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ? `<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>` : data
+		} },
 	],
 
 	invoicesFieldDescription: [

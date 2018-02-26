@@ -283,6 +283,14 @@ export default {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 		}
+
+		&__discount {
+			font-weight: bold;
+			color: red;
+			s {
+				font-size: 70%;
+			}
+		}
 	}
 	.manyFurnitureWrapper {
 		width: 100%;
