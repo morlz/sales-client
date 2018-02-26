@@ -41,7 +41,9 @@ const actions = {
 			})
 	},
 	recordsInfinity({ commit, dispatch, state, getters }, payload){
-		if (state.lastOffset == state.offset) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+			
 		commit('changeRecordsLastOffset', state.offset)
 		commit('loadingBottomRecordsSet', true)
 		api.records

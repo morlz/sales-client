@@ -153,7 +153,8 @@ export default {
 			this.storage_filtersChange (Object.assign({}, this.lastStorageFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
 		oneId (n) {

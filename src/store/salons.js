@@ -8,33 +8,30 @@ const state = {
 }
 
 const actions = {
-	getOneSalon({ commit, dispatch }, payload){
+	async getOneSalon({ commit, dispatch }, payload){
 		commit('loadingSalonsSet', true)
-		api.salons
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('updateCachedSalons', [data])
-				commit('loadingSalonsSet', false)
-			})
+		let res = await api.salons.getOne(payload)
+		commit('loadingSalonsSet', false)
+
+		if (!res.data || res.data.error) return
+		commit('updateCachedSalons', [res.data])
 	},
-	getSalonsByIds({ commit, dispatch }, payload){
+	async getSalonsByIds({ commit, dispatch }, payload){
 		commit('loadingSalonsSet', true)
-		api.salons
-			.getByIds(payload)
-			.then(({ data }) => {
-				commit('updateCachedSalons', data)
-				commit('loadingSalonsSet', false)
-			})
+		let res = await api.salons.getByIds(payload)
+		commit('loadingSalonsSet', false)
+
+		if (!res.data || res.data.error) return
+		commit('updateCachedSalons', res.data)
 	},
-	getSalonsList ({ commit, dispatch, state }) {
+	async getSalonsList ({ commit, dispatch, state }) {
 		if (state.salonList.length) return
 		commit('updateSalonsListLoading', true)
-		api.salons
-			.getList()
-			.then(({ data }) => {
-				commit('updateSalonsList', data)
-				commit('updateSalonsListLoading', false)
-			})
+		let res = await api.salons.getList()
+		commit('updateSalonsListLoading', false)
+
+		if (!res.data || res.data.error) return
+		commit('updateSalonsList', res.data)
 	}
 }
 

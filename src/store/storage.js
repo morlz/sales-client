@@ -39,7 +39,9 @@ const actions = {
 		dispatch('storage_infinityStart')
 	},
 	storage_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+			
 		commit('storage_lastOffsetSet', state.offset.current)
 		commit('storage_loadingBottomSet', true)
 		api.storages

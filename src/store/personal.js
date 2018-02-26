@@ -49,7 +49,9 @@ const actions = {
 		dispatch('personal_infinityStart')
 	},
 	personal_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+
 		commit('personal_lastOffsetSet', state.offset.current)
 		commit('personal_loadingBottomSet', true)
 		api.personals

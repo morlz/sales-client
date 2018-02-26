@@ -40,7 +40,9 @@ const actions = {
 		dispatch('preorder_infinityStart')
 	},
 	preorder_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+			
 		commit('preorder_lastOffsetSet', state.offset.current)
 		commit('preorder_loadingBottomSet', true)
 		api.preorders

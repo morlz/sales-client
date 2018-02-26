@@ -47,7 +47,9 @@ const actions = {
 		dispatch('task_infinityStart')
 	},
 	task_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+			
 		commit('task_lastOffsetSet', state.offset.current)
 		commit('task_loadingBottomSet', true)
 		api.tasks

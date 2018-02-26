@@ -37,10 +37,9 @@ const actions = {
 		await dispatch('shipment_infinityStart')
 	},
 	async shipment_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) {
-			setTimeout(a => payload.loaded(), 5e2)
-			return
-		}
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+			
 		commit('shipment_lastOffsetSet', state.offset.current)
 		commit('shipment_loadingBottomSet', true)
 		let res = await api.shipments.getLimited({

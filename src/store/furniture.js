@@ -90,7 +90,9 @@ const actions = {
 		dispatch('furniture_infinityStart')
 	},
 	async furniture_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+
 		commit('furniture_lastOffsetSet', state.offset.current)
 		commit('furniture_loadingBottomSet', true)
 		let res = await api.furnitures.getLimited({

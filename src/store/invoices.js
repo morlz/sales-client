@@ -63,10 +63,9 @@ const actions = {
 		await dispatch('invoice_infinityStart')
 	},
 	async invoice_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) {
-			setTimeout(a => payload.loaded(), 5e2)
-			return
-		}
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+
 		commit('invoice_lastOffsetSet', state.offset.current)
 		commit('invoice_loadingBottomSet', true)
 		let res = await api.invoices.getLimited({

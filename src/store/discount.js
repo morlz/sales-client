@@ -41,7 +41,9 @@ const actions = {
 		dispatch('discount_infinityStart')
 	},
 	discount_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
+		if (state.offset.last == state.offset.current)
+			return setTimeout(a => payload.loaded(), 5e2)
+
 		commit('discount_lastOffsetSet', state.offset.current)
 		commit('discount_loadingBottomSet', true)
 		api.discounts

@@ -6,11 +6,13 @@
 	<q-window-resize-observable @resize="app_view_resize" />
 
 	<transition name="fadeZoom" appear key="mainTransition">
-		<q-layout view="lhh LpR lff" v-if="logined" :left-style="menuWrapperStyle" :left-class="{ menuWrapper: true }" v-model="open" ref="layout">
+		<q-layout view="lhh LpR lff" v-if="logined" :left-style="menuWrapperStyle" :left-class="{ menuWrapper: true }" v-model="open" ref="layout" class="app">
 			<slot name="menu" slot="left"/>
 			<slot name="header" slot="header"/>
 
-			<slot/>
+			<div class="app__content">
+				<slot/>
+			</div>
 
 			<slot name="footer" slot="footer"/>
 		</q-layout>
@@ -131,26 +133,18 @@ export default {
 .appWrapper {
     height: 100%;
     .app {
-        transition: all 0.3s ease-in-out;
-        height: 100%;
-
-        .mainContentWrapper {
-            width: ~"calc(100% - 80px)";
-            height: 100%;
-            transition: all 0.3s ease-in-out;
-            float: right;
-        }
-
-        .main {
-            height: ~"calc(100% - 60px)";
-            overflow-y: scroll;
-            box-sizing: border-box;
-            padding: 10px;
-			margin: 5px;
-            color: #5a5e66;
-        }
+		&__content {
+			height: 100%;
+			overflow: auto;
+		}
     }
+
+	.layout-page-container {
+		height: calc(100% ~"-" 50px);
+	}
 }
+
+
 
 @media screen and (max-width: 768px) {
 	.appWrapper {
