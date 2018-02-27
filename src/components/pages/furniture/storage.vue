@@ -44,7 +44,7 @@
 				</div>
 
 				<div class="buttons">
-					<q-btn color="primary">Добавить в корзину</q-btn>
+					<q-btn color="primary" @click="storage_addToCart(storage_current)">Добавить в корзину</q-btn>
 				</div>
 			</el-card>
 		</div>
@@ -81,13 +81,21 @@
 					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline/>
 					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
 				</template>
+
 				<template slot="cloth2" slot-scope="props">
 					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline/>
 					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
 				</template>
+
 				<template slot="cloth3" slot-scope="props">
 					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline/>
 					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+				</template>
+
+				<template slot="buttons" slot-scope="props">
+					<q-btn color="primary" flat @click="storage_addToCart({ UN: props.row.UN })">
+						<q-icon name="shopping_cart"/>
+					</q-btn>
 				</template>
 			</tabless>
 
@@ -115,7 +123,7 @@ import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import PreviewCloth from '@/components/PreviewCloth'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
-import { QTab, QTabs, QBtn } from 'quasar'
+import { QTab, QTabs, QBtn, QIcon} from 'quasar'
 
 
 let {
@@ -133,7 +141,8 @@ export default {
 		QTab,
 		QTabs,
 		QBtn,
-		PreviewCloth
+		PreviewCloth,
+		QIcon
 	},
 	mixins: [mixins],
 	data() {
@@ -202,6 +211,7 @@ export default {
 			'storage_infinity',
 			'storage_getModels',
 			'storage_getOne',
+			'storage_addToCart',
 		]),
 		local_storage_filterChange (n) {
 			this.lastStorageFilters = n

@@ -11,7 +11,7 @@
 			<div class="oneInvoice" v-loading="invoice_loadingOne">
 				<info-card-invoice :content="invoice_current" v-ga="`m`"/>
 				<info-card-client :content="invoice_current.client || invoice_current.clientOld" v-ga="`c`"/>
-				<invoice-card-additional :content="invoice_current" v-ga="`a`"/>
+				<info-card-invoice-additional :content="invoice_current" v-ga="`a`"/>
 				<info-card-zak-td :content="invoice_current" v-ga="`z`"/>
 				<!-- <info-card-shipments :content="invoice_current.shipments" v-ga="`s`"/> -->
 
@@ -75,7 +75,7 @@ import InfoCardClient from '@/components/InfoCardClient.vue'
 import InfoCardInvoice from '@/components/InfoCardInvoice.vue'
 import InfoCardZakTd from '@/components/InfoCardZakTd.vue'
 import InfoCardShipments from '@/components/InfoCardShipments.vue'
-import InvoiceCardAdditional from '@/components/InvoiceCardAdditional.vue'
+import InfoCardInvoiceAdditional from '@/components/InfoCardInvoiceAdditional.vue'
 import fieldDesription from '@/static/fieldDescription'
 import InfiniteLoading from 'vue-infinite-loading'
 import mixins from '@/components/mixins'
@@ -130,7 +130,7 @@ export default {
 		InfoCardInvoice,
 		InfoCardZakTd,
 		InfoCardShipments,
-		InvoiceCardAdditional
+		InfoCardInvoiceAdditional
 	},
 	watch: {
 		additionalFilters (n) {
@@ -154,7 +154,7 @@ export default {
 			'invoice_cached',
 			'invoice_current',
 			'invoice_filters',
-			'salonsList',
+			'salon_list',
 			'currentUserSalon'
 		]),
 		data () {
@@ -174,7 +174,7 @@ export default {
 			'invoice_filtersChange',
 			'invoice_sortChange',
 			'invoice_getOne',
-			'getSalonsList'
+			'salon_getList'
 		]),
 		local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n

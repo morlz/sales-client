@@ -53,7 +53,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'cachedSalons',
+			'salon_list',
 			'task_types'
 		]),
 		data () {

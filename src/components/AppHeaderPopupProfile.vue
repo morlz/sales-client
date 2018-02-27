@@ -23,7 +23,7 @@
 		</div>
 	</el-popover>
 
-	<QBtn v-popover:popoverProfie class="name" flat>
+	<QBtn v-popover:popoverProfie class="name" flat wait-for-ripple>
 		<q-icon name="account_circle" v-if="app_view_mobile"/>
 		{{ app_view_mobile ? '' : fio }}
 	</QBtn>

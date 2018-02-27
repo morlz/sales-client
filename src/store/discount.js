@@ -24,11 +24,11 @@ const state = {
 const actions = {
 	async discount_init ({ commit, dispatch }, payload) {
 		dispatch('discount_getModels', {})
-		dispatch('getSalonsList', getters.currentUserSalon)
+		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			await dispatch('discount_getOne', payload)
 		} else {
-			dispatch('getSalonsList')
+			dispatch('salon_getList')
 			await dispatch('discount_infinityStart')
 		}
 	},
@@ -63,8 +63,8 @@ const actions = {
 			payload.complete()
 	},
 	async discount_infinityStart({ commit, dispatch, state, getters }){
-		commit('discount_lastOffsetSet', -1)
-		commit('discount_currentOffsetSet', -1)
+		commit('discount_lastOffsetSet', 0)
+		commit('discount_currentOffsetSet', 0)
 		commit('discount_loadingBottomSet', true)
 		commit('discount_loadingSet', true)
 		let res = await api.discounts.getLimited({
@@ -80,23 +80,25 @@ const actions = {
 		commit('discount_cacheSet', res.data)
 		commit('discount_currentOffsetSet')
 	},
-	discount_getOne({ commit, dispatch }, payload){
+	async discount_getOne({ commit, dispatch }, payload){
 		commit('discount_loadingOneSet', true)
-		api.discounts
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('discount_currentSet', data)
-				commit('discount_loadingOneSet', false)
-			})
+		let res = await api.discounts.getOne(payload)
+		commit('discount_loadingOneSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('discount_currentSet', res.data)
 	},
-	discount_getModels({ commit, dispatch }, payload){
+	async discount_getModels({ commit, dispatch }, payload){
 		commit('discount_loadingModelsSet', true)
-		api.discounts
-			.getModels(payload)
-			.then(({ data }) => {
-				commit('discount_cachedModelsSet', data)
-				commit('discount_loadingModelsSet', false)
-			})
+		let res = await api.discounts.getModels(payload)
+		commit('discount_loadingModelsSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('discount_cachedModelsSet', res.data)
+	},
+	async discount_addToCart({ commit, dispatch }, payload) {
+		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
+		commit('discount_removeOneFromCache', payload)
 	},
 }
 
@@ -106,7 +108,7 @@ const mutations = {
 	discount_filtersSet: (store, payload) => store.filters = payload,
 	discount_sortSet: (store, payload) => store.sort = payload,
 	discount_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	discount_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
+	discount_removeOneFromCache: (store, payload) => store.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
 	discount_currentSet: (store, payload) => store.cached.current = payload,
 	discount_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
 	discount_cachedModelsSet: (store, payload) => store.cached.models = payload,

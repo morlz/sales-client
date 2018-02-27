@@ -74,7 +74,7 @@ const state = {
 const actions = {
 	async furniture_init ({ commit, dispatch, getters }, payload) {
 		dispatch('furniture_getModels', { type: getters.furniture_type })
-		dispatch('getSalonsList', getters.currentUserSalon)
+		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			dispatch('furniture_getOne', payload)
 		} else {

@@ -78,8 +78,6 @@ const actions = {
 				longitude: coords.longitude,
 				speed: coords.speed
 			}
-
-			console.log(info)
 		} catch (err) {
 			console.warn(err)
 			dispatch('notify', 'Не удалось получить ваше местоположение, вам нужно выбрать салон вручную.')

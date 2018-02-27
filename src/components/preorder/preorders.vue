@@ -50,7 +50,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'cachedSalons',
+			'salon_list',
 			'cachedManagers',
 			'preorder_statuses'
 		]),
@@ -58,7 +58,7 @@ export default {
 			return this.content ? this.content.map(preorder => {
 				preorder.status = this.preorder_statuses[preorder.status_id] ? this.preorder_statuses[preorder.status_id].title : '...'
 				let manager = this.cachedManagers.find(el => preorder.manager_id == el.ID_M),
-					salon = this.cachedSalons.find(el => preorder.salon_id == el.ID_SALONA)
+					salon = this.salon_list.find(el => preorder.salon_id == el.ID_SALONA)
 				preorder.manager = manager ? manager.FIO : '...'
 				preorder.salon =  salon ? salon.NAME : '...'
 				return preorder

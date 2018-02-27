@@ -186,7 +186,7 @@ export default {
 	computed: {
 		...mapGetters([
 			'salon_list_furniture',
-			'salonsListLoading',
+			'salon_loadingList',
 			'currentUserSalon',
 			'furniture_loadingModels',
 			'furniture_loadingBottom',

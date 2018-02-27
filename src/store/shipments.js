@@ -21,7 +21,7 @@ const state = {
 
 const actions = {
 	async shipment_init ({ commit, dispatch, getterss }, payload) {
-		dispatch('getSalonsList', getters.currentUserSalon)
+		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			await dispatch('shipment_getOne', payload)
 		} else {

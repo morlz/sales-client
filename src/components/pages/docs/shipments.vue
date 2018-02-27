@@ -46,8 +46,6 @@
 			<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
 		</ul>
 
-
-
 		<tabless
 			v-loading="shipment_loading"
 			key="shipments"
@@ -59,6 +57,7 @@
 			@sortChange="local_shipment_sortChange"
 			@onClick="routerGoId"
 		/>
+
 		<infinite-loading @infinite="shipment_infinity" ref="infiniteLoading" key="shipmentsinf">
 			<div class="end" slot="no-results" />
 			<div class="end" slot="no-more" />
@@ -154,8 +153,8 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'salonsList',
-			'salonsListLoading',
+			'salon_list',
+			'salon_loadingList',
 			'currentUserSalon',
 			'shipment_cached',
 			'shipment_current',
@@ -170,7 +169,7 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'getSalonsList',
+			'salon_getList',
 			'shipment_init',
 			'shipment_infinity',
 			'shipment_sortChange',

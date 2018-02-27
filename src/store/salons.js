@@ -1,84 +1,63 @@
 import api from '@/api'
 
 const state = {
-	cached: [],
-	loading: true,
-	salonList: [],
-	salonListLoading: true,
+	cached: {
+		list: []
+	},
+	loading: {
+		list: false,
+		one: false
+	},
+	all: false
 }
 
 const actions = {
 	async getOneSalon({ commit, dispatch }, payload){
-		commit('loadingSalonsSet', true)
+		commit('salon_loadingSet', { type: 'list', data: true })
 		let res = await api.salons.getOne(payload)
-		commit('loadingSalonsSet', false)
+		commit('salon_loadingSet', { type: 'list', data: false })
 
 		if (!res.data || res.data.error) return
-		commit('updateCachedSalons', [res.data])
+		commit('salon_listUpdate', [res.data])
 	},
 	async getSalonsByIds({ commit, dispatch }, payload){
-		commit('loadingSalonsSet', true)
+		commit('salon_loadingSet', { type: 'list', data: true })
 		let res = await api.salons.getByIds(payload)
-		commit('loadingSalonsSet', false)
+		commit('salon_loadingSet', { type: 'list', data: false })
 
 		if (!res.data || res.data.error) return
-		commit('updateCachedSalons', res.data)
+		commit('salon_listUpdate', res.data)
 	},
-	async getSalonsList ({ commit, dispatch, state }) {
-		if (state.salonList.length) return
-		commit('updateSalonsListLoading', true)
+	async salon_getList ({ commit, dispatch, state }) {
+		if (state.all) return
+		commit('salon_loadingSet', { type: 'list', data: true })
 		let res = await api.salons.getList()
-		commit('updateSalonsListLoading', false)
+		commit('salon_loadingSet', { type: 'list', data: false })
 
 		if (!res.data || res.data.error) return
-		commit('updateSalonsList', res.data)
+		commit('salon_listSet', res.data)
 	}
 }
 
 const mutations = {
-	updateCachedSalons(store, payload){
-		payload.map(el => {
-			let id = el.ID_SALONA || el
-			store.cached = store.cached.filter(el2 => el2.ID_SALONA != id)
-			store.cached.push(el)
-		})
-	},
-	loadingSalonsSet: (store, payload) => store.loading = payload,
-	updateSalonsList: (store, payload) => store.salonList = payload,
-	updateSalonsListLoading: (store, payload) => store.salonListLoading = payload
-}
-
-let sortSalons = (a, b) => {
-	if (a.id == 999 || a.id == "" || a.id == 10 || a.id == 1040) return -1
-	if (b.id == 999 || b.id == "" || b.id == 10 || b.id == 1040) return 1
-
-	if (a.NAME.toLowerCase() < b.NAME.toLowerCase()) return -1
-	if (a.NAME.toLowerCase() > b.NAME.toLowerCase()) return 1
+	salon_listSet: (state, payload) => (state.cached.list = payload, state.all = true),
+	salon_listUpdate: (state, payload) => state.cached.list = [
+		...state.cached.list.filter(
+			cachedSalon => !payload.reduce(
+				(newSalon, prev) => prev || cachedSalon.ID_SALONA == newSalon.ID_SALONA, false
+			)
+		),
+		...payload
+	],
+	salon_loadingSet: (state, payload) => state.loading[payload.type] = payload.data
 }
 
 const getters = {
-	cachedSalons: ({ cached }) => cached,
-	loadingSalons: ({ loading }) => loading,
-	salonsList: ({ salonList }) => salonList.sort(sortSalons),
-	salonsListDiscount: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 10),
-	salonsListFurniture: ({ salonList }) => salonList.sort(sortSalons).filter(el => el.id != 1040 && el.id != 10),
-	salonsListLoading: ({ salonListLoading }) => salonListLoading,
-	salon_list_discount: state => state.salonList
-		.filter(el => el.ID_SALONA != 10)
-		.map(el => {
-			if (el.ID_SALONA == '999')
-				el.ID_SALONA = undefined
-			return el
-		})
-		.sort(api.core.sortFnFactory(salon => salon.ID_SALONA == undefined ? 'ААААА' : salon.NAME, true)),
-	salon_list_furniture: state => state.salonList
-		.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10)
-		.map(el => {
-			if (el.ID_SALONA == '999')
-				el.ID_SALONA = undefined
-			return el
-		})
-		.sort(api.core.sortFnFactory(salon => salon.ID_SALONA == undefined ? 'AAAAA' : salon.NAME, true))
+	salon_list: state => state.cached.list.sort(api.core.sortFnFactory(salon => salon.NAME, true)),
+	salon_listWithAll: (state, getters) => [ { NAME: "Все салоны" }, ...getters.salon_list ],
+	salon_list_discount: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 10),
+	salon_list_furniture: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10),
+	salon_loadingList: state => state.loading.list,
 }
 
 export default {

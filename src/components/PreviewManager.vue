@@ -10,7 +10,9 @@
 					<q-item v-if="data.salon">
 						<q-item-side>Салон</q-item-side>
 						<q-item-main/>
-						<q-item-side>{{ data.salon.NAME }}</q-item-side>
+						<q-item-side>
+							<preview-salon :content="data.salon" v-if="data.salon"/>
+						</q-item-side>
 					</q-item>
 					<q-item>
 						<q-item-side>Должность</q-item-side>
@@ -67,6 +69,8 @@ import {
 	QItemSide
 } from 'quasar'
 
+import PreviewSalon from '@/components/PreviewSalon'
+
 export default {
 	props: {
 		content: {
@@ -92,10 +96,8 @@ export default {
 		QList,
 		QItem,
 		QItemMain,
-		QItemSide
-	},
-	watch: {
-
+		QItemSide,
+		PreviewSalon
 	},
 	computed: {
 		data() {
@@ -104,9 +106,6 @@ export default {
 		fio() {
 			return `${this.data.FIO} ${this.data.IMY} ${this.data.OTCH}`
 		}
-	},
-	methods: {
-
 	},
 }
 </script>

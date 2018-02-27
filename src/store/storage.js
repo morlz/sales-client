@@ -94,7 +94,11 @@ const actions = {
 		if (!res.data || res.data.error) return
 
 		commit('storage_cachedModelsSet', res.data)
-	}
+	},
+	async storage_addToCart({ commit, dispatch }, payload) {
+		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
+		commit('storage_removeOneFromCache', payload)
+	},
 }
 
 const mutations = {
@@ -103,7 +107,7 @@ const mutations = {
 	storage_filtersSet: (store, payload) => store.filters = payload,
 	storage_sortSet: (store, payload) => store.sort = payload,
 	storage_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	storage_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
+	storage_removeOneFromCache: (store, payload) => store.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
 	storage_currentSet: (store, payload) => store.cached.current = payload,
 	storage_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
 	storage_cachedModelsSet: (store, payload) => store.cached.models = payload,

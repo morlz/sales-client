@@ -36,5 +36,11 @@ export default {
 	},
 	unsetToken () {
 		LocalStorage.remove('token')
+	},
+	getCurrentSalon () {
+
+	},
+	setCurrentSalon () {
+
 	}
 }

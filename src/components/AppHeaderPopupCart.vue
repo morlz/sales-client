@@ -11,8 +11,8 @@
 	<q-modal maximized v-if="!app_view_desktop" v-model="modal" ref="modal" class="cartModal">
 		<q-modal-layout>
 			<q-toolbar slot="header">
-				<q-btn flat>
-					<q-icon name="keyboard_arrow_left" @click="modal = false"/>
+				<q-btn flat wait-for-ripple @click="modal = false">
+					<q-icon name="keyboard_arrow_left"/>
 				</q-btn>
 				<q-toolbar-title>{{cart_cachedSumm}} руб. {{cart_cachedCount}} шт.</q-toolbar-title>
 				<q-btn flat icon-right="redo" @click="goToCreateInvoice" v-if="cart_exist.length || cart_new.length">Оформить</q-btn>
@@ -22,7 +22,7 @@
 		</q-modal-layout>
 	</q-modal>
 
-	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat @click="modal = !modal">
+	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat @click="modal = !modal" wait-for-ripple>
 		<q-icon name="shopping_cart" v-if="app_view_mobile"/>
 		<template v-if="!app_view_mobile">
 			Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
