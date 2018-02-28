@@ -44,7 +44,7 @@
 					@filter="localRecordFilterChange"
 					@sortChange="localRecordSortChange"
 				/>
-				<infinite-loading @infinite="preorder_infinity" ref="infiniteLoading">
+				<infinite-loading :distance="800" @infinite="preorder_infinity" ref="infiniteLoading">
 					<div class="end" slot="no-results" />
 					<div class="end" slot="no-more" />
 					<div class="spinner" slot="spinner" v-loading="preorder_loadingBottom" />

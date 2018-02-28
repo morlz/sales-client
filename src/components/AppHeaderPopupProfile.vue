@@ -12,7 +12,7 @@
 				<div class="avatar"></div>
 				<div class="fio">{{ fio }}</div>
 				<div class="dol">{{ loginedAs.UPOST }}</div>
-				<div class="salon">{{ loginedAs.UPOST }}</div>
+				<div class="salon">{{ auth_currentSalon ? auth_currentSalon.NAME : '...' }}</div>
 			</div>
 			<div class="buttons">
 				<q-btn flat>Задачи</q-btn>
@@ -51,7 +51,8 @@ export default {
 	computed: {
 		...mapGetters([
 			'loginedAs',
-			'app_view_mobile'
+			'app_view_mobile',
+			'auth_currentSalon'
 		]),
 		fio () {
 			return `${this.loginedAs.FIO} ${this.loginedAs.IMY} ${this.loginedAs.OTCH}`

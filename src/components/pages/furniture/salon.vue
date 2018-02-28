@@ -112,7 +112,7 @@
 				</template>
 			</tabless>
 
-			<infinite-loading @infinite="furniture_infinity" ref="infiniteLoading">
+			<infinite-loading :distance="800" @infinite="furniture_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<div class="spinner" slot="spinner" v-loading="furniture_loadingBottom" />
@@ -172,7 +172,8 @@ export default {
 			this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		oneId (n) {
@@ -197,7 +198,7 @@ export default {
 			'furniture_filters',
 			'furniture_models',
 			'furniture_type',
-			'main_auth_settings',
+			'main_auth_settings'
 		]),
 		data () {
 			return this.cachedFurnitures
@@ -265,7 +266,7 @@ export default {
 		await this.furniture_init(this.oneId)
 		if (this.$refs.infiniteLoading)
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-	}
+	},
 }
 </script>
 

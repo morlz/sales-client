@@ -22,11 +22,11 @@
 							:key="index"
 							v-if="column.type == 'search'"
 							:disabled="column.search === false"/>
+
 						<el-select
 							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
 							class="searchByField"
 							:key="index"
-							value=""
 							v-if="column.type == 'select'"
 							:filterable="column.filterable"
 							@change="selectChange($event, column)"
@@ -172,6 +172,7 @@ export default {
 					this.filterChangeFirst = false
 					return
 				}
+
 				this.$emit("filter", n)
 			}, 8e2)
 		}
@@ -182,11 +183,10 @@ export default {
 		},
 		searchFields() {
 			let obj = {}
-			for (var prop in this.search) {
-				if (this.search.hasOwnProperty(prop) && this.search[prop] && this.search[prop].length) {
+			for (var prop in this.search)
+				if (this.search.hasOwnProperty(prop) && this.search[prop] && this.search[prop].length)
 					obj[prop] = this.search[prop]
-				}
-			}
+
 			return obj
 		},
 		formatedSort() {
@@ -288,9 +288,14 @@ export default {
 		applyFilters () {
 			if (!this.filters) return
 
+			let obj = {}
 			for (var prop in this.filters)
 				if (this.filters.hasOwnProperty(prop) && this.search[prop] != this.filters[prop])
-					this.search[prop] = this.filters[prop]
+					obj[prop] = this.filters[prop]
+
+			if (Object.keys(obj).length === 0) return
+
+			this.search = { ...this.search, ...obj }
 		},
 		getFieldData (row, field, format = {}) {
 			return this.fieldDataFormat(

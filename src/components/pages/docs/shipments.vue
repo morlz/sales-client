@@ -58,7 +58,7 @@
 			@onClick="routerGoId"
 		/>
 
-		<infinite-loading @infinite="shipment_infinity" ref="infiniteLoading" key="shipmentsinf">
+		<infinite-loading :distance="800" @infinite="shipment_infinity" ref="infiniteLoading" key="shipmentsinf">
 			<div class="end" slot="no-results" />
 			<div class="end" slot="no-more" />
 			<div class="spinner" slot="spinner" v-loading="shipment_loadingBottom" />

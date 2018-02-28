@@ -49,7 +49,7 @@
 				@onClick="routerGoId"
 			/>
 
-			<infinite-loading @infinite="invoice_infinity" ref="infiniteLoading" key="invoicesinf">
+			<infinite-loading :distance="800" @infinite="invoice_infinity" ref="infiniteLoading" key="invoicesinf">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<div class="spinner" slot="spinner" v-loading="invoice_loadingBottom" />

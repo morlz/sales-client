@@ -24,7 +24,7 @@
 					@click="select(item)"/>
 			</div>
 
-			<infinite-loading @infinite="local_furniture_clothSelectForm_infinity" ref="infiniteLoading">
+			<infinite-loading :distance="800" @infinite="local_furniture_clothSelectForm_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<div class="spinner" slot="spinner" v-loading="furniture_clothSelectForm.loading.bottom" />

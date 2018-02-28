@@ -72,12 +72,20 @@ const state = {
 }
 
 const actions = {
-	async furniture_init ({ commit, dispatch, getters }, payload) {
-		dispatch('furniture_getModels', { type: getters.furniture_type })
-		dispatch('salon_getList', getters.currentUserSalon)
+	async furniture_init ({ commit, dispatch, getters, state }, payload) {
+		let ID_SALONA = state.filters['td.salon.ID_SALONA'] !== undefined ?
+									state.filters['td.salon.ID_SALONA']
+								:	getters.auth_currentSalon.ID_SALONA + ""
+		dispatch('furniture_getModels', { type: getters.furniture_type, filters: { 'td.salon.ID_SALONA' : ID_SALONA } })
+		dispatch('salon_getList')
 		if (payload) {
 			dispatch('furniture_getOne', payload)
 		} else {
+			commit('furniture_filtersSet', {
+				...state.filters,
+				'td.salon.ID_SALONA' : ID_SALONA
+			 })
+
 			await dispatch('furniture_infinityStart')
 		}
 	},
@@ -473,7 +481,7 @@ const mutations = {
 }
 
 const getters = {
-	furniture_filters: ({ filters }) => ({ ...filters, type: undefined }),
+	furniture_filters: (state, getters) => ({ ...state.filters, type: undefined }),
 	furniture_type: ({ filters }) => filters.type,
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
