@@ -5,7 +5,7 @@
 	<q-btn class="salonPopoverToggleButton" flat wait-for-ripple @click="modal = !modal">
 		<q-icon name="fa-building" v-if="app_view_mobile"/>
 		<template v-if="!app_view_mobile">
-			{ salon.NAME }
+			{{ auth_currentSalon ? auth_currentSalon.NAME : '...' }}
 		</template>
 	</q-btn>
 </div>
@@ -35,6 +35,7 @@ export default {
 	computed: {
 		...mapGetters([
 			'app_view_mobile',
+			'auth_currentSalon'
 		])
 	}
 }

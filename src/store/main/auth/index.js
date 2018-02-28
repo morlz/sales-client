@@ -4,12 +4,17 @@ import settings from '@/store/main/auth/settings'
 
 const state = {
 	user: false,
+	currentSalon: false,
+	visible: {
+		currentSalon: false
+	},
 	permissions: [],
 	salons: [],
 	token: "",
 	loading: {
 		auth: false,
-		permissions: false
+		permissions: false,
+		currentSalon: false
 	},
 	form: {
 		login: "",
@@ -24,9 +29,9 @@ const actions = {
 		commit("updateToken", token ? token : "")
 		if (!token) return
 
-		commit("auth_loadingSet", true)
+		commit("auth_loadingSet", { type: 'auth', data: true })
 		let res = await api.auth.getUserData()
-		commit("auth_loadingSet", false)
+		commit("auth_loadingSet", { type: 'auth', data: false })
 
 		if (res.data && res.data.error) {
 			if (res.data.error.status == 403)
@@ -42,7 +47,7 @@ const actions = {
 	},
 	async auth_signIn ({ commit, dispatch, state }) {
 		let res = await api.auth.signIn(state.form)
-		if (res.data && res.data.error) return
+		if (!res.data || res.data.error) return
 		if (res && res.data && res.data.token) {
 			commit("updateUserAuth", res.data)
 			commit("updateToken", res.data.token)
@@ -83,16 +88,46 @@ const actions = {
 			dispatch('notify', 'Не удалось получить ваше местоположение, вам нужно выбрать салон вручную.')
 		}
 
-		commit("auth_loadingPermissionsSet", true)
+		commit("auth_loadingSet", { type: 'permissions', data: true })
 		let res = await api.auth.getPermissions(info)
-		commit("auth_loadingPermissionsSet", false)
-		if (res.data && res.data.error) return
+		commit("auth_loadingSet", { type: 'permissions', data: false })
+		if (!res.data || res.data.error) return
 
 		commit("auth_permissionsSet", res.data.permissions)
-		commit("auth_salonsSet", res.data.salons)
+
+		// обьект в массив
+		let salons = []
+		for (var prop in res.data.salons)
+			if (res.data.salons.hasOwnProperty(prop))
+				salons.push(res.data.salons[prop])
+
+		commit("auth_salonsSet", salons)
+
+		//координаты не изменились
+		if (res.data.salon)
+			return commit('auth_currentSalonSet', res.data.salon)
+
+		//нет доступа к салонам
+		if (!salons) return
+
+		//всего 1 салон
+		if (salons.length == 1)
+			return commit('auth_currentSalonSet', salons[0])
+
+		//выбор салона
+		if (salons.length > 1)
+			return commit('auth_currentSalonVisibleSet', true)
 	},
 	auth_getGeolocation() {
 		return new Promise((resolve, reject) => window.navigator.geolocation.getCurrentPosition(resolve, reject))
+	},
+	async auth_currentSalonSet ({ commit, dispatch }, payload) {
+		commit("auth_loadingSet", { type: 'currentSalon', data: true })
+		let res = await api.auth.setSalon(payload)
+		commit("auth_loadingSet", { type: 'currentSalon', data: false })
+		if (!res.data || res.data.error) return
+
+		commit('auth_currentSalonSet', res.data)
 	}
 }
 
@@ -102,17 +137,21 @@ const mutations = {
 		state.token = payload
 		payload ? api.auth.setToken(payload) : api.auth.unsetToken()
 	},
-	auth_loadingSet: (state, payload) => state.loading.auth = payload,
-	auth_loadingPermissionsSet: (state, payload) => state.loading.permissions = payload,
+	auth_loadingSet: (state, payload) => state.loading[payload.type] = payload.data,
 	auth_permissionsSet: (state, payload) => state.permissions = payload || [],
 	auth_salonsSet: (state, payload) => state.salons = payload || [],
-	auth_fromSet: (state, payload) => state.form[payload.type] = payload.data
+	auth_formSet: (state, payload) => state.form[payload.type] = payload.data,
+	auth_currentSalonSet: (state, payload) => state.currentSalon = payload,
+	auth_currentSalonVisibleSet: (state, payload) => state.visible.currentSalon = payload,
 }
 
 const getters = {
 	auth_permisiions: state => state.permissions,
 	auth_form: state => state.form,
-	logined: state => !!state.user && !!state.permissions && state.permissions.length,
+	auth_currentSalon: state => state.currentSalon,
+	auth_currentSalonVisible: state => state.visible.currentSalon,
+	auth_loadingForm: (state, getters) => getters.auchChecking || getters.logined,
+	logined: state => !!state.user && !!state.permissions && state.permissions.length && !!state.currentSalon,
 	loginedAs: state => state.user,
 	auchChecking: state => state.loading.auth || state.loading.permissions,
 	currentUserSalon: state => state.user.ID_SALONA,

@@ -3,7 +3,7 @@
 	<div class="gradient" :style="gradientStyles"/>
 
 	<div class="mainAuth">
-		<q-card class="authTile" v-loading="auchChecking || logined">
+		<q-card class="authTile" v-loading="auth_loadingForm">
 			<q-card-title>Авторизация</q-card-title>
 
 			<q-card-main>
@@ -22,6 +22,8 @@
 			</q-card-actions>
 		</q-card>
 	</div>
+
+	<select-current-salon-form v-model="currentSalon" no-close />
 </div>
 </template>
 
@@ -30,6 +32,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import formRules from '@/static/formRules'
 import { QField, QInput, QCard, QCardTitle, QCardMain, QCardActions, QBtn } from 'quasar'
+import SelectCurrentSalonForm from '@/components/forms/SelectCurrentSalon'
 
 export default {
 	components: {
@@ -39,7 +42,8 @@ export default {
 		QCardTitle,
 		QCardMain,
 		QCardActions,
-		QBtn
+		QBtn,
+		SelectCurrentSalonForm
 	},
 	data () {
 		return {
@@ -62,7 +66,7 @@ export default {
 	watch: {
 		app_view_desktop (n) {
 			this.interval = n ?
-					setInterval(this.updateGradient, 10)
+					setInterval(this.updateGradient, 50)
 				:	clearInterval (this.interval)
 		}
 	},
@@ -98,13 +102,15 @@ export default {
 				this.colorIndices[1] = (this.colorIndices[1] + Math.floor(1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
 				this.colorIndices[3] = (this.colorIndices[3] + Math.floor(1 + Math.random() * (this.colors.length - 1))) % this.colors.length;
 			}
+		},
+		authHandler () {
+			this.auth_signIn()
 		}
 	},
 	computed: {
 		...mapGetters([
-			'auchChecking',
-			'logined',
-			'app_view_desktop'
+			'app_view_desktop',
+			'auth_loadingForm'
 		]),
 		gradientStyles() {
 			return {
@@ -116,7 +122,7 @@ export default {
 				return this.$store.getters.auth_form.login
 			},
 			set (data) {
-				this.$store.commit('auth_fromSet', { type: 'login', data })
+				this.$store.commit('auth_formSet', { type: 'login', data })
 			}
 		},
 		pass: {
@@ -124,7 +130,15 @@ export default {
 				return this.$store.getters.auth_form.password
 			},
 			set (data) {
-				this.$store.commit('auth_fromSet', { type: 'password', data })
+				this.$store.commit('auth_formSet', { type: 'password', data })
+			}
+		},
+		currentSalon: {
+			get () {
+				return this.$store.getters.auth_currentSalonVisible
+			},
+			set (n) {
+				this.$store.commit('auth_currentSalonVisibleSet', n)
 			}
 		}
 	},

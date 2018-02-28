@@ -28,6 +28,15 @@ export default {
 			data
 		})
 	},
+	async setSalon (id) {
+		return await core.invoke({
+			method: "post",
+			type: "auth/set-salon",
+			data: {
+				id
+			}
+		})
+	},
 	getToken () {
 		return LocalStorage.get.item('token')
 	},
@@ -37,10 +46,4 @@ export default {
 	unsetToken () {
 		LocalStorage.remove('token')
 	},
-	getCurrentSalon () {
-
-	},
-	setCurrentSalon () {
-
-	}
 }
