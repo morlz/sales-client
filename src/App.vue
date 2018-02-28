@@ -2,8 +2,8 @@
 	<div id="q-app">
 		<q-ajax-bar />
 		<app-layout>
-			<icons slot="icons"/>
-			<global-styles slot="styles"/>
+			<app-icons slot="icons"/>
+			<app-styles slot="styles"/>
 			<app-menu slot="menu"/>
 			<app-header slot="header"/>
 
@@ -14,10 +14,6 @@
 			<main-auth slot="auth"/>
 		</app-layout>
 	</div>
-</div>
-
-
-
 </template>
 
 <script>
@@ -29,8 +25,8 @@ import {
 import AppMenu from '@/components/AppMenu.vue'
 import AppHeader from '@/components/AppHeader.vue'
 import mainAuth from '@/components/pages/main/auth.vue'
-import icons from '@/components/icons.vue'
-import globalStyles from '@/components/globalStyles.vue'
+import AppIcons from '@/components/AppIcons.vue'
+import AppStyles from '@/components/AppStyles.vue'
 import mixins from '@/components/mixins'
 import AppLayout from '@/components/AppLayout'
 
@@ -44,8 +40,8 @@ export default {
 		AppMenu,
 		AppHeader,
 		mainAuth,
-		icons,
-		globalStyles,
+		AppIcons,
+		AppStyles,
 		QAjaxBar
 	},
 	watch: {

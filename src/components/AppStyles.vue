@@ -43,6 +43,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+body.with-modal {
+	padding-right: 0 !important;
+}
+
 body.with-layout-side-opened {
 	overflow: auto;
 }
