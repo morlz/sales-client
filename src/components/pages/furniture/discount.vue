@@ -165,18 +165,20 @@ export default {
 		}
 	},
 	watch: {
-		additionalFilters (n) {
-			this.discount_filtersChange (Object.assign({}, this.lastDiscountFilters, n))
+		async additionalFilters (n) {
+			await this.discount_filtersChange (Object.assign({}, this.lastDiscountFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		additionalSort (n) {
-			this.discount_sortChange (Object.assign({}, n, this.lastDiscountSort))
+		async additionalSort (n) {
+			await this.discount_sortChange (Object.assign({}, n, this.lastDiscountSort))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		oneId (n) {
@@ -238,20 +240,22 @@ export default {
 			'discount_getModels',
 			'discount_addToCart',
 		]),
-		local_discount_filterChange (n) {
+		async local_discount_filterChange (n) {
 			this.lastDiscountFilters = n
-			this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
+			await this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		local_discount_sortChange (n) {
+		async local_discount_sortChange (n) {
 			this.lastDiscountSort = n
-			this.discount_sortChange (Object.assign({}, n, this.additionalSort))
+			await this.discount_sortChange (Object.assign({}, n, this.additionalSort))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_discount_handleFieldSelect (data) {

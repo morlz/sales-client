@@ -89,13 +89,13 @@ const actions = {
 			await dispatch('furniture_infinityStart')
 		}
 	},
-	furniture_sortChange({ commit, dispatch }, payload){
+	async furniture_sortChange({ commit, dispatch }, payload){
 		commit("furniture_sortSet", payload)
-		dispatch('furniture_infinityStart')
+		await dispatch('furniture_infinityStart')
 	},
-	furniture_filtersChange({ commit, dispatch }, payload){
+	async furniture_filtersChange({ commit, dispatch }, payload){
 		commit("furniture_filtersSet", payload)
-		dispatch('furniture_infinityStart')
+		await dispatch('furniture_infinityStart')
 	},
 	async furniture_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current) return

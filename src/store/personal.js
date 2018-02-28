@@ -39,13 +39,13 @@ const actions = {
 			await dispatch('personal_infinityStart')
 		}
 	},
-	personal_sortChange({ commit, dispatch }, payload){
+	async personal_sortChange({ commit, dispatch }, payload){
 		commit("personal_sortSet", payload)
-		dispatch('personal_infinityStart')
+		await dispatch('personal_infinityStart')
 	},
-	personal_filtersChange({ commit, dispatch }, payload){
+	async personal_filtersChange({ commit, dispatch }, payload){
 		commit("personal_filtersSet", payload)
-		dispatch('personal_infinityStart')
+		 await dispatch('personal_infinityStart')
 	},
 	async personal_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current)return

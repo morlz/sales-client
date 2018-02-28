@@ -86,7 +86,6 @@ export default {
 		oneId() {
 			if (this.oneId !== undefined)
 				this.task_getOne(this.oneId)
-
 		}
 	},
 	computed: {
@@ -114,16 +113,16 @@ export default {
 			'task_sortChange',
 			'task_init'
 		]),
-		localTaskFilterChange(n) {
-			this.task_filtersChange(n)
+		async localTaskFilterChange(n) {
+			await this.task_filtersChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		localTaskSortChange(n) {
-			this.task_sortChange(n)
+		async localTaskSortChange(n) {
+			await this.task_sortChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)

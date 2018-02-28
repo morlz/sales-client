@@ -158,16 +158,16 @@ export default {
 			'preorder_init',
 			'preorder_getOne'
 		]),
-		localRecordFilterChange (n) {
+		async localRecordFilterChange (n) {
 			this.lastFilters = n
-			this.preorder_filtersChange (Object.assign({}, n, this.additionalFilters))
+			await this.preorder_filtersChange (Object.assign({}, n, this.additionalFilters))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		localRecordSortChange (n) {
-			this.preorder_sortChange(n)
+		async localRecordSortChange (n) {
+			await this.preorder_sortChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');

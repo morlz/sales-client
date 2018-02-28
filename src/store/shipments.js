@@ -20,11 +20,17 @@ const state = {
 }
 
 const actions = {
-	async shipment_init ({ commit, dispatch, getterss }, payload) {
+	async shipment_init ({ commit, dispatch, getters, state }, payload) {
 		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			await dispatch('shipment_getOne', payload)
 		} else {
+			commit('shipment_filtersSet', {
+				...state.filters,
+				'salon.ID_SALONA' : state.filters['salon.ID_SALONA'] !== undefined ?
+											state.filters['salon.ID_SALONA']
+										:	getters.auth_currentSalon.ID_SALONA + ""
+			 })
 			await dispatch('shipment_infinityStart')
 		}
 	},

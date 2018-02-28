@@ -46,11 +46,17 @@ const state = {
 }
 
 const actions = {
-	async invoice_init ({ commit, dispatch, getters }, payload) {
+	async invoice_init ({ commit, dispatch, getters, state }, payload) {
 		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			await dispatch('invoice_getOne', payload)
 		} else {
+			commit('invoice_filtersSet', {
+				...state.filters,
+				'storage.ID_SALONA' : state.filters['storage.ID_SALONA'] !== undefined ?
+											state.filters['storage.ID_SALONA']
+										:	getters.auth_currentSalon.ID_SALONA + ""
+			 })
 			await dispatch('invoice_infinityStart')
 		}
 	},

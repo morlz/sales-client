@@ -168,8 +168,8 @@ export default {
 		}
 	},
 	watch: {
-		additionalFilters (n) {
-			this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
+		async additionalFilters (n) {
+			await this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
@@ -235,17 +235,17 @@ export default {
 			'furniture_getOne',
 			'furniture_addToCart'
 		]),
-		local_furniture_filterChange (n) {
+		async local_furniture_filterChange (n) {
 			this.lastFurnituresFilters = n
-			this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
+			await this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		local_furniture_sortChange (n) {
-			this.furniture_sortChange (n)
+		async local_furniture_sortChange (n) {
+			await this.furniture_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)

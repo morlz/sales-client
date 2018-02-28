@@ -31,13 +31,13 @@ const actions = {
 			await dispatch('preorder_infinityStart')
 		}
 	},
-	preorder_sortChange({ commit, dispatch }, payload){
+	async preorder_sortChange({ commit, dispatch }, payload){
 		commit("preorder_sortSet", payload)
-		dispatch('preorder_infinityStart')
+		await dispatch('preorder_infinityStart')
 	},
-	preorder_filtersChange({ commit, dispatch }, payload){
+	async preorder_filtersChange({ commit, dispatch }, payload){
 		commit("preorder_filtersSet", payload)
-		dispatch('preorder_infinityStart')
+		await dispatch('preorder_infinityStart')
 	},
 	async preorder_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current) return

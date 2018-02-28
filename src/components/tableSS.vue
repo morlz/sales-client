@@ -16,26 +16,22 @@
 					<th v-if="lineNumbers && !minify" class="tableIndex"/>
 					<th v-for="column, index in columnsSearchFields">
 						<el-input
-							v-model="search[column.field]"
+							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
 							class="searchByField"
 							suffix-icon="el-icon-search"
 							:key="index"
 							v-if="column.type == 'search'"
 							:disabled="column.search === false"/>
 
-						<el-select
+						<q-select
+							v-if="column.type == 'select'"
 							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
 							class="searchByField"
 							:key="index"
-							v-if="column.type == 'select'"
-							:filterable="column.filterable"
+							:filter="column.filterable"
+							:options="formatSelectOptions(column)"
 							@change="selectChange($event, column)"
-						>
-							<el-option v-for="option, optionIndex in column.data"
-								:key="optionIndex"
-								:label="column.fields && column.fields.label ? option[column.fields.label] : option.label"
-								:value="column.fields && column.fields.value ? option[column.fields.value] : option.value"/>
-						</el-select>
+						/>
 					</th>
 				</tr>
 			</thead>
@@ -92,7 +88,8 @@
 //<div class="thDelimiter" @mousedown.stop="delimiterMouseDown($event, index)" v-if="false"/>
 import tablessPopover from '@/components/tableSSPopover'
 import {
-	QInput
+	QInput,
+	QSelect
 } from 'quasar'
 
 export default {
@@ -140,7 +137,8 @@ export default {
 	},
 	components: {
 		tablessPopover,
-		QInput
+		QInput,
+		QSelect
 	},
 	data () {
 		return {
@@ -327,7 +325,14 @@ export default {
 		},
 		delimiterMouseUp (e) {
 			this.delimiter.mooving = -1
-		}
+		},
+		formatSelectOptions: column => column.data.map(
+			option => ({
+				label: column.fields && column.fields.label ? option[column.fields.label] : option.label,
+				value: column.fields && column.fields.value ? option[column.fields.value] : option.value
+			})
+		)
+
 	},
 	mounted () {
 		this.applyFilters()
@@ -377,6 +382,7 @@ export default {
 	                        opacity: 1;
 	                    }
 	                    .searchByField {
+							margin: 0;
 							.el-input__suffix {
 								pointer-events: none;
 								&-inner {

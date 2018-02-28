@@ -32,6 +32,8 @@ const scrollBehavior = t => {
 
 Vue.use(Router)
 
+let movements = { ...invoices, name: "movements" }
+
 let routes = [
 	{ path: '/', 							component: home, 				meta: { name: "Главная" } },
 	{ path: '/admin/roles/:id?', 			component: roles, 				meta: { name: "Роли" } },
@@ -45,7 +47,7 @@ let routes = [
 	{ path: '/furniture/new/', 				component: furnitureNew, 		meta: { name: "Заказ на изготовление" } },
 	{ path: '/docs/createInvoice', 			component: createInvoice, 		meta: { name: "Оформление заказа" }, },
 	{ path: '/docs/invoices/:id?', 			component: invoices, 			meta: { name: "Выставленые счета" }, 						props: { type: "invoices" } },
-	{ path: '/docs/movements/:id?', 		component: invoices, 			meta: { name: "Перемещения" },								props: { type: "movements" } },
+	{ path: '/docs/movements/:id?', 		component: movements, 			meta: { name: "Перемещения" },								props: { type: "movements" } },
 	{ path: '/docs/shipments/:id?', 		component: shipments, 			meta: { name: "Доставки" } },
 	{ path: '/preorder/clients/:id?', 		component: clients, 			meta: { name: "Клиенты" } },
 	{ path: '/preorder/preorders/:id?', 	component: preorders, 			meta: { name: "Предзаказы" } },

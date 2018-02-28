@@ -32,13 +32,13 @@ const actions = {
 			await dispatch('discount_infinityStart')
 		}
 	},
-	discount_sortChange({ commit, dispatch }, payload){
+	async discount_sortChange({ commit, dispatch }, payload){
 		commit("discount_sortSet", payload)
-		dispatch('discount_infinityStart')
+		await dispatch('discount_infinityStart')
 	},
-	discount_filtersChange({ commit, dispatch }, payload){
+	async discount_filtersChange({ commit, dispatch }, payload){
 		commit("discount_filtersSet", payload)
-		dispatch('discount_infinityStart')
+		await dispatch('discount_infinityStart')
 	},
 	async discount_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current)

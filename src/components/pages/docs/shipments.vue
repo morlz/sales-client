@@ -40,17 +40,23 @@
 	</div>
 
 	<div class="manyShipmntsWrapper" v-if="!isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Документы</router-link></li>
-			<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
-		</ul>
+		<div class="manyShipmntsWrapper__horGroup" :class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
+			<ul class="breadcrumb">
+				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
+				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
+				<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
+			</ul>
+
+			<q-field helper="Салон" class="manyShipmntsWrapper__salon">
+				<q-select v-model="local_currentSalon" :options="local_salon_list" filter/>
+			</q-field>
+		</div>
 
 		<tabless
 			v-loading="shipment_loading"
 			key="shipments"
 			:data="shipment_cached"
-			:fieldDescription="shipmentsFieldDescription"
+			:fieldDescription="shipmentsFieldDescriptionFiltred"
 			:filters="shipment_filters"
 			ref="table"
 			@filter="local_shipment_filterChange"
@@ -70,17 +76,6 @@
 
 
 <script>
-/*
-<el-date-picker
-	v-model="filters.dateRange"
-	type="daterange"
-	unlink-panels
-	range-separator="До"
-	start-placeholder="Дата начала"
-	end-placeholder="Дата конца"
-	:picker-options="datePickerOptions"
-/>
-*/
 import {
 	mapGetters,
 	mapActions,
@@ -91,6 +86,7 @@ import fieldDesription from '@/static/fieldDescription'
 import InfiniteLoading from 'vue-infinite-loading'
 import mixins from '@/components/mixins'
 
+import { QSelect, QField } from 'quasar'
 
 let {
 	shipmentsFieldDescription
@@ -98,6 +94,13 @@ let {
 
 
 export default {
+	mixins: [mixins],
+	components: {
+		tabless,
+		InfiniteLoading,
+		QSelect,
+		QField
+	},
 	data() {
 		return {
 			shipmentsFieldDescription,
@@ -132,14 +135,9 @@ export default {
 			}
 		}
 	},
-	mixins: [mixins],
-	components: {
-		tabless,
-		InfiniteLoading
-	},
 	watch: {
-		additionalFilters(n) {
-			this.shipment_filtersChange(Object.assign({}, this.lastShipmentsFilters, n))
+		async additionalFilters(n) {
+			await this.shipment_filtersChange(Object.assign({}, this.lastShipmentsFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
@@ -161,10 +159,31 @@ export default {
 			'shipment_loading',
 			'shipment_loadingBottom',
 			'shipment_loadingOne',
-			'shipment_filters'
+			'shipment_filters',
+			'salon_listWithAll',
+			'app_view_mobile'
 		]),
 		additionalFilters () {
 			return {}
+		},
+		local_currentSalon: {
+			get () {
+				return this.shipment_filters['salon.ID_SALONA']
+			},
+			set (n) {
+				this.local_shipment_filterChange({
+					...this.lastShipmentsFilters,
+					'salon.ID_SALONA': n
+				})
+			}
+		},
+		local_salon_list () {
+			return this.salon_listWithAll.map( el => ({ label: el.NAME, value: el.ID_SALONA }) )
+		},
+		shipmentsFieldDescriptionFiltred () {
+			if (this.local_currentSalon)
+				return this.shipmentsFieldDescription.filter(el => el.field != 'salon.NAME')
+			return this.shipmentsFieldDescription
 		}
 	},
 	methods: {
@@ -176,17 +195,17 @@ export default {
 			'shipment_filtersChange',
 			'shipment_getOne',
 		]),
-		local_shipment_filterChange(n) {
+		async local_shipment_filterChange(n) {
 			this.lastShipmentsFilters = n
-			this.shipment_filtersChange(Object.assign({}, this.additionalFilters, n))
+			await this.shipment_filtersChange(Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		local_shipment_sortChange(n) {
-			this.shipment_sortChange(n)
+		async local_shipment_sortChange(n) {
+			await this.shipment_sortChange(n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
@@ -205,6 +224,23 @@ export default {
 
 
 <style lang="less" >
+
+.manyShipmntsWrapper {
+	&__salon {
+		width: 300px;
+	}
+
+	&__horGroup {
+		display: grid;
+		grid-auto-flow: column;
+		justify-content: space-between;
+		&-mobile {
+			grid-auto-flow: row;
+			justify-content: center;
+			justify-items: center;
+		}
+	}
+}
 
 .oneShipmentWrapper {
 	.cards {

@@ -30,18 +30,24 @@
 			<ul class="breadcrumb">
 				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
 				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
-				<li><router-link :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</router-link></li>
+				<li><router-link :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставленые счета' : 'Перемещения' }}</router-link></li>
 			</ul>
 
-			<q-tabs inverted v-model="currentTab">
-				<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
-			</q-tabs>
+			<div class="manyInvoicesWrapper__horGroup" :class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
+				<q-tabs inverted v-model="currentTab">
+					<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
+				</q-tabs>
+
+				<q-field helper="Салон" class="manyInvoicesWrapper__salon">
+					<q-select v-model="local_currentSalon" :options="local_salon_list" filter/>
+				</q-field>
+			</div>
 
 			<tabless
 				v-loading="invoice_loading"
 				key="invoices"
 				:data="invoice_cached"
-				:fieldDescription="invoicesFieldDescription"
+				:fieldDescription="invoicesFieldDescriptionFiltred"
 				:filters="invoice_filters"
 				ref="table"
 				@filter="local_invoice_filtersChange"
@@ -90,6 +96,8 @@ import {
 	QItem,
 	QItemMain,
 	QItemSide,
+	QSelect,
+	QField
 } from 'quasar'
 
 let {
@@ -124,6 +132,8 @@ export default {
 		QItem,
 		QItemMain,
 		QItemSide,
+		QSelect,
+		QField,
 		tabless,
 		InfiniteLoading,
 		InfoCardClient,
@@ -133,8 +143,8 @@ export default {
 		InfoCardInvoiceAdditional
 	},
 	watch: {
-		additionalFilters (n) {
-			this.invoice_filtersChange (Object.assign({}, this.lastInvoicesFilters, n))
+		async additionalFilters (n) {
+			await this.invoice_filtersChange (Object.assign({}, this.lastInvoicesFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
@@ -155,7 +165,9 @@ export default {
 			'invoice_current',
 			'invoice_filters',
 			'salon_list',
-			'currentUserSalon'
+			'salon_listWithAll',
+			'currentUserSalon',
+			'app_view_mobile'
 		]),
 		data () {
 			return this.cachedInvoices
@@ -165,6 +177,25 @@ export default {
 		},
 		currentInvoiceManager () {
 			return this.invoice_current.manager ? `${this.invoice_current.manager.FIO} ${this.invoice_current.manager.IMY} ${this.invoice_current.manager.OTCH}` : {}
+		},
+		local_currentSalon: {
+			get () {
+				return this.invoice_filters['storage.ID_SALONA']
+			},
+			set (n) {
+				this.local_invoice_filtersChange({
+					...this.lastInvoicesFilters,
+					'storage.ID_SALONA': n
+				})
+			}
+		},
+		local_salon_list () {
+			return this.salon_listWithAll.map( el => ({ label: el.NAME, value: el.ID_SALONA }) )
+		},
+		invoicesFieldDescriptionFiltred () {
+			if (this.local_currentSalon)
+				return this.invoicesFieldDescription.filter(el => el.field != 'storage.NAME')
+			return this.invoicesFieldDescription
 		}
 	},
 	methods: {
@@ -176,17 +207,17 @@ export default {
 			'invoice_getOne',
 			'salon_getList'
 		]),
-		local_invoice_filtersChange (n) {
+		async local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n
-			this.invoice_filtersChange (Object.assign({}, this.additionalFilters, n))
+			await this.invoice_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		local_invoice_sortChange (n) {
-			this.invoice_sortChange (n)
+		async local_invoice_sortChange (n) {
+			await this.invoice_sortChange (n)
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
@@ -204,6 +235,23 @@ export default {
 </script>
 
 <style lang="less">
+
+.manyInvoicesWrapper {
+	&__salon {
+		width: 300px;
+	}
+
+	&__horGroup {
+		display: grid;
+		grid-auto-flow: column;
+		justify-content: space-between;
+		&-mobile {
+			grid-auto-flow: row;
+			justify-content: center;
+			justify-items: center;
+		}
+	}
+}
 
 .oneInvoiceWrapper {
 	.cards {

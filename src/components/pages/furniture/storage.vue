@@ -158,12 +158,12 @@ export default {
 		}
 	},
 	watch: {
-		additionalFilters (n) {
-			this.storage_filtersChange (Object.assign({}, this.lastStorageFilters, n))
+		async additionalFilters (n) {
+			await this.storage_filtersChange (Object.assign({}, this.lastStorageFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		oneId (n) {
@@ -213,19 +213,21 @@ export default {
 			'storage_getOne',
 			'storage_addToCart',
 		]),
-		local_storage_filterChange (n) {
+		async local_storage_filterChange (n) {
 			this.lastStorageFilters = n
-			this.storage_filtersChange (Object.assign({}, this.additionalFIlters, n))
+			await this.storage_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		local_storage_sortChange (n) {
-			this.storage_sortChange (n)
+		async local_storage_sortChange (n) {
+			await this.storage_sortChange (n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
 		local_storage_filtersModelSet (MODEL) {

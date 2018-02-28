@@ -30,13 +30,13 @@ const actions = {
 			await dispatch('storage_infinityStart')
 		}
 	},
-	storage_sortChange({ commit, dispatch }, payload){
+	async storage_sortChange({ commit, dispatch }, payload){
 		commit("storage_sortSet", payload)
-		dispatch('storage_infinityStart')
+		await dispatch('storage_infinityStart')
 	},
-	storage_filtersChange({ commit, dispatch }, payload){
+	async storage_filtersChange({ commit, dispatch }, payload){
 		commit("storage_filtersSet", payload)
-		dispatch('storage_infinityStart')
+		await dispatch('storage_infinityStart')
 	},
 	async storage_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current) return

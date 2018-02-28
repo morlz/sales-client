@@ -101,11 +101,12 @@ export default {
 			if (this.seachTimeout) clearTimeout (this.seachTimeout)
 			this.seachTimeout = setTimeout(() => this.searchByPhone2 = n, 500)
 		},
-		additionalFIlters (n) {
-			this.client_filtersChange (Object.assign({}, this.lastClientsFilters, n))
+		async additionalFIlters (n) {
+			await this.client_filtersChange (Object.assign({}, this.lastClientsFilters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		}
 	},
@@ -134,19 +135,21 @@ export default {
 			'client_sortChange',
 			'client_filtersChange',
 		]),
-		localClientFilterChange (n) {
+		async localClientFilterChange (n) {
 			this.lastClientsFilters = n
-			this.client_filtersChange (Object.assign({}, this.additionalFIlters, n))
+			await this.client_filtersChange (Object.assign({}, this.additionalFIlters, n))
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		localClientSortChange (n) {
-			this.client_sortChange (n)
+		async localClientSortChange (n) {
+			await this.client_sortChange (n)
 
 			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+				if (this.$refs.infiniteLoading)
+					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		}
 	},

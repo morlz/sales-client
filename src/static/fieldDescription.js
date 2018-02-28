@@ -89,9 +89,9 @@ let dataObj = {
 			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
 			set: data => undefined
 		} },
-		{ field: "cloth1", label: "Ткань 1" },
-		{ field: "cloth2", label: "Ткань 2" },
-		{ field: "cloth3", label: "Ткань 3" },
+		{ field: "cloth1", label: "Ткань 1", fields: { output: 'cloth1.NAME' } },
+		{ field: "cloth2", label: "Ткань 2", fields: { output: 'cloth2.NAME' } },
+		{ field: "cloth3", label: "Ткань 3", fields: { output: 'cloth3.NAME' } },
 		{ field: "KAT", label: "Кат" },
 		{ field: "DEKOR", label: "Декор" },
 		{ field: "Vid_stegki", label: "Стежка" },
@@ -113,7 +113,7 @@ let dataObj = {
 		{ field: "manager.fio", label: "Менеджер", search: false },
 		{ field: "client.fio", label: "Клиент", search: false },
 		{ field: "adSource.NAME", label: "Рекламный источник" },
-		{ field: "storage.NAME", label: "Склад" },
+		{ field: "storage.NAME", label: "Салон" },
 	],
 
 	shipmentsFieldDescription: [

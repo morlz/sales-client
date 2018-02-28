@@ -38,13 +38,13 @@ const actions = {
 			await dispatch('task_infinityStart')
 		}
 	},
-	task_sortChange({ commit, dispatch }, payload){
+	async task_sortChange({ commit, dispatch }, payload){
 		commit("task_sortSet", payload)
-		dispatch('task_infinityStart')
+		await dispatch('task_infinityStart')
 	},
-	task_filtersChange({ commit, dispatch }, payload){
+	async task_filtersChange({ commit, dispatch }, payload){
 		commit("task_filtersSet", payload)
-		dispatch('task_infinityStart')
+		await dispatch('task_infinityStart')
 	},
 	async task_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current) return
