@@ -38,16 +38,13 @@
 		</q-card>
 	</el-popover>
 
-	<q-chip
-		square
-		color="positive"
+	<clickable
 		v-popover:previewClothPopover
-		class="previewCloth__chip"
-		@click.stop
-		:style="{ whiteSpace: inline ? 'nowrap' : undefined }">
-
+		:width="width"
+		:inline="inline"
+		@click.native.stop>
 		{{ data.NAME }}
-	</q-chip>
+	</clickable>
 </div>
 
 
@@ -62,7 +59,6 @@ import {
 
 import {
 	QPopover,
-	QChip,
 	QCard,
 	QCardTitle,
 	QCardMain,
@@ -76,6 +72,8 @@ import {
 	QItemSide
 } from 'quasar'
 
+import Clickable from '@/components/Clickable'
+
 export default {
 	props: {
 		content: {
@@ -85,6 +83,10 @@ export default {
 		inline: {
 			type: Boolean,
 			default: a => false
+		},
+		width: {
+			type: [Number, String],
+			default: a => 'auto'
 		}
 	},
 	data() {
@@ -94,7 +96,6 @@ export default {
 	},
 	components: {
 		QPopover,
-		QChip,
 		QCard,
 		QCardTitle,
 		QCardMain,
@@ -105,7 +106,8 @@ export default {
 		QList,
 		QItem,
 		QItemMain,
-		QItemSide
+		QItemSide,
+		Clickable
 	},
 	watch: {
 
@@ -123,13 +125,6 @@ export default {
 
 
 <style lang="less">
-.previewCloth {
-	&__chip {
-		cursor: pointer;
-		user-select: none;
-	}
-}
-
 .clothPreviewPopoverCard {
     margin: 0;
     width: 500px;

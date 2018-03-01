@@ -9,10 +9,10 @@
 				<h6>Заказные позиции</h6>
 				<table-collapsible :columns="colsZak" :rows="zak" accordion border-open>
 					<template slot-scope="props">
-						<div class="collabsibleContent">
+						<div class="collabsibleContent" :class="{ 'collabsibleContent-mobile': app_view_mobile }">
 							<div class="separator-g" v-ga="`sg1`"/>
 
-							<table-two-collumns>
+							<table-two-collumns v-ga="'c1'">
 								<table-two-collumns-row>
 									<template slot="label">Цена</template>
 									{{ props.row.CENA }}
@@ -41,7 +41,7 @@
 
 							<div class="separator-v" v-ga="`sm`"/>
 
-							<table-two-collumns>
+							<table-two-collumns v-ga="'c2'">
 								<table-two-collumns-row v-if="props.row.DEKOR">
 									<template slot="label">Декор</template>
 									{{ props.row.DEKOR }}
@@ -86,10 +86,10 @@
 				<h6>Позиции со склада</h6>
 				<table-collapsible :columns="colsTd" :rows="td" accordion border-open>
 					<template slot-scope="props">
-						<div class="collabsibleContent">
+						<div class="collabsibleContent" :class="{ 'collabsibleContent-mobile': app_view_mobile }">
 							<div class="separator-g" v-ga="`sg1`"/>
 
-							<table-two-collumns>
+							<table-two-collumns v-ga="'c1'">
 								<table-two-collumns-row>
 									<template slot="label">Цена</template>
 									{{ props.row.CENA }}
@@ -118,7 +118,7 @@
 
 							<div class="separator-v" v-ga="`sm`"/>
 
-							<table-two-collumns v-if='props.row.furniture'>
+							<table-two-collumns v-if='props.row.furniture' v-ga="'c2'">
 								<table-two-collumns-row v-if="props.row.furniture.DEKOR">
 									<template slot="label">Декор</template>
 									{{ props.row.furniture.DEKOR }}
@@ -229,6 +229,9 @@ export default {
 
 	},
 	computed: {
+		...mapGetters([
+			'app_view_mobile'
+		]),
 		data () {
 			return this.content || {}
 		},
@@ -253,6 +256,14 @@ export default {
 	align-items: flex-start;
 	padding: 15px;
 	grid-gap: 15px;
+
+	&-mobile {
+		grid-template: 	"c1"	1fr
+						"sg1"	1px
+						"c2"	1fr
+					~"/" 1fr;
+	}
+
 	.tableTwoCollumns__rowValue {
 		font-weight: bold;
 	}

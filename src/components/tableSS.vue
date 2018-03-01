@@ -193,7 +193,9 @@ export default {
 				sortColumn: this.sort.columnIndex != -1 ?
 					this.columns[this.sort.columnIndex].type == 'array' ?
 						this.columns[this.sort.columnIndex].field + '.' + this.columns[this.sort.columnIndex].fields[0] :
-						this.columns[this.sort.columnIndex].field
+						this.columns[this.sort.columnIndex].fields && this.columns[this.sort.columnIndex].fields.output ?
+							this.columns[this.sort.columnIndex].fields.output
+						:	this.columns[this.sort.columnIndex].field
 					 : -1
 			}
 		},
@@ -205,37 +207,31 @@ export default {
 		},
 		sortedRows() {
 			if (this.sort.columnIndex == -1)
-				return this.rows.map(el => {
-					el.gender === 1 ? 'Мужской' : 'Женский'
-					return el
+				return this.rows
+
+			let data = this.rows
+
+			if (this.localSort)
+				data.sort((a, b) => {
+					let sortField = this.columns[this.sort.columnIndex].field,
+						returnRez = rez => {
+							return this.sort.type == 'asc' ? rez : -rez
+						},
+						sortDataA = this.getFieldData(a, sortField),
+						sortDataB = this.getFieldData(b, sortField),
+						fieldA = typeof sortDataA == 'string' ? sortDataA.toLowerCase() : sortDataA,
+						fieldB = typeof sortDataB == 'string' ? sortDataB.toLowerCase() : sortDataB
+
+					if (fieldA < fieldB)
+						return returnRez(-1)
+
+					if (fieldA > fieldB)
+						return returnRez(1)
+
+					return 0
 				})
 
-				let data = this.rows
-
-				if (this.localSort)
-					data.sort((a, b) => {
-						let sortField = this.columns[this.sort.columnIndex].field,
-							returnRez = rez => {
-								return this.sort.type == 'asc' ? rez : -rez
-							},
-							sortDataA = this.getFieldData(a, sortField),
-							sortDataB = this.getFieldData(b, sortField),
-							fieldA = typeof sortDataA == 'string' ? sortDataA.toLowerCase() : sortDataA,
-							fieldB = typeof sortDataB == 'string' ? sortDataB.toLowerCase() : sortDataB
-
-						if (fieldA < fieldB)
-							return returnRez(-1)
-
-						if (fieldA > fieldB)
-							return returnRez(1)
-
-						return 0
-					})
-
-			return data.map(el => {
-				el.gender === 1 ? 'Мужской' : 'Женский'
-				return el
-			})
+			return data
 		},
 		columnsSearchFields() {
 			this.columns.map(({ field }) => {

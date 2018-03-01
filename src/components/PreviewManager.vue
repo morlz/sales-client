@@ -38,9 +38,12 @@
 		</q-card>
 	</el-popover>
 
-	<q-chip square color="positive" v-popover:previewManagerPopover class="previewManager__chip">
+	<clickable
+		v-popover:previewManagerPopover
+		@click.native.stop
+	>
 		{{ fio }}
-	</q-chip>
+	</clickable>
 </div>
 
 
@@ -70,6 +73,7 @@ import {
 } from 'quasar'
 
 import PreviewSalon from '@/components/PreviewSalon'
+import Clickable from '@/components/Clickable'
 
 export default {
 	props: {
@@ -85,7 +89,7 @@ export default {
 	},
 	components: {
 		QPopover,
-		QChip,
+		Clickable,
 		QCard,
 		QCardTitle,
 		QCardMain,
@@ -112,12 +116,6 @@ export default {
 
 
 <style lang="less">
-.previewManager {
-	&__chip {
-		cursor: pointer;
-	}
-}
-
 .managerPreviewPopoverCard {
     margin: 0;
     width: 500px;

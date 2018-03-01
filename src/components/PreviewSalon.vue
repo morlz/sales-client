@@ -47,9 +47,13 @@
 			</q-card-actions>
 		</q-card>
 	</el-popover>
-	<q-chip square color="positive" v-popover:previewSalonPopover class="previewSalon__chip">
+
+	<clickable
+		v-popover:previewSalonPopover
+		@click.native.stop
+	>
 		{{ data.NAME }}
-	</q-chip>
+	</clickable>
 </div>
 
 
@@ -64,7 +68,6 @@ import {
 
 import {
 	QPopover,
-	QChip,
 	QCard,
 	QCardTitle,
 	QCardMain,
@@ -78,6 +81,8 @@ import {
 	QItemSide,
 	QItemTile
 } from 'quasar'
+
+import Clickable from '@/components/Clickable'
 
 export default {
 	props: {
@@ -93,7 +98,7 @@ export default {
 	},
 	components: {
 		QPopover,
-		QChip,
+		Clickable,
 		QCard,
 		QCardTitle,
 		QCardMain,

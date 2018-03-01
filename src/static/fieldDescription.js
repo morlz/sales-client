@@ -83,23 +83,23 @@ let dataObj = {
 	furnitureSalonFieldDescription: [
 		{ field: "td.salon.NAME", label: "Салон" },
 		{ field: "MODEL", label: "Модель" },
-		{ field: "UN", label: "Фаб.н." },
 		{ field: "td.TIP", label: "Тип", inline: true },
-		{ field: "td.DATE_VX", label: "Дней на складе", search: false, align: 'right', format: {
-			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
-			set: data => undefined
-		} },
 		{ field: "cloth1", label: "Ткань 1", fields: { output: 'cloth1.NAME' } },
 		{ field: "cloth2", label: "Ткань 2", fields: { output: 'cloth2.NAME' } },
 		{ field: "cloth3", label: "Ткань 3", fields: { output: 'cloth3.NAME' } },
 		{ field: "KAT", label: "Кат" },
-		{ field: "DEKOR", label: "Декор" },
-		{ field: "Vid_stegki", label: "Стежка" },
 		{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", format: {
 			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
 					`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
 				:	data
 		} },
+		{ field: "DEKOR", label: "Декор" },
+		{ field: "Vid_stegki", label: "Стежка" },
+		{ field: "td.DATE_VX", label: "Дни", search: false, align: 'right', format: {
+			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
+			set: data => undefined
+		} },
+		{ field: "UN", label: "Фаб.н." },
 	],
 
 	invoicesFieldDescription: [
