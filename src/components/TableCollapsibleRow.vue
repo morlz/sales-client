@@ -105,7 +105,7 @@ export default {
 		transition: all 0.3s ease-in-out;
 
 		&-mobile {
-			padding: 5px 0;
+			padding: 5px 2px;
 		}
 	}
 

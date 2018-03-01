@@ -4,6 +4,7 @@
 	<el-popover
 		ref="popoverProfie"
 		class="modal"
+		popper-class="el-popover-empty"
 		placement="bottom"
 		trigger="click"
 	>
@@ -77,6 +78,8 @@ export default {
 .profileModalWrapper {
 	display: grid;
 	grid-auto-flow: row;
+	width: 500px;
+	max-width: ~"calc(100vw - 15px)";
 	.bg {
 		display: grid;
 		justify-content: center;
@@ -95,7 +98,7 @@ export default {
 		margin-top: 10px;
 		padding: 10px;
 		display: grid;
-		grid-auto-flow: column;
+		grid-template-columns: repeat(auto-fit, minmax(100px, auto));
 		grid-gap: 10px;
 		justify-items: center;
 	}

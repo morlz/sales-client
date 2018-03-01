@@ -128,5 +128,6 @@ export default {
 .clothPreviewPopoverCard {
     margin: 0;
     width: 500px;
+	max-width: ~"calc(100vw - 15px)";
 }
 </style>

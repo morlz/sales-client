@@ -136,5 +136,6 @@ export default {
 .salonPreviewPopoverCard {
     margin: 0;
     width: 600px;
+	max-width: ~"calc(100vw - 15px)";
 }
 </style>
