@@ -5,6 +5,9 @@ const state = {
 		left: false,
 		right: false
 	},
+	names: {
+		show: false
+	},
 	menuItems: [
 		{
 			name: 'Главная',
@@ -145,11 +148,13 @@ const actions = {
 const mutations = {
 	nav_openSet: (state, payload) => state.open = payload,
 	nav_openLeftSet: (state, payload) => state.open.left = payload,
+	nav_namesShowSet: (state, payload) => state.names.show = payload,
 	nav_openToggle: state => state.open.left = !state.open.left,
 }
 
 const getters = {
 	nav_open: (state, getters) => ({ ...state.open, left: state.open.left || getters.app_view_desktop }),
+	nav_namesShow: state => state.names.show,
 	nav_items: state => state.menuItems
 }
 

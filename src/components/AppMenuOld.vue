@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import AppMenuItem from '@/components/AppMenuItem.vue'
+import AppMenuItem from '@/components/AppMenuItemOld.vue'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
@@ -17,8 +17,7 @@ export default {
 	},
 	methods: {
 		...mapMutations([
-			'nav_openLeftSet',
-			'nav_namesShowSet'
+			'nav_openLeftSet'
 		]),
 		onlyCan (el) {
 			el = { ...el }
@@ -36,15 +35,14 @@ export default {
 			'nav_items',
 			'nav_open',
 			'app_view_mobile',
-			'app_view_desktop',
-			'nav_namesShow'
+			'app_view_desktop'
 		]),
 		onlyAllowedItems () {
 			return this.onlyCan({
 				childs: this.nav_items,
-				name: "Меню",
-				icon: this.nav_open.left ? 'menu' : 'el-icon-back',
-				click: this.app_view_mobile ? e => !this.nav_openLeftSet(false) : e => this.nav_namesShowSet(!this.nav_namesShow)
+				name: "Menu",
+				icon: this.app_view_desktop ?  undefined : 'el-icon-back',
+				click: e => this.nav_openLeftSet(false)
 			})
 		},
 		menuStyles () {
@@ -53,6 +51,12 @@ export default {
 			}
 		}
 	},
+	mounted () {
+
+	},
+	beforeDestroy () {
+
+	}
 }
 </script>
 

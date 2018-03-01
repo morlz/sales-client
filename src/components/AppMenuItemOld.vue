@@ -4,15 +4,15 @@
 	:is="isLink"
 	:to="content.path || ''"
 	:class="{ currentRouteItem }"
-	@click.stop="clickHandler">
-	<div class="menuItem__icon" :style="iconStyle" :class="{ 'menuItem__icon-initial' : initial }" v-ripple="iconRipple"
-		@mouseover.stop="mouseEnter"
-		@mouseout.stop="mouseLeave">
-		<i :is="iconType" :class="content.icon" :name="content.icon"/>
+	@click.stop="clickHandler"
+	@mouseover.stop="mouseEnterThrottled()($event)"
+	@mouseout.stop="mouseLeaveThrottled()($event)">
+	<div class="menuItem__icon" :style="iconStyle" :class="{ 'menuItem__icon-initial' : initial }" v-ripple="iconRipple">
+		<i :class="content.icon"/>
 	</div>
 
 	<transition :css="false" @enter="showNameAnimation" @leave="hideNameAnimation">
-		<div class="menuItem__name" :style="nameStyles" v-show="nameShow">
+		<div class="menuItem__name" :style="nameStyles" v-show="nameShow" v-if="!initial">
 			{{ content.name }}
 			<q-icon :name="openStateIcon" v-if="openStateIcon" class="menuItem__openStateButton"/>
 		</div>
@@ -84,8 +84,7 @@ export default {
 					scale: 0.7,
 					opacity: 0
 				},
-				_tween: false,
-				duration: 300
+				_tween: false
 			},
 			speed: 30
 		}
@@ -98,7 +97,7 @@ export default {
 	computed: {
 		...mapGetters ([
 			'app_view_desktop',
-			'nav_namesShow'
+			'nav_open'
 		]),
 		nameStyles () {
 			return {
@@ -117,10 +116,6 @@ export default {
 				'padding-left': `${this.iconPaddingLeft}px`,
 				'padding-right': `${this.iconPaddingRight}px`
 			}
-		},
-		iconType () {
-			if (!this.content.icon) return 'i'
-			return this.content.icon.indexOf('el-icon') == 0 ? 'i' : 'q-icon'
 		},
 		iconPaddingLeft () {
 			return this.recursionCount * 15
@@ -159,13 +154,10 @@ export default {
 	methods: {
 		clickHandler (e) {
 			if (typeof this.content.click == 'function')
-				if ( this.content.click(e, this.content) ) return
+				return this.content.click(e, this.content)
 
+			if (this.initial) return
 			this.open ? this.$emit('close') : this.$emit('open')
-
-			if (this.initial)
-				return this.applyBottom(!this.open)
-
 			if (this.content.path)
 				router.push(this.content.path)
 
@@ -183,48 +175,38 @@ export default {
 			return throttle(this.mouseLeave, 50)
 		},
 		mouseEnter (e) {
-			if (!this.app_view_desktop || this.nav_namesShow) return
-			this.showName(0, 50)
-			//this.$emit('spread', true)
+			if (!this.app_view_desktop) return
+			this.$emit('spread', true)
 		},
 		mouseLeave (e) {
-			if (!this.app_view_desktop || this.nav_namesShow) return
-			this.hideName(0, 50)
-			//this.$emit('spread', false)
+			if (!this.app_view_desktop) return
+			this.$emit('spread', false)
 		},
-		showName (delay = 0, duration) {
-			setTimeout(a => {
-				if (duration) this.name.duration = duration
-				this.name.show = true
-				if (duration) setTimeout(a => this.name.duration = 300, duration)
-			}, delay)
+		showName (delay = 0) {
+			setTimeout(a => this.name.show = true, delay)
 		},
-		hideName (delay = 0, duration) {
-			setTimeout(a => {
-				if (duration) this.name.duration = duration
-				this.name.show = false
-				if (duration) setTimeout(a => this.name.duration = 300, duration)
-			}, delay)
+		hideName (delay = 0) {
+			setTimeout(a => this.name.show = false, delay)
 		},
 		showNameAnimation (el, complete) {
 			if (this.name._tween) this.name._tween.stop()
 			//tween({ from: this.name.styles, to: { left: 50, scale: 1 }, duration: 300 })
 			timeline([
 				[
-					{ track: 'left', from: this.name.styles.left, to: 50 + 30, duration: this.name.duration, ease: easing.easeOut },
-					{ track: 'opacity', from: this.name.styles.opacity, to: 1, duration: this.name.duration, ease: easing.easeOut },
+					{ track: 'left', from: this.name.styles.left, to: 50 + 30, duration: 300, ease: easing.easeOut },
+					{ track: 'opacity', from: this.name.styles.opacity, to: 1, duration: 300, ease: easing.easeOut },
 				],
-				{ track: 'scale', from: this.name.styles.scale, to: 1, duration: this.name.duration },
+				{ track: 'scale', from: this.name.styles.scale, to: 1, duration: 200 },
 			])
 			.start({ update: v => this.name.styles = v, complete })
 		},
 		hideNameAnimation (el, complete) {
 			//this.name._tween = tween({ from: this.name.styles, to: { left: -50, scale: 0.8 }, duration: 300 })
 			timeline([
-				{ track: 'scale', from: this.name.styles.scale, to: 0.7, duration: this.name.duration },
+				{ track: 'scale', from: this.name.styles.scale, to: 0.7, duration: 200 },
 				[
-					{ track: 'left', from: this.name.styles.left, to: -200, duration: this.name.duration, ease: easing.easeIn  },
-					{ track: 'opacity', from: this.name.styles.opacity, to: 0, duration: this.name.duration, ease: easing.easeIn  }
+					{ track: 'left', from: this.name.styles.left, to: -200, duration: 300, ease: easing.easeIn  },
+					{ track: 'opacity', from: this.name.styles.opacity, to: 0, duration: 300, ease: easing.easeIn  }
 				]
 			])
 			.start({ update: v => this.name.styles = v, complete })
@@ -357,17 +339,14 @@ export default {
 <style lang="less">
 @menuItem-width: 50px;
 @menuItem-height: 50px;
-@menuItem-background: #fff;
-@menuItem-background-hover: #ecf5ff;
 @menuItem-icon-width: 50px;
 @menuItem-icon-height: 50px;
-@menuItem-icon-color: #027be3;
 @menuItem-name-width: 250px;
 
 .currentRouteItem {
 	.menuItem {
 		&__icon, &__name {
-			background: @menuItem-background-hover;
+			background: rgba(210, 210, 210, 0.95);
 		}
 	}
 }
@@ -382,8 +361,8 @@ export default {
 
 	&:hover {
 		> .menuItem {
-			&__icon, &__name {
-				background:	@menuItem-background-hover;
+			&__icon:not(.menuItem__icon-initial), &__name {
+				background:	#ecf5ff;
 			}
 		}
 	}
@@ -391,17 +370,16 @@ export default {
 	&__icon {
 		width: @menuItem-icon-width;
 		height: @menuItem-height;
-		font-size: 26px;
 		display: grid;
 		align-items: center;
 		justify-content: center;
-		background: @menuItem-background;
-		color: @menuItem-icon-color;
+		background: #fff;
+		//border: 1px solid blue;
 		box-sizing: content-box;
 		z-index: 2500;
 		position: relative;
-		transition: box-shadow 0.1s ease-in-out,
-					background-color 0.1s ease-in-out;
+		transition: box-shadow 0.3s ease-in-out,
+					background-color 0.3s ease-in-out;
 		pointer-events: all;
 		i {
 			pointer-events: none;
@@ -418,11 +396,11 @@ export default {
 
 		//border: 1px solid red;
 		box-sizing: border-box;
-		background: @menuItem-background;
+		background: rgba(255, 255, 255, 0.95);
 		z-index: 2000;
 		pointer-events: all;
-		transition: box-shadow 0.1s ease-in-out,
-					background-color 0.1s ease-in-out;
+		transition: box-shadow 0.3s ease-in-out,
+					background-color 0.3s ease-in-out;
 	}
 
 	&__childs {
