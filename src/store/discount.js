@@ -22,13 +22,24 @@ const state = {
 }
 
 const actions = {
-	async discount_init ({ commit, dispatch }, payload) {
-		dispatch('discount_getModels', {})
-		dispatch('salon_getList', getters.currentUserSalon)
+	async discount_init ({ commit, dispatch, state, getters }, payload) {
+		let ID_SALONA = state.filters['td.salon.ID_SALONA'] !== undefined ?
+							state.filters['td.salon.ID_SALONA']
+						:	"1040"
+
+		let NAKC = state.filters['td.salon.ID_SALONA'] == "1040" ?
+							"65536"
+						:	undefined
+
+		dispatch('discount_getModels', { filters: { 'td.salon.ID_SALONA': ID_SALONA, 'NAKC': NAKC } })
 		if (payload) {
 			await dispatch('discount_getOne', payload)
 		} else {
 			dispatch('salon_getList')
+			commit('discount_filtersSet', {
+				...state.filters,
+				'td.salon.ID_SALONA': ID_SALONA
+			})
 			await dispatch('discount_infinityStart')
 		}
 	},
@@ -119,7 +130,7 @@ const mutations = {
 }
 
 const getters = {
-	discount_filters: ({ filters }) => filters,
+	discount_filters: state => ({ ...state.filters, 'NAKC': state.filters['td.salon.ID_SALONA'] == '1040' ? '65536' : undefined}),
 	discount_current: ({ cached }) => cached.current,
 	discount_cached: ({ cached }) => cached.list,
 	discount_cachedByModel: (store) => {

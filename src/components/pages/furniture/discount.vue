@@ -4,7 +4,7 @@
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
 			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/discount' }">В салоне</router-link></li>
+			<li><router-link :to="{ path: '/furniture/discount' }">Дисконт</router-link></li>
 			<li><router-link :to="{ path: `/furniture/discount/${discount_current.UN}` }">{{ discount_current.UN }}</router-link></li>
 		</ul>
 
@@ -59,7 +59,7 @@
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
 			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/discount' }">В салоне</router-link></li>
+			<li><router-link :to="{ path: '/furniture/discount' }">Дисконт</router-link></li>
 		</ul>
 
 		<furniture-models-switch/>
