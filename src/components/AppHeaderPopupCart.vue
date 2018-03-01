@@ -67,6 +67,9 @@ export default {
 			'cart_removeItem'
 		]),
 		goToCreateInvoice () {
+			if (!this.$refs.modal)
+				return router.push('/docs/createInvoice')
+
 			this.$refs.modal.$once('close', a => router.push('/docs/createInvoice'))
 			this.modal = false
 		}

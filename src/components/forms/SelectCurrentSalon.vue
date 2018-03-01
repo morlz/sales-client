@@ -18,7 +18,7 @@
 
 			<div class="selectSalonForm__content">
 				<q-field>
-					<q-input v-model="search" float-label="Поиск"/>
+					<q-input v-model="search" float-label="Поиск" @keyup.enter.native="enter"/>
 				</q-field>
 
 				<q-list class="selectSalonForm__list" no-border>
@@ -99,6 +99,11 @@ export default {
 		local_auth_currentSalonSet (salon) {
 			this.input(false)
 			this.auth_currentSalonSet(salon)
+		},
+		enter (e) {
+			let first = this.salonsListFiltred[0]
+			if (first)
+				this.local_auth_currentSalonSet(first.ID_SALONA)
 		}
 	},
 	mounted () {

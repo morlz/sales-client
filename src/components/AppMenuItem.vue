@@ -184,12 +184,12 @@ export default {
 		},
 		mouseEnter (e) {
 			if (!this.app_view_desktop || this.nav_namesShow) return
-			this.showName(0, 50)
+			this.showName(0, 1)
 			//this.$emit('spread', true)
 		},
 		mouseLeave (e) {
 			if (!this.app_view_desktop || this.nav_namesShow) return
-			this.hideName(0, 50)
+			this.hideName(0, 1)
 			//this.$emit('spread', false)
 		},
 		showName (delay = 0, duration) {
