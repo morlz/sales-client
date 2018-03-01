@@ -1,5 +1,5 @@
 <template>
-<div class="tableCollapsible">
+<div class="tableCollapsible" :class="{ 'tableCollapsible-mobile': app_view_mobile }">
 	<table-collapsible-head :columns="columns">
 		<template slot="start" slot-scope="props">
 			<slot name="startH"/>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import TableCollapsibleHead from '@/components/TableCollapsibleHead.vue'
 import TableCollapsibleBody from '@/components/TableCollapsibleBody.vue'
 import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
@@ -66,8 +67,19 @@ export default {
 		TableCollapsibleBody,
 		TableCollapsibleRow
 	},
+	computed: {
+		...mapGetters([
+			'app_view_mobile'
+		])
+	}
 }
 </script>
 
 
-<style lang="less"></style>
+<style lang="less">
+.tableCollapsible {
+	&-mobile {
+		
+	}
+}
+</style>

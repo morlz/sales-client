@@ -1,5 +1,11 @@
 <template>
-	<div class="tableCollapsible__row" :class="{ tableCollapsible__rowOpenBordered: open && borderOpen, tableCollapsible__rowHover: !head }">
+	<div
+		class="tableCollapsible__row"
+		:class="{
+			tableCollapsible__rowOpenBordered: open && borderOpen,
+			tableCollapsible__rowHover: !head,
+			'tableCollapsible__row-head': head
+		}">
 		<div
 			class="tableCollapsible__rowColumns"
 			@click="open = !head ? !open : false"
@@ -8,6 +14,7 @@
 				'cursor-pointer': !head,
 				tableCollapsible__rowColumnsHead: head,
 				tableCollapsible__rowColumnOpen: open,
+				'tableCollapsible__rowColumns-mobile': app_view_mobile
 			}">
 			<slot/>
 		</div>
@@ -21,6 +28,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import {
 	QSlideTransition,
 	Ripple
@@ -56,6 +65,11 @@ export default {
 	directives: {
 		Ripple
 	},
+	computed: {
+		...mapGetters([
+			'app_view_mobile'
+		])
+	},
 	methods: {
 		close () {
 			this.open = false
@@ -80,6 +94,7 @@ export default {
 
 	&__rowColumns {
 		position: relative;
+		word-wrap: break-word;
 		display: grid;
 		min-height: 45px;
 		box-sizing: border-box;
@@ -88,6 +103,10 @@ export default {
 		padding: 5px 15px;
 		align-items: center;
 		transition: all 0.3s ease-in-out;
+
+		&-mobile {
+			padding: 5px 0;
+		}
 	}
 
 	&__rowColumnEnd {
