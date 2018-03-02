@@ -47,7 +47,7 @@ class Core extends EventEmitter {
 	}
 
 	async invoke (params = {}) {
-		//await _wait(10000, 5000) //emit real server
+		//await _wait(1000, 1000) //emit real server
 		if (!params.data) params.data = {}
 		if (!params.params) params.params = {}
 		let url = path.resolve(this.apiPath, params.type)
@@ -111,5 +111,6 @@ const { sortFnFactory } = core
 
 export default core
 export {
-	sortFnFactory
+	sortFnFactory,
+	_wait
 }

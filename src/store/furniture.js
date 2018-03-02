@@ -3,9 +3,11 @@ import api from '@/api'
 const state = {
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
+	perLoadingLimit: 1000,
+	autoSetPreloaded: false,
 	cached: {
 		list: [],
+		preload: false,
 		current: {},
 		models: []
 	},
@@ -15,6 +17,7 @@ const state = {
 	},
 	loading: {
 		list: true,
+		preload: false,
 		one: true,
 		models: true,
 		bottom: false
@@ -99,8 +102,24 @@ const actions = {
 	},
 	async furniture_infinity({ commit, dispatch, state, getters }, payload){
 		if (state.offset.last == state.offset.current) return
-
+		console.log('i');
 		commit('furniture_lastOffsetSet', state.offset.current)
+
+		if (state.cached.preload !== false) {
+			console.log('ic');
+			commit('furniture_cacheAppend', state.cached.preload)
+			payload.loaded()
+			if (!state.cached.preload.length)
+				payload.complete()
+			commit('furniture_preloadSet', false)
+			return dispatch('furniture_preload')
+		}
+
+		if (state.loading.preload)
+			return ( console.log('iw'), commit('furniture_autoSetPreloadedSet', payload) )
+
+		console.log('is');
+
 		commit('furniture_loadingBottomSet', true)
 		let res = await api.furnitures.getLimited({
 			limit: state.perLoadingLimit,
@@ -117,9 +136,12 @@ const actions = {
 		commit('furniture_currentOffsetSet')
 		payload.loaded()
 		if (!res.data.length)
-			payload.complete()
+			return payload.complete()
+
+		dispatch('furniture_preload')
 	},
 	async furniture_infinityStart({ commit, dispatch, state, getters }){
+		console.log('start');
 		commit('furniture_lastOffsetSet', 0)
 		commit('furniture_currentOffsetSet', 0)
 		commit('furniture_loadingBottomSet', true)
@@ -137,6 +159,38 @@ const actions = {
 
 		commit('furniture_cacheSet', res.data)
 		commit('furniture_currentOffsetSet')
+		dispatch('furniture_preload')
+	},
+	async furniture_preload({ commit, dispatch, state, getters }){
+		if (state.loading.preload) return
+
+		console.log('preload start');
+
+		commit('furniture_loadingPreloadSet', true)
+		let res = await api.furnitures.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.furniture_filters,
+			sort: state.sort,
+			type: getters.furniture_type
+		})
+		commit('furniture_loadingPreloadSet', false)
+
+		console.log('preload end');
+
+		if (!res.data || res.data.error) return
+
+		if (state.autoSetPreloaded !== false) {
+			state.autoSetPreloaded.loaded()
+			if (!res.data.length)
+				state.autoSetPreloaded.complete()
+			commit('furniture_cacheAppend', res.data)
+			commit('furniture_autoSetPreloadedSet', false)
+		} else {
+			commit('furniture_preloadSet', res.data)
+		}
+
+		commit('furniture_currentOffsetSet', state.offset.current + res.data.length)
 	},
 	async furniture_getOne({ commit, dispatch }, payload){
 		commit('furniture_loadingOneSet', true)
@@ -424,6 +478,8 @@ const actions = {
 const mutations = {
 	furniture_cacheSet: (state, payload) => state.cached.list = payload,
 	furniture_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	furniture_preloadSet: (state, payload) => state.cached.preload = payload,
+	furniture_autoSetPreloadedSet: (state, payload) => state.autoSetPreloaded = payload,
 	furniture_filtersSet: (state, payload) => state.filters = payload,
 	furniture_sortSet: (state, payload) => state.sort = payload,
 	furniture_lastOffsetSet: (state, payload) => state.offset.last = payload,
@@ -433,6 +489,7 @@ const mutations = {
 	furniture_cachedModelsSet: (state, payload) => state.cached.models = payload,
 
 	furniture_loadingSet: (state, payload) => state.loading.list = payload,
+	furniture_loadingPreloadSet: (state, payload) => state.loading.preload = payload,
 	furniture_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	furniture_loadingOneSet: (state, payload) => state.loading.one = payload,
 	furniture_loadingModelsSet: (state, payload) => state.loading.models = payload,

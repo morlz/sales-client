@@ -81,25 +81,25 @@ let dataObj = {
 	],
 
 	furnitureSalonFieldDescription: [
-		{ field: "td.salon.NAME", label: "Салон" },
-		{ field: "MODEL", label: "Модель" },
-		{ field: "td.TIP", label: "Тип", inline: true },
-		{ field: "cloth1", label: "Ткань 1", fields: { output: 'cloth1.NAME' } },
-		{ field: "cloth2", label: "Ткань 2", fields: { output: 'cloth2.NAME' } },
-		{ field: "cloth3", label: "Ткань 3", fields: { output: 'cloth3.NAME' } },
-		{ field: "KAT", label: "Кат" },
-		{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", format: {
+		{ field: "td.salon.NAME", label: "Салон", width: 120},
+		{ field: "MODEL", label: "Модель", width: 100},
+		{ field: "td.TIP", label: "Тип", width: 150, inline: true },
+		{ field: "cloth1.NAME", label: "Ткань 1", width: 150, fields: { output: 'cloth1.NAME' } },
+		{ field: "cloth2.NAME", label: "Ткань 2", width: 150, fields: { output: 'cloth2.NAME' } },
+		{ field: "cloth3.NAME", label: "Ткань 3", width: 150, fields: { output: 'cloth3.NAME' } },
+		{ field: "KAT", label: "Кат", width: 20, },
+		{ field: "td.CENA_ZAL", label: "Цена руб.", width: 70, type: "html", format: {
 			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
 					`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
 				:	data
 		} },
-		{ field: "DEKOR", label: "Декор" },
-		{ field: "Vid_stegki", label: "Стежка" },
-		{ field: "td.DATE_VX", label: "Дни", search: false, align: 'right', format: {
+		{ field: "DEKOR", label: "Декор", width: 50 },
+		{ field: "Vid_stegki", label: "Стежка", width: 50 },
+		{ field: "td.DATE_VX", label: "Дни", width: 30, search: false, align: 'right', format: {
 			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
 			set: data => undefined
 		} },
-		{ field: "UN", label: "Фаб.н." },
+		{ field: "UN", label: "Фаб.н.", width: 40 },
 	],
 
 	invoicesFieldDescription: [
@@ -136,12 +136,12 @@ let dataObj = {
 		{ field: "UN", label: "Фаб. №" },
 		{ field: "MODEL", label: "Модель" },
 		{ field: "td.mestoXR.NAME", label: "Место. хр." },
-		{ field: "td.ModelPriceR", label: "Цена (р)" },
 		{ field: "td.TIP", label: "Тип", inline: true },
 		{ field: "cloth1", label: "Ткань 1" },
 		{ field: "cloth2", label: "Ткань 2" },
 		{ field: "cloth3", label: "Ткань 3" },
 		{ field: "KAT", label: "Кат." },
+		{ field: "td.ModelPriceR", label: "Цена (р)" },
 		{ field: "COMMENT", label: "Примечание" },
 		{ field: "DEKOR", label: "Декор" },
 		{ field: "Vid_stegki", label: "Стежка" },

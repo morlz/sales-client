@@ -76,42 +76,46 @@
 			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 		</q-tabs>
 
-		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersModelSet" :loading="furniture_loadingModels" :models="furniture_models">
-			<tabless
-				key="salon"
-				:data="furniture_cached"
-				:field-description="furnitureSalonFieldDescriptionFiltred"
-				:filters="furniture_filters"
-				:select-fields="local_furniture_selectFields"
-				:local-sort="false"
-				ref="table"
-				@filter="local_furniture_filterChange"
-				@sortChange="local_furniture_sortChange"
-				@onClick="routerGoId"
-				@select="local_furniture_handleFieldSelect"
-			>
-				<template slot="cloth1" slot-scope="props">
-					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-				</template>
 
-				<template slot="cloth2" slot-scope="props">
-					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-				</template>
+		<tabless
+			key="salon"
+			:data="furniture_cached"
+			:field-description="furnitureSalonFieldDescriptionFiltred"
+			:filters="furniture_filters"
+			:select-fields="local_furniture_selectFields"
+			:local-sort="false"
+			:infinite="!!furniture_cached.length"
+			ref="table"
+			@filter="local_furniture_filterChange"
+			@sortChange="local_furniture_sortChange"
+			@onClick="routerGoId"
+			@select="local_furniture_handleFieldSelect"
+			@infinite="furniture_infinity"
+			@preload="furniture_preload"
+		>
+			<template slot="cloth1" slot-scope="props">
+				<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
+				<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+			</template>
 
-				<template slot="cloth3" slot-scope="props">
-					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-				</template>
+			<template slot="cloth2" slot-scope="props">
+				<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
+				<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+			</template>
 
-				<template slot="buttons" slot-scope="props">
-					<q-btn color="primary" flat @click="furniture_addToCart({ UN: props.row.UN })">
-						<q-icon name="shopping_cart"/>
-					</q-btn>
-				</template>
-			</tabless>
+			<template slot="cloth3" slot-scope="props">
+				<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
+				<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+			</template>
 
+			<template slot="buttons" slot-scope="props">
+				<q-btn color="primary" flat @click="furniture_addToCart({ UN: props.row.UN })">
+					<q-icon name="shopping_cart"/>
+				</q-btn>
+			</template>
+		</tabless>
+
+		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersModelSet" :loading="furniture_loadingModels" :models="furniture_models" v-if="false">
 			<infinite-loading :distance="800" @infinite="furniture_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
@@ -233,9 +237,11 @@ export default {
 			'furniture_infinity',
 			'furniture_getModels',
 			'furniture_getOne',
-			'furniture_addToCart'
+			'furniture_addToCart',
+			'furniture_preload'
 		]),
 		async local_furniture_filterChange (n) {
+			console.log('e');
 			this.lastFurnituresFilters = n
 			await this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
 
@@ -257,7 +263,7 @@ export default {
 			this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': data.value }, type: this.furniture_type })
 		},
 		local_furniture_filtersModelSet (MODEL) {
-			if (MODEL == 'Все модели') MODEL = ""
+			if (MODEL == 'Все модели') MODEL = undefined
 			let filters = { ...this.furniture_filters, MODEL, type: this.furniture_type }
 			this.local_furniture_filterChange(filters)
 		}
@@ -288,6 +294,7 @@ export default {
 		&__discount {
 			font-weight: bold;
 			color: red;
+			display: grid;
 			s {
 				font-size: 70%;
 			}
@@ -295,7 +302,7 @@ export default {
 	}
 	.manyFurnitureWrapper {
 		width: 100%;
-
+		height: ~"calc(100% - 100px)";
 	}
 	@media screen and (max-width: 1250px) {
 		.oneFurnitureWrapper {

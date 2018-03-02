@@ -20,6 +20,7 @@ import store from '@/store'
 import App from '@/App'
 import { sync } from 'vuex-router-sync'
 import * as VueGoogleMaps from 'vue2-google-maps'
+import VirtualScroller from 'vue-virtual-scroller'
 
 //google maps config
 const load = {
@@ -30,6 +31,7 @@ const load = {
 
 Vue.use(VueGoogleMaps, { load })
 Vue.use(ElementUI, { locale })
+Vue.use(VirtualScroller)
 Vue.use(Quasar) // Install Quasar Framework
 
 if (__THEME === 'mat')
