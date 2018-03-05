@@ -22,7 +22,7 @@ export default {
 	async getAdSources () {
 		return await core.invoke({
 			method: "get",
-			type: "invoices/ad-sources"
+			type: "invoice/ad-sources"
 		})
 	},
 	async create (data) {

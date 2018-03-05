@@ -71,6 +71,13 @@ export default {
 			params
 		})
 	},
+	async getNewClothById(params) {
+		return await core.invoke({
+			method: "get",
+			type: "furniture/new-cloth-by-id",
+			params
+		})
+	},
 	async getNewPrice (params, debug = false) {
 
 		// foramt request params

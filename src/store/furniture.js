@@ -347,10 +347,6 @@ const actions = {
 		})
 	},
 
-	async furniture_new_loadToEdit () {
-
-	},
-
 	/*
 	 *
 	 *		форма выбора ткани
@@ -390,6 +386,85 @@ const actions = {
 
 		if (!res.data || res.data.length < 30)
 			payload.complete()
+	},
+	async furniture_new_setEdit({ commit, dispatch, state }, payload){
+		await dispatch('furniture_new_waitModels')
+
+		if (state.new.cached.models.length) {
+			let model = state.new.cached.models.find(el => el.ITEMNAME == payload.MODEL)
+			if (!model)
+				return dispatch('alert', 'Модель не надена')
+
+			await dispatch('furniture_new_modelSelect', model.ITEMID)
+		}
+
+		if (state.new.cached.types.length) {
+			let type = state.new.cached.types.find(el => el.NAME == payload.TIP)
+			if (!type)
+				return dispatch('alert', 'Тип не найден')
+			await dispatch('furniture_new_typeSelect', type.CONFIGID)
+		}
+
+		if (state.new.cached.dekor.length) {
+			let dekor = state.new.cached.dekor.find(el => el.CONFIGID == payload.DEKOR)
+			if (!dekor)
+				return dispatch('alert', 'Декор не найден')
+			await dispatch('furniture_new_dekorSelect', dekor.CONFIGID)
+		}
+
+		if (+state.new.cached.clothCount) {
+			const getCloth = (payload, index) => {
+				console.log(payload);
+				switch (index) {
+					case 0:
+						return payload.TKAN
+					 	break;
+					case 1:
+						return payload.KOMP
+					 	break;
+					case 2:
+						return payload.KOMP1
+					 	break;
+				}
+			}
+
+			for (var index = 0; index < +state.new.cached.clothCount; index++) {
+				let cloth = getCloth(payload, index)
+				let data = await dispatch('furniture_new_getClothById', { index, cloth })
+				if (!data)
+					return dispatch('alert', `Ткань ${index + 1} не найдена`)
+
+				await dispatch('furniture_new_clothSelect', { index, data })
+			}
+		}
+
+
+		commit('furniture_new_priceSet', { r: +payload.CENA, opt: +payload.cenaOpt })
+		commit('furniture_new_signSet', payload.COMMENT)
+		return console.log({ ...payload });
+	},
+
+	furniture_new_waitModels ({ state }) {
+		return new Promise((resolve, reject) => {
+			let checkModels = a => {
+					if (state.new.cached.models) {
+						clearInterval(waitModels)
+						resolve()
+					}
+				},
+				waitModels = setInterval(checkModels, 100)
+		})
+	},
+	async furniture_new_getClothById ({ commit, dispatch }, { index, cloth }) {
+		let res = await api.furnitures.getNewClothById({
+			cloth,
+			id: state.new.selected.model,
+			index,
+			stock_id: state.new.cached.stock ? state.new.cached.stock : null
+		})
+
+		if (!res.data || res.data.error) return
+		return res.data
 	}
 }
 

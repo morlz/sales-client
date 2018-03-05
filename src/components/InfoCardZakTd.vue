@@ -81,7 +81,7 @@
 					</template>
 
 					<div slot="end" slot-scope="{ row }" class="infoCardZak__buttons">
-						<q-btn flat @click.stop>
+						<q-btn flat @click.stop="invoice_editZak(row)">
 							<q-icon name="edit"/>
 						</q-btn>
 
@@ -255,7 +255,8 @@ export default {
 		...mapActions([
 			'invoice_addFromCart',
 			'invoice_removeTd',
-			'invoice_removeZak'
+			'invoice_removeZak',
+			'invoice_editZak'
 		])
 	},
 	computed: {

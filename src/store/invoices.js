@@ -177,6 +177,10 @@ const actions = {
 		if (!res.data || res.data.error) return
 		commit('invoice_currentZakRemove', res.data)
 		dispatch('notify', 'Успешно удалено')
+	},
+	async invoice_editZak ({ commit, dispatch }, payload) {
+		router.push('/furniture/edit')
+		dispatch('furniture_new_setEdit', payload)
 	}
 }
 
