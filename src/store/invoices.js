@@ -147,7 +147,36 @@ const actions = {
 		if (res.data.invoice)
 			dispatch('notify', 'Заказ создан')
 
-		console.log(res.data);
+		console.log(res.data)
+	},
+	async invoice_addFromCart ({ commit, dispatch, state }) {
+		let res = await api.invoices.addFromCart(state.cached.current.ID)
+		if (!res.data || res.data.error) return
+
+		commit('cart_removeItemsFromCache', { type: 'exist', data: res.data.exist })
+		commit('cart_removeItemsFromCache', { type: 'new', data: res.data.new })
+		commit('invoice_currentTdAppend', res.data.exist)
+		commit('invoice_currentZakAppend', res.data.new)
+
+		dispatch('notify', 'Предметы успешно добавлены из корзины в заказ')
+	},
+	async invoice_removeTd ({ commit, dispatch, state }, payload) {
+		let res = await api.invoices.removeItem({
+			id: payload.ID,
+			type: 'td'
+		})
+		if (!res.data || res.data.error) return
+		commit('invoice_currentTdRemove', res.data)
+		dispatch('notify', 'Успешно удалено')
+	},
+	async invoice_removeZak ({ commit, dispatch, state }, payload) {
+		let res = await api.invoices.removeItem({
+			id: payload.ID,
+			type: 'zak'
+		})
+		if (!res.data || res.data.error) return
+		commit('invoice_currentZakRemove', res.data)
+		dispatch('notify', 'Успешно удалено')
 	}
 }
 
@@ -160,6 +189,10 @@ const mutations = {
 	invoice_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
 	invoice_currentSet: (state, payload) => state.cached.current = payload,
 	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
+	invoice_currentTdRemove: (state, payload) => state.cached.current.td = state.cached.current.td.filter(el => el.ID != payload.ID),
+	invoice_currentZakRemove: (state, payload) => state.cached.current.zak = state.cached.current.zak.filter(el => el.ID != payload.ID),
+	invoice_currentTdAppend: (state, payload) => state.cached.current.td = [...state.cached.current.td, ...payload],
+	invoice_currentZakAppend: (state, payload) => state.cached.current.zak = [...state.cached.current.zak, ...payload],
 	invoice_loadingSet: (state, payload) => state.loading.list = payload,
 	invoice_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	invoice_loadingOneSet: (state, payload) => state.loading.one = payload,

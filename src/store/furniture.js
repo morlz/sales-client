@@ -402,7 +402,7 @@ const mutations = {
 	furniture_filtersSet: (state, payload) => state.filters = payload,
 	furniture_sortSet: (state, payload) => state.sort = payload,
 	furniture_lastOffsetSet: (state, payload) => state.offset.last = payload,
-	furniture_removeOneFromCache: (state, payload) => state.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
+	furniture_removeOneFromCache: (state, payload) => state.infinite.cached = state.infinite.cached.filter(el => el.UN != (payload.UN || payload)),
 	furniture_currentSet: (state, payload) => state.cached.current = payload,
 	furniture_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	furniture_cachedModelsSet: (state, payload) => state.cached.models = payload,

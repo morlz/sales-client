@@ -79,6 +79,16 @@
 							<div class="separator-g" v-ga="`sg2`"/>
 						</div>
 					</template>
+
+					<div slot="end" slot-scope="{ row }" class="infoCardZak__buttons">
+						<q-btn flat @click.stop>
+							<q-icon name="edit"/>
+						</q-btn>
+
+						<q-btn flat @click.stop="invoice_removeZak(row)">
+							<q-icon name="delete"/>
+						</q-btn>
+					</div>
 				</table-collapsible>
 			</template>
 
@@ -92,7 +102,7 @@
 							<table-two-collumns v-ga="'c1'">
 								<table-two-collumns-row>
 									<template slot="label">Цена</template>
-									{{ props.row.CENA }}
+									{{ props.row.CENA_ZAL }}
 								</table-two-collumns-row>
 
 								<table-two-collumns-row v-if="props.row.furniture">
@@ -156,9 +166,19 @@
 							<div class="separator-g" v-ga="`sg2`"/>
 						</div>
 					</template>
+
+					<div slot="end" slot-scope="{ row }">
+						<q-btn flat @click.stop="invoice_removeTd(row)">
+							<q-icon name="delete"/>
+						</q-btn>
+					</div>
 				</table-collapsible>
 			</template>
 		</q-card-main>
+
+		<q-card-actions>
+			<q-btn color="primary" @click="invoice_addFromCart">Добавить из корзины</q-btn>
+		</q-card-actions>
 	</q-card>
 </template>
 
@@ -171,11 +191,14 @@ import TableTwoCollumns from '@/components/TableTwoCollumns.vue'
 import TableTwoCollumnsRow from '@/components/TableTwoCollumnsRow.vue'
 import PreviewCloth from '@/components/PreviewCloth.vue'
 import {
+	QBtn,
 	QCard,
 	QCardTitle,
 	QCardMain,
+	QCardActions,
 	QList,
 	QItem,
+	QIcon,
 	QItemMain,
 	QItemSide,
 	QItemTile,
@@ -189,11 +212,14 @@ export default {
 	mixins: [mixins],
 	props: ["content"],
 	components: {
+		QBtn,
 		QCard,
 		QCardTitle,
 		QCardMain,
+		QCardActions,
 		QList,
 		QItem,
+		QIcon,
 		QItemMain,
 		QItemSide,
 		QItemTile,
@@ -216,7 +242,7 @@ export default {
 			colsTd: [
 				{ fields: ["furniture.TIP", "furniture.MODEL"], label: "Наименование" },
 				{ field: "furniture.KAT", label: "Категория" },
-				{ field: "CENA", label: "Цена" },
+				{ field: "CENA_ZAL", label: "Цена" },
 				{ field: "furniture.Vid_stejki", label: "Стёжка" },
 				{ field: "furniture.DEKOR", label: "Декор" },
 			]
@@ -226,7 +252,11 @@ export default {
 
 	},
 	methods: {
-
+		...mapActions([
+			'invoice_addFromCart',
+			'invoice_removeTd',
+			'invoice_removeZak'
+		])
 	},
 	computed: {
 		...mapGetters([
@@ -266,6 +296,13 @@ export default {
 
 	.tableTwoCollumns__rowValue {
 		font-weight: bold;
+	}
+}
+
+.infoCardZak {
+	&__buttons {
+		display: grid;
+		grid-auto-flow: column;
 	}
 }
 

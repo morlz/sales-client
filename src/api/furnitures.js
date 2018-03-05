@@ -34,13 +34,13 @@ export default {
 	async getNewModels () {
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/new-models"
+			type: "furniture/new-models"
 		})
 	},
 	async getNewTypes (model_id, palermo = null) {
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/new-model-info",
+			type: "furniture/new-model-info",
 			params: {
 				model_id,
 				palermo
@@ -50,7 +50,7 @@ export default {
 	async getNewDekor ({ model_id, type_id, palermo }) {
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/new-dekor",
+			type: "furniture/new-dekor",
 			params: {
 				model_id,
 				config_id: type_id,
@@ -61,13 +61,13 @@ export default {
 	async getNewCat () {
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/new-cat"
+			type: "furniture/new-cat"
 		})
 	},
 	async getNewCloth (params) {
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/new-cloth",
+			type: "furniture/new-cloth",
 			params
 		})
 	},
@@ -96,13 +96,13 @@ export default {
 			//new
 			core.invoke({
 				method: "get",
-				type: "furnitures/new-price",
+				type: "furniture/new-price",
 				params: newParams
 			}),
 			//old
 			core.invoke({
 				method: "get",
-				type: "furnitures/old-price",
+				type: "furniture/old-price",
 				params: oldParams
 			})
 		])
@@ -180,7 +180,7 @@ export default {
 
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/cloth-info",
+			type: "furniture/cloth-info",
 			params: {
 				cloth
 			}
@@ -189,7 +189,7 @@ export default {
 	async getDiscountPrice ({ model_id, cat, price }) {
 		return await core.invoke({
 			method: "get",
-			type: "furnitures/new-discount-price",
+			type: "furniture/new-discount-price",
 			params: {
 				model_id,
 				cat,

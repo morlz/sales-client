@@ -1,13 +1,17 @@
 <template>
 <div class="tableCollapsible__body">
 	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows" :border-open="borderOpen">
-		<slot name="start" :row="row" class="tableCollapsible__rowColumnStart"/>
+		<div class="tableCollapsible__rowColumnStart" v-if="$scopedSlots.start">
+			<slot name="start" :row="row"/>
+		</div>
 
 		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex">
 			{{ getFieldData(row, column) }}
 		</div>
 
-		<slot name="end" class="tableCollapsible__rowColumnEnd" :row="row"/>
+		<div class="tableCollapsible__rowColumnEnd" v-if="$scopedSlots.end">
+			<slot name="end" :row="row"/>
+		</div>
 
 		<template slot="content" slot-scope="props">
 			<slot :row="props.row"/>

@@ -31,5 +31,23 @@ export default {
 			type: "invoices",
 			data
 		})
+	},
+	async addFromCart (id) {
+		return await core.invoke({
+			method: 'post',
+			type: 'cart/to-invoice',
+			data: {
+				id
+			}
+		})
+	},
+	async removeItem (data) {
+		let type = 'invoice/remove-' + data.type
+		delete(data.type)
+		return await core.invoke({
+			method: 'delete',
+			type,
+			data
+		})
 	}
 }

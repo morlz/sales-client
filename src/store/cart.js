@@ -50,6 +50,7 @@ const mutations = {
 	],
 	cart_loadingListSet: (state, payload) => state.loading.list = payload,
 	cart_removeItemFromCache: (state, payload) => state.cached[payload.type] = state.cached[payload.type].filter(el => el.ID != payload.ID),
+	cart_removeItemsFromCache: (state, payload) => state.cached[payload.type] = state.cached[payload.type].filter(el => !(payload.data.find(f => f.ID == el.UN || f.ID == el.id_zak) + 1)),
 	cart_itemRemovingAdd: (state, payload) => !state.loading.remove.includes(payload) ? state.loading.remove.push(payload) : null,
 	cart_itemRemovingRemove: (state, payload) => state.loading.remove = state.loading.remove.filter(el => el != payload)
 }
