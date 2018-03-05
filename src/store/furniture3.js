@@ -1,18 +1,24 @@
 import api from '@/api'
-import Infinite from '@/lib/Infinite'
 
 const state = {
-	infinite: false,
+	infiniteInstance: false,
 	filters: [],
 	sort: [],
-	complete: false,
+	perLoadingLimit: 1000,
+	autoSetPreloaded: false,
 	cached: {
 		list: [],
 		preload: false,
 		current: {},
 		models: []
 	},
+	offset: {
+		current: 0,
+		last: -1
+	},
 	loading: {
+		list: true,
+		preload: false,
 		one: true,
 		models: true,
 		bottom: false
@@ -71,44 +77,121 @@ const state = {
 
 const actions = {
 	async furniture_init ({ commit, dispatch, getters, state }, payload) {
-		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
-
-
-		commit('furniture_initInfinite', new Infinite({
-			method: api.furnitures.getLimited,
-			filters: {
-				'td.salon.ID_SALONA' : ID_SALONA
-			}
-		}))
-
-		state.infinite.on('cached', n => commit('furniture_cacheSet', n))
-		state.infinite.on('complete', n => commit('furniture_completeSet', n))
-		commit('furniture_filtersSet', {
-			...state.filters,
-			type: undefined,
-			'td.salon.ID_SALONA' : ID_SALONA
-		})
-		dispatch('furniture_getModels', { type: undefined, filters: { 'td.salon.ID_SALONA' : ID_SALONA } })
+		let ID_SALONA = state.filters['td.salon.ID_SALONA'] !== undefined ?
+									state.filters['td.salon.ID_SALONA']
+								:	getters.auth_currentSalon.ID_SALONA + ""
+		dispatch('furniture_getModels', { type: getters.furniture_type, filters: { 'td.salon.ID_SALONA' : ID_SALONA } })
 		dispatch('salon_getList')
 		if (payload) {
 			dispatch('furniture_getOne', payload)
 		} else {
-			await state.infinite.start()
+			commit('furniture_filtersSet', {
+				...state.filters,
+				'td.salon.ID_SALONA' : ID_SALONA
+			 })
+
+			await dispatch('furniture_infinityStart')
 		}
 	},
-	async furniture_sortChange({ commit, dispatch, state }, payload){
-		commit('furniture_sortSet', payload)
-		state.infinite.sort = payload
-		await state.infinite.start()
+	async furniture_sortChange({ commit, dispatch }, payload){
+		commit("furniture_sortSet", payload)
+		await dispatch('furniture_infinityStart')
 	},
-	async furniture_filtersChange({ commit, dispatch, state }, payload){
-		commit('furniture_filtersSet', payload)
-		state.infinite.filters = { ...payload, type: undefined }
-		state.infinite.additional = { type: payload.type }
-		await state.infinite.start()
+	async furniture_filtersChange({ commit, dispatch }, payload){
+		commit("furniture_filtersSet", payload)
+		await dispatch('furniture_infinityStart')
 	},
 	async furniture_infinity({ commit, dispatch, state, getters }, payload){
-		await state.infinite.more(payload)
+		if (state.offset.last == state.offset.current) return
+		console.log('i');
+		commit('furniture_lastOffsetSet', state.offset.current)
+
+		if (state.cached.preload !== false) {
+			console.log('ic');
+			commit('furniture_cacheAppend', state.cached.preload)
+			payload.loaded()
+			if (!state.cached.preload.length)
+				payload.complete()
+			commit('furniture_preloadSet', false)
+			return dispatch('furniture_preload')
+		}
+
+		if (state.loading.preload)
+			return ( console.log('iw'), commit('furniture_autoSetPreloadedSet', payload) )
+
+		console.log('is');
+
+		commit('furniture_loadingBottomSet', true)
+		let res = await api.furnitures.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.furniture_filters,
+			sort: state.sort,
+			type: getters.furniture_type
+		})
+		commit('furniture_loadingSet', false)
+		commit('furniture_loadingBottomSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('furniture_cacheAppend', res.data)
+		commit('furniture_currentOffsetSet')
+		payload.loaded()
+		if (!res.data.length)
+			return payload.complete()
+
+		dispatch('furniture_preload')
+	},
+	async furniture_infinityStart({ commit, dispatch, state, getters }){
+		console.log('start');
+		commit('furniture_lastOffsetSet', 0)
+		commit('furniture_currentOffsetSet', 0)
+		commit('furniture_loadingBottomSet', true)
+		commit('furniture_loadingSet', true)
+		let res = await api.furnitures.getLimited({
+			limit: state.perLoadingLimit,
+			offset: 0,
+			filters: getters.furniture_filters,
+			sort: state.sort,
+			type: getters.furniture_type
+		})
+		commit('furniture_loadingBottomSet', false)
+		commit('furniture_loadingSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('furniture_cacheSet', res.data)
+		commit('furniture_currentOffsetSet')
+		dispatch('furniture_preload')
+	},
+	async furniture_preload({ commit, dispatch, state, getters }){
+		if (state.loading.preload) return
+
+		console.log('preload start');
+
+		commit('furniture_loadingPreloadSet', true)
+		let res = await api.furnitures.getLimited({
+			limit: state.perLoadingLimit,
+			offset: state.offset.current,
+			filters: getters.furniture_filters,
+			sort: state.sort,
+			type: getters.furniture_type
+		})
+		commit('furniture_loadingPreloadSet', false)
+
+		console.log('preload end');
+
+		if (!res.data || res.data.error) return
+
+		if (state.autoSetPreloaded !== false) {
+			state.autoSetPreloaded.loaded()
+			if (!res.data.length)
+				state.autoSetPreloaded.complete()
+			commit('furniture_cacheAppend', res.data)
+			commit('furniture_autoSetPreloadedSet', false)
+		} else {
+			commit('furniture_preloadSet', res.data)
+		}
+
+		commit('furniture_currentOffsetSet', state.offset.current + res.data.length)
 	},
 	async furniture_getOne({ commit, dispatch }, payload){
 		commit('furniture_loadingOneSet', true)
@@ -394,11 +477,10 @@ const actions = {
 }
 
 const mutations = {
-	furniture_initInfinite: (state, payload) => state.infinite = payload,
 	furniture_cacheSet: (state, payload) => state.cached.list = payload,
-	furniture_completeSet: (state, payload) => state.complete = payload,
 	furniture_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	furniture_preloadSet: (state, payload) => state.cached.preload = payload,
+	furniture_autoSetPreloadedSet: (state, payload) => state.autoSetPreloaded = payload,
 	furniture_filtersSet: (state, payload) => state.filters = payload,
 	furniture_sortSet: (state, payload) => state.sort = payload,
 	furniture_lastOffsetSet: (state, payload) => state.offset.last = payload,
@@ -457,8 +539,6 @@ const mutations = {
 }
 
 const getters = {
-	furniture_infinite: state => state.infinite,
-	furniture_complete: state => state.complete,
 	furniture_filters: (state, getters) => ({ ...state.filters, type: undefined }),
 	furniture_type: ({ filters }) => filters.type,
 	furniture_current: ({ cached }) => cached.current,

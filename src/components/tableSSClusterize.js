@@ -23,26 +23,36 @@ export default {
 	},
 	watch: {
 		content(n) {
-			console.log('create cache')
-
-			let timeStart = Date.now()
-
-			cache = [...n]
-
-			let time = Date.now() - timeStart
-
-			if (time < 1000)
-				console.log('cache created in', time.toFixed(), 'ms')
-			else
-				console.log('cache created in', (time / 1e3).toFixed(3), 's')
-
-
+			this.createCache(n)
+		}
+	},
+	computed: {
+		scrollHandlerThrottled () {
+			return throttle(this.scrollHandler, 300, {
+				trailing: true
+			})
+		}
+	},
+	methods: {
+		createCache (n) {
+			cache = [...(n || this.content)]
+			this.$forceUpdate()
+		},
+		scrollHandler () {
 			this.$forceUpdate()
 		}
 	},
+	mounted () {
+		this.createCache()
+	},
 	render(h) {
-		let timeStart = Date.now()
-		let domEl = document.getElementById('clusterize')
+		let domEl = document.getElementById('clusterize'),
+			cachedSlot = current => typeof current !== 'object' ?
+						this.$scopedSlots.default({
+							item: cache[current],
+							index: current
+						})
+					:	current
 
 		let chunkSize = this.chunkSize,
 			itemsCount = this.content.length,
@@ -58,24 +68,21 @@ export default {
 			showCount = chunksCount
 
 		let items = []
-		//fill normal
 		for (let chunk = offsetFromStart - outerRenderCount; chunk < offsetFromStart + showCount + outerRenderCount; chunk++)
 			for (let item = 0; item < chunkSize; item++)
 				if (chunk * chunkSize + item < itemsCount && chunk * chunkSize + item >= 0) items.push(chunk * chunkSize + item)
 
+		items.push(this.$slots.end)
 
-		let scrollHandler = e => this.$forceUpdate(),
-			cachedSlot = this.$scopedSlots.default
-
-		let res = h(
+		return h(
 			'div', {
 				class: 'clusterize',
 				style: {
 					overflowY: 'auto',
-					transfom: 'translateZ(0)'
+					transform: 'translateZ(0)'
 				},
 				on: {
-					scroll: throttle(scrollHandler, 300, { trailing: true })
+					scroll: this.scrollHandlerThrottled
 				},
 				domProps: {
 					id: 'clusterize'
@@ -90,23 +97,9 @@ export default {
 						},
 						ref: 'scroll'
 					},
-					items.map(
-						current => cachedSlot({
-							item: cache[current],
-							index: current
-						})
-					)
+					items.map(current => cachedSlot(current))
 				)
 			]
 		)
-
-		let time = Date.now() - timeStart
-
-		if (time < 1000)
-			console.log('rendered in', time.toFixed(), 'ms')
-		else
-			console.log('rendered in', (time / 1e3).toFixed(3), 's')
-
-		return res
 	}
 }

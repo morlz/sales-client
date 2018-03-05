@@ -1,97 +1,85 @@
 <template>
-	<div class="tableSS">
-		<div class="tableSS__actions">
+<div class="tableWrapper">
+	<div class="tableCoreWrapper">
+		<table>
+			<thead>
+				<tr>
+					<th v-if="lineNumbers && !minify" class="tableIndex">№</th>
+					<th v-for="column, index in columns" @click="thClick(column, index)" :key="index" ref="ths"
+						:width="columnWidths.find(el => el.index == index) ? columnWidths.find(el => el.index == index).width + 'px' : 'auto'">
 
-		</div>
-
-		<tabless-clusterize :content="items" :item-height="itemHeight" class="tableSS__main">
-			<div class="tableSS__row" slot-scope="row" :style="rowStyle" :key="row.itemKey">
-				<template v-if="row.item.rowType == 'head'">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</div>
-					<div
-						class="tableSS__item-head"
-						v-for="column, index in columns"
-						@click="thClick(column, index)"
-						ref="ths">
-						<i :class="sortableIconClass(column, index)" />
 						{{ column.label }}
-					</div>
+						<i :class="sortableIconClass(column, index)" />
+					</th>
+				</tr>
+				<tr v-if="!minify">
+					<th v-if="lineNumbers && !minify" class="tableIndex"/>
+					<th v-for="column, index in columnsSearchFields">
+						<el-input
+							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
+							class="searchByField"
+							suffix-icon="el-icon-search"
+							:key="index"
+							v-if="column.type == 'search'"
+							:disabled="column.search === false"/>
 
-					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
-						<slot name="buttons"/>
-					</div>
-				</template>
+						<q-select
+							v-if="column.type == 'select'"
+							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
+							class="searchByField"
+							:key="index"
+							:filter="column.filterable"
+							:options="formatSelectOptions(column)"
+							@change="selectChange($event, column)"
+						/>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="row, index in sortedRows" :key="index" :data-index="index" class="hoverShow">
+					<td v-if="lineNumbers && !minify" class="tableIndex" @click="clickHandler($event, row, 0)">{{ index + 1 }}</td>
+					<td
+						v-for="column, columnIndex in columns"
+						:class="column.type"
+						@click="clickHandler($event, row, columnIndex)"
+						:style="{
+							textAlign: column.align ? column.align : undefined,
+							whiteSpace: column.inline ? 'nowrap' : undefined
+						}">
 
-				<template v-if="row.item.rowType == 'search' && !minify">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
-					<div class="tableSS__item-search" v-for="column, index in columnsSearchFields">
-						<slot name="search">
-							<q-input
-								v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
-								:key="index"
-								v-if="column.type == 'search'"
-								:disabled="column.search === false"/>
-
-							<q-select
-								v-if="column.type == 'select'"
-								v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
-								:key="index"
-								:filter="column.filterable"
-								:options="formatSelectOptions(column)"
-								@change="selectChange($event, column)"
-							/>
-						</slot>
-					</div>
-
-					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
-						<slot name="buttons"/>
-					</div>
-				</template>
-
-
-				<template v-if="row.item.rowType == 'row'">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
-					<div class="tableSS__item" v-for="column, index in columns">
-						{{ column.rowType }}
-						<slot :name="column.field" :row="row.item" :column="column">
-							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(row.item, column.field, column.format) }}</div>
-							<div v-if="column.type == 'html'" v-html="getFieldData(row.item, column.field, column.format)"/>
+						<slot :name="column.field" :row="row" :column="column">
+							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(row, column.field, column.format) }}</div>
+							<div v-if="column.type == 'html'" v-html="getFieldData(row, column.field, column.format)"/>
 							<tabless-popover
 								v-if="column.type == 'array'"
-								:one="getFieldData(row.item, column.field, column.format).length < 2"
-								:arr="getFieldData(row.item, column.field, column.format)"
+								:one="getFieldData(row, column.field, column.format).length < 2"
+								:arr="getFieldData(row, column.field, column.format)"
 								:column="column"
 								:fields="column.fields"
 								:label="column.label"
 								/>
 						</slot>
-					</div>
-
-					<div class="tableSS__buttons" v-if="local_buttonsCondition(row.item)">
-						<slot name="buttons" :row="row.item">
+					</td>
+					<td class="buttons" v-if="local_buttonsCondition(row)">
+						<slot name="buttons" :row="row">
 							<el-button
 								size="small"
-								@click.stop="button.click($event, row.item)"
+								@click.stop="button.click($event, row)"
 								v-for="button, index in buttonRedused"
 								:key="index"
 								:class="button.class"
 								:type="button.type"
-								v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(row.item, button.loading.field) )"
+								v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(row, button.loading.field) )"
 							>
 								{{ button.name }}
 							</el-button>
 						</slot>
-					</div>
-				</template>
-			</div>
-
-			<infinite-loading slot="end-outer" :distance="800" @infinite="infiniteHandler" ref="infiniteLoading">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner"/>
-			</infinite-loading>
-		</tabless-clusterize>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
+</div>
 </template>
 
 
@@ -99,8 +87,6 @@
 <script>
 //<div class="thDelimiter" @mousedown.stop="delimiterMouseDown($event, index)" v-if="false"/>
 import tablessPopover from '@/components/tableSSPopover'
-import tablessClusterize from '@/components/tableSSClusterize'
-import InfiniteLoading from 'vue-infinite-loading'
 import {
 	QInput,
 	QSelect
@@ -124,7 +110,7 @@ export default {
 		},
 		minify: {
 			type: Boolean,
-			default: a => false
+			default: false
 		},
 		filters: {
 			default: () => ({})
@@ -134,7 +120,7 @@ export default {
 		},
 		lineNumbers: {
 			type: Boolean,
-			default: a => false
+			default: false
 		},
 		sortable: {
 			type: Boolean,
@@ -142,31 +128,17 @@ export default {
 		},
 		localSort: {
 			type: Boolean,
-			default: false
+			default: true
 		},
 		selectFields: {
 			type: Array,
 			default: () => ([])
-		},
-		itemHeight: {
-			type: [Number, String],
-			default: a => 50
-		},
-		infinite: {
-			type: Boolean,
-			default: a => false
-		},
-		infiniteLoading: {
-			type: Boolean,
-			default: a => false
 		}
 	},
 	components: {
-		tablessClusterize,
 		tablessPopover,
 		QInput,
-		QSelect,
-		InfiniteLoading
+		QSelect
 	},
 	data () {
 		return {
@@ -194,21 +166,13 @@ export default {
 			if (this.searchInputTimeout) clearTimeout(this.searchInputTimeout)
 
 			this.searchInputTimeout = setTimeout(() => {
-				if (this.filterChangeFirst)
-					return this.filterChangeFirst = false
+				if (this.filterChangeFirst) {
+					this.filterChangeFirst = false
+					return
+				}
 
-				for (var prop in n)
-					if ( n.hasOwnProperty(prop) && n[prop] !== this.filters[prop] )
-						return this.$emit("filter", n)
-
-				for (var prop in this.filters)
-					if ( this.filters.hasOwnProperty(prop) && n[prop] !== this.filters[prop] )
-						return this.$emit("filter", n)
+				this.$emit("filter", n)
 			}, 8e2)
-		},
-		rows (n) {
-			if (this.$refs.infiniteLoading)
-				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 		}
 	},
 	computed: {
@@ -242,10 +206,10 @@ export default {
 			return this.data || []
 		},
 		sortedRows() {
-			let data = this.rows.map(el => ({ ...el, columns: this.columnsSearchFields, rowType: 'row' }))
-
 			if (this.sort.columnIndex == -1)
-				return data
+				return this.rows
+
+			let data = this.rows
 
 			if (this.localSort)
 				data.sort((a, b) => {
@@ -283,30 +247,6 @@ export default {
 
 				return selectField ? { ...column, ...selectField, type: "select" } : { ...column, type: "search" }
 			})
-		},
-		items () {
-			return [
-				{ rowType: 'head' },
-				{ rowType: 'search'},
-				...this.sortedRows
-			]
-		},
-		rowStyle () {
-			const getElWidth = el => {
-				if (typeof el.width == 'array') return `minmax(${el.width[0]}px, ${el.width[1]}px) `
-				if (typeof el.width == 'number') return `minmax(${el.width}px, 300px) `
-				if (typeof el.width == 'string') return `${el.width} `
-				return el.width + ' '
-			}
-			let gridTemplateColumns = this.columns.reduce((prev, el) => prev + getElWidth(el), '')
-			if (this.$scopedSlots.buttons)
-				gridTemplateColumns += 'minmax(50px, max-content) '
-
-			return {
-				height: `${this.itemHeight}px`,
-				gridTemplateColumns,
-				gridTemplateRows: `${this.itemHeight}px`
-			}
 		}
 	},
 	methods: {
@@ -321,11 +261,12 @@ export default {
 			this.$emit("onClick", e, row, index)
 		},
 		sortableIconClass(column, index) {
+			let sortedByCurrent = index == this.sort.columnIndex
 			return {
-				'tableSS__sortIcon': true,
+				'sortIcon': true,
 				'el-icon-sort-down': this.sort.type == 'asc',
 				'el-icon-sort-up': this.sort.type == 'desc',
-				'tableSS__sortIcon-active': index == this.sort.columnIndex
+				'sortByThisIcon': sortedByCurrent
 			}
 		},
 		thClick(column, index) {
@@ -386,13 +327,8 @@ export default {
 				label: column.fields && column.fields.label ? option[column.fields.label] : option.label,
 				value: column.fields && column.fields.value ? option[column.fields.value] : option.value
 			})
-		),
-		infiniteHandler (e) {
-			if (this.infiniteLoading || !this.rows.length)
-				return setTimeout(a => e.loaded(), 200)
+		)
 
-			this.$emit('infinite', e)
-		}
 	},
 	mounted () {
 		this.applyFilters()
@@ -407,80 +343,114 @@ export default {
 
 
 <style lang="less">
-
-
-.tableSS {
-	height: 100%;
-	&__actions {
-
+.tableWrapper {
+    width: 100%;
+    box-sizing: border-box;
+	.tableCoreWrapper {
+		//width: 100%;
+	    //overflow-x: auto;
+	    table {
+	        width: 100%;
+	        table-layout: auto;
+	        border-spacing: 0;
+	        thead {
+	            tr {
+	                th {
+						user-select: none;
+						cursor: pointer;
+	                    white-space: nowrap;
+	                    padding: 5px;
+	                    color: #337ab7;
+	                    transition: color 0.3s ease-in-out;
+	                    border-bottom: 2px solid #f4f4f4;
+						position: relative;
+	                    &:hover {
+	                        color: rgb(114, 175, 210);
+	                        > .sortIcon {
+	                            opacity: 1;
+	                        }
+	                    }
+	                    .sortIcon {
+	                        opacity: 0;
+	                        transition: all 0.3s ease-in-out;
+	                    }
+	                    .sortByThisIcon {
+	                        opacity: 1;
+	                    }
+	                    .searchByField {
+							margin: 0;
+							.el-input__suffix {
+								pointer-events: none;
+								&-inner {
+									pointer-events: none;
+								}
+								i {
+									line-height: 14px;
+									cursor: default;
+								}
+							}
+							input {
+								width: 100%;
+								height: 100%;
+								padding: 4px;
+							}
+						}
+						.thDelimiter {
+							position: absolute;
+							height: 100%;
+							background: red;
+							width: 3px;
+							top: 0;
+							right: 0;
+							z-index: 500;
+							cursor: move;
+						}
+	                }
+	            }
+	        }
+	        tbody {
+	            tr {
+					height: 50px;
+					cursor: pointer;
+	                transition: all 0.3s;
+	                td {
+						&:first-child {
+							padding-left: 10px;
+						}
+	                    padding: 3px;
+	                }
+					.buttons {
+						white-space: nowrap;
+						vertical-align: middle;
+					}
+	                transition: all 0.3s ease-in-out;
+	                .tableIndex {
+	                    vertical-align: middle;
+	                    text-align: center;
+	                    color: #5a5e66;
+	                    font-weight: bold;
+	                }
+	                .number {
+	                    text-align: right;
+	                }
+	                &:hover {
+	                    background-color: rgba(51,122,183, 0.1);
+	                }
+	            }
+	        }
+	    }
 	}
+}
 
-	&__lineNumber {
-
-	}
-
-	&__main {
-		height: 100%;
-		overflow: auto;
-	}
-
-	&__content {
-		display: grid;
-	}
-
-	&__row {
-		display: grid;
-		grid-gap: 5px;
-		border-bottom: 1px solid rgba(224, 224, 224, 1);
-		align-content: center;
-		align-items: center;
-	}
-
-	&__item {
-		text-overflow: clip;
-		max-height: 100%;
-		overflow: hidden;
-	}
-
-	&__item-head {
-		white-space: nowrap;
-		font-size: 12px;
-		cursor: pointer;
-		user-select: none;
-		color: rgba(0, 0, 0, 0.54);
-
-		&:hover {
-			> .tableSS__sortIcon {
-				opacity: 1;
-			}
-		}
-	}
-
-	&__item-search {
-		white-space: nowrap;
-
-		> div {
-			margin: 0;
-		}
-	}
-
-	&__item-buttons {
-		height: 0;
-		opacity: 0;
-		pointer-events: none;
-	}
-
-	&__sortIcon {
-		opacity: 0;
-		transition: all 0.3s ease-in-out;
-
-		&-active {
-			opacity: 1;
-		}
-	}
-
-	&__buttons {
-
+.hoverHide {
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.3s ease-in-out;
+}
+.hoverShow:hover {
+	.hoverHide {
+		opacity: 1;
+		pointer-events: all;
 	}
 }
 </style>

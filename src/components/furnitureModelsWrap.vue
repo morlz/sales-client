@@ -3,7 +3,7 @@
 		<q-card class="modelList" v-if="main_auth_settings.showModels" v-loading="loading">
 			<q-card-title>Модель</q-card-title>
 
-			<q-card-main>
+			<q-card-main class="models">
 				<div class="model"
 					v-for="item, index in models"
 					:class="{ selected: current == item.MODEL || (!current && item.MODEL == 'Все модели') }"
@@ -68,14 +68,22 @@ export default {
 <style lang="less">
 .modelsWrapper {
 	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: 180px 1fr;
+	grid-template-rows: 100%;
 	grid-gap: 10px;
 	.modelList {
+		height: ~"calc(100% - 10px)";
+		overflow-y: auto;
 		.el-card__body {
 			padding: 7px;
 		}
 		align-self: start;
+		.modles {
+			height: 100%;
+		}
 		.model {
 			display: grid;
 			grid-auto-flow: column;

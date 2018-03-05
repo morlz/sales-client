@@ -76,51 +76,48 @@
 			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 		</q-tabs>
 
+		<furniture-models-wrap
+			:current="furniture_filters.MODEL"
+			@select="local_furniture_filtersModelSet"
+			:loading="furniture_loadingModels"
+			:models="furniture_models">
+			<tabless
+				key="salon"
+				:data="furniture_cached"
+				:complete="furniture_complete"
+				:field-description="furnitureSalonFieldDescriptionFiltred"
+				:filters="furniture_filters"
+				:select-fields="local_furniture_selectFields"
+				:local-sort="false"
+				:infinite="!!furniture_cached.length"
+				ref="table"
+				@filter="local_furniture_filterChange"
+				@sortChange="local_furniture_sortChange"
+				@onClick="routerGoId"
+				@select="local_furniture_handleFieldSelect"
+				@infinite="furniture_infinity"
+			>
+				<template slot="cloth1" slot-scope="props">
+					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
+					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+				</template>
 
-		<tabless
-			key="salon"
-			:data="furniture_cached"
-			:field-description="furnitureSalonFieldDescriptionFiltred"
-			:filters="furniture_filters"
-			:select-fields="local_furniture_selectFields"
-			:local-sort="false"
-			:infinite="!!furniture_cached.length"
-			ref="table"
-			@filter="local_furniture_filterChange"
-			@sortChange="local_furniture_sortChange"
-			@onClick="routerGoId"
-			@select="local_furniture_handleFieldSelect"
-			@infinite="furniture_infinity"
-			@preload="furniture_preload"
-		>
-			<template slot="cloth1" slot-scope="props">
-				<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-				<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-			</template>
+				<template slot="cloth2" slot-scope="props">
+					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
+					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+				</template>
 
-			<template slot="cloth2" slot-scope="props">
-				<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-				<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-			</template>
+				<template slot="cloth3" slot-scope="props">
+					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
+					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+				</template>
 
-			<template slot="cloth3" slot-scope="props">
-				<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-				<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-			</template>
-
-			<template slot="buttons" slot-scope="props">
-				<q-btn color="primary" flat @click="furniture_addToCart({ UN: props.row.UN })">
-					<q-icon name="shopping_cart"/>
-				</q-btn>
-			</template>
-		</tabless>
-
-		<furniture-models-wrap :current="furniture_filters.MODEL" @select="local_furniture_filtersModelSet" :loading="furniture_loadingModels" :models="furniture_models" v-if="false">
-			<infinite-loading :distance="800" @infinite="furniture_infinity" ref="infiniteLoading">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="furniture_loadingBottom" />
-			</infinite-loading>
+				<template slot="buttons" slot-scope="props">
+					<q-btn color="primary" flat @click="furniture_addToCart({ UN: props.row.UN })">
+						<q-icon name="shopping_cart"/>
+					</q-btn>
+				</template>
+			</tabless>
 		</furniture-models-wrap>
 	</div>
 </div>
@@ -131,7 +128,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
-import tabless from '@/components/tableSS'
+import tabless from '@/components/tableSSNew'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
@@ -174,11 +171,6 @@ export default {
 	watch: {
 		async additionalFilters (n) {
 			await this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		oneId (n) {
 			if (n != undefined)
@@ -202,7 +194,8 @@ export default {
 			'furniture_filters',
 			'furniture_models',
 			'furniture_type',
-			'main_auth_settings'
+			'main_auth_settings',
+			'furniture_complete'
 		]),
 		data () {
 			return this.cachedFurnitures
@@ -241,22 +234,11 @@ export default {
 			'furniture_preload'
 		]),
 		async local_furniture_filterChange (n) {
-			console.log('e');
 			this.lastFurnituresFilters = n
 			await this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async local_furniture_sortChange (n) {
 			await this.furniture_sortChange (n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		local_furniture_handleFieldSelect (data) {
 			if (data.field != 'td.salon.NAME') return
@@ -270,8 +252,7 @@ export default {
 	},
 	async mounted () {
 		await this.furniture_init(this.oneId)
-		if (this.$refs.infiniteLoading)
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+		this.lastFurnituresFilters = this.furniture_filters
 	},
 }
 </script>

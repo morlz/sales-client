@@ -95,11 +95,11 @@ let dataObj = {
 		} },
 		{ field: "DEKOR", label: "Декор", width: 50 },
 		{ field: "Vid_stegki", label: "Стежка", width: 50 },
-		{ field: "td.DATE_VX", label: "Дни", width: 30, search: false, align: 'right', format: {
+		{ field: "td.DATE_VX", label: "Дни", width: 40, search: false, align: 'right', format: {
 			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
 			set: data => undefined
 		} },
-		{ field: "UN", label: "Фаб.н.", width: 40 },
+		{ field: "UN", label: "Фаб.н.", width: 60 },
 	],
 
 	invoicesFieldDescription: [
