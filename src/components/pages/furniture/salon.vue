@@ -97,9 +97,10 @@
 				@onClick="routerGoId"
 				@select="local_furniture_handleFieldSelect"
 				@infinite="furniture_infinity"
+				@selected="transfer_selectedSet"
 			>
 				<template slot="selected" slot-scope="{ selected, count }">
-					<q-btn color="primary" v-if="count" @click="$store.dispatch('notify', 'Сделано!')">Сделать</q-btn>
+					<q-btn color="primary" v-if="count" @click="$store.dispatch('notify', 'Сделано!')">Отметить прибывшие</q-btn>
 				</template>
 
 				<template slot="cloth1" slot-scope="props">
@@ -202,6 +203,9 @@ export default {
 			'main_auth_settings',
 			'furniture_complete'
 		]),
+		...mapGetters('transfer', [
+			'transfer_selected'
+		]),
 		data () {
 			return this.cachedFurnitures
 		},
@@ -238,6 +242,9 @@ export default {
 			'furniture_getOne',
 			'furniture_addToCart',
 			'furniture_preload'
+		]),
+		...mapMutations('transfer', [
+			'transfer_selectedSet'
 		]),
 		async local_furniture_filterChange (n) {
 			this.lastFurnituresFilters = n

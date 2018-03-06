@@ -496,7 +496,7 @@ export default {
 		border-bottom: 1px solid rgba(224, 224, 224, 1);
 		align-content: center;
 		align-items: center;
-		padding: 0 5px; 
+		padding: 0 5px;
 		cursor: pointer;
 		transition: background-color 0.3s ease-in-out,
 					color 0.3s ease-in-out;

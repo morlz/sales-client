@@ -2,6 +2,8 @@ import api from '@/api'
 import Infinite from '@/lib/Infinite'
 import merge from 'lodash.merge'
 
+import transfer from './transfer'
+
 const state = {
 	infinite: false,
 	filters: [],
@@ -646,9 +648,14 @@ const getters = {
 
 }
 
+const modules = {
+	transfer
+}
+
 export default {
 	state,
 	actions,
 	mutations,
-	getters
+	getters,
+	modules
 }
