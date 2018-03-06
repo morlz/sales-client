@@ -90,6 +90,7 @@
 				:select-fields="local_furniture_selectFields"
 				:local-sort="false"
 				:infinite="!!furniture_cached.length"
+				:selectable="currentTab == 'new'"
 				ref="table"
 				@filter="local_furniture_filterChange"
 				@sortChange="local_furniture_sortChange"
@@ -97,6 +98,10 @@
 				@select="local_furniture_handleFieldSelect"
 				@infinite="furniture_infinity"
 			>
+				<template slot="selected" slot-scope="{ selected, count }">
+					<q-btn color="primary" v-if="count" @click="$store.dispatch('notify', 'Сделано!')">Сделать</q-btn>
+				</template>
+
 				<template slot="cloth1" slot-scope="props">
 					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
 					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
@@ -217,8 +222,9 @@ export default {
 			return rez
 		},
 		furnitureSalonFieldDescriptionFiltred () {
-			if (this.main_auth_settings.showModels)
+			if (this.main_auth_settings.showModels && this.furniture_filters.MODEL)
 				return this.furnitureSalonFieldDescription.filter(el => el.field != 'MODEL')
+
 			return this.furnitureSalonFieldDescription
 		},
 	},

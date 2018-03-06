@@ -1,13 +1,26 @@
 <template>
 	<div class="tableSS">
-		<div class="tableSS__actions">
-
-		</div>
+		<q-slide-transition>
+			<div class="tableSS__actions" v-if="$scopedSlots.selected && selectable" :class="{ 'tableSS__actions-selected' : selectedCount }" v-show="!!selectedCount">
+				<div v-if="selectedCount" class="tableSS__selectedCount">Выбрано {{ selectedCount }} шт.</div>
+				<slot name="selected" :selected="selected" :count="selectedCount"/>
+			</div>
+		</q-slide-transition>
 
 		<tabless-clusterize :content="items" :item-height="itemHeight" class="tableSS__main">
-			<div class="tableSS__row" slot-scope="row" :style="rowStyle" :key="row.itemKey">
+			<div
+				class="tableSS__row"
+				slot-scope="row"
+				:style="rowStyle"
+				:key="row.itemKey"
+				:class="{ 'tableSS__row-selected': selected[row.index] }"
+				@click="clickHandler($event, row.item, row.index - 2)"
+			>
 				<template v-if="row.item && row.item.rowType == 'head'">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</div>
+
+					<q-checkbox v-model="selectAll" v-if="selectable" class="tableSS__checkbox"/>
+
 					<div
 						class="tableSS__item-head"
 						v-for="column, index in columns"
@@ -24,6 +37,9 @@
 
 				<template v-if="row.item && row.item.rowType == 'search' && !minify">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+
+					<div v-if="selectable" class="tableSS__checkbox"/>
+
 					<div class="tableSS__item-search" v-for="column, index in columnsSearchFields">
 						<slot name="search">
 							<q-input
@@ -51,6 +67,9 @@
 
 				<template v-if="row.item && row.item.rowType == 'row'">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+
+					<q-checkbox :value="!!selected[row.index]" @input="changeSelectedRow($event, row)" v-if="selectable" class="tableSS__checkbox"/>
+
 					<div class="tableSS__item" v-for="column, index in columns">
 						{{ column.rowType }}
 						<slot :name="column.field" :row="row.item" :column="column">
@@ -97,40 +116,35 @@
 
 
 <script>
-//<div class="thDelimiter" @mousedown.stop="delimiterMouseDown($event, index)" v-if="false"/>
 import tablessPopover from '@/components/tableSSPopover'
 import tablessClusterize from '@/components/tableSSClusterize'
 import InfiniteLoading from 'vue-infinite-loading'
 import {
 	QInput,
-	QSelect
+	QSelect,
+	QSlideTransition,
+	QCheckbox
 } from 'quasar'
 
 export default {
 	props: {
 		data: {
 			type: Array,
-			default: () => ([])
+			default: a => []
 		},
 		fieldDescription: {
 			type: Array,
-			default: () => ([])
+			default: a => []
 		},
-		onClick: {
-			type: Function
-		},
-		buttons: {
-			type: Array
-		},
+		onClick: Function,
+		buttons: Array,
+		buttonsCondition: Function,
 		minify: {
 			type: Boolean,
 			default: a => false
 		},
 		filters: {
-			default: () => ({})
-		},
-		buttonsCondition: {
-			type: Function
+			default: a => ({})
 		},
 		lineNumbers: {
 			type: Boolean,
@@ -138,15 +152,15 @@ export default {
 		},
 		sortable: {
 			type: Boolean,
-			default: true
+			default: a => true
 		},
 		localSort: {
 			type: Boolean,
-			default: false
+			default: a => false
 		},
 		selectFields: {
 			type: Array,
-			default: () => ([])
+			default: a => []
 		},
 		itemHeight: {
 			type: [Number, String],
@@ -163,6 +177,10 @@ export default {
 		complete: {
 			type: Boolean,
 			default: a => false
+		},
+		selectable: {
+			type: Boolean,
+			default: a => false
 		}
 	},
 	components: {
@@ -170,6 +188,8 @@ export default {
 		tablessPopover,
 		QInput,
 		QSelect,
+		QCheckbox,
+		QSlideTransition,
 		InfiniteLoading
 	},
 	data () {
@@ -184,7 +204,8 @@ export default {
 			delimiter: {
 				mooving: -1
 			},
-			columnWidths: []
+			columnWidths: [],
+			selected: []
 		}
 	},
 	watch: {
@@ -214,6 +235,9 @@ export default {
 			if (this.complete) return
 			if (this.$refs.infiniteLoading)
 				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+		},
+		currentSelected (n) {
+			this.$emit('selected', n)
 		}
 	},
 	computed: {
@@ -255,9 +279,7 @@ export default {
 			if (this.localSort)
 				data.sort((a, b) => {
 					let sortField = this.columns[this.sort.columnIndex].field,
-						returnRez = rez => {
-							return this.sort.type == 'asc' ? rez : -rez
-						},
+						returnRez = rez => this.sort.type == 'asc' ? rez : -rez,
 						sortDataA = this.getFieldData(a, sortField),
 						sortDataB = this.getFieldData(b, sortField),
 						fieldA = typeof sortDataA == 'string' ? sortDataA.toLowerCase() : sortDataA,
@@ -307,11 +329,28 @@ export default {
 			if (this.$scopedSlots.buttons)
 				gridTemplateColumns += 'minmax(50px, max-content) '
 
+			if (this.selectable)
+				gridTemplateColumns = `40px ` + gridTemplateColumns
 			return {
 				height: `${this.itemHeight}px`,
 				gridTemplateColumns,
 				gridTemplateRows: `${this.itemHeight}px`
 			}
+		},
+		selectAll: {
+			get () {
+				return this.selectedCount == this.rows.length
+			},
+			set (n) {
+				for (var i = 2; i < this.rows.length + 2; i++)
+					this.$set(this.selected, i, n)
+			}
+		},
+		selectedCount () {
+			return this.selected.filter(el => el).length
+		},
+		currentSelected () {
+			return this.selected.map((el, index) => el ? this.rows[index - 2] : null).filter(el => el)
 		}
 	},
 	methods: {
@@ -320,6 +359,7 @@ export default {
 			return this.buttonsCondition(row)
 		},
 		clickHandler(e, row, index) {
+			if (index < 0) return
 			if (typeof this.onClick == 'function')
 				this.onClick(e, row, index)
 
@@ -397,6 +437,9 @@ export default {
 				return setTimeout(a => e.loaded(), 200)
 
 			this.$emit('infinite', e)
+		},
+		changeSelectedRow (e, row) {
+			this.$set(this.selected, row.index, e)
 		}
 	},
 	mounted () {
@@ -417,7 +460,21 @@ export default {
 .tableSS {
 	height: 100%;
 	&__actions {
+		margin-top: 10px;
+		height: 50px;
+		display: grid;
+		grid-auto-flow: column;
+		justify-content: space-between;
+		padding: 0 10px;
+		grid-gap: 10px;
+		align-items: center;
+		transition: background-color 0.3s ease-in-out,
+					color 0.3s ease-in-out;
 
+		&-selected {
+			background: #E8F0FE;
+			color: #5A94F5;
+		}
 	}
 
 	&__lineNumber {
@@ -439,6 +496,18 @@ export default {
 		border-bottom: 1px solid rgba(224, 224, 224, 1);
 		align-content: center;
 		align-items: center;
+		padding: 0 5px; 
+		cursor: pointer;
+		transition: background-color 0.3s ease-in-out,
+					color 0.3s ease-in-out;
+
+		&-selected {
+			background: #F5F5F5;
+		}
+
+		&:hover {
+			background: rgba(51,122,183,.1);
+		}
 	}
 
 	&__item {
@@ -453,6 +522,7 @@ export default {
 		cursor: pointer;
 		user-select: none;
 		color: rgba(0, 0, 0, 0.54);
+
 
 		&:hover {
 			> .tableSS__sortIcon {
@@ -486,6 +556,14 @@ export default {
 
 	&__buttons {
 
+	}
+
+	&__checkbox {
+		margin-left: 16px;
+	}
+
+	&__selectedCount {
+		justify-self: start;
 	}
 }
 </style>
