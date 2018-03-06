@@ -2,7 +2,8 @@ import api from '@/api'
 
 const state = {
 	cached: {
-		list: []
+		list: [],
+		places: []
 	},
 	loading: {
 		list: false,
@@ -36,11 +37,21 @@ const actions = {
 
 		if (!res.data || res.data.error) return
 		commit('salon_listSet', res.data)
+	},
+	async salon_getPlaces ({ commit, dispatch, getters }, payload) {
+		if (!payload)
+			payload = getters.auth_currentSalon.ID_SALONA
+
+		let res = await api.salons.getPlaces(payload)
+		if (!res.data || res.data.error) return
+
+		commit('salon_placesSet', res.data)
 	}
 }
 
 const mutations = {
 	salon_listSet: (state, payload) => (state.cached.list = payload, state.all = true),
+	salon_placesSet: (state, payload) => state.cached.places = payload,
 	salon_listUpdate: (state, payload) => state.cached.list = [
 		...state.cached.list.filter(
 			cachedSalon => !payload.reduce(
@@ -58,6 +69,7 @@ const getters = {
 	salon_list_discount: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 10),
 	salon_list_furniture: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10),
 	salon_loadingList: state => state.loading.list,
+	salon_places: state => state.cached.places
 }
 
 export default {

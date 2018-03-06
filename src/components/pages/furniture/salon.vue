@@ -100,7 +100,8 @@
 				@selected="transfer_selectedSet"
 			>
 				<template slot="selected" slot-scope="{ selected, count }">
-					<q-btn color="primary" v-if="count" @click="$store.dispatch('notify', 'Сделано!')">Отметить прибывшие</q-btn>
+					<q-btn color="primary" v-if="count" @click="selectPlaceModal = !selectPlaceModal">Отметить прибывшие</q-btn>
+					<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
 				</template>
 
 				<template slot="cloth1" slot-scope="props">
@@ -119,7 +120,7 @@
 				</template>
 
 				<template slot="buttons" slot-scope="props">
-					<q-btn color="primary" flat @click="furniture_addToCart({ UN: props.row.UN })">
+					<q-btn color="primary" flat @click.stop="furniture_addToCart({ UN: props.row.UN })">
 						<q-icon name="shopping_cart"/>
 					</q-btn>
 				</template>
@@ -140,6 +141,7 @@ import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
+import SelectPlaceForm from '@/components/forms/SelectPlace'
 
 import { QTabs, QTab, QBtn, QIcon } from 'quasar'
 
@@ -159,7 +161,8 @@ export default {
 		QTab,
 		QBtn,
 		PreviewCloth,
-		QIcon
+		QIcon,
+		SelectPlaceForm
 	},
 	mixins: [mixins],
 	data() {
@@ -171,7 +174,8 @@ export default {
 				{ name: "Склад", type: "storage" },
 				{ name: "Все новые", type: "new" },
 				{ name: "Продажи из других салонов", type: "selled" },
-			]
+			],
+			selectPlaceModal: false
 		}
 	},
 	watch: {
@@ -241,7 +245,10 @@ export default {
 			'furniture_getModels',
 			'furniture_getOne',
 			'furniture_addToCart',
-			'furniture_preload'
+			'furniture_preload',
+		]),
+		...mapActions('transfer', [
+			'transfer_take'
 		]),
 		...mapMutations('transfer', [
 			'transfer_selectedSet'

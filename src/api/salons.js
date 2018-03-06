@@ -29,5 +29,14 @@ export default {
 			type: "salons",
 			params
 		})
+	},
+	async getPlaces (id) {
+		return await core.invoke({
+			method: "get",
+			type: 'salon/places',
+			data: {
+				id
+			}
+		})
 	}
 }

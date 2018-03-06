@@ -211,5 +211,12 @@ export default {
 			type: "furniture",
 			data
 		})
+	},
+	async transferTake (data) {
+		return await core.invoke({
+			method: "post",
+			type: "transfer/take",
+			data
+		})
 	}
 }

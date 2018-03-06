@@ -232,6 +232,14 @@ export default {
 			}, 8e2)
 		},
 		rows (n) {
+			if (this.selectable) {
+				let tmp = []
+				for (var i = 0; i < n.length; i++)
+					tmp[i] = false
+
+				this.selected = tmp
+			}
+
 			if (this.complete) return
 			if (this.$refs.infiniteLoading)
 				this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
@@ -339,7 +347,7 @@ export default {
 		},
 		selectAll: {
 			get () {
-				return this.selectedCount == this.rows.length
+				return this.selectedCount == this.rows.length && !!this.selectedCount
 			},
 			set (n) {
 				for (var i = 2; i < this.rows.length + 2; i++)
