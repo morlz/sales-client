@@ -95,13 +95,14 @@
 							<div>Цена оптовая</div>
 							<div class="price" v-loading="furniture_new_loading.price">{{ furniture_new_cached.opt }}</div>
 						</div>
-
-						<el-form-item>
-							<el-button type="primary" :disabled="furniture_new_active.button" @click="furniture_new_addToCart">Создать</el-button>
-						</el-form-item>
 					</el-form>
 				</div>
 			</q-card-main>
+
+			<q-card-actions>
+				<q-btn color="primary" :disabled="furniture_new_active.button" @click="furniture_new_save" v-if="edit">Сохранить</q-btn>
+				<q-btn color="primary" :disabled="furniture_new_active.button" @click="furniture_new_addToCart" v-else>Создать</q-btn>
+			</q-card-actions>
 		</q-card>
 	</div>
 </template>
@@ -117,22 +118,18 @@ import {
 import clothSelectForm from '@/components/forms/clothSelect.vue'
 import palermoConstructForm from '@/components/forms/palermoConstruct.vue'
 import gallery from '@/components/gallery.vue'
-import { QCard, QCardTitle, QCardMain } from 'quasar'
+import { QCard, QCardTitle, QCardMain, QCardActions, QBtn } from 'quasar'
 
 export default {
-	data() {
-		return {}
-	},
 	components: {
 		clothSelectForm,
 		palermoConstructForm,
 		gallery,
 		QCard,
 		QCardTitle,
-		QCardMain
-	},
-	watch: {
-
+		QCardMain,
+		QCardActions,
+		QBtn
 	},
 	computed: {
 		...mapGetters([
@@ -186,6 +183,10 @@ export default {
 		price: {
 			get () { return this.furniture_new_selected.price },
 			set (n) { this.furniture_new_priceSet(n) }
+		},
+		edit: {
+			get () { return this.furniture_new_selected.edit },
+			set (n) { this.furniture_new_editSet(n) }
 		}
 	},
 	methods: {
@@ -195,16 +196,18 @@ export default {
 			'furniture_new_dekorSelect',
 			'furniture_new_init',
 			'furniture_new_clothSelect',
-			'furniture_new_addToCart'
+			'furniture_new_addToCart',
+			'furniture_new_save'
 		]),
 		...mapMutations([
 			'furniture_new_signSet',
 			'furniture_new_countSet',
-			'furniture_new_priceSet'
+			'furniture_new_priceSet',
+			'furniture_new_editSet'
 		])
 	},
 	mounted () {
-		this.furniture_new_init()
+		this.furniture_new_init(this.$route.params.id)
 	}
 }
 </script>

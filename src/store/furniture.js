@@ -1,5 +1,6 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
+import merge from 'lodash.merge'
 
 const state = {
 	infinite: false,
@@ -139,9 +140,11 @@ const actions = {
 	 */
 
 	//инициализация
-	async furniture_new_init ({ commit, dispatch, state }) {
+	async furniture_new_init ({ commit, dispatch, state }, payload) {
 		if (!state.new.cached.models.length)
 			dispatch('furniture_new_getModels')
+
+		commit('furniture_new_editSet', payload ? payload : false)
 	},
 	//получение всех моделей
 	async furniture_new_getModels ({ commit, dispatch }) {
@@ -311,14 +314,17 @@ const actions = {
 		await dispatch('furniture_new_getPrice', payload.index)
 	},
 
-	async furniture_new_addToCart({ commit, dispatch, state, getters }) {
+	async furniture_new_addToCart({ commit, dispatch }) {
+		await dispatch('cart_addItem', await dispatch('furniture_new_collectData'))
+	},
+	async furniture_new_collectData ({ commit, dispatch, state, getters }) {
 		//prepared data
 		//'Vid_stegki' => @$this->params['stejka'],
 		let model = state.new.cached.models.find(model => state.new.selected.model == model.ITEMID),
 			type = state.new.cached.types.find(type => state.new.selected.type == type.CONFIGID) || state.new.selected.type
 				//normal type or palermo
 
-		await dispatch('cart_addItem', {
+		return {
 			type: 'new',
 			model: {
 				id: model.ITEMID,
@@ -343,8 +349,8 @@ const actions = {
 			price: {
 				r: state.new.cached.price,
 				opt: state.new.cached.opt
-			},
-		})
+			}
+		}
 	},
 
 	/*
@@ -388,10 +394,26 @@ const actions = {
 			payload.complete()
 	},
 	async furniture_new_setEdit({ commit, dispatch, state }, payload){
-		await dispatch('furniture_new_waitModels')
+		const getCloth = (payload, index) => {
+			switch (index) {
+				case 0:
+					return payload.TKAN
+					break;
+				case 1:
+					return payload.KOMP
+					break;
+				case 2:
+					return payload.KOMP1
+					break;
+			}
+		}
 
-		if (state.new.cached.models.length) {
-			let model = state.new.cached.models.find(el => el.ITEMNAME == payload.MODEL)
+		let models = await dispatch('furniture_new_waitModels')
+
+		commit('furniture_new_editSet', payload)
+
+		if (models.length) {
+			let model = models.find(el => el.ITEMNAME == payload.MODEL)
 			if (!model)
 				return dispatch('alert', 'Модель не надена')
 
@@ -413,21 +435,6 @@ const actions = {
 		}
 
 		if (+state.new.cached.clothCount) {
-			const getCloth = (payload, index) => {
-				console.log(payload);
-				switch (index) {
-					case 0:
-						return payload.TKAN
-					 	break;
-					case 1:
-						return payload.KOMP
-					 	break;
-					case 2:
-						return payload.KOMP1
-					 	break;
-				}
-			}
-
 			for (var index = 0; index < +state.new.cached.clothCount; index++) {
 				let cloth = getCloth(payload, index)
 				let data = await dispatch('furniture_new_getClothById', { index, cloth })
@@ -438,18 +445,16 @@ const actions = {
 			}
 		}
 
-
 		commit('furniture_new_priceSet', { r: +payload.CENA, opt: +payload.cenaOpt })
 		commit('furniture_new_signSet', payload.COMMENT)
-		return console.log({ ...payload });
 	},
 
 	furniture_new_waitModels ({ state }) {
 		return new Promise((resolve, reject) => {
 			let checkModels = a => {
-					if (state.new.cached.models) {
+					if (state.new.cached.models.length) {
 						clearInterval(waitModels)
-						resolve()
+						resolve(state.new.cached.models)
 					}
 				},
 				waitModels = setInterval(checkModels, 100)
@@ -465,6 +470,17 @@ const actions = {
 
 		if (!res.data || res.data.error) return
 		return res.data
+	},
+	async furniture_new_save ({ commit, dispatch }) {
+		let data = await dispatch('furniture_new_collectData')
+		let res = await api.furnitures.updateZak( merge(data, { id: state.new.selected.edit.ID }) )
+		if (!res.data || res.data.error) return
+
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		router.push(`/docs/invoices/${state.new.selected.edit.INVOICE_ID}`)
+		dispatch('notify', 'Успешно изменено')
 	}
 }
 
@@ -519,6 +535,7 @@ const mutations = {
 	furniture_new_clothSelect: (state, payload) => state.new.selected.cloth[payload.index] = payload.data,
 	furniture_new_signSet: (state, payload) => state.new.selected.sign = payload,
 	furniture_new_countSet: (state, payload) => state.new.selected.count = payload,
+	furniture_new_editSet: (state, payload) => state.new.selected.edit = payload,
 	furniture_new_priceSet: (state, { r, opt }) => {
 		if (r) {
 			state.new.selected.price = r

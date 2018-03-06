@@ -204,5 +204,12 @@ export default {
 				price
 			}
 		})
+	},
+	async updateZak (data) {
+		return await core.invoke({
+			method: "put",
+			type: "furniture",
+			data
+		})
 	}
 }

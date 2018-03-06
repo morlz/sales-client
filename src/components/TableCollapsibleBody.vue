@@ -1,7 +1,7 @@
 <template>
 <div class="tableCollapsible__body">
 	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows" :border-open="borderOpen">
-		<div class="tableCollapsible__rowColumnStart" v-if="$scopedSlots.start">
+		<div class="tableCollapsible__rowColumnStart" v-if="$scopedSlots.start({ row: {} })">
 			<slot name="start" :row="row"/>
 		</div>
 
@@ -9,7 +9,7 @@
 			{{ getFieldData(row, column) }}
 		</div>
 
-		<div class="tableCollapsible__rowColumnEnd" v-if="$scopedSlots.end">
+		<div class="tableCollapsible__rowColumnEnd" v-if="$scopedSlots.end({ row: {} })">
 			<slot name="end" :row="row"/>
 		</div>
 
@@ -56,9 +56,6 @@ export default {
 			if (this.$refs.rows && this.accordion)
 				this.$refs.rows.map((vm, vmIndex) => index != vmIndex ? vm.$emit('wannaClose'): null)
 		}
-	},
-	mounted () {
-
 	}
 }
 </script>

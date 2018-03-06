@@ -11,7 +11,7 @@
 	</table-collapsible-head>
 
 	<table-collapsible-body :columns="columns" :rows="rows" :accordion="accordion" :borderOpen="borderOpen">
-		<template slot="start" slot-scope="props">
+		<template slot="start" slot-scope="props" v-if="$scopedSlots.start">
 			<slot name="start" :row="props.row"/>
 		</template>
 
@@ -19,7 +19,7 @@
 			<slot :row="props.row"/>
 		</template>
 
-		<template slot="end" slot-scope="props">
+		<template slot="end" slot-scope="props" v-if="$scopedSlots.end">
 			<slot name="end" :row="props.row"/>
 		</template>
 	</table-collapsible-body>
@@ -79,7 +79,7 @@ export default {
 <style lang="less">
 .tableCollapsible {
 	&-mobile {
-		
+
 	}
 }
 </style>
