@@ -6,7 +6,16 @@
 	<q-window-resize-observable @resize="app_view_resize" />
 
 	<transition name="fadeZoom" appear key="mainTransition">
-		<q-layout view="lhh LpR lff" v-if="logined" :left-style="menuWrapperStyle" :left-class="{ menuWrapper: true }" v-model="open" ref="layout" class="app">
+		<q-layout
+			view="lhh LpR lff"
+			v-if="logined"
+			:left-style="menuWrapperStyle"
+			:left-class="{ menuWrapper: true }"
+			:header-class="{ 'app__headerNoShadow' : !app_layout_headerShadow }"
+			v-model="open"
+			ref="layout"
+			class="app"
+		>
 			<slot name="menu" slot="left"/>
 			<slot name="header" slot="header"/>
 
@@ -72,7 +81,8 @@ export default {
 			'logined',
 			'nav_open',
 			'app_view_mobile',
-			'app_view_desktop'
+			'app_view_desktop',
+			'app_layout_headerShadow'
 		]),
 		open: {
 			get () {
@@ -136,6 +146,10 @@ export default {
 		&__content {
 			height: 100%;
 			overflow: auto;
+		}
+
+		&__headerNoShadow {
+			box-shadow: none;
 		}
     }
 

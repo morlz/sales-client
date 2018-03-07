@@ -124,4 +124,42 @@ export default {
 			data
 		})
 	},
+	async getGroups () {
+		return await core.invoke({
+			method: "get",
+			type: "role/groups"
+		})
+	},
+	async createGroup (data) {
+		return await core.invoke({
+			method: "post",
+			type: "role/create-group",
+			data
+		})
+	},
+	async deleteGroup (id) {
+		return await core.invoke({
+			method: "delete",
+			type: "role/delete-group",
+			data: {
+				id
+			}
+		})
+	},
+	async updateGroup (data) {
+		return core.invoke({
+			method: "put",
+			type: "role/update-group",
+			data
+		})
+	},
+	async saveGroupsState (groups) {
+		return core.invoke({
+			method: "put",
+			type: "role/save-groups-state",
+			data: {
+				groups
+			}
+		})
+	}
 }

@@ -125,15 +125,15 @@ const state = {
 					can: { lvl: 1, action: "Manager" }
 				},
 				{
-					name: "Роли",
-					path: "/admin/roles",
-					icon: "el-icon-roles",
-					can: { lvl: 1, action: "Role" }
+					name: "Настройка прав",
+					path: "/admin/permissions",
+					icon: "group_work",
+					can: { lvl: 1, action: "Group" }
 				},
 				{
 					name: "Тестирование",
 					path: "/admin/tests",
-					icon: "el-icon-roles",
+					icon: "fa-bug",
 					can: { lvl: 1, action: "Role" }
 				},
 			]

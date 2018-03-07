@@ -21,8 +21,8 @@ import profile 			from '@/components/pages/main/profile.vue'
 import p404 			from '@/components/pages/main/p404.vue'
 import home 			from '@/components/pages/main/home.vue'
 
-import roles 			from '@/components/pages/admin/roles.vue'
 import personal 		from '@/components/pages/admin/personal.vue'
+import permissions		from '@/components/pages/admin/Permissions.vue'
 import tests 			from '@/components/pages/admin/tests.vue'
 
 const scrollBehavior = t => {
@@ -37,8 +37,8 @@ let movements = { ...invoices, name: "movements" },
 
 let routes = [
 	{ path: '/', 							component: home, 				meta: { name: "Главная" } },
-	{ path: '/admin/roles/:id?', 			component: roles, 				meta: { name: "Роли" } },
 	{ path: '/admin/personal/:id?', 		component: personal, 			meta: { name: "Перонал" } },
+	{ path: '/admin/permissions/', 			component: permissions, 		meta: { name: "Настройка прав" } },
 	{ path: '/admin/tests/', 				component: tests, 				meta: { name: "Тест" } },
 	{ path: '/profile/:id?', 				component: profile, 			meta: { name: "Профиль" } },
 	{ path: '/furniture/allocation', 		component: allocation, 			meta: { name: "Распределение грузов" } },

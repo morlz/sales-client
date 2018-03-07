@@ -1,4 +1,5 @@
 import api from '@/api'
+import salonGroups from './salonGroups'
 
 const compare = (a, b) => {
 	if (a.id < b.id)
@@ -242,7 +243,7 @@ const getters = {
 		let relation = state.controllersSetup.find(itm => itm.action_id == state.selected.id && itm.role_id == el.id)
 		el.access_level = relation ? relation.access_level : 0
 
-		return el
+		return { ...el }
 	}).sort(compare),
 	permissions_controllers: state => state.controllers.map(el => {
 		el.selected = state.selected.type == "controllers" && el.id == state.selected.id
@@ -251,7 +252,7 @@ const getters = {
 		let relation = state.controllersSetup.find(itm => itm.role_id == state.selected.id && itm.action_id == el.id)
 		el.access_level = relation ? relation.access_level : 0
 
-		return el
+		return { ...el }
 	}).sort(compare),
 	permissions_ranges: state => state.ranges,
 	permissions_rolesSetup: state => state.rangesSetup,
@@ -265,9 +266,14 @@ const getters = {
 	permissions_loading_ranges: state => state.loading.ranges,
 }
 
+const modules = {
+	salonGroups
+}
+
 export default {
 	state,
 	actions,
 	mutations,
-	getters
+	getters,
+	modules
 }
