@@ -1,22 +1,14 @@
 <template>
 	<div class="tableSS">
 		<q-slide-transition>
-			<div class="tableSS__actions" v-if="$scopedSlots.selected && selectable" :class="{ 'tableSS__actions-selected' : selectedCount }" v-show="!!selectedCount">
-				<div v-if="selectedCount" class="tableSS__selectedCount">Выбрано {{ selectedCount }} шт.</div>
-				<slot name="selected" :selected="selected" :count="selectedCount"/>
-			</div>
-		</q-slide-transition>
+			<div v-show="showHeader" class="tableSS__header">
+				<div class="tableSS__actions" :class="{ 'tableSS__actions-selected' : selectedCount }">
+					<div class="tableSS__selectedCount" v-if="selectedCount">Выбрано {{ selectedCount }} шт.</div>
+					<div class="tableSS__rowsCount" v-else>{{ rows.length }} строк.</div>
+					<slot name="selected" :selected="selected" :count="selectedCount"/>
+				</div>
 
-		<tabless-clusterize :content="items" :item-height="itemHeight" class="tableSS__main">
-			<div
-				class="tableSS__row"
-				slot-scope="row"
-				:style="rowStyle"
-				:key="row.itemKey"
-				:class="{ 'tableSS__row-selected': selected[row.index] }"
-				@click="clickHandler($event, row.item, row.index - 2)"
-			>
-				<template v-if="row.item && row.item.rowType == 'head'">
+				<div class="tableSS__head" :style="rowStyle">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</div>
 
 					<q-checkbox v-model="selectAll" v-if="selectable" class="tableSS__checkbox"/>
@@ -33,9 +25,9 @@
 					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
 						<slot name="buttons"/>
 					</div>
-				</template>
+				</div>
 
-				<template v-if="row.item && row.item.rowType == 'search' && !minify">
+				<div class="tableSS__search" :style="rowStyle">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
 
 					<div v-if="selectable" class="tableSS__checkbox"/>
@@ -62,9 +54,19 @@
 					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
 						<slot name="buttons"/>
 					</div>
-				</template>
+				</div>
+			</div>
+		</q-slide-transition>
 
-
+		<tabless-clusterize :content="items" :item-height="itemHeight" class="tableSS__main" v-if="big" ref="main" :style="mainStyle" @mousewheel.native="scrollHandler">
+			<div
+				class="tableSS__row"
+				slot-scope="row"
+				:style="rowStyle"
+				:key="row.itemKey"
+				:class="{ 'tableSS__row-selected': selected[row.index] }"
+				@click="clickHandler($event, row.item, row.index - 2)"
+			>
 				<template v-if="row.item && row.item.rowType == 'row'">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
 
@@ -107,9 +109,65 @@
 			<infinite-loading slot="end" :distance="2000" @infinite="infiniteHandler" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner"/>
+				<q-spinner-ball :size="50" slot="spinner" class="spinner"/>
 			</infinite-loading>
 		</tabless-clusterize>
+
+
+		<div class="tableSS__main" v-if="!big" @mousewheel="scrollHandler" :style="mainStyle">
+			<div
+				class="tableSS__row"
+				v-for="item, index in items"
+				:style="rowStyle"
+				:key="index"
+				:class="{ 'tableSS__row-selected': selected[index] }"
+				@click="clickHandler($event, item, index - 2)"
+			>
+				<template v-if="item && item.rowType == 'row'">
+					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+
+					<q-checkbox :value="!!selected[index]" @input="changeSelectedRow($event, index)" v-if="selectable" class="tableSS__checkbox"/>
+
+					<div class="tableSS__item" v-for="column, index in columns">
+						{{ column.rowType }}
+						<slot :name="column.field" :row="item" :column="column">
+							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(item, column.field, column.format) }}</div>
+							<div v-if="column.type == 'html'" v-html="getFieldData(item, column.field, column.format)"/>
+							<tabless-popover
+								v-if="column.type == 'array'"
+								:one="getFieldData(item, column.field, column.format).length < 2"
+								:arr="getFieldData(item, column.field, column.format)"
+								:column="column"
+								:fields="column.fields"
+								:label="column.label"
+								/>
+						</slot>
+					</div>
+
+					<div class="tableSS__buttons" v-if="local_buttonsCondition(item)">
+						<slot name="buttons" :row="item">
+							<el-button
+								size="small"
+								@click.stop="button.click($event, item)"
+								v-for="button, index in buttonRedused"
+								:key="index"
+								:class="button.class"
+								:type="button.type"
+								v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(item, button.loading.field) )"
+							>
+								{{ button.name }}
+							</el-button>
+						</slot>
+					</div>
+				</template>
+			</div>
+
+			<infinite-loading slot="end" :distance="2000" @infinite="infiniteHandler" ref="infiniteLoading">
+				<div class="end" slot="no-results" />
+				<div class="end" slot="no-more" />
+				<q-spinner-ball :size="50" slot="spinner" class="spinner"/>
+			</infinite-loading>
+		</div>
 	</div>
 </template>
 
@@ -123,7 +181,8 @@ import {
 	QInput,
 	QSelect,
 	QSlideTransition,
-	QCheckbox
+	QCheckbox,
+	QSpinnerBall
 } from 'quasar'
 
 export default {
@@ -181,6 +240,10 @@ export default {
 		selectable: {
 			type: Boolean,
 			default: a => false
+		},
+		itemsBigLimit: {
+			type: Number,
+			default: a => 1000
 		}
 	},
 	components: {
@@ -190,7 +253,8 @@ export default {
 		QSelect,
 		QCheckbox,
 		QSlideTransition,
-		InfiniteLoading
+		InfiniteLoading,
+		QSpinnerBall
 	},
 	data () {
 		return {
@@ -205,7 +269,8 @@ export default {
 				mooving: -1
 			},
 			columnWidths: [],
-			selected: []
+			selected: [],
+			showHeader: true
 		}
 	},
 	watch: {
@@ -249,6 +314,24 @@ export default {
 		}
 	},
 	computed: {
+		mainStyle () {
+			return {
+				height: `calc(100%${this.showHeader ? ' - 160px' : ''})`
+			}
+		},
+		big () {
+			if (this.rows.length > this.itemsBigLimit) {
+				this.$nextTick(a => {
+					if (this.$refs.main && this.$refs.main.$el && this.$refs.main.$el.scrollTop == 0)
+						this.$refs.main.$el.scrollTop = this.itemsBigLimit * +this.itemHeight
+				})
+
+				return true
+			}
+
+
+			return false
+		},
 		buttonRedused() {
 			return this.buttons || []
 		},
@@ -265,11 +348,11 @@ export default {
 				sortType: this.sort.type,
 				sortColumn: this.sort.columnIndex != -1 ?
 					this.columns[this.sort.columnIndex].type == 'array' ?
-						this.columns[this.sort.columnIndex].field + '.' + this.columns[this.sort.columnIndex].fields[0] :
-						this.columns[this.sort.columnIndex].fields && this.columns[this.sort.columnIndex].fields.output ?
-							this.columns[this.sort.columnIndex].fields.output
-						:	this.columns[this.sort.columnIndex].field
-					 : -1
+							this.columns[this.sort.columnIndex].field + '.' + this.columns[this.sort.columnIndex].fields[0]
+						:	this.columns[this.sort.columnIndex].fields && this.columns[this.sort.columnIndex].fields.output ?
+								this.columns[this.sort.columnIndex].fields.output
+							:	this.columns[this.sort.columnIndex].field
+					: -1
 			}
 		},
 		columns() {
@@ -320,22 +403,30 @@ export default {
 			})
 		},
 		items () {
-			return [
-				{ rowType: 'head' },
-				{ rowType: 'search'},
-				...this.sortedRows
-			]
+			return this.sortedRows
 		},
 		rowStyle () {
+
 			const getElWidth = el => {
 				if (typeof el.width == 'array') return `minmax(${el.width[0]}px, ${el.width[1]}px) `
 				if (typeof el.width == 'number') return `minmax(${el.width}px, 300px) `
 				if (typeof el.width == 'string') return `${el.width} `
 				return el.width + ' '
 			}
+
+			/*
+			const getElWidth = el => {
+				if (typeof el.width == 'array') return `${el.width[0]}px `
+				if (typeof el.width == 'number') return `${el.width}px `
+				if (typeof el.width == 'string') return `${el.width} `
+				return el.width + ' '
+			}
+			*/
+
 			let gridTemplateColumns = this.columns.reduce((prev, el) => prev + getElWidth(el), '')
 			if (this.$scopedSlots.buttons)
 				gridTemplateColumns += 'minmax(50px, max-content) '
+				//gridTemplateColumns += 'minmax(50px, max-content) '
 
 			if (this.selectable)
 				gridTemplateColumns = `40px ` + gridTemplateColumns
@@ -350,7 +441,7 @@ export default {
 				return this.selectedCount == this.rows.length && !!this.selectedCount
 			},
 			set (n) {
-				for (var i = 2; i < this.rows.length + 2; i++)
+				for (var i = 0; i < this.rows.length; i++)
 					this.$set(this.selected, i, n)
 			}
 		},
@@ -358,7 +449,7 @@ export default {
 			return this.selected.filter(el => el).length
 		},
 		currentSelected () {
-			return this.selected.map((el, index) => el ? this.rows[index - 2] : null).filter(el => el)
+			return this.selected.map((el, index) => el ? this.rows[index] : null).filter(el => el)
 		}
 	},
 	methods: {
@@ -446,8 +537,11 @@ export default {
 
 			this.$emit('infinite', e)
 		},
-		changeSelectedRow (e, row) {
-			this.$set(this.selected, row.index, e)
+		changeSelectedRow (e, index) {
+			this.$set(this.selected, index, e)
+		},
+		scrollHandler (e) {
+			this.showHeader = e.wheelDeltaY > 0
 		}
 	},
 	mounted () {
@@ -466,36 +560,28 @@ export default {
 
 
 .tableSS {
+	width: 100%;
 	height: 100%;
-	&__actions {
-		margin-top: 10px;
-		height: 50px;
-		display: grid;
-		grid-auto-flow: column;
-		justify-content: space-between;
-		padding: 0 10px;
-		grid-gap: 10px;
-		align-items: center;
-		transition: background-color 0.3s ease-in-out,
-					color 0.3s ease-in-out;
-
-		&-selected {
-			background: #E8F0FE;
-			color: #5A94F5;
-		}
-	}
-
+	overflow-x: auto;
+	overflow-y: hidden;
+	background: #fff;
 	&__lineNumber {
 
 	}
 
-	&__main {
-		height: 100%;
-		overflow-x: hidden;
+	&__header {
+		overflow: hidden;
+		width: min-content;
+		min-width: 100%;
 	}
 
-	&__content {
-		display: grid;
+	&__main {
+		overflow-x: hidden;
+		overflow-y: auto;
+		transition: height 0.3s ease-in-out;
+		transform: translateZ(0);
+		width: min-content;
+		min-width: 100%;
 	}
 
 	&__row {
@@ -504,7 +590,7 @@ export default {
 		border-bottom: 1px solid rgba(224, 224, 224, 1);
 		align-content: center;
 		align-items: center;
-		padding: 0 5px;
+		padding: 0 15px;
 		cursor: pointer;
 		transition: background-color 0.3s ease-in-out,
 					color 0.3s ease-in-out;
@@ -524,13 +610,47 @@ export default {
 		overflow: hidden;
 	}
 
-	&__item-head {
+	&__item-buttons {
+		height: 0;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	&__actions {
+		height: 50px;
+		display: grid;
+		grid-auto-flow: column;
+		justify-content: space-between;
+		padding: 0 10px;
+		grid-gap: 10px;
+		width: max-content;
+		min-width: 100%;
+		align-items: center;
+		transition: background-color 0.3s ease-in-out,
+					color 0.3s ease-in-out;
+
+		&-selected {
+			background: #E8F0FE;
+			color: #5A94F5;
+		}
+	}
+
+	&__head, &__search {
+		display: grid;
 		white-space: nowrap;
+		align-content: center;
+		align-items: center;
+		height: 50px;
+		width: min-content;
+		padding: 0 15px;
+		min-width: 100%;
+	}
+
+	&__head {
 		font-size: 12px;
 		cursor: pointer;
 		user-select: none;
 		color: rgba(0, 0, 0, 0.54);
-
 
 		&:hover {
 			> .tableSS__sortIcon {
@@ -540,17 +660,9 @@ export default {
 	}
 
 	&__item-search {
-		white-space: nowrap;
-
 		> div {
 			margin: 0;
 		}
-	}
-
-	&__item-buttons {
-		height: 0;
-		opacity: 0;
-		pointer-events: none;
 	}
 
 	&__sortIcon {
@@ -570,8 +682,10 @@ export default {
 		margin-left: 16px;
 	}
 
-	&__selectedCount {
+	&__selectedCount, &__rowsCount {
 		justify-self: start;
+		margin-left: 10px;
 	}
+
 }
 </style>

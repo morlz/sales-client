@@ -1,6 +1,10 @@
-const throttle = require('lodash.throttle')
+import throttle from 'lodash.throttle'
+import isEqual from 'lodash.isequal'
+import { QSpinnerBall } from 'quasar'
 
-let cache = []
+
+let cache = [],
+	lastState = false
 
 export default {
 	props: {
@@ -10,7 +14,7 @@ export default {
 		},
 		chunkSize: {
 			type: Number,
-			default: a => 30
+			default: a => 4
 		},
 		itemHeight: {
 			type: [String, Number],
@@ -18,7 +22,7 @@ export default {
 		},
 		outerRenderCount: {
 			type: [String, Number],
-			default: a => 3
+			default: a => 2
 		}
 	},
 	watch: {
@@ -28,7 +32,7 @@ export default {
 	},
 	computed: {
 		scrollHandlerThrottled () {
-			return throttle(this.scrollHandler, 300, {
+			return throttle(this.scrollHandler, 30, {
 				trailing: true
 			})
 		}
@@ -38,43 +42,81 @@ export default {
 			cache = [...(n || this.content)]
 			this.$forceUpdate()
 		},
-		scrollHandler () {
-			this.$forceUpdate()
+		scrollHandler (e) {
+			let state = this.getState()
+			if (!isEqual(lastState, state.items))
+				this.$forceUpdate()
+		},
+		getState () {
+			let domEl = document.getElementById('clusterize')
+
+			let chunkSize = this.chunkSize,
+				itemsCount = this.content.length,
+				chunksCount = Math.ceil(itemsCount / chunkSize),
+				outerRenderCount = this.outerRenderCount,
+				chunkHeight = chunkSize * this.itemHeight
+
+			let offsetFromStart = Math.floor((domEl ? domEl.scrollTop : 0) / chunkHeight),
+				showCount = Math.ceil((domEl ? domEl.offsetHeight : 0) / chunkHeight),
+				offsetFromEnd = chunksCount - offsetFromStart - showCount
+
+			if (showCount > chunksCount)
+				showCount = chunksCount
+
+			let items = []
+			for (let chunk = offsetFromStart - outerRenderCount; chunk < offsetFromStart + showCount + outerRenderCount; chunk++)
+				for (let item = 0; item < chunkSize; item++)
+					if (chunk * chunkSize + item < itemsCount && chunk * chunkSize + item >= 0) items.push(chunk * chunkSize + item)
+
+			let offset = {
+				top: 0,
+				bottom: 0
+			}
+
+			if (!items.includes(0) && items.length)
+				offset.top -= 90
+
+			if (!items.includes(cache.length - 3) && items.length)
+				offset.bottom -= 90
+
+			return {
+				items,
+				style: {
+					marginTop: (offsetFromStart - outerRenderCount < 0 ? 0 : offsetFromStart - outerRenderCount) * chunkHeight + offset.top + 'px',
+					marginBottom: (offsetFromEnd - outerRenderCount > chunksCount ? chunksCount : offsetFromEnd - outerRenderCount) * chunkHeight + offset.bottom + 'px'
+				}
+			}
 		}
 	},
 	mounted () {
 		this.createCache()
 	},
 	render(h) {
-		let domEl = document.getElementById('clusterize'),
-			cachedSlot = current => typeof current !== 'object' ?
-						this.$scopedSlots.default({
-							item: cache[current],
-							index: current
-						})
-					:	current
+		let t = Date.now()
 
-		let chunkSize = this.chunkSize,
-			itemsCount = this.content.length,
-			chunksCount = Math.ceil(itemsCount / chunkSize),
-			outerRenderCount = this.outerRenderCount,
-			chunkHeight = chunkSize * this.itemHeight
+		const cachedSlot = current => typeof current !== 'object' ?
+					this.$scopedSlots.default({
+						item: cache[current],
+						index: current
+					})
+				:	current
 
-		let offsetFromStart = Math.floor((domEl ? domEl.scrollTop : 0) / chunkHeight),
-			showCount = Math.ceil((domEl ? domEl.offsetHeight : 0) / chunkHeight),
-			offsetFromEnd = chunksCount - offsetFromStart - showCount
+		const spinnerOptions = {
+			class: { spinner: true },
+			props: { size: 50 },
+		}
 
-		if (showCount > chunksCount)
-			showCount = chunksCount
+		let { items, style } = this.getState()
 
-		let items = []
-		for (let chunk = offsetFromStart - outerRenderCount; chunk < offsetFromStart + showCount + outerRenderCount; chunk++)
-			for (let item = 0; item < chunkSize; item++)
-				if (chunk * chunkSize + item < itemsCount && chunk * chunkSize + item >= 0) items.push(chunk * chunkSize + item)
+		lastState = items
 
-		items.push(this.$slots.end)
+		if (!items.includes(0) && items.length)
+			items.unshift( h( QSpinnerBall, spinnerOptions ) )
 
-		return h(
+		if (!items.includes(cache.length - 3) && items.length)
+			items.push( h( QSpinnerBall, spinnerOptions ) )
+
+		let res = h(
 			'div', {
 				class: 'clusterize',
 				style: {
@@ -88,18 +130,22 @@ export default {
 					id: 'clusterize'
 				}
 			}, [
+				this.$slots.start,
 				h(
 					'div', {
 						class: 'clusterize__scroll',
-						style: {
-							marginTop: (offsetFromStart - outerRenderCount < 0 ? 0 : offsetFromStart - outerRenderCount) * chunkHeight + 'px',
-							marginBottom: (offsetFromEnd - outerRenderCount > chunksCount ? chunksCount : offsetFromEnd - outerRenderCount) * chunkHeight + 'px'
-						},
+						style,
 						ref: 'scroll'
 					},
 					items.map(current => cachedSlot(current))
-				)
+				),
+				this.$slots.end
 			]
 		)
+
+		t = Date.now() - t
+
+		console.log(`[cluster] [render] rendered ${items.length} items in ${t} ms ~${(1e3 / t).toFixed()} fps`)
+		return res
 	}
 }

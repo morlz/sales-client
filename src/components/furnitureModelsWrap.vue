@@ -68,12 +68,11 @@ export default {
 <style lang="less">
 .modelsWrapper {
 	width: 100%;
-	height: 100%;
-	box-sizing: border-box;
+	height: ~"calc(100vh - 100px)";
 	display: grid;
-	grid-template-columns: 180px 1fr;
-	grid-template-rows: 100%;
-	grid-gap: 10px;
+	grid-template-columns: 180px ~"calc(100% - 180px)";
+	grid-template-rows: ~"calc(100vh - 100px)";
+	align-items: start;
 	.modelList {
 		height: ~"calc(100% - 10px)";
 		overflow-y: auto;
@@ -100,7 +99,7 @@ export default {
 		}
 	}
 	.content {
-
+		height: 100%;
 	}
 }
 

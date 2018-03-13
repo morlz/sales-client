@@ -146,6 +146,7 @@ body.with-layout-side-opened {
 			}
 		}
 	}
+
 	&-list {
 		&-highlight {
 			.q-item {
@@ -154,6 +155,10 @@ body.with-layout-side-opened {
 				}
 			}
 		}
+	}
+
+	&-card {
+		background: #fff;
 	}
 }
 
@@ -212,6 +217,8 @@ h2 {
 
 .spinner {
     height: 50px;
+	margin: 40px auto;
+	display: block;
 }
 
 .infoGrid {

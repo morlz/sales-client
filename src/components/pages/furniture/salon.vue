@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper">
+<div class="AppContent">
 	<div class="oneFurnitureWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -64,15 +64,7 @@
 
 
 	<div class="manyFurnitureWrapper" v-if="!isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/salon' }">В салоне</router-link></li>
-		</ul>
-
-		<furniture-models-switch/>
-
-		<q-tabs v-model="currentTab" inverted>
+		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 		</q-tabs>
 
@@ -81,50 +73,52 @@
 			@select="local_furniture_filtersModelSet"
 			:loading="furniture_loadingModels"
 			:models="furniture_models">
-			<tabless
-				key="salon"
-				:data="furniture_cached"
-				:complete="furniture_complete"
-				:field-description="furnitureSalonFieldDescriptionFiltred"
-				:filters="furniture_filters"
-				:select-fields="local_furniture_selectFields"
-				:local-sort="false"
-				:infinite="!!furniture_cached.length"
-				:selectable="currentTab == 'new'"
-				ref="table"
-				@filter="local_furniture_filterChange"
-				@sortChange="local_furniture_sortChange"
-				@onClick="routerGoId"
-				@select="local_furniture_handleFieldSelect"
-				@infinite="furniture_infinity"
-				@selected="transfer_selectedSet"
-			>
-				<template slot="selected" slot-scope="{ selected, count }">
-					<q-btn color="primary" v-if="count" @click="selectPlaceModal = !selectPlaceModal">Отметить прибывшие</q-btn>
-					<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
-				</template>
+			<q-card class="manyFurnitureWrapper__card">
+				<tabless
+					key="salon"
+					:data="furniture_cached"
+					:complete="furniture_complete"
+					:field-description="furnitureSalonFieldDescriptionFiltred"
+					:filters="furniture_filters"
+					:select-fields="local_furniture_selectFields"
+					:local-sort="false"
+					:infinite="!!furniture_cached.length"
+					:selectable="currentTab == 'new'"
+					ref="table"
+					@filter="local_furniture_filterChange"
+					@sortChange="local_furniture_sortChange"
+					@onClick="routerGoId"
+					@select="local_furniture_handleFieldSelect"
+					@infinite="furniture_infinity"
+					@selected="transfer_selectedSet"
+				>
+					<template slot="selected" slot-scope="{ selected, count }">
+						<q-btn color="primary" v-if="count" @click="selectPlaceModal = !selectPlaceModal">Отметить прибывшие</q-btn>
+						<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
+					</template>
 
-				<template slot="cloth1" slot-scope="props">
-					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-				</template>
+					<template slot="cloth1" slot-scope="props">
+						<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
+						<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+					</template>
 
-				<template slot="cloth2" slot-scope="props">
-					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-				</template>
+					<template slot="cloth2" slot-scope="props">
+						<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
+						<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+					</template>
 
-				<template slot="cloth3" slot-scope="props">
-					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-				</template>
+					<template slot="cloth3" slot-scope="props">
+						<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
+						<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+					</template>
 
-				<template slot="buttons" slot-scope="props">
-					<q-btn color="primary" flat @click.stop="furniture_addToCart({ UN: props.row.UN })">
-						<q-icon name="shopping_cart"/>
-					</q-btn>
-				</template>
-			</tabless>
+					<template slot="buttons" slot-scope="props">
+						<q-btn color="primary" flat @click.stop="furniture_addToCart({ UN: props.row.UN })">
+							<q-icon name="shopping_cart"/>
+						</q-btn>
+					</template>
+				</tabless>
+		</q-card>
 		</furniture-models-wrap>
 	</div>
 </div>
@@ -143,7 +137,7 @@ import fieldDesription from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
 import SelectPlaceForm from '@/components/forms/SelectPlace'
 
-import { QTabs, QTab, QBtn, QIcon } from 'quasar'
+import { QTabs, QTab, QBtn, QIcon, QCard, QCardMain } from 'quasar'
 
 let {
 	furnitureSalonFieldDescription
@@ -162,7 +156,9 @@ export default {
 		QBtn,
 		PreviewCloth,
 		QIcon,
-		SelectPlaceForm
+		SelectPlaceForm,
+		QCard,
+		QCardMain
 	},
 	mixins: [mixins],
 	data() {
@@ -245,13 +241,16 @@ export default {
 			'furniture_getModels',
 			'furniture_getOne',
 			'furniture_addToCart',
-			'furniture_preload',
+			'furniture_preload'
 		]),
 		...mapActions('transfer', [
 			'transfer_take'
 		]),
 		...mapMutations('transfer', [
 			'transfer_selectedSet'
+		]),
+		...mapMutations([
+			'app_layout_headerShadowSet'
 		]),
 		async local_furniture_filterChange (n) {
 			this.lastFurnituresFilters = n
@@ -271,9 +270,13 @@ export default {
 		}
 	},
 	async mounted () {
+		this.app_layout_headerShadowSet(false)
 		await this.furniture_init(this.oneId)
 		this.lastFurnituresFilters = this.furniture_filters
 	},
+	beforeDestroy() {
+		this.app_layout_headerShadowSet(true)
+	}
 }
 </script>
 
@@ -303,7 +306,11 @@ export default {
 	}
 	.manyFurnitureWrapper {
 		width: 100%;
-		height: ~"calc(100% - 100px)";
+		height: 100%;
+
+		&__card {
+			height: ~"calc(100vh - 110px)";
+		}
 	}
 	@media screen and (max-width: 1250px) {
 		.oneFurnitureWrapper {
