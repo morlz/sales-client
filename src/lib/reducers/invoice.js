@@ -38,7 +38,7 @@ export default invoice => {
 			return this.shipments.reduce((prev, el) => prev + +el.SUM_DOST, 0)
 		},
 		shipment () {
-			return this.shipments[0]
+			return this.shipments[0] || {}
 		},
 		productReadyDate () {
 			return this.shipment().PL_OTGR

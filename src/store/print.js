@@ -37,6 +37,7 @@ const actions = {
 			let rawHtml = Mustache.render(tpl.html, data)
 			dispatch('print_crateWindow', rawHtml)
 		} catch (err) {
+			console.log(err);
 			dispatch('alert', err)
 		}
 	},

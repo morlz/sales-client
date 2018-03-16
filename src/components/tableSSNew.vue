@@ -537,7 +537,9 @@ export default {
 			this.$set(this.selected, index, e)
 		},
 		scrollHandler (e) {
-			this.showHeader = e.wheelDeltaY > 0
+			e = e.wheelDeltaY > 0
+			if (e !== this.showHeader)
+				this.showHeader = e
 		}
 	},
 	mounted () {
