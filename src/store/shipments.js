@@ -1,16 +1,14 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -21,64 +19,45 @@ const state = {
 
 const actions = {
 	async shipment_init ({ commit, dispatch, getters, state }, payload) {
+		let ID_SALONA = state.filters['salon.ID_SALONA'] !== undefined ?
+									state.filters['salon.ID_SALONA']
+								:	getters.auth_currentSalon.ID_SALONA + ""
+
+		let filters = {
+			'salon.ID_SALONA' : ID_SALONA
+		}
+
 		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			await dispatch('shipment_getOne', payload)
 		} else {
+			commit('shipment_initInfinite', new Infinite({
+				method: api.shipments.getLimited,
+				filters
+			}))
+
+			state.infinite.on('cached', n => commit('shipment_cacheSet', n))
+			state.infinite.on('complete', n => commit('shipment_completeSet', n))
+
 			commit('shipment_filtersSet', {
 				...state.filters,
-				'salon.ID_SALONA' : state.filters['salon.ID_SALONA'] !== undefined ?
-											state.filters['salon.ID_SALONA']
-										:	getters.auth_currentSalon.ID_SALONA + ""
+				...filters
 			 })
-			await dispatch('shipment_infinityStart')
+			await state.infinite.start()
 		}
 	},
 	async shipment_sortChange({ commit, dispatch }, payload){
 		commit("shipment_sortSet", payload)
-		await dispatch('shipment_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
 	async shipment_filtersChange({ commit, dispatch }, payload){
 		commit("shipment_filtersSet", payload)
-		await dispatch('shipment_infinityStart')
+		state.infinite.filters = { ...payload }
+		await state.infinite.start()
 	},
 	async shipment_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
-
-		commit('shipment_lastOffsetSet', state.offset.current)
-		commit('shipment_loadingBottomSet', true)
-		let res = await api.shipments.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.shipment_filters,
-			sort: state.sort
-		})
-		commit('shipment_loadingSet', false)
-		commit('shipment_loadingBottomSet', false)
-		if (res.data && res.data.error) return
-
-		commit('shipment_cacheAppend', res.data)
-		commit('shipment_currentOffsetSet')
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async shipment_infinityStart({ commit, dispatch, state, getters }){
-		commit('shipment_lastOffsetSet', 0)
-		commit('shipment_currentOffsetSet', 0)
-		commit('shipment_loadingBottomSet', true)
-		commit('shipment_loadingSet', true)
-		let res = await api.shipments .getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.shipment_filters,
-			sort: state.sort
-		})
-		commit('shipment_loadingBottomSet', false)
-		commit('shipment_loadingSet', false)
-		if (res.data && res.data.error) return
-		commit('shipment_cacheSet', res.data)
-		commit('shipment_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	async shipment_getOne({ commit, dispatch }, payload){
 		commit('shipment_loadingOneSet', true)
@@ -101,6 +80,8 @@ const mutations = {
 	shipment_loadingSet: (store, payload) => store.loading.list = payload,
 	shipment_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
 	shipment_loadingOneSet: (store, payload) => store.loading.one = payload,
+	shipment_completeSet: (state, payload) => state.complete = payload,
+	shipment_initInfinite: (state, payload) => state.infinite = payload,
 }
 
 const getters = {
@@ -110,6 +91,7 @@ const getters = {
 	shipment_loading: state => state.loading.list,
 	shipment_loadingBottom: state => state.loading.bottom,
 	shipment_loadingOne: state => state.loading.one,
+	shipment_complete: state => state.complete
 }
 
 export default {

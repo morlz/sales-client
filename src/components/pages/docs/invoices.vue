@@ -36,7 +36,7 @@
 				</q-tabs>
 
 				<q-field class="manyInvoicesWrapper__salon">
-					<q-select v-model="local_currentSalon" :options="local_salon_list" filter/>
+					<q-select v-model="local_currentSalon" :options="local_salon_list" filter inverted/>
 				</q-field>
 			</div>
 
@@ -241,9 +241,12 @@ export default {
 <style lang="less">
 
 .manyInvoicesWrapper {
+	width: 100%;
+	height: 100%;
+
 	&__salon {
 		width: 300px;
-		margin: 0;
+		margin: 0 10px;
 	}
 
 	&__horGroup {
@@ -257,9 +260,10 @@ export default {
 			justify-content: center;
 			justify-items: center;
 		}
-		.q-input-target, .q-input-shadow {
-			color: #fff;
-		}
+	}
+
+	&__card {
+		height: ~"calc(100vh - 115px)";
 	}
 }
 
@@ -275,15 +279,6 @@ export default {
 						"z z"
 						"s s"
 						"p p";
-	}
-}
-
-.manyInvoicesWrapper {
-	width: 100%;
-	height: 100%;
-
-	&__card {
-		height: ~"calc(100vh - 115px)";
 	}
 }
 

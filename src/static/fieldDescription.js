@@ -118,19 +118,19 @@ let dataObj = {
 	],
 
 	shipmentsFieldDescription: [
-		{ field: "invoice.N_DOC", label: "№ Док" },
-		{ field: "DATEV", label: "Дата ввода", inline: true, format: {
+		{ field: "invoice.N_DOC", label: "№ Док", width: 80 },
+		{ field: "DATEV", label: "Дата ввода", inline: true, width: 120, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "PL_OTGR", label: "Оплата доставки", inline: true, format: {
+		{ field: "PL_OTGR", label: "Оплата доставки", inline: true, width: 120, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "VIDDOST", label: "Вид" },
-		{ field: "", label: "Примечание" },
-		{ field: "DATEWORK", label: "В работе", inline: true, format: {
+		{ field: "VIDDOST", label: "Вид", width: 100 },
+		{ field: "", label: "Примечание", width: 200 },
+		{ field: "DATEWORK", label: "В работе", inline: true, width: 120, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "salon.NAME", label: "Склад" },
+		{ field: "salon.NAME", label: "Склад", width: 150 },
 	],
 
 	storageFieldDescription: [

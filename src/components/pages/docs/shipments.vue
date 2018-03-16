@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper">
+<div class="AppContent">
 	<div class="oneShipmentWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -41,34 +41,25 @@
 
 	<div class="manyShipmntsWrapper" v-if="!isOne">
 		<div class="manyShipmntsWrapper__horGroup" :class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
-			<ul class="breadcrumb">
-				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
-				<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
-			</ul>
-
-			<q-field helper="Салон" class="manyShipmntsWrapper__salon">
-				<q-select v-model="local_currentSalon" :options="local_salon_list" filter/>
+			<q-field class="manyShipmntsWrapper__salon">
+				<q-select v-model="local_currentSalon" :options="local_salon_list" filter inverted/>
 			</q-field>
 		</div>
 
-		<tabless
-			v-loading="shipment_loading"
-			key="shipments"
-			:data="shipment_cached"
-			:fieldDescription="shipmentsFieldDescriptionFiltred"
-			:filters="shipment_filters"
-			ref="table"
-			@filter="local_shipment_filterChange"
-			@sortChange="local_shipment_sortChange"
-			@onClick="routerGoId"
-		/>
-
-		<infinite-loading :distance="800" @infinite="shipment_infinity" ref="infiniteLoading" key="shipmentsinf">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="shipment_loadingBottom" />
-		</infinite-loading>
+		<q-card class="manyShipmntsWrapper__card">
+			<tabless
+				key="shipments"
+				:data="shipment_cached"
+				:complete="shipment_complete"
+				:field-description="shipmentsFieldDescriptionFiltred"
+				:filters="shipment_filters"
+				ref="table"
+				@filter="local_shipment_filterChange"
+				@sort="local_shipment_sortChange"
+				@click="routerGoId"
+				@infinite="shipment_infinity"
+			/>
+		</q-card>
 	</div>
 </div>
 </template>
@@ -81,12 +72,12 @@ import {
 	mapActions,
 	mapMutations
 } from 'vuex'
-import tabless from '@/components/tableSS.vue'
+import tabless from '@/components/tableSSNew.vue'
 import fieldDesription from '@/static/fieldDescription'
 import InfiniteLoading from 'vue-infinite-loading'
 import mixins from '@/components/mixins'
 
-import { QSelect, QField } from 'quasar'
+import { QSelect, QField, QCard } from 'quasar'
 
 let {
 	shipmentsFieldDescription
@@ -99,7 +90,8 @@ export default {
 		tabless,
 		InfiniteLoading,
 		QSelect,
-		QField
+		QField,
+		QCard
 	},
 	data() {
 		return {
@@ -161,7 +153,8 @@ export default {
 			'shipment_loadingOne',
 			'shipment_filters',
 			'salon_listWithAll',
-			'app_view_mobile'
+			'app_view_mobile',
+			'shipment_complete'
 		]),
 		additionalFilters () {
 			return {}
@@ -195,6 +188,9 @@ export default {
 			'shipment_filtersChange',
 			'shipment_getOne',
 		]),
+		...mapMutations([
+			'app_layout_headerShadowSet'
+		]),
 		async local_shipment_filterChange(n) {
 			this.lastShipmentsFilters = n
 			await this.shipment_filtersChange(Object.assign({}, this.additionalFilters, n))
@@ -214,9 +210,13 @@ export default {
 		}
 	},
 	async mounted() {
+		this.app_layout_headerShadowSet(false)
 		await this.shipment_init(this.oneId)
 		if (this.$refs.infiniteLoading)
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+	},
+	beforeDestroy() {
+		this.app_layout_headerShadowSet(true)
 	}
 }
 </script>
@@ -226,19 +226,30 @@ export default {
 <style lang="less" >
 
 .manyShipmntsWrapper {
+	width: 100%;
+	height: 100%;
+
 	&__salon {
 		width: 300px;
+		margin: 0 10px;
 	}
 
 	&__horGroup {
 		display: grid;
 		grid-auto-flow: column;
-		justify-content: space-between;
+		justify-content: end;
+		align-items: center;
+		background: #027be3;
+		height: 50px;
 		&-mobile {
 			grid-auto-flow: row;
 			justify-content: center;
 			justify-items: center;
 		}
+	}
+
+	&__card {
+		height: ~"calc(100vh - 120px)";
 	}
 }
 
