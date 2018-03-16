@@ -69,6 +69,7 @@ const actions = {
 }
 
 const mutations = {
+	shipment_destroy: state => state.cached.list = [],
 	shipment_cacheSet: (state, payload) => state.cached.list = payload,
 	shipment_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	shipment_filtersSet: (store, payload) => store.filters = payload,

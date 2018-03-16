@@ -260,7 +260,7 @@ export default {
 			'furniture_getModels',
 			'furniture_getOne',
 			'furniture_addToCart',
-			'furniture_preload'
+			'furniture_preload',
 		]),
 		...mapActions('transfer', [
 			'transfer_take',
@@ -271,6 +271,7 @@ export default {
 			'transfer_selectedToMoveSet'
 		]),
 		...mapMutations([
+			'furniture_destroy',
 			'app_layout_headerShadowSet'
 		]),
 		async local_furniture_filterChange (n) {
@@ -297,6 +298,7 @@ export default {
 	},
 	beforeDestroy() {
 		this.app_layout_headerShadowSet(true)
+		this.furniture_destroy()
 	}
 }
 </script>

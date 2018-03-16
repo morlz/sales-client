@@ -487,6 +487,7 @@ const actions = {
 }
 
 const mutations = {
+	furniture_destroy: state => state.cached.list = [],
 	furniture_initInfinite: (state, payload) => state.infinite = payload,
 	furniture_cacheSet: (state, payload) => state.cached.list = payload,
 	furniture_completeSet: (state, payload) => state.complete = payload,

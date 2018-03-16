@@ -205,7 +205,8 @@ export default {
 			'salon_getList'
 		]),
 		...mapMutations([
-			'app_layout_headerShadowSet'
+			'app_layout_headerShadowSet',
+			'invoice_destroy'
 		]),
 		async local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n
@@ -233,6 +234,7 @@ export default {
 	},
 	beforeDestrou () {
 		this.app_layout_headerShadowSet(true)
+		this.invoice_destroy()
 	}
 }
 

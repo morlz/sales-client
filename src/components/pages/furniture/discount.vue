@@ -240,7 +240,8 @@ export default {
 			'discount_addToCart',
 		]),
 		...mapMutations([
-			'app_layout_headerShadowSet'
+			'app_layout_headerShadowSet',
+			'discount_destroy'
 		]),
 		async local_discount_filterChange (n) {
 			this.lastDiscountFilters = n
@@ -276,6 +277,7 @@ export default {
 	},
 	beforeDestrou () {
 		this.app_layout_headerShadowSet(true)
+		this.discount_destroy()
 	}
 }
 </script>

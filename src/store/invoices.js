@@ -179,6 +179,7 @@ const actions = {
 }
 
 const mutations = {
+	invoice_destroy: state => state.cached.list = [],
 	invoice_cacheSet: (state, payload) => state.cached.list = payload,
 	invoice_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	invoice_filtersSet: (state, payload) => state.filters = payload,

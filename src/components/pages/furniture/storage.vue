@@ -211,7 +211,8 @@ export default {
 			'storage_addToCart',
 		]),
 		...mapMutations([
-			'app_layout_headerShadowSet'
+			'app_layout_headerShadowSet',
+			'storage_destroy'
 		]),
 		async local_storage_filterChange (n) {
 			this.lastStorageFilters = n
@@ -248,6 +249,7 @@ export default {
 	},
 	beforeDestroy() {
 		this.app_layout_headerShadowSet(true)
+		this.storage_destroy()
 	}
 }
 </script>

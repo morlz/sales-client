@@ -189,7 +189,8 @@ export default {
 			'shipment_getOne',
 		]),
 		...mapMutations([
-			'app_layout_headerShadowSet'
+			'app_layout_headerShadowSet',
+			'shipment_destroy'
 		]),
 		async local_shipment_filterChange(n) {
 			this.lastShipmentsFilters = n
@@ -217,6 +218,7 @@ export default {
 	},
 	beforeDestroy() {
 		this.app_layout_headerShadowSet(true)
+		this.shipment_destroy()
 	}
 }
 </script>
