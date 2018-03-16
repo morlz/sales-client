@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper personalWrapper" v-if="auth_can(1, 'Manager')">
+<div class="AppContent" v-if="auth_can(1, 'Manager')">
 	<div class="onePersonalWrapper" v-if="isOne" v-loading="personal_loadingOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -16,29 +16,20 @@
 	</div>
 
 	<div class="manyPersoalWrapper" v-if="!isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
-			<li><router-link :to="{ path: `/admin/personal` }">Персонал</router-link></li>
-		</ul>
-
-		<tabless
-			v-loading="personal_loading"
-			key="personal"
-			:data="personal_cached"
-			:fieldDescription="personalFieldDescription"
-			:filters="personal_filters"
-			ref="table"
-			@filter="local_personal_filtersChange"
-			@sortChange="local_personal_sortChange"
-			@onClick="routerGoId"
-		/>
-
-		<infinite-loading :distance="800" @infinite="personal_infinity" ref="infiniteLoading">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="personal_loadingBottom" />
-		</infinite-loading>
+		<q-card class="manyPersoalWrapper__card">
+			<tabless
+				key="personal"
+				:data="personal_cached"
+				:complete="personal_complete"
+				:field-description="personalFieldDescription"
+				:filters="personal_filters"
+				ref="table"
+				@filter="local_personal_filtersChange"
+				@sort="local_personal_sortChange"
+				@click="routerGoId"
+				@infinite="personal_infinity"
+			/>
+		</q-card>
 	</div>
 </div>
 </template>
@@ -51,11 +42,12 @@ import {
 } from 'vuex'
 
 import mixins from '@/components/mixins'
-import tabless from '@/components/tableSS'
+import tabless from '@/components/tableSSNew'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 import userProfileCard from '@/components/userProfileCard.vue'
 import userRolesCard from '@/components/userRolesCard.vue'
+import { QCard } from 'quasar'
 
 let {
 	personalFieldDescription
@@ -67,7 +59,8 @@ export default {
 		InfiniteLoading,
 		tabless,
 		userProfileCard,
-		userRolesCard
+		userRolesCard,
+		QCard
 	},
 	data() {
 		return {
@@ -79,12 +72,27 @@ export default {
 			if (n) this.personal_init(n)
 		}
 	},
+	computed: {
+		...mapGetters([
+			"personal_loadingBottom",
+			"personal_loading",
+			"personal_cached",
+			'personal_current',
+			'personal_loadingOne',
+			'personal_filters',
+			'personal_complete'
+		])
+	},
 	methods: {
 		...mapActions([
 			"personal_infinity",
 			'personal_filtersChange',
 			'personal_sortChange',
-			'personal_init'
+			'personal_init',
+		]),
+		...mapMutations([
+			'app_layout_headerShadowSet',
+			'personal_destroy'
 		]),
 		local_personal_filtersChange (n) {
 			this.personal_filtersChange(n)
@@ -101,20 +109,13 @@ export default {
 			})
 		}
 	},
-	computed: {
-		...mapGetters([
-			"personal_loadingBottom",
-			"personal_loading",
-			"personal_cached",
-			'personal_current',
-			'personal_loadingOne',
-			'personal_filters'
-		])
-	},
 	async mounted() {
 		await this.personal_init(this.oneId)
 		if (this.$refs.infiniteLoading)
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+	},
+	beforeDestroy () {
+		this.personal_destroy()
 	}
 }
 </script>
@@ -122,7 +123,7 @@ export default {
 
 
 <style lang="less">
-.personalWrapper {
+.onePersonalWrapper {
 	.cards {
 		display: grid;
 		grid-gap: 10px;
@@ -131,9 +132,20 @@ export default {
 	}
 }
 
+.manyPersoalWrapper {
+	width: 100%;
+	height: 100%;
+	padding-top: 8px;
+
+	&__card {
+		margin-top: 0;
+		height: ~"calc(100vh - 68px)";
+	}
+}
+
 
 @media screen and (max-width: 1050px) {
-	.personalWrapper {
+	.onePersonalWrapper {
 		.cards {
 			grid-template-columns: 1fr;
 		}

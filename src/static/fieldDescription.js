@@ -186,14 +186,14 @@ let dataObj = {
 	],
 
 	personalFieldDescription: [
-		{ field: "LOGIN", label: "Логин" },
-		{ field: "FIO", label: "Фамилия" },
-		{ field: "IMY", label: "Имя" },
-		{ field: "OTCH", label: "Отчество" },
-		{ field: "S_DATE", label: "Дата создания" },
-		{ field: "RABOTAET", label: "Работает" },
-		{ field: "roles", label: "Роли", type: 'array', fields: ['name'] },
-		{ field: "salon.NAME", label: "Салон" },
+		{ field: "LOGIN", label: "Логин", width: 80 },
+		{ field: "FIO", label: "Фамилия", width: 100 },
+		{ field: "IMY", label: "Имя", width: 100 },
+		{ field: "OTCH", label: "Отчество", width: 100 },
+		{ field: "S_DATE", label: "Дата создания", width: 100 },
+		{ field: "RABOTAET", label: "Работает", width: 50 },
+		{ field: "roles", label: "Роли", type: 'array', fields: ['name'], width: 120 },
+		{ field: "salon.NAME", label: "Салон", width: 120 },
 	],
 
 	cartPopupExistFieldDescription: [

@@ -1,17 +1,15 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
 		currentRolesSetup: [],
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -36,54 +34,28 @@ const actions = {
 			dispatch('personal_getOne', payload)
 			dispatch('permissions_getRoles')
 		} else {
-			await dispatch('personal_infinityStart')
+			commit('personal_initInfinite', new Infinite({
+				method: api.personals.getLimited
+			}))
+
+			state.infinite.on('cached', n => commit('personal_cacheSet', n))
+			state.infinite.on('complete', n => commit('personal_completeSet', n))
+
+			await state.infinite.start()
 		}
 	},
-	async personal_sortChange({ commit, dispatch }, payload){
+	async personal_sortChange({ commit, dispatch, state }, payload){
 		commit("personal_sortSet", payload)
-		await dispatch('personal_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
-	async personal_filtersChange({ commit, dispatch }, payload){
+	async personal_filtersChange({ commit, dispatch, state }, payload){
 		commit("personal_filtersSet", payload)
-		 await dispatch('personal_infinityStart')
+		state.infinite.filters = { ...payload }
+		await state.infinite.start()
 	},
 	async personal_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)return
-		commit('personal_lastOffsetSet', state.offset.current)
-		commit('personal_loadingBottomSet', true)
-		let res = await api.personals.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.personal_filters,
-			sort: state.sort
-		})
-		commit('personal_loadingSet', false)
-		commit('personal_loadingBottomSet', false)
-		if(!res.data || res.data.error) return
-
-		commit('personal_cacheAppend', res.data)
-		commit('personal_currentOffsetSet')
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async personal_infinityStart({ commit, dispatch, state, getters }){
-		commit('personal_lastOffsetSet', 0)
-		commit('personal_currentOffsetSet', 0)
-		commit('personal_loadingBottomSet', true)
-		commit('personal_loadingSet', true)
-		let res = await api.personals.getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.personal_filters,
-			sort: state.sort
-		})
-		commit('personal_loadingBottomSet', false)
-		commit('personal_loadingSet', false)
-
-		if (!res.data || res.data.error) return
-		commit('personal_cacheSet', res.data)
-		commit('personal_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	personal_getOne({ commit, dispatch }, payload){
 		commit('personal_loadingOneSet', true)
@@ -105,6 +77,9 @@ const actions = {
 }
 
 const mutations = {
+	personal_destroy: state => state.cached.list = [],
+	personal_initInfinite: (state, payload) => state.infinite = payload,
+	personal_completeSet: (state, payload) => state.complete = payload,
 	personal_cacheSet: (state, payload) => state.cached.list = payload,
 	personal_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	personal_filtersSet: (store, payload) => store.filters = payload,
@@ -121,6 +96,7 @@ const mutations = {
 }
 
 const getters = {
+	personal_complete: state => state.complete,
 	personal_filters: ({ filters }) => filters,
 	personal_cached: ({ cached }) => cached.list,
 	personal_current: ({ cached }) => cached.current,
