@@ -73,6 +73,10 @@
 			@select="local_furniture_filtersModelSet"
 			:loading="furniture_loadingModels"
 			:models="furniture_models">
+
+			<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
+			<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
+
 			<q-card class="manyFurnitureWrapper__card">
 				<tabless
 					key="salon"
@@ -82,19 +86,17 @@
 					:filters="furniture_filters"
 					:select-fields="local_furniture_selectFields"
 					:local-sort="false"
-					:infinite="!!furniture_cached.length"
 					:selectable="currentTab == 'new'"
 					ref="table"
 					@filter="local_furniture_filterChange"
-					@sortChange="local_furniture_sortChange"
-					@onClick="routerGoId"
+					@sort="local_furniture_sortChange"
+					@click="routerGoId"
 					@select="local_furniture_handleFieldSelect"
 					@infinite="furniture_infinity"
 					@selected="transfer_selectedSet"
 				>
 					<template slot="selected" slot-scope="{ selected, count }">
 						<q-btn color="primary" v-if="count" @click="selectPlaceModal = !selectPlaceModal">Отметить прибывшие</q-btn>
-						<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
 					</template>
 
 					<template slot="cloth1" slot-scope="props">
@@ -116,6 +118,14 @@
 						<q-btn color="primary" flat @click.stop="furniture_addToCart({ UN: props.row.UN })">
 							<q-icon name="shopping_cart"/>
 						</q-btn>
+
+						<q-btn flat @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(props.row))">
+							<q-icon name="local_shipping"/>
+						</q-btn>
+
+						<q-btn flat @click.stop>
+							<q-icon name="swap_horiz"/>
+						</q-btn>
 					</template>
 				</tabless>
 		</q-card>
@@ -136,6 +146,7 @@ import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
 import SelectPlaceForm from '@/components/forms/SelectPlace'
+import SelectSalonForm from '@/components/forms/SelectSalon'
 
 import { QTabs, QTab, QBtn, QIcon, QCard, QCardMain } from 'quasar'
 
@@ -158,7 +169,8 @@ export default {
 		QIcon,
 		SelectPlaceForm,
 		QCard,
-		QCardMain
+		QCardMain,
+		SelectSalonForm
 	},
 	mixins: [mixins],
 	data() {
@@ -171,7 +183,9 @@ export default {
 				{ name: "Все новые", type: "new" },
 				{ name: "Продажи из других салонов", type: "selled" },
 			],
-			selectPlaceModal: false
+			selectPlaceModal: false,
+			selectSalonModal: false,
+			selected: {}
 		}
 	},
 	watch: {
@@ -226,10 +240,16 @@ export default {
 			return rez
 		},
 		furnitureSalonFieldDescriptionFiltred () {
-			if (this.main_auth_settings.showModels && this.furniture_filters.MODEL)
-				return this.furnitureSalonFieldDescription.filter(el => el.field != 'MODEL')
+			let tmp = this.furnitureSalonFieldDescription
 
-			return this.furnitureSalonFieldDescription
+			if (this.currentTab != 'new')
+				tmp = tmp.filter(el => el.field != 'td.lastPlace.invoice.N_DOC')
+
+
+			if (this.main_auth_settings.showModels && this.furniture_filters.MODEL)
+				return tmp.filter(el => el.field != 'MODEL')
+
+			return tmp
 		},
 	},
 	methods: {
@@ -244,10 +264,12 @@ export default {
 			'furniture_preload'
 		]),
 		...mapActions('transfer', [
-			'transfer_take'
+			'transfer_take',
+			'transfer_moveToSalon'
 		]),
 		...mapMutations('transfer', [
-			'transfer_selectedSet'
+			'transfer_selectedSet',
+			'transfer_selectedToMoveSet'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet'
@@ -267,7 +289,7 @@ export default {
 			if (MODEL == 'Все модели') MODEL = undefined
 			let filters = { ...this.furniture_filters, MODEL, type: this.furniture_type }
 			this.local_furniture_filterChange(filters)
-		}
+		},
 	},
 	async mounted () {
 		this.app_layout_headerShadowSet(false)

@@ -49,5 +49,14 @@ export default {
 			type,
 			data
 		})
+	},
+	async exportToAx (id) {
+		return await core.invoke({
+			method: "post",
+			type: "invoice/export-to-ax",
+			data: {
+				id
+			}
+		})
 	}
 }

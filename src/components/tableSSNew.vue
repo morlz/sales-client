@@ -65,12 +65,12 @@
 				:style="rowStyle"
 				:key="row.itemKey"
 				:class="{ 'tableSS__row-selected': selected[row.index] }"
-				@click="clickHandler($event, row.item, row.index - 2)"
+				@click="clickHandler($event, row.item, row.index)"
 			>
 				<template v-if="row.item && row.item.rowType == 'row'">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
 
-					<q-checkbox :value="!!selected[row.index]" @input="changeSelectedRow($event, row)" v-if="selectable" class="tableSS__checkbox"/>
+					<q-checkbox :value="!!selected[row.index]" @input="changeSelectedRow($event, row.index)" v-if="selectable" class="tableSS__checkbox"/>
 
 					<div class="tableSS__item" v-for="column, index in columns">
 						{{ column.rowType }}
@@ -121,7 +121,7 @@
 				:style="rowStyle"
 				:key="index"
 				:class="{ 'tableSS__row-selected': selected[index] }"
-				@click="clickHandler($event, item, index - 2)"
+				@click="clickHandler($event, item, index)"
 			>
 				<template v-if="item && item.rowType == 'row'">
 					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
@@ -195,7 +195,6 @@ export default {
 			type: Array,
 			default: a => []
 		},
-		onClick: Function,
 		buttons: Array,
 		buttonsCondition: Function,
 		minify: {
@@ -224,10 +223,6 @@ export default {
 		itemHeight: {
 			type: [Number, String],
 			default: a => 50
-		},
-		infinite: {
-			type: Boolean,
-			default: a => false
 		},
 		infiniteLoading: {
 			type: Boolean,
@@ -278,7 +273,7 @@ export default {
 			this.applyFilters()
 		},
 		formatedSort(n) {
-			this.$emit("sortChange", n)
+			this.$emit("sort", n)
 		},
 		searchFields(n) {
 			if (this.searchInputTimeout) clearTimeout(this.searchInputTimeout)
@@ -425,7 +420,7 @@ export default {
 
 			let gridTemplateColumns = this.columns.reduce((prev, el) => prev + getElWidth(el), '')
 			if (this.$scopedSlots.buttons)
-				gridTemplateColumns += 'minmax(50px, max-content) '
+				gridTemplateColumns += 'minmax(min-content, max-content) '
 				//gridTemplateColumns += 'minmax(50px, max-content) '
 
 			if (this.selectable)
@@ -459,10 +454,8 @@ export default {
 		},
 		clickHandler(e, row, index) {
 			if (index < 0) return
-			if (typeof this.onClick == 'function')
-				this.onClick(e, row, index)
 
-			this.$emit("onClick", e, row, index)
+			this.$emit("click", e, row, index)
 		},
 		sortableIconClass(column, index) {
 			return {
@@ -532,6 +525,9 @@ export default {
 			})
 		),
 		infiniteHandler (e) {
+			if (this.complete)
+			 	return (e.loaded(), e.complete())
+
 			if (this.infiniteLoading || !this.rows.length)
 				return setTimeout(a => e.loaded(), 200)
 
@@ -675,7 +671,8 @@ export default {
 	}
 
 	&__buttons {
-
+		display: grid;
+		grid-auto-flow: column;
 	}
 
 	&__checkbox {

@@ -218,5 +218,12 @@ export default {
 			type: "transfer/take",
 			data
 		})
+	},
+	async moveToSalon(data) {
+		return core.invoke({
+			method: "post",
+			type: "cart/sofa-move",
+			data
+		})
 	}
 }

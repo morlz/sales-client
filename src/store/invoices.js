@@ -181,6 +181,12 @@ const actions = {
 	async invoice_editZak ({ commit, dispatch }, payload) {
 		router.push('/furniture/edit')
 		dispatch('furniture_new_setEdit', payload)
+	},
+	async invoice_exportToAx ({ commit, dispatch }, payload) {
+		let res = await api.invoices.exportToAx(payload)
+		if (!res.data || res.data.error) return
+
+		dispatch('notify', 'Заказ успешно выгружен в AX')
 	}
 }
 

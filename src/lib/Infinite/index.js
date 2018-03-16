@@ -48,6 +48,8 @@ class Infinite extends EventEmitter {
 
 		this.cached = res.data
 		this._offset = res.data.length
+		if (!res.data || !res.data.length)
+			this.complete = true
 
 		this.emit('started', this.cached)
 		this._preload(params)
@@ -59,6 +61,10 @@ class Infinite extends EventEmitter {
 			this.cached = [...this.cached, ...this._preloaded]
 			this._preloaded = false
 			payload.loaded()
+			if (!this._preloaded) {
+				this.complete = true
+				payload.complete()
+			}
 		} else {
 			if (this.loadingPreload) {
 				if (this.log) console.log('[inf] [more] wait for preload');
@@ -75,7 +81,7 @@ class Infinite extends EventEmitter {
 				this.cached = [...this.cached, ...res.data]
 				this._offset += res.data.length
 				payload.loaded()
-				if (!res.data.length) {
+				if (!res.data || !res.data.length) {
 					this.complete = true
 					payload.complete()
 				}
@@ -104,7 +110,7 @@ class Infinite extends EventEmitter {
 			if (this.log) console.log('[inf] [preload] set data in cache')
 			this.cached = [...this.cached, ...res.data]
 			this._autoSetPreloaded.loaded()
-			if (!res.data.length) {
+			if (!res.data || !res.data.length) {
 				this.complete = true
 				this._autoSetPreloaded.complete()
 			}

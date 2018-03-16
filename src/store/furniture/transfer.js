@@ -3,7 +3,8 @@ import api from '@/api'
 
 const state = {
 	selected: {
-		transfer: []
+		transfer: [],
+		move: false
 	}
 }
 
@@ -21,11 +22,23 @@ const actions = {
 
 		commit('furniture_removeManyFromCache', res.data, { root: true })
 		dispatch('notify', `Успешно принято ${res.data.length} шт.`, { root: true })
+	},
+	async transfer_moveToSalon ({ commit, dispatch, state }, salon_id) {
+		let res = await api.furnitures.moveToSalon({
+			id: state.selected.move.td.ID,
+			salon_id
+		})
+
+		if (!res.data || res.data.error) return
+
+		commit('furniture_removeOneFromCache', state.selected.move, { root: true })
+		dispatch('notify', 'Успешно перемещено', { root: true })
 	}
 }
 
 const mutations = {
-	transfer_selectedSet: (state, payload) => state.selected.transfer = payload
+	transfer_selectedSet: (state, payload) => state.selected.transfer = payload,
+	transfer_selectedToMoveSet: (state, payload) => state.selected.move = payload,
 }
 
 const getters = {

@@ -42,7 +42,7 @@
 		</q-card-main>
 
 		<q-card-actions class="infoCardInvoice_actions">
-			<q-btn color="primary">Отправить</q-btn>
+			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">Выгрузить в AX</q-btn>
 			<q-btn color="primary">в 1С</q-btn>
 			<q-btn color="primary" @click="invoice_print(data)">Печать</q-btn>
 		</q-card-actions>
@@ -100,7 +100,8 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'invoice_print'
+			'invoice_print',
+			'invoice_exportToAx'
 		]),
 		date (d) {
 			return moment(d).isValid() ? moment(d).format("DD-MM-YYYY") : d

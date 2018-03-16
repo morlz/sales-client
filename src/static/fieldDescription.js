@@ -81,13 +81,14 @@ let dataObj = {
 	],
 
 	furnitureSalonFieldDescription: [
+		{ field: "td.lastPlace.invoice.N_DOC", label: "№ док.", width: 80 },
 		{ field: "td.salon.NAME", label: "Салон", width: 120},
 		{ field: "MODEL", label: "Модель", width: 100},
 		{ field: "td.TIP", label: "Тип", width: 150, inline: true },
 		{ field: "cloth1.NAME", label: "Ткань 1", width: 150, fields: { output: 'cloth1.NAME' } },
 		{ field: "cloth2.NAME", label: "Ткань 2", width: 150, fields: { output: 'cloth2.NAME' } },
 		{ field: "cloth3.NAME", label: "Ткань 3", width: 150, fields: { output: 'cloth3.NAME' } },
-		{ field: "KAT", label: "Кат", width: 20, },
+		{ field: "KAT", label: "Кат", width: 30, },
 		{ field: "td.CENA_ZAL", label: "Цена руб.", width: 70, type: "html", format: {
 			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
 					`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
