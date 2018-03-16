@@ -1,5 +1,5 @@
 <template>
-	<div class="mainWrapper" v-if="auth_can(1, 'Client')">
+	<div class="AppContent" v-if="auth_can(1, 'Client')">
 		<div class="oneClientWrapper" v-if="isOne">
 			<ul class="breadcrumb">
 				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -22,30 +22,34 @@
 			</div>
 		</div>
 
-		<div class="manyClientsWrapper" v-else="!isOne">
-			<ul class="breadcrumb bc">
-				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-				<li><router-link :to="{ path: `/preorder/clients` }">Список клиентов</router-link></li>
-			</ul>
+		<div class="manyClientsWrapper" v-if="!isOne">
+			<div
+				class="manyClientsWrapper__horGroup AppContent__headerTabs"
+				:class="{ 'manyClientsWrapper__horGroup-mobile': app_view_mobile }">
 
-			<el-input v-model="searchByPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" />
-			<tabless
-				v-loading="client_loading"
-				key="clientsinf"
-				ref="table"
-				:data="client_cached"
-				:fieldDescription="clientManyFieldDescription"
-				:filters="client_filters"
-				:localSort="false"
-				@onClick="routerGoId"
-				@filter="localClientFilterChange"
-				@sortChange="localClientSortChange"
-			/>
-			<infinite-loading :distance="800" @infinite="client_infinity" ref="infiniteLoading">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="client_loadingBottom" />
-			</infinite-loading>
+				<q-field class="manyClientsWrapper__phone">
+					<q-input
+						v-model="searchByPhone"
+						placeholder="Поиск по номеру телефона"
+						class="searchByPhone"
+						inverted/>
+				</q-field>
+			</div>
+
+			<q-card class="manyClientsWrapper__card">
+				<tabless
+					key="clientsinf"
+					:data="client_cached"
+					:complete="client_complete"
+					:field-description="clientManyFieldDescription"
+					:filters="client_filters"
+					ref="table"
+					@filter="local_client_filtersChange"
+					@sort="local_client_sortChange"
+					@click="routerGoId"
+					@infinite="client_infinity"
+				/>
+			</q-card>
 		</div>
 	</div>
 </template>
@@ -60,7 +64,7 @@ let {
 } = fieldDescription
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import tabless from '@/components/tableSS.vue'
+import tabless from '@/components/tableSSNew.vue'
 import lightTable from '@/components/lightTable.vue'
 
 import clientInfo from '@/components/preorder/clientInfo.vue'
@@ -71,6 +75,8 @@ import preorders from '@/components/preorder/preorders.vue'
 
 import mixins from '@/components/mixins'
 import InfiniteLoading from 'vue-infinite-loading'
+
+import { QField, QInput, QCard } from 'quasar'
 
 export default {
 	data () {
@@ -90,7 +96,10 @@ export default {
 		clientInfo,
 		contactFaces,
 		tasks,
-		preorders
+		preorders,
+		QField,
+		QInput,
+		QCard
 	},
 	watch: {
 		oneId () {
@@ -101,7 +110,7 @@ export default {
 			if (this.seachTimeout) clearTimeout (this.seachTimeout)
 			this.seachTimeout = setTimeout(() => this.searchByPhone2 = n, 500)
 		},
-		async additionalFIlters (n) {
+		async additionalFilters (n) {
 			await this.client_filtersChange (Object.assign({}, this.lastClientsFilters, n))
 
 			this.$nextTick(() => {
@@ -120,11 +129,13 @@ export default {
 			'client_loadingBottom',
 			'client_filters',
 			'client_filtersPhone',
+			'client_complete',
+			'app_view_mobile'
 		]),
-		additionalFIlters () {
-			return Object.assign({}, {
+		additionalFilters () {
+			return {
 				'contacts.phone': this.searchByPhone2
-			})
+			}
 		}
 	},
 	methods: {
@@ -135,16 +146,20 @@ export default {
 			'client_sortChange',
 			'client_filtersChange',
 		]),
-		async localClientFilterChange (n) {
+		...mapMutations([
+			'app_layout_headerShadowSet',
+			'client_destroy'
+		]),
+		async local_client_filtersChange (n) {
 			this.lastClientsFilters = n
-			await this.client_filtersChange (Object.assign({}, this.additionalFIlters, n))
+			await this.client_filtersChange (Object.assign({}, this.additionalFilters, n))
 
 			this.$nextTick(() => {
 				if (this.$refs.infiniteLoading)
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		async localClientSortChange (n) {
+		async local_client_sortChange (n) {
 			await this.client_sortChange (n)
 
 			this.$nextTick(() => {
@@ -153,9 +168,14 @@ export default {
 			})
 		}
 	},
-	mounted(){
-		this.client_init(this.oneId)
+	async mounted(){
+		this.app_layout_headerShadowSet(false)
+		await this.client_init(this.oneId)
 		this.searchByPhone = this.client_filtersPhone
+	},
+	beforeDestroy () {
+		this.app_layout_headerShadowSet(true)
+		this.client_destroy()
 	}
 }
 
@@ -164,48 +184,59 @@ export default {
 
 
 <style lang="less">
-.mainWrapper {
-	.manyClientsWrapper {
+.manyClientsWrapper {
+	width: 100%;
+	height: 100%;
+
+	&__phone {
+		width: 300px;
+		margin: 0 10px;
+	}
+
+	&__horGroup {
 		display: grid;
-		grid-template: "bc search";
-		> * {
+		grid-auto-flow: column;
+		justify-content: end;
+		align-items: center;
+		background: #027be3;
+		height: 50px;
+		&-mobile {
+			grid-auto-flow: row;
+			justify-content: center;
+			justify-items: center;
+		}
+	}
+
+	&__card {
+		height: ~"calc(100vh - 120px)";
+	}
+}
+
+
+.oneClientWrapper {
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-gap: 20px;
+		.tasks,
+		.preorders {
 			grid-column: ~"1 / 3";
 		}
-		.bc {
-			grid-area: bc;
-		}
-		.searchByPhone {
-			grid-area: search;
-			justify-self: end;
-			width: 300px;
-			margin: 5px;
+
+		h2 {
+			margin: 0;
+			font-size: 18px;
+			font-weight: bold;
 		}
 	}
+}
+
+@media screen and (max-width: 1250px) {
 	.oneClientWrapper {
 		.cards {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			grid-gap: 20px;
-			.tasks,
-			.preorders {
-				grid-column: ~"1 / 3";
-			}
-
-			h2 {
-				margin: 0;
-				font-size: 18px;
-				font-weight: bold;
-			}
-		}
-	}
-
-	@media screen and (max-width: 1250px) {
-		.oneClientWrapper {
-			.cards {
-				grid-template-columns: 1fr;
-				.tasks, .preorders {
-					grid-column: ~"1 / 2";
-				}
+			grid-template-columns: 1fr;
+			.tasks, .preorders {
+				grid-column: ~"1 / 2";
 			}
 		}
 	}

@@ -1,19 +1,17 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 import select from '@/store/clients/select'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
 		byPhone: []
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -31,96 +29,66 @@ const state = {
 }
 
 const actions = {
-	client_init ({ commit, dispatch }, payload) {
+	async client_init ({ commit, dispatch, state }, payload) {
 		if (payload) {
 			dispatch('client_getOne', payload)
 		} else {
-			dispatch('client_infinityStart')
+			commit('client_initInfinite', new Infinite({
+				method: api.clients.getLimited
+			}))
+
+			state.infinite.on('cached', n => commit('client_cacheSet', n))
+			state.infinite.on('complete', n => commit('client_completeSet', n))
+
+			await state.infinite.start()
 		}
 	},
-	client_sortChange({ commit, dispatch }, payload){
+	async client_sortChange({ commit, dispatch, state }, payload){
 		commit("client_sortSet", payload)
-		dispatch('client_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
-	client_filtersChange({ commit, dispatch }, payload){
+	async client_filtersChange({ commit, dispatch, state }, payload){
 		commit("client_filtersSet", payload)
-		dispatch('client_infinityStart')
+		state.infinite.filters = { ...payload }
+		await state.infinite.start()
 	},
-	client_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
-		commit('client_lastOffsetSet', state.offset.current)
-		commit('client_loadingBottomSet', true)
-		api.clients
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: state.offset.current,
-				filters: getters.client_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) {
-					commit('client_cacheAppend', data)
-					payload.loaded()
-					if (!data.length) payload.complete ()
-				}
-				commit('client_loadingSet', false)
-				commit('client_loadingBottomSet', false)
-				commit('client_currentOffsetSet')
-				if (data.error) dispatch('catchErrorNotify', data.error)
-			})
+	async client_infinity({ commit, dispatch, state, getters }, payload){
+		await state.infinite.more(payload)
 	},
-	client_infinityStart({ commit, dispatch, state, getters }){
-		commit('client_lastOffsetSet', -1)
-		commit('client_loadingBottomSet', true)
-		commit('client_loadingSet', true)
-		api.clients
-			.getLimited({
-				limit: state.perLoadingLimit,
-				offset: 0,
-				filters: getters.client_filters,
-				sort: state.sort
-			})
-			.then(({ data }) => {
-				if (!data.error) commit('client_cacheSet', data)
-				if (data.error) dispatch('catchErrorNotify', data.error)
-				commit('client_loadingBottomSet', false)
-				commit('client_loadingSet', false)
-				commit('client_currentOffsetSet')
-			})
-	},
-	client_getOne({ commit, dispatch }, payload){
+	async client_getOne({ commit, dispatch }, payload){
 		commit('client_loadingOneSet', true)
-		api.clients
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('client_currentSet', data)
-				commit('client_loadingOneSet', false)
-			})
-	},
-	client_addContact({ commit, dispatch }, payload){
-		api.clients
-			.addContact(payload)
-			.then(({ data }) => {
-				if (data.error) return
-				if (data.errors) dispatch('handleFormErrors', data.errors)
+		let res = await api.clients.getOne(payload)
+		commit('client_loadingOneSet', false)
+		if (!res.data || res.data.error) return
 
-				commit('preorder_currentContctAdd', data)
-			})
+		commit('client_currentSet', res.data)
 	},
-	client_updateContact({ commit, dispatch }, payload){
-		api.clients
-			.editContact(payload)
-			.then(({ data }) => {
-				if (data.error) return
-				if (data.errors) dispatch('handleFormErrors', data.errors)
+	async client_addContact({ commit, dispatch }, payload){
+		let res = await api.clients.addContact(payload)
+		if (!res.data || res.data.error) return
 
-				commit('client_currentContctUpdate', data)
-				commit('preorder_currentContctUpdate', data)
-			})
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		commit('preorder_currentContctAdd', res.data)
+	},
+	async client_updateContact({ commit, dispatch }, payload){
+		let res = await api.clients.editContact(payload)
+		if (!res.data || res.data.error) return
+
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		commit('client_currentContctUpdate', res.data)
+		commit('preorder_currentContctUpdate', res.data)
 	}
 }
 
 const mutations = {
+	client_destroy: state => state.cached.list = [],
+	client_initInfinite: (state, payload) => state.infinite = payload,
+	client_completeSet: (state, payload) => state.complete = payload,
 	client_cacheSet: (state, payload) => state.cached.list = payload,
 	client_byPhoneSet: (state, payload) => state.cached.byPhone = payload,
 	client_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
@@ -141,6 +109,7 @@ const mutations = {
 }
 
 const getters = {
+	client_complete: state => state.complete,
 	client_filters: ({ filters }) => filters,
 	client_filtersPhone: ({ filters }) => filters.phone || "",
 	client_current: ({ cached }) => cached.current,

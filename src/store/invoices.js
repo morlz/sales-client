@@ -89,7 +89,6 @@ const actions = {
 		await state.infinite.start()
 	},
 	async invoice_filtersChange({ commit, dispatch, state, getters }, payload){
-		console.log(payload);
 		commit("invoice_filtersSet", payload)
 		state.infinite.filters = { ...payload, type: undefined, page: undefined }
 		state.infinite.additional = { type: getters.invoice_type, page: getters.invoice_page }

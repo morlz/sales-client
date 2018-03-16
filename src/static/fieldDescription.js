@@ -38,13 +38,13 @@ let dataObj = {
 
 	clientManyFieldDescription: [
 		//{ field: "id", label: "№", type: "number" },
-		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'] },
-		{ field: "manager.FIO", label: "Менеджер", type: "string" },
-		{ field: "salon.NAME", label: "Салон", type: "string" },
-		{ field: "created_at", label: "Создан", inline: true, format: {
+		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+		{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
+		{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
+		{ field: "created_at", label: "Создан", inline: true, width: 120, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 		} },
-		{ field: "notactive", label: "Неактивен", type: "string" },
+		{ field: "notactive", label: "Неактивен", type: "string", width: 100 },
 	],
 
 	clientContactsFieldDescription: [

@@ -56,7 +56,7 @@
 
 
 	<div class="manyDiscountWrapper" v-if="!isOne">
-		<q-tabs v-model="currentTab">
+		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 			<q-tab name="table" label="Таблица" slot="title"/>
 			<q-tab name="tile" label="Плитки" slot="title"/>
 		</q-tabs>

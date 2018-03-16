@@ -28,7 +28,7 @@
 
 		<div class="manyInvoicesWrapper" v-if="!isOne">
 			<div
-				class="manyInvoicesWrapper__horGroup"
+				class="manyInvoicesWrapper__horGroup AppContent__headerTabs"
 				:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 
 				<q-tabs v-model="currentTab">
