@@ -1,17 +1,15 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
 		models: []
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -22,62 +20,40 @@ const state = {
 }
 
 const actions = {
-	async storage_init ({ commit, dispatch, getters }, payload) {
-		dispatch('storage_getModels', { type: getters.storage_type })
+	async storage_init ({ commit, dispatch, getters, state }, payload) {
+		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+
+		commit('storage_initInfinite', new Infinite({
+			method: api.storages.getLimited,
+			additional: {
+				type: "sgp"
+			}
+		}))
+
+		state.infinite.on('cached', n => commit('storage_cacheSet', n))
+		state.infinite.on('complete', n => commit('storage_completeSet', n))
+
+		dispatch('storage_getModels', { type: "sgp" })
+
 		if (payload) {
 			dispatch('storage_getOne', payload)
 		} else {
-			await dispatch('storage_infinityStart')
+			await state.infinite.start()
 		}
 	},
-	async storage_sortChange({ commit, dispatch }, payload){
+	async storage_sortChange({ commit, dispatch, state }, payload){
 		commit("storage_sortSet", payload)
-		await dispatch('storage_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
-	async storage_filtersChange({ commit, dispatch }, payload){
+	async storage_filtersChange({ commit, dispatch, state }, payload){
 		commit("storage_filtersSet", payload)
-		await dispatch('storage_infinityStart')
+		state.infinite.filters = { ...payload, type: undefined }
+		state.infinite.additional = { type: payload.type }
+		await state.infinite.start()
 	},
 	async storage_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
-
-		commit('storage_lastOffsetSet', state.offset.current)
-		commit('storage_loadingBottomSet', true)
-		let res = await api.storages.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.storage_filters,
-			sort: state.sort,
-			type: getters.storage_type
-		})
-		commit('storage_loadingSet', false)
-		commit('storage_loadingBottomSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('storage_cacheAppend', res.data)
-		commit('storage_currentOffsetSet')
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async storage_infinityStart({ commit, dispatch, state, getters }){
-		commit('storage_lastOffsetSet', 0)
-		commit('storage_currentOffsetSet', 0)
-		commit('storage_loadingBottomSet', true)
-		commit('storage_loadingSet', true)
-		let res = await api.storages.getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.storage_filters,
-			sort: state.sort,
-			type: getters.storage_type
-		})
-		commit('storage_loadingBottomSet', false)
-		commit('storage_loadingSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('storage_cacheSet', res.data)
-		commit('storage_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	async storage_getOne({ commit, dispatch }, payload){
 		commit('storage_loadingOneSet', true)
@@ -104,33 +80,36 @@ const actions = {
 const mutations = {
 	storage_cacheSet: (state, payload) => state.cached.list = payload,
 	storage_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
-	storage_filtersSet: (store, payload) => store.filters = payload,
-	storage_sortSet: (store, payload) => store.sort = payload,
-	storage_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	storage_removeOneFromCache: (store, payload) => store.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
-	storage_currentSet: (store, payload) => store.cached.current = payload,
-	storage_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
-	storage_cachedModelsSet: (store, payload) => store.cached.models = payload,
-	storage_loadingSet: (store, payload) => store.loading.list = payload,
-	storage_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
-	storage_loadingOneSet: (store, payload) => store.loading.one = payload,
-	storage_loadingModelsSet: (store, payload) => store.loading.models = payload
+	storage_filtersSet: (state, payload) => state.filters = payload,
+	storage_sortSet: (state, payload) => state.sort = payload,
+	storage_lastOffsetSet: (state, payload) => state.offset.last = payload,
+	storage_removeOneFromCache: (state, payload) => state.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
+	storage_currentSet: (state, payload) => state.cached.current = payload,
+	storage_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
+	storage_cachedModelsSet: (state, payload) => state.cached.models = payload,
+	storage_loadingSet: (state, payload) => state.loading.list = payload,
+	storage_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
+	storage_loadingOneSet: (state, payload) => state.loading.one = payload,
+	storage_loadingModelsSet: (state, payload) => state.loading.models = payload,
+	storage_initInfinite: (state, payload) => state.infinite = payload,
+	storage_completeSet: (state, payload) => state.complete = payload
 }
 
 const getters = {
-	storage_filters: ({ filters }) => ({ ...filters, type: undefined }),
-	storage_current: ({ cached }) => cached.current,
-	storage_cached: ({ cached }) => cached.list,
+	storage_filters: state => ({ ...state.filters, type: undefined }),
+	storage_current: state => state.cached.current,
+	storage_cached: state => state.cached.list,
 	storage_models: ({ cached }) => [
 			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
 			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
 		]
 		.sort(api.core.sortFnFactory(model => model.value == "" ? "АААААА": model.MODEL, true)),
-	storage_type: ({ filters }) => filters.type,
-	storage_loading: ({ loading }) => loading.list,
-	storage_loadingBottom: ({ loading }) => loading.bottom,
-	storage_loadingOne: ({ loading }) => loading.one,
-	storage_loadingModels: ({ loading }) => loading.models,
+	storage_type: state => state.filters.type,
+	storage_loading: state => state.loading.list,
+	storage_loadingBottom: state => state.loading.bottom,
+	storage_loadingOne: state => state.loading.one,
+	storage_loadingModels: state => state.loading.models,
+	storage_complete: state => state.complete
 }
 
 export default {

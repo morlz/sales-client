@@ -134,24 +134,24 @@ let dataObj = {
 	],
 
 	storageFieldDescription: [
-		{ field: "UN", label: "Фаб. №" },
-		{ field: "MODEL", label: "Модель" },
-		{ field: "td.mestoXR.NAME", label: "Место. хр." },
-		{ field: "td.TIP", label: "Тип", inline: true },
-		{ field: "cloth1", label: "Ткань 1" },
-		{ field: "cloth2", label: "Ткань 2" },
-		{ field: "cloth3", label: "Ткань 3" },
-		{ field: "KAT", label: "Кат." },
-		{ field: "td.ModelPriceR", label: "Цена (р)" },
-		{ field: "COMMENT", label: "Примечание" },
-		{ field: "DEKOR", label: "Декор" },
-		{ field: "Vid_stegki", label: "Стежка" },
-		{ field: "NAKC", label: "Акция" },
-		{ field: "td.Sostoynie", label: "Сост." },
-		{ field: "td.DATE_CEX", label: "Цех", inline: true, format: {
+		{ field: "UN", label: "Фаб. №", width: 60 },
+		{ field: "MODEL", label: "Модель", width: 100 },
+		{ field: "td.mestoXR.NAME", label: "Место. хр.", width: 100 },
+		{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
+		{ field: "cloth1.NAME", label: "Ткань 1", width: 150 },
+		{ field: "cloth2.NAME", label: "Ткань 2", width: 150 },
+		{ field: "cloth3.NAME", label: "Ткань 3", width: 150 },
+		{ field: "KAT", label: "Кат.", width: 60 },
+		{ field: "td.ModelPriceR", label: "Цена (р)", width: 60 },
+		{ field: "COMMENT", label: "Примечание", width: 350 },
+		{ field: "DEKOR", label: "Декор", width: 80 },
+		{ field: "Vid_stegki", label: "Стежка", width: 80 },
+		{ field: "NAKC", label: "Акция", width: 50 },
+		{ field: "td.Sostoynie", label: "Сост.", width: 100 },
+		{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "invoice.N_DOC", label: "Номер заказа" },
+		{ field: "invoice.N_DOC", label: "Номер заказа", width: 50 },
 	],
 
 	discountFieldDescription: [

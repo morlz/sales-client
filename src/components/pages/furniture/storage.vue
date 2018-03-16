@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper">
+<div class="AppContent">
 	<div class="oneStorageWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -52,58 +52,53 @@
 
 
 	<div class="manyStorageWrapper" v-if="!isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/salon' }">На складе</router-link></li>
-		</ul>
-
-		<furniture-models-switch/>
-
-		<q-tabs v-model="currentTab" inverted>
+		<q-tabs v-model="currentTab">
 			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 		</q-tabs>
 
-		<furniture-models-wrap :current="storage_filters.MODEL" @select="local_storage_filtersModelSet" :models="storage_models" :loading="storage_loadingModels">
-			<tabless
-				v-loading="storage_loading"
-				key="storage"
-				:data="storage_cached"
-				:fieldDescription="storageFieldDescriptionFiltred"
-				:filters="storage_filters"
-				:select-fields="local_storage_selectFields"
-				ref="table"
-				@filter="local_storage_filterChange"
-				@sortChange="local_storage_sortChange"
-				@onClick="routerGoId"
-			>
-				<template slot="cloth1" slot-scope="props">
-					<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-					<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-				</template>
+		<furniture-models-wrap
+			:current="storage_filters.MODEL"
+			:loading="storage_loadingModels"
+			:models="storage_models"
+			@select="local_storage_filtersModelSet" >
 
-				<template slot="cloth2" slot-scope="props">
-					<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-					<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-				</template>
+			<q-card class="manyStorageWrapper__card">
+				<tabless
+					key="salon"
+					:data="storage_cached"
+					:complete="storage_complete"
+					:field-description="storageFieldDescriptionFiltred"
+					:filters="storage_filters"
+					:select-fields="local_storage_selectFields"
+					ref="table"
+					@filter="local_storage_filterChange"
+					@sort="local_storage_sortChange"
+					@click="routerGoId"
+					@select="local_storage_handleFieldSelect"
+					@infinite="storage_infinity"
+				>
+					<template slot="cloth1" slot-scope="props">
+						<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
+						<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+					</template>
 
-				<template slot="cloth3" slot-scope="props">
-					<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-					<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-				</template>
+					<template slot="cloth2" slot-scope="props">
+						<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
+						<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+					</template>
 
-				<template slot="buttons" slot-scope="props">
-					<q-btn color="primary" flat @click="storage_addToCart({ UN: props.row.UN })">
-						<q-icon name="shopping_cart"/>
-					</q-btn>
-				</template>
-			</tabless>
+					<template slot="cloth3" slot-scope="props">
+						<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
+						<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+					</template>
 
-			<infinite-loading :distance="800" @infinite="storage_infinity" ref="infiniteLoading">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="storage_loadingBottom" />
-			</infinite-loading>
+					<template slot="buttons" slot-scope="props">
+						<q-btn color="primary" flat @click="storage_addToCart({ UN: props.row.UN })">
+							<q-icon name="shopping_cart"/>
+						</q-btn>
+					</template>
+				</tabless>
+			</q-card>
 		</furniture-models-wrap>
 	</div>
 </div>
@@ -117,13 +112,13 @@
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
-import tabless from '@/components/tableSS'
+import tabless from '@/components/tableSSNew'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import PreviewCloth from '@/components/PreviewCloth'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
-import { QTab, QTabs, QBtn, QIcon} from 'quasar'
+import { QTab, QTabs, QBtn, QIcon, QCard } from 'quasar'
 
 
 let {
@@ -142,7 +137,8 @@ export default {
 		QTabs,
 		QBtn,
 		PreviewCloth,
-		QIcon
+		QIcon,
+		QCard
 	},
 	mixins: [mixins],
 	data() {
@@ -185,6 +181,7 @@ export default {
 			'storage_filters',
 			'storage_models',
 			'storage_type',
+			'storage_complete',
 			'main_auth_settings'
 		]),
 		additionalFilters () {
@@ -213,6 +210,9 @@ export default {
 			'storage_getOne',
 			'storage_addToCart',
 		]),
+		...mapMutations([
+			'app_layout_headerShadowSet'
+		]),
 		async local_storage_filterChange (n) {
 			this.lastStorageFilters = n
 			await this.storage_filtersChange (Object.assign({}, this.additionalFIlters, n))
@@ -234,12 +234,20 @@ export default {
 			if (MODEL == 'Все модели') MODEL = ""
 			let filters = { ...this.storage_filters, MODEL, type: this.storage_type }
 			this.local_storage_filterChange(filters)
+		},
+		local_storage_handleFieldSelect (data) {
+			if (data.field != 'td.salon.NAME') return
+			this.storage_getModels({ filters: { 'td.salon.ID_SALONA': data.value }, type: this.storage_type })
 		}
 	},
 	async mounted () {
+		this.app_layout_headerShadowSet(false)
 		await this.storage_init(this.oneId)
 		if (this.$refs.infiniteLoading)
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+	},
+	beforeDestroy() {
+		this.app_layout_headerShadowSet(true)
 	}
 }
 </script>
@@ -261,6 +269,10 @@ export default {
 	}
 	.manyStorageWrapper {
 		width: 100%;
+
+		&__card {
+			height: ~"calc(100vh - 110px)";
+		}
 	}
 	@media screen and (max-width: 1250px) {
 		.oneStorageWrapper {

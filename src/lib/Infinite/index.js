@@ -27,7 +27,7 @@ class Infinite extends EventEmitter {
 
 		this.pageSize = options.pageSize || 200
 		this.method = options.method
-		this.log = options.log || false
+		this.log = options.log || true
 
 		if (this.log) console.log('[inf] [init]')
 	}
@@ -59,12 +59,12 @@ class Infinite extends EventEmitter {
 		if (this._preloaded != false) {
 			if (this.log) console.log('[inf] [more] from memory');
 			this.cached = [...this.cached, ...this._preloaded]
-			this._preloaded = false
 			payload.loaded()
 			if (!this._preloaded) {
 				this.complete = true
 				payload.complete()
 			}
+			this._preloaded = false
 		} else {
 			if (this.loadingPreload) {
 				if (this.log) console.log('[inf] [more] wait for preload');

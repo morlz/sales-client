@@ -70,9 +70,9 @@
 
 		<furniture-models-wrap
 			:current="furniture_filters.MODEL"
-			@select="local_furniture_filtersModelSet"
 			:loading="furniture_loadingModels"
-			:models="furniture_models">
+			:models="furniture_models"
+			@select="local_furniture_filtersModelSet">
 
 			<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
 			<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
@@ -85,7 +85,6 @@
 					:field-description="furnitureSalonFieldDescriptionFiltred"
 					:filters="furniture_filters"
 					:select-fields="local_furniture_selectFields"
-					:local-sort="false"
 					:selectable="currentTab == 'new'"
 					ref="table"
 					@filter="local_furniture_filterChange"

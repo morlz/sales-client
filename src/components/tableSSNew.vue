@@ -306,6 +306,9 @@ export default {
 		},
 		currentSelected (n) {
 			this.$emit('selected', n)
+		},
+		complete (n) {
+			console.log(n);
 		}
 	},
 	computed: {
