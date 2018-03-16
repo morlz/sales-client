@@ -48,13 +48,12 @@ const actions = {
 			dispatch('discount_getModels', { filters })
 			commit('discount_filtersSet', {
 				...state.filters,
-				filters
+				...filters
 			})
 			await state.infinite.start()
 		}
 	},
 	async discount_sortChange({ commit, dispatch, state }, payload){
-		console.log('sc');
 		commit("discount_sortSet", payload)
 		state.infinite.sort = payload
 		await state.infinite.start()

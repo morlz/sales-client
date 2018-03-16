@@ -12,6 +12,10 @@ export default {
 			type: Array,
 			required: true
 		},
+		contentTag: {
+			type: String,
+			default: a => "div"
+		},
 		chunkSize: {
 			type: Number,
 			default: a => 4
@@ -132,7 +136,7 @@ export default {
 			}, [
 				this.$slots.start,
 				h(
-					'div', {
+					this.contentTag, {
 						class: 'clusterize__scroll',
 						style,
 						ref: 'scroll'

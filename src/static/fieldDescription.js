@@ -104,17 +104,17 @@ let dataObj = {
 	],
 
 	invoicesFieldDescription: [
-		{ field: "N_DOC", label: "Номер документа" },
-		{ field: "DATE", label: "Дата оформления", inline: true, format: {
+		{ field: "N_DOC", label: "Номер документа", width: 80 },
+		{ field: "DATE", label: "Дата оформления", inline: true, width: 100, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "shipments", type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+		{ field: "shipments", type: 'array', width: 100, fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
 			get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "manager.fio", label: "Менеджер", search: false },
-		{ field: "client.fio", label: "Клиент", search: false },
-		{ field: "adSource.NAME", label: "Рекламный источник" },
-		{ field: "storage.NAME", label: "Салон" },
+		{ field: "manager.fio", label: "Менеджер", width: 150, search: false },
+		{ field: "client.fio", label: "Клиент", width: 150, search: false },
+		{ field: "adSource.NAME", label: "Р. Ист.", width: 100 },
+		{ field: "storage.NAME", label: "Салон", width: 150 },
 	],
 
 	shipmentsFieldDescription: [

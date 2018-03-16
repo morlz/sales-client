@@ -1,17 +1,15 @@
 import api from '@/api'
 import reduceInvoice from '@/lib/reducers/invoice'
+import Infinite from '@/lib/Infinite'
 
 const state = {
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
+	complete: false,
+	infinite: false,
 	cached: {
 		list: [],
 		current: {},
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -47,68 +45,58 @@ const state = {
 
 const actions = {
 	async invoice_init ({ commit, dispatch, getters, state }, payload) {
+		let ID_SALONA = state.filters['storage.ID_SALONA'] !== undefined ?
+									state.filters['storage.ID_SALONA']
+								:	getters.auth_currentSalon.ID_SALONA + ""
+
+		let filters = {
+			'storage.ID_SALONA' : ID_SALONA
+		}
+
+		let additional = {
+			type: getters.invoice_type,
+			page: payload.page ?
+					[payload.page, payload = undefined][0]
+				:	getters.invoice_page
+		}
+
+
 		dispatch('salon_getList', getters.currentUserSalon)
 		if (payload) {
 			await dispatch('invoice_getOne', payload)
 		} else {
+			commit('invoice_initInfinite', new Infinite({
+				method: api.invoices.getLimited,
+				filters,
+				additional
+			}))
+
+			state.infinite.on('cached', n => commit('invoice_cacheSet', n))
+			state.infinite.on('complete', n => commit('invoice_completeSet', n))
+
 			commit('invoice_filtersSet', {
 				...state.filters,
-				'storage.ID_SALONA' : state.filters['storage.ID_SALONA'] !== undefined ?
-											state.filters['storage.ID_SALONA']
-										:	getters.auth_currentSalon.ID_SALONA + ""
-			 })
-			await dispatch('invoice_infinityStart')
+				...filters,
+				...additional
+			})
+
+			await state.infinite.start()
 		}
 	},
-	async invoice_sortChange({ commit, dispatch }, payload){
+	async invoice_sortChange({ commit, dispatch, state, getters }, payload){
 		commit("invoice_sortSet", payload)
-		await dispatch('invoice_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
-	async invoice_filtersChange({ commit, dispatch }, payload){
+	async invoice_filtersChange({ commit, dispatch, state, getters }, payload){
+		console.log(payload);
 		commit("invoice_filtersSet", payload)
-		await dispatch('invoice_infinityStart')
+		state.infinite.filters = { ...payload, type: undefined, page: undefined }
+		state.infinite.additional = { type: getters.invoice_type, page: getters.invoice_page }
+		await state.infinite.start()
 	},
 	async invoice_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
-
-		commit('invoice_lastOffsetSet', state.offset.current)
-		commit('invoice_loadingBottomSet', true)
-		let res = await api.invoices.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.invoice_filters,
-			sort: state.sort,
-			type: getters.invoice_type,
-			page: getters.invoice_page
-		})
-		commit('invoice_loadingSet', false)
-		commit('invoice_loadingBottomSet', false)
-		if (res.data && res.data.error) return
-		commit('invoice_cacheAppend', res.data)
-		commit('invoice_currentOffsetSet')
-
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async invoice_infinityStart({ commit, dispatch, state, getters }){
-		commit('invoice_lastOffsetSet', 0)
-		commit('invoice_currentOffsetSet', 0)
-		commit('invoice_loadingBottomSet', true)
-		commit('invoice_loadingSet', true)
-		let res = await api.invoices.getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.invoice_filters,
-			sort: state.sort,
-			type: getters.invoice_type,
-			page: getters.invoice_page
-		})
-		commit('invoice_loadingBottomSet', false)
-		commit('invoice_loadingSet', false)
-		if (res.data && res.data.error) return
-		commit('invoice_cacheSet', res.data)
-		commit('invoice_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	async invoice_getOne({ commit, dispatch }, payload){
 		commit('invoice_loadingOneSet', true)
@@ -206,6 +194,8 @@ const mutations = {
 	invoice_loadingSet: (state, payload) => state.loading.list = payload,
 	invoice_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	invoice_loadingOneSet: (state, payload) => state.loading.one = payload,
+	invoice_initInfinite: (state, payload) => state.infinite = payload,
+	invoice_completeSet: (state, payload) => state.complete = payload,
 
 	invoice_new_selectedSet: (state, payload) => state.new.selected = payload,
 	invoice_new_loadingSet: (state, payload) => state.new.loading[payload.type] = payload.data,
@@ -216,8 +206,9 @@ const getters = {
 	invoice_filters: state => ({ ...state.filters, type: undefined, page: undefined }),
 	invoice_type: state => state.filters.type,
 	invoice_page: state => state.filters.page,
-	invoice_current: ({ cached }) => cached.current,
-	invoice_cached: ({ cached }) => cached.list.map(el => {
+	invoice_current: state => state.cached.current,
+	invoice_complete: state => state.complete,
+	invoice_cached: state => state.cached.list.map(el => {
 		let tmp = { ...el }
 		if (!el.client)
 			tmp.client = el.clientOld

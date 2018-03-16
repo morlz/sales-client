@@ -1,5 +1,5 @@
 <template>
-	<div class="mainWrapper">
+	<div class="AppContent">
 		<div class="oneInvoiceWrapper" v-if="isOne">
 			<ul class="breadcrumb">
 				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -27,39 +27,33 @@
 		</div>
 
 		<div class="manyInvoicesWrapper" v-if="!isOne">
-			<ul class="breadcrumb">
-				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
-				<li><router-link :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставленые счета' : 'Перемещения' }}</router-link></li>
-			</ul>
+			<div
+				class="manyInvoicesWrapper__horGroup"
+				:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 
-			<div class="manyInvoicesWrapper__horGroup" :class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
-				<q-tabs inverted v-model="currentTab">
+				<q-tabs v-model="currentTab">
 					<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
 				</q-tabs>
 
-				<q-field helper="Салон" class="manyInvoicesWrapper__salon">
+				<q-field class="manyInvoicesWrapper__salon">
 					<q-select v-model="local_currentSalon" :options="local_salon_list" filter/>
 				</q-field>
 			</div>
 
-			<tabless
-				v-loading="invoice_loading"
-				key="invoices"
-				:data="invoice_cached"
-				:fieldDescription="invoicesFieldDescriptionFiltred"
-				:filters="invoice_filters"
-				ref="table"
-				@filter="local_invoice_filtersChange"
-				@sortChange="local_invoice_sortChange"
-				@onClick="routerGoId"
-			/>
-
-			<infinite-loading :distance="800" @infinite="invoice_infinity" ref="infiniteLoading" key="invoicesinf">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="invoice_loadingBottom" />
-			</infinite-loading>
+			<q-card class="manyInvoicesWrapper__card">
+				<tabless
+					key="invoices"
+					:data="invoice_cached"
+					:complete="invoice_complete"
+					:field-description="invoicesFieldDescriptionFiltred"
+					:filters="invoice_filters"
+					ref="table"
+					@filter="local_invoice_filtersChange"
+					@sort="local_invoice_sortChange"
+					@click="routerGoId"
+					@infinite="invoice_infinity"
+				/>
+			</q-card>
 		</div>
 	</div>
 </template>
@@ -76,7 +70,7 @@
 
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import tabless from '@/components/tableSS.vue'
+import tabless from '@/components/tableSSNew.vue'
 import InfoCardClient from '@/components/InfoCardClient.vue'
 import InfoCardInvoice from '@/components/InfoCardInvoice.vue'
 import InfoCardZakTd from '@/components/InfoCardZakTd.vue'
@@ -106,7 +100,9 @@ let {
 
 
 export default {
-	props: ['type'],
+	props: {
+		type: String
+	},
 	data () {
 		return {
 			invoicesFieldDescription,
@@ -118,7 +114,7 @@ export default {
 				{ name: "В работе", type: 'inWork' },
 				{ name: "Отгружено", type: 'shipped' },
 				{ name: "Отказ", type: 'deny' },
-			],
+			]
 		}
 	},
 	mixins: [mixins],
@@ -154,7 +150,7 @@ export default {
 		oneId () {
 			if (this.oneId !== undefined)
 				this.invoice_getOne(this.oneId)
-		}
+		},
 	},
 	computed: {
 		...mapGetters([
@@ -167,7 +163,8 @@ export default {
 			'salon_list',
 			'salon_listWithAll',
 			'currentUserSalon',
-			'app_view_mobile'
+			'app_view_mobile',
+			'invoice_complete'
 		]),
 		data () {
 			return this.cachedInvoices
@@ -207,6 +204,9 @@ export default {
 			'invoice_getOne',
 			'salon_getList'
 		]),
+		...mapMutations([
+			'app_layout_headerShadowSet'
+		]),
 		async local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n
 			await this.invoice_filtersChange (Object.assign({}, this.additionalFilters, n))
@@ -226,9 +226,13 @@ export default {
 		}
 	},
 	async mounted () {
-		await this.invoice_init(this.oneId)
+		this.app_layout_headerShadowSet(false)
+		await this.invoice_init(this.oneId || { page: this.type })
 		if (this.$refs.infiniteLoading)
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+	},
+	beforeDestrou () {
+		this.app_layout_headerShadowSet(true)
 	}
 }
 
@@ -239,16 +243,22 @@ export default {
 .manyInvoicesWrapper {
 	&__salon {
 		width: 300px;
+		margin: 0;
 	}
 
 	&__horGroup {
 		display: grid;
 		grid-auto-flow: column;
 		justify-content: space-between;
+		align-items: center;
+		background: #027be3;
 		&-mobile {
 			grid-auto-flow: row;
 			justify-content: center;
 			justify-items: center;
+		}
+		.q-input-target, .q-input-shadow {
+			color: #fff;
 		}
 	}
 }
@@ -265,6 +275,15 @@ export default {
 						"z z"
 						"s s"
 						"p p";
+	}
+}
+
+.manyInvoicesWrapper {
+	width: 100%;
+	height: 100%;
+
+	&__card {
+		height: ~"calc(100vh - 115px)";
 	}
 }
 

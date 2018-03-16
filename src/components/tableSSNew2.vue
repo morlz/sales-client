@@ -2,133 +2,94 @@
 	<div class="tableSS">
 		<q-slide-transition>
 			<div v-show="showHeader" class="tableSS__header">
-				<div class="tableSS__actions" :class="{ 'tableSS__actions-selected' : selectedCount }">
-					<div class="tableSS__selectedCount" v-if="selectedCount">Выбрано {{ selectedCount }} шт.</div>
-					<div class="tableSS__rowsCount" v-else>{{ rows.length }} строк.</div>
-					<slot name="selected" :selected="selected" :count="selectedCount"/>
-				</div>
+				<table>
+					<tr class="tableSS__actions" :class="{ 'tableSS__actions-selected' : selectedCount }">
+						<th>
+							<div class="tableSS__selectedCount" v-if="selectedCount">Выбрано {{ selectedCount }} шт.</div>
+							<div class="tableSS__rowsCount" v-else>{{ rows.length }} строк.</div>
+							<slot name="selected" :selected="selected" :count="selectedCount"/>
+						</th>
+					</tr>
 
-				<div class="tableSS__head" :style="rowStyle">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</div>
+					<tr class="tableSS__head">
+						<th v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</th>
 
-					<q-checkbox v-model="selectAll" v-if="selectable" class="tableSS__checkbox"/>
+						<th v-if="selectable">
+							<q-checkbox v-model="selectAll" class="tableSS__checkbox"/>
+						</th>
 
-					<div
-						class="tableSS__item-head"
-						v-for="column, index in columns"
-						@click="thClick(column, index)"
-						ref="ths">
-						<i :class="sortableIconClass(column, index)" />
-						{{ column.label }}
-					</div>
+						<th
+							class="tableSS__item-head"
+							v-for="column, index in columns"
+							@click="thClick(column, index)"
+							ref="ths">
+							<div>
+								<i :class="sortableIconClass(column, index)" />
+								{{ column.label }}
+							</div>
+						</th>
 
-					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
-						<slot name="buttons"/>
-					</div>
-				</div>
+						<th class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
+							<slot name="buttons"/>
+						</th>
+					</tr>
 
-				<div class="tableSS__search" :style="rowStyle">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+					<tr class="tableSS__search">
+						<th v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
 
-					<div v-if="selectable" class="tableSS__checkbox"/>
+						<th v-if="selectable" class="tableSS__checkbox"/>
 
-					<div class="tableSS__item-search" v-for="column, index in columnsSearchFields">
-						<slot name="search">
-							<q-input
-								v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
-								:key="index"
-								v-if="column.type == 'search'"
-								:disabled="column.search === false"/>
+						<th class="tableSS__item-search" v-for="column, index in columnsSearchFields">
+							<slot name="search">
+								<q-input
+									v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
+									:key="index"
+									v-if="column.type == 'search'"
+									:disabled="column.search === false"/>
 
-							<q-select
-								v-if="column.type == 'select'"
-								v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
-								:key="index"
-								:filter="column.filterable"
-								:options="formatSelectOptions(column)"
-								@change="selectChange($event, column)"
-							/>
-						</slot>
-					</div>
+								<q-select
+									v-if="column.type == 'select'"
+									v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
+									:key="index"
+									:filter="column.filterable"
+									:options="formatSelectOptions(column)"
+									@change="selectChange($event, column)"
+								/>
+							</slot>
+						</th>
 
-					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
-						<slot name="buttons"/>
-					</div>
-				</div>
+						<th class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
+							<slot name="buttons"/>
+						</th>
+					</tr>
+				</table>
 			</div>
 		</q-slide-transition>
 
-		<tabless-clusterize :content="items" :item-height="itemHeight" class="tableSS__main" v-if="big" ref="main" :style="mainStyle" @mousewheel.native="scrollHandler">
-			<div
+		<tabless-clusterize
+			class="tableSS__main"
+			v-if="big"
+			ref="main"
+			content-tag="table"
+			:content="items"
+			:item-height="itemHeight"
+			:style="mainStyle"
+			@mousewheel.native="scrollHandler">
+			<tr
 				class="tableSS__row"
-				slot-scope="row"
-				:style="rowStyle"
-				:key="row.itemKey"
-				:class="{ 'tableSS__row-selected': selected[row.index] }"
-				@click="clickHandler($event, row.item, row.index)"
-			>
-				<template v-if="row.item && row.item.rowType == 'row'">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
-
-					<q-checkbox :value="!!selected[row.index]" @input="changeSelectedRow($event, row.index)" v-if="selectable" class="tableSS__checkbox"/>
-
-					<div class="tableSS__item" v-for="column, index in columns">
-						{{ column.rowType }}
-						<slot :name="column.field" :row="row.item" :column="column">
-							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(row.item, column.field, column.format) }}</div>
-							<div v-if="column.type == 'html'" v-html="getFieldData(row.item, column.field, column.format)"/>
-							<tabless-popover
-								v-if="column.type == 'array'"
-								:one="getFieldData(row.item, column.field, column.format).length < 2"
-								:arr="getFieldData(row.item, column.field, column.format)"
-								:column="column"
-								:fields="column.fields"
-								:label="column.label"
-								/>
-						</slot>
-					</div>
-
-					<div class="tableSS__buttons" v-if="local_buttonsCondition(row.item)">
-						<slot name="buttons" :row="row.item">
-							<el-button
-								size="small"
-								@click.stop="button.click($event, row.item)"
-								v-for="button, index in buttonRedused"
-								:key="index"
-								:class="button.class"
-								:type="button.type"
-								v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(row.item, button.loading.field) )"
-							>
-								{{ button.name }}
-							</el-button>
-						</slot>
-					</div>
-				</template>
-			</div>
-
-			<infinite-loading slot="end" :distance="2000" @infinite="infiniteHandler" ref="infiniteLoading">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<q-spinner-ball :size="50" slot="spinner" class="spinner"/>
-			</infinite-loading>
-		</tabless-clusterize>
-
-
-		<div class="tableSS__main" v-if="!big" @mousewheel="scrollHandler" :style="mainStyle">
-			<div
-				class="tableSS__row"
-				v-for="item, index in items"
-				:style="rowStyle"
+				slot-scope="{ item, index }"
 				:key="index"
 				:class="{ 'tableSS__row-selected': selected[index] }"
 				@click="clickHandler($event, item, index)"
 			>
 				<template v-if="item && item.rowType == 'row'">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+					<td v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
 
-					<q-checkbox :value="!!selected[index]" @input="changeSelectedRow($event, index)" v-if="selectable" class="tableSS__checkbox"/>
+					<td v-if="selectable">
+						<q-checkbox :value="!!selected[index]" @input="changeSelectedRow($event, index)" class="tableSS__checkbox"/>
+					</td>
 
-					<div class="tableSS__item" v-for="column, index in columns">
+					<td class="tableSS__item" v-for="column, index in columns" :width="column.width + 'px'">
 						{{ column.rowType }}
 						<slot :name="column.field" :row="item" :column="column">
 							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(item, column.field, column.format) }}</div>
@@ -142,31 +103,99 @@
 								:label="column.label"
 								/>
 						</slot>
-					</div>
+					</td>
 
-					<div class="tableSS__buttons" v-if="local_buttonsCondition(item)">
-						<slot name="buttons" :row="item">
-							<el-button
-								size="small"
-								@click.stop="button.click($event, item)"
-								v-for="button, index in buttonRedused"
-								:key="index"
-								:class="button.class"
-								:type="button.type"
-								v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(item, button.loading.field) )"
-							>
-								{{ button.name }}
-							</el-button>
-						</slot>
-					</div>
+					<td v-if="local_buttonsCondition(item)">
+						<div class="tableSS__buttons">
+							<slot name="buttons" :row="item">
+								<el-button
+									size="small"
+									@click.stop="button.click($event, item)"
+									v-for="button, index in buttonRedused"
+									:key="index"
+									:class="button.class"
+									:type="button.type"
+									v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(item, button.loading.field) )"
+								>
+									{{ button.name }}
+								</el-button>
+							</slot>
+						</div>
+					</td>
 				</template>
-			</div>
+			</tr>
 
 			<infinite-loading slot="end" :distance="2000" @infinite="infiniteHandler" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<q-spinner-ball :size="50" slot="spinner" class="spinner"/>
 			</infinite-loading>
+		</tabless-clusterize>
+
+		<div
+			class="tableSS__main"
+			v-if="!big"
+			:style="mainStyle"
+			@mousewheel="scrollHandler">
+
+			<table>
+				<tr
+					class="tableSS__row"
+					v-for="item, index in items"
+					:key="index"
+					:class="{ 'tableSS__row-selected': selected[index] }"
+					@click="clickHandler($event, item, index)"
+				>
+					<template v-if="item && item.rowType == 'row'">
+						<td v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+
+						<td v-if="selectable">
+							<q-checkbox :value="!!selected[index]" @input="changeSelectedRow($event, index)" class="tableSS__checkbox"/>
+						</td>
+
+						<td class="tableSS__item" v-for="column, index in columns">
+							<slot :name="column.field" :row="item" :column="column">
+								<div :style="{ width: column.width + 'px', height: itemHeight + 'px' }" v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(item, column.field, column.format) }}</div>
+								<div :style="{ width: column.width + 'px', height: itemHeight + 'px' }" v-if="column.type == 'html'" v-html="getFieldData(item, column.field, column.format)"/>
+								<tabless-popover
+									v-if="column.type == 'array'"
+									:one="getFieldData(item, column.field, column.format).length < 2"
+									:arr="getFieldData(item, column.field, column.format)"
+									:column="column"
+									:fields="column.fields"
+									:label="column.label"
+									:style="{ width: column.width + 'px', height: itemHeight + 'px' }"
+									/>
+							</slot>
+						</td>
+
+						<td v-if="local_buttonsCondition(item)">
+							<div class="tableSS__buttons">
+								<slot name="buttons" :row="item">
+									<el-button
+										size="small"
+										@click.stop="button.click($event, item)"
+										v-for="button, index in buttonRedused"
+										:key="index"
+										:class="button.class"
+										:type="button.type"
+										v-loading="button.loading && button.loading.items && button.loading.items.includes( getFieldData(item, button.loading.field) )"
+									>
+										{{ button.name }}
+									</el-button>
+								</slot>
+							</div>
+						</td>
+					</template>
+				</tr>
+
+				<infinite-loading slot="end" :distance="2000" @infinite="infiniteHandler" ref="infiniteLoading">
+					<div class="end" slot="no-results" />
+					<div class="end" slot="no-more" />
+					<q-spinner-ball :size="50" slot="spinner" class="spinner"/>
+				</infinite-loading>
+			</table>
+
 		</div>
 	</div>
 </template>
@@ -306,7 +335,7 @@ export default {
 		},
 		currentSelected (n) {
 			this.$emit('selected', n)
-		},
+		}
 	},
 	computed: {
 		mainStyle () {
@@ -401,22 +430,23 @@ export default {
 			return this.sortedRows
 		},
 		rowStyle () {
-
+			/*
 			const getElWidth = el => {
 				if (typeof el.width == 'array') return `minmax(${el.width[0]}px, ${el.width[1]}px) `
 				if (typeof el.width == 'number') return `minmax(${el.width}px, 300px) `
 				if (typeof el.width == 'string') return `${el.width} `
 				return el.width + ' '
 			}
+			*/
 
-			/*
+
 			const getElWidth = el => {
 				if (typeof el.width == 'array') return `${el.width[0]}px `
 				if (typeof el.width == 'number') return `${el.width}px `
 				if (typeof el.width == 'string') return `${el.width} `
 				return el.width + ' '
 			}
-			*/
+
 
 			let gridTemplateColumns = this.columns.reduce((prev, el) => prev + getElWidth(el), '')
 			if (this.$scopedSlots.buttons)
@@ -553,6 +583,15 @@ export default {
 
 
 <style lang="less">
+.childsPadding {
+	&:first-child {
+		padding-left: 10px;
+	}
+
+	&:last-child {
+		padding-right: 10px;
+	}
+}
 
 
 .tableSS {
@@ -561,14 +600,26 @@ export default {
 	overflow-x: auto;
 	overflow-y: hidden;
 	background: #fff;
+
+	table {
+		table-layout: fixed;
+		border-collapse: collapse;
+
+		td {
+			> div {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+		}
+	}
+
 	&__lineNumber {
 
 	}
 
 	&__header {
 		overflow: hidden;
-		width: min-content;
-		min-width: 100%;
 	}
 
 	&__main {
@@ -576,17 +627,11 @@ export default {
 		overflow-y: auto;
 		transition: height 0.3s ease-in-out;
 		transform: translateZ(0);
-		width: min-content;
-		min-width: 100%;
 	}
 
 	&__row {
-		display: grid;
-		grid-gap: 5px;
 		border-bottom: 1px solid rgba(224, 224, 224, 1);
-		align-content: center;
-		align-items: center;
-		padding: 0 15px;
+		height: 50px;
 		cursor: pointer;
 		transition: background-color 0.3s ease-in-out,
 					color 0.3s ease-in-out;
@@ -601,9 +646,12 @@ export default {
 	}
 
 	&__item {
-		text-overflow: clip;
-		max-height: 100%;
-		overflow: hidden;
+		.childsPadding;
+		padding: 0;
+		> div {
+			display: flex;
+			align-items: center;
+		}
 	}
 
 	&__item-buttons {
@@ -614,14 +662,6 @@ export default {
 
 	&__actions {
 		height: 50px;
-		display: grid;
-		grid-auto-flow: column;
-		justify-content: space-between;
-		padding: 0 10px;
-		grid-gap: 10px;
-		width: max-content;
-		min-width: 100%;
-		align-items: center;
 		transition: background-color 0.3s ease-in-out,
 					color 0.3s ease-in-out;
 
@@ -632,14 +672,8 @@ export default {
 	}
 
 	&__head, &__search {
-		display: grid;
 		white-space: nowrap;
-		align-content: center;
-		align-items: center;
 		height: 50px;
-		width: min-content;
-		padding: 0 15px;
-		min-width: 100%;
 	}
 
 	&__head {
@@ -656,8 +690,16 @@ export default {
 	}
 
 	&__item-search {
+		.childsPadding;
 		> div {
 			margin: 0;
+		}
+	}
+
+	&__item-head {
+		> div {
+			width: 100%;
+			height: 100%;
 		}
 	}
 
@@ -673,6 +715,7 @@ export default {
 	&__buttons {
 		display: grid;
 		grid-auto-flow: column;
+		vertical-align: middle;
 	}
 
 	&__checkbox {

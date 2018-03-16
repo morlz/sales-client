@@ -301,7 +301,7 @@ export default {
 		height: 100%;
 
 		&__card {
-			height: ~"calc(100vh - 110px)";
+			height: ~"calc(100vh - 115px)";
 		}
 	}
 	@media screen and (max-width: 1250px) {

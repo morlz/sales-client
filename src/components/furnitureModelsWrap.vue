@@ -71,7 +71,7 @@ export default {
 	height: ~"calc(100vh - 100px)";
 	display: grid;
 	grid-template-columns: 180px ~"calc(100% - 180px)";
-	grid-template-rows: ~"calc(100vh - 100px)";
+	grid-template-rows: ~"calc(100vh - 120px)";
 	align-items: start;
 	.modelList {
 		height: ~"calc(100% - 10px)";
