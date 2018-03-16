@@ -1,17 +1,15 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
 		statuses: []
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -23,60 +21,34 @@ const state = {
 }
 
 const actions = {
-	async preorder_init ({ commit, dispatch }, payload) {
+	async preorder_init ({ commit, dispatch, state }, payload) {
 		dispatch('preorder_getStatuses')
+
 		if (payload) {
 			await dispatch('preorder_getOne', payload)
 		} else {
-			await dispatch('preorder_infinityStart')
+			commit('preorder_initInfinite', new Infinite({
+				method: api.preorders.getLimited
+			}))
+
+			state.infinite.on('cached', n => commit('preorder_cacheSet', n))
+			state.infinite.on('complete', n => commit('preorder_completeSet', n))
+
+			await state.infinite.start()
 		}
 	},
 	async preorder_sortChange({ commit, dispatch }, payload){
 		commit("preorder_sortSet", payload)
-		await dispatch('preorder_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
 	async preorder_filtersChange({ commit, dispatch }, payload){
 		commit("preorder_filtersSet", payload)
-		await dispatch('preorder_infinityStart')
+		state.infinite.filters = { ...payload }
+		await state.infinite.start()
 	},
 	async preorder_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
-
-		commit('preorder_lastOffsetSet', state.offset.current)
-		commit('preorder_loadingBottomSet', true)
-		let res = await api.preorders.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.preorder_filters,
-			sort: state.sort
-		})
-		commit('preorder_loadingSet', false)
-		commit('preorder_loadingBottomSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('preorder_cacheAppend', res.data)
-		commit('preorder_currentOffsetSet')
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async preorder_infinityStart({ commit, dispatch, state, getters }){
-		commit('preorder_lastOffsetSet', 0)
-		commit('preorder_currentOffsetSet', 0)
-		commit('preorder_loadingBottomSet', true)
-		commit('preorder_loadingSet', true)
-		let res = await api.preorders.getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.preorder_filters,
-			sort: state.sort
-		})
-		commit('preorder_loadingBottomSet', false)
-		commit('preorder_loadingSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('preorder_cacheSet', res.data)
-		commit('preorder_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	async preorder_getOne({ commit, dispatch }, payload){
 		commit('preorder_loadingOneSet', true)
@@ -112,6 +84,9 @@ const actions = {
 }
 
 const mutations = {
+	preorder_destroy: state => state.cached.list = [],
+	preorder_initInfinite: (state, payload) => state.infinite = payload,
+	preorder_completeSet: (state, payload) => state.complete = payload,
 	preorder_cacheSet: (state, payload) => state.cached.list = payload,
 	preorder_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	preorder_filtersSet: (state, payload) => state.filters = payload,
@@ -132,6 +107,7 @@ const mutations = {
 }
 
 const getters = {
+	preorder_complete: state => state.complete,
 	preorder_filters: ({ filters }) => filters,
 	preorder_filtersPhone: ({ filters }) => filters.phone || "",
 	preorder_current: ({ cached }) => cached.current,

@@ -18,15 +18,15 @@ let dataObj = {
 
 	recordsManyFieldDescription: [
 		//{field: "id", label: "№", type: "number" },
-		{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'] },
-		{ field: "created_at", label: "Дата создания", inline: true, format: {
+		{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+		{ field: "created_at", label: "Дата создания", inline: true, width: 100, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 		}},
-		{ field: "status.title", label: "Статус", type: "string" },
-		{ field: "manager.FIO", label: "Менеджер", type: "string" },
-		{ field: "salon.NAME", label: "Салон", type: "string" },
-		{ field: "calc_summ", label: "Сумма расчета", type: "number" },
-		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" },
+		{ field: "status.title", label: "Статус", type: "string", width: 100 },
+		{ field: "manager.FIO", label: "Менеджер", type: "string", width: 100 },
+		{ field: "salon.NAME", label: "Салон", type: "string", width: 120 },
+		{ field: "calc_summ", label: "Сумма расчета", type: "number", width: 100 },
+		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number", width: 100 },
 	],
 
 	adSources: [

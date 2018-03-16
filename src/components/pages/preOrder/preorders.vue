@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper" v-if="auth_can(1, 'Preorder')">
+<div class="AppContent" v-if="auth_can(1, 'Preorder')">
 	<div class="oneRecordWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -23,39 +23,41 @@
 	</div>
 
 	<div class="manyRecordsWrapper" v-if="!isOne">
-		<ul class="breadcrumb bc">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: `/preorder/preorders` }">Список предзаказов</router-link></li>
-		</ul>
+		<div
+			class="manyRecordsWrapper__horGroup AppContent__headerTabs"
+			:class="{ 'manyRecordsWrapper__horGroup-mobile': app_view_mobile }">
+			<q-tabs v-model="currentTab">
+				<q-tab name="all" label="Все предзаказы" slot="title"/>
+				<q-tab name="new" label="Новый предзаказ" slot="title"/>
+			</q-tabs>
 
+			<q-input
+				inverted
+				v-model="searchByPhone"
+				:value="preorder_filtersPhone"
+				placeholder="Поиск по номеру телефона"
+				class="manyRecordsWrapper__phone"
+				v-if="currentTab == 'all'" />
+		</div>
 
-		<el-input v-model="searchByPhone" :value="preorder_filtersPhone" placeholder="Поиск по номеру телефона" class="searchByPhone" v-if="currentTab == '0'" />
-		<el-tabs tab-position="top" v-model="currentTab" key="preordersTabs" class="manyRecordsTabs">
-			<el-tab-pane label="Все предзаказы" key="1">
-				<tabless
-					key="preorders"
-					ref="table"
-					:data="data"
-					:fieldDescription="recordsManyFieldDescription"
-					:key="1"
-					:filters="preorder_filters"
-					:localSort="false"
-					@onClick="routerGoId"
-					@filter="localRecordFilterChange"
-					@sortChange="localRecordSortChange"
-				/>
-				<infinite-loading :distance="800" @infinite="preorder_infinity" ref="infiniteLoading">
-					<div class="end" slot="no-results" />
-					<div class="end" slot="no-more" />
-					<div class="spinner" slot="spinner" v-loading="preorder_loadingBottom" />
-				</infinite-loading>
+		<q-card v-if="currentTab == 'all'" class="manyRecordsWrapper__card">
+			<tabless
+				key="preorders"
+				:data="preorder_cached"
+				:complete="preorder_complete"
+				:field-description="recordsManyFieldDescription"
+				:filters="preorder_filters"
+				ref="table"
+				@filter="local_record_filtersChange"
+				@sort="local_record_sortChange"
+				@click="routerGoId"
+				@infinite="preorder_infinity"
+			/>
+		</q-card>
 
-			</el-tab-pane>
-
-			<el-tab-pane label="Новый предзаказ" key="2">
-				<new-preorder-form @goBack="currentTab = '0'"/>
-			</el-tab-pane>
-		</el-tabs>
+		<div v-if="currentTab == 'new'">
+			<new-preorder-form @go-back="currentTab = 'all'"/>
+		</div>
 	</div>
 </div>
 </template>
@@ -78,7 +80,7 @@ import {
 	mapMutations
 } from 'vuex'
 import mixins from '@/components/mixins'
-import tabless from '@/components/tableSS.vue'
+import tabless from '@/components/tableSSNew.vue'
 import addContactForm from '@/components/forms/addContact.vue'
 import editContactForm from '@/components/forms/editContact.vue'
 import editTaskForm from '@/components/forms/editTask.vue'
@@ -89,6 +91,7 @@ import preorderInfo from '@/components/preorder/preorderInfo.vue'
 import contactFaces from '@/components/preorder/contactFaces.vue'
 import tasks from '@/components/preorder/tasks.vue'
 
+import { QTabs, QTab, QInput, QCard } from 'quasar'
 
 export default {
 	data() {
@@ -97,7 +100,7 @@ export default {
 			searchByPhone: "",
 			searchByPhoneQuery: "",
 			seachTimeout: false,
-			currentTab: "0",
+			currentTab: "all",
 			lastFilters: {}
 		}
 	},
@@ -111,7 +114,11 @@ export default {
 		preorderInfo,
 		contactFaces,
 		tasks,
-		newPreorderForm
+		newPreorderForm,
+		QTabs,
+		QTab,
+		QInput,
+		QCard
 	},
 	watch: {
 		oneId (n) {
@@ -139,11 +146,10 @@ export default {
 			'preorder_acceptedAdd',
 			'preorder_loadingOne',
 			'preorder_filters',
-			'preorder_filtersPhone'
+			'preorder_filtersPhone',
+			'preorder_complete',
+			'app_view_mobile'
 		]),
-		data() {
-			return this.preorder_cached
-		},
 		additionalFilters () {
 			return {
 				'contactFaces.phone': this.searchByPhoneQuery
@@ -158,7 +164,11 @@ export default {
 			'preorder_init',
 			'preorder_getOne'
 		]),
-		async localRecordFilterChange (n) {
+		...mapMutations([
+			'preorder_destroy',
+			'app_layout_headerShadowSet'
+		]),
+		async local_record_filtersChange (n) {
 			this.lastFilters = n
 			await this.preorder_filtersChange (Object.assign({}, n, this.additionalFilters))
 
@@ -166,7 +176,7 @@ export default {
 				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
 			})
 		},
-		async localRecordSortChange (n) {
+		async local_record_sortChange (n) {
 			await this.preorder_sortChange(n)
 
 			this.$nextTick(() => {
@@ -175,8 +185,13 @@ export default {
 		}
 	},
 	mounted() {
+		this.app_layout_headerShadowSet(false)
 		this.preorder_init(this.oneId)
 		this.searchByPhone = this.preorder_filtersPhone
+	},
+	beforeDestroy () {
+		this.app_layout_headerShadowSet(true)
+		this.preorder_destroy()
 	}
 }
 </script>
@@ -195,19 +210,24 @@ export default {
 }
 
 .manyRecordsWrapper {
-	display: grid;
-	grid-template: "bc search";
-	> * {
-		grid-column: ~"1 / 3";
-	}
-	.bc {
-		grid-area: bc;
-	}
-	.searchByPhone {
-		grid-area: search;
-		justify-self: end;
+	width: 100%;
+	height: 100%;
+
+	&__phone {
+		margin: 0 10px;
 		width: 300px;
-		margin: 5px;
+	}
+
+	&__card {
+		height: ~"calc(100vh - 115px)";
+	}
+
+	&__horGroup {
+		display: grid;
+		grid-auto-flow: column;
+		justify-content: space-between;
+		align-items: center;
+		background: #027be3;
 	}
 }
 
