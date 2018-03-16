@@ -3,17 +3,17 @@ import moment from 'moment'
 let dataObj = {
 	tasksManyFieldDescription: [
 		//{ field: "id", label: "№", type: "string" },
-		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'] },
-		{ field: "description", label: "Задача", type: "string" },
-		{ field: "date", label: "Дата", type: "string", inline: true, format: {
+		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+		{ field: "description", label: "Задача", type: "string", width: 200 },
+		{ field: "date", label: "Дата", type: "string", inline: true, width: 100, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
-		{ field: "managerresponsible.FIO", label: "Ответсвенный", type: "string" },
-		{ field: "type.title", label: "Тип", type: "string" },
-		{ field: "end_date", label: "Выполнена", type: "string", inline: true, format: {
+		{ field: "managerresponsible.FIO", label: "Ответственный", width: 150, type: "string" },
+		{ field: "type.title", label: "Тип", type: "string", width: 100 },
+		{ field: "end_date", label: "Выполнена", type: "string", width: 100, inline: true, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 		} },
-		{ field: "salon.NAME", label: "Салон", type: "string" },
+		{ field: "salon.NAME", label: "Салон", type: "string", width: 100 },
 	],
 
 	recordsManyFieldDescription: [

@@ -1,17 +1,15 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
 		types: []
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -31,59 +29,32 @@ const state = {
 }
 
 const actions = {
-	async task_init ({ commit, dispatch }, payload) {
+	async task_init ({ commit, dispatch, state }, payload) {
 		if (+payload) {
 			await dispatch('task_getOne', payload)
 		} else {
-			await dispatch('task_infinityStart')
+			commit('task_initInfinite', new Infinite({
+				method: api.tasks.getLimited
+			}))
+
+			state.infinite.on('cached', n => commit('task_cacheSet', n))
+			state.infinite.on('complete', n => commit('task_completeSet', n))
+
+			await state.infinite.start()
 		}
 	},
 	async task_sortChange({ commit, dispatch }, payload){
 		commit("task_sortSet", payload)
-		await dispatch('task_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
 	async task_filtersChange({ commit, dispatch }, payload){
 		commit("task_filtersSet", payload)
-		await dispatch('task_infinityStart')
+		state.infinite.filters = { ...payload }
+		await state.infinite.start()
 	},
 	async task_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current) return
-
-		commit('task_lastOffsetSet', state.offset.current)
-		commit('task_loadingBottomSet', true)
-		let res = await api.tasks.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.task_filters,
-			sort: state.sort
-		})
-		commit('task_loadingSet', false)
-		commit('task_loadingBottomSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('task_cacheAppend', res.data)
-		commit('task_currentOffsetSet')
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async task_infinityStart({ commit, dispatch, state, getters }){
-		commit('task_lastOffsetSet', 0)
-		commit('task_currentOffsetSet', 0)
-		commit('task_loadingBottomSet', true)
-		commit('task_loadingSet', true)
-		let res = await api.tasks.getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.task_filters,
-			sort: state.sort
-		})
-		commit('task_loadingBottomSet', false)
-		commit('task_loadingSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('task_cacheSet', res.data)
-		commit('task_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	async task_getOne({ commit, dispatch }, payload){
 		commit('task_loadingOneSet', true)
@@ -128,6 +99,9 @@ const actions = {
 }
 
 const mutations = {
+	task_destroy: state => state.cached.list = [],
+	task_initInfinite: (state, payload) => state.infinite = payload,
+	task_completeSet: (state, payload) => state.complete = payload,
 	task_cacheSet: (state, payload) => state.cached.list = payload,
 	task_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	task_cacheUpdate: (state, payload) => {
@@ -135,28 +109,29 @@ const mutations = {
 		if (!task) return
 		for (var prop in payload) if (payload.hasOwnProperty(prop)) task[prop] = payload[prop]
 	},
-	task_filtersSet: (store, payload) => store.filters = payload,
-	task_sortSet: (store, payload) => store.sort = payload,
-	task_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	task_removeOneFromCached: (store, payload) => store.cached.list = store.cached.list.filter(el => el.id != payload.id || payload),
-	task_currentSet: (store, payload) => store.cached.current = payload,
-	task_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
-	task_cachedTypesSet: (store, payload) => store.cached.types = payload,
-	task_loadingSet: (store, payload) => store.loading.list = payload,
-	task_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
-	task_loadingOneSet: (store, payload) => store.loading.one = payload,
-	task_loadingTypesSet: (store, payload) => store.loading.models = payload,
-	task_loadingAddSet: (store, payload) => store.loading.add = payload,
-	task_edit_currentSet: (store, payload) => store.edit.current = payload,
-	task_edit_visibleSet: (store, payload) => store.edit.visible = payload,
-	task_add_prevSet: (store, payload) => store.add.prev = payload,
-	task_add_nextSet: (store, payload) => store.add.next = payload,
+	task_filtersSet: (state, payload) => state.filters = payload,
+	task_sortSet: (state, payload) => state.sort = payload,
+	task_lastOffsetSet: (state, payload) => state.offset.last = payload,
+	task_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
+	task_currentSet: (state, payload) => state.cached.current = payload,
+	task_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
+	task_cachedTypesSet: (state, payload) => state.cached.types = payload,
+	task_loadingSet: (state, payload) => state.loading.list = payload,
+	task_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
+	task_loadingOneSet: (state, payload) => state.loading.one = payload,
+	task_loadingTypesSet: (state, payload) => state.loading.models = payload,
+	task_loadingAddSet: (state, payload) => state.loading.add = payload,
+	task_edit_currentSet: (state, payload) => state.edit.current = payload,
+	task_edit_visibleSet: (state, payload) => state.edit.visible = payload,
+	task_add_prevSet: (state, payload) => state.add.prev = payload,
+	task_add_nextSet: (state, payload) => state.add.next = payload,
 }
 
 const getters = {
+	task_complete: state => state.complete,
 	task_filters: ({ filters }) => filters,
 	task_current: ({ cached }) => cached.current,
-	task_cached: ({ cached }) => cached.list,
+	task_cached: state => state.cached.list,
 	task_types: ({ cached }) => cached.types,
 	task_loading: ({ loading }) => loading.list,
 	task_loadingBottom: ({ loading }) => loading.bottom,

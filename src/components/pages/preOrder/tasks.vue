@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper" v-if="auth_can(1, 'Task')">
+<div class="AppContent" v-if="auth_can(1, 'Task')">
 	<div class="oneTaskWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -11,41 +11,28 @@
 	</div>
 
 	<div class="manyTasksWrapper" v-if="!isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: `/preorder/tasks` }">Список задач</router-link></li>
-		</ul>
-
-		<tabless
-			key="tasks"
-			ref="table"
-			:data="data"
-			:fieldDescription="tasksManyFieldDescription"
-			:buttons="afterTableTasksButtons"
-			:filters="task_filters"
-			:buttonsCondition="task_buttonCondition"
-			:localSort="false"
-			@onClick="goToPreorder"
-			@filter="localTaskFilterChange"
-			@sortChange="localTaskSortChange"
-		/>
-
-		<infinite-loading :distance="800" @infinite="task_infinity" ref="infiniteLoading">
-			<div class="end" slot="no-results" />
-			<div class="end" slot="no-more" />
-			<div class="spinner" slot="spinner" v-loading="task_loadingBottom" />
-		</infinite-loading>
-
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
+
+		<q-card class="manyTasksWrapper__card">
+			<tabless
+				key="tasks"
+				:data="task_cached"
+				:complete="task_complete"
+				:field-description="tasksManyFieldDescription"
+				:filters="task_filters"
+				ref="table"
+				@filter="local_task_filtersChange"
+				@sort="local_task_sortChange"
+				@click="routerGoId"
+				@infinite="task_infinity"
+			/>
+		</q-card>
 	</div>
 </div>
 </template>
 
 
 <script>
-// счета
-
-
 import fieldDescription from '@/static/fieldDescription'
 
 let {
@@ -57,14 +44,15 @@ let {
 
 import {
 	mapGetters,
-	mapActions
+	mapActions,
+	mapMutations
 } from 'vuex'
 import mixins from '@/components/mixins'
-import tabless from '@/components/tableSS.vue'
+import tabless from '@/components/tableSSNew.vue'
 import InfiniteLoading from 'vue-infinite-loading'
 import editTaskForm from '@/components/forms/editTask.vue'
 import endTaskForm from '@/components/forms/endTask.vue'
-
+import { QCard } from 'quasar'
 
 export default {
 	data() {
@@ -80,7 +68,8 @@ export default {
 		tabless,
 		InfiniteLoading,
 		editTaskForm,
-		endTaskForm
+		endTaskForm,
+		 QCard
 	},
 	watch: {
 		oneId() {
@@ -96,13 +85,11 @@ export default {
 			'task_loading',
 			'task_loadingBottom',
 			'task_loadingOne',
-			'task_filters'
+			'task_filters',
+			'task_complete'
 		]),
 		task_currentCLientMainContact() {
 			return this.task_current.contactFaces ? this.task_current.contactFaces.find(el => el.regard == "Основной") : {}
-		},
-		data() {
-			return this.task_cached
 		},
 	},
 	methods: {
@@ -113,7 +100,10 @@ export default {
 			'task_sortChange',
 			'task_init'
 		]),
-		async localTaskFilterChange(n) {
+		...mapMutations([
+			'task_destroy'
+		]),
+		async local_task_filtersChange(n) {
 			await this.task_filtersChange(n)
 
 			this.$nextTick(() => {
@@ -121,7 +111,7 @@ export default {
 					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 			})
 		},
-		async localTaskSortChange(n) {
+		async local_task_sortChange(n) {
 			await this.task_sortChange(n)
 
 			this.$nextTick(() => {
@@ -134,14 +124,28 @@ export default {
 		await this.task_init(this.oneId)
 		if (this.$refs.infiniteLoading)
 			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
+	},
+	beforeDestroy () {
+		this.task_destroy()
 	}
 }
 </script>
 
 
 
-<style lang="less" scoped>
+<style lang="less">
 .oneTaskWrapper {
 
+}
+
+.manyTasksWrapper {
+	width: 100%;
+	height: 100%;
+	padding-top: 8px;
+
+	&__card {
+		margin-top: 0;
+		height: ~"calc(100vh - 68px)";
+	}
 }
 </style>
