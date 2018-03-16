@@ -64,7 +64,7 @@
 
 			<q-card class="manyStorageWrapper__card">
 				<tabless
-					key="salon"
+					key="storage"
 					:data="storage_cached"
 					:complete="storage_complete"
 					:field-description="storageFieldDescriptionFiltred"
@@ -269,6 +269,7 @@ export default {
 	}
 	.manyStorageWrapper {
 		width: 100%;
+		height: 100%;
 
 		&__card {
 			height: ~"calc(100vh - 110px)";

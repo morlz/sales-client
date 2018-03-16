@@ -306,9 +306,6 @@ export default {
 		},
 		currentSelected (n) {
 			this.$emit('selected', n)
-		},
-		complete (n) {
-			console.log(n);
 		}
 	},
 	computed: {
@@ -404,22 +401,23 @@ export default {
 			return this.sortedRows
 		},
 		rowStyle () {
-
+			/*
 			const getElWidth = el => {
 				if (typeof el.width == 'array') return `minmax(${el.width[0]}px, ${el.width[1]}px) `
 				if (typeof el.width == 'number') return `minmax(${el.width}px, 300px) `
 				if (typeof el.width == 'string') return `${el.width} `
 				return el.width + ' '
 			}
+			*/
 
-			/*
+
 			const getElWidth = el => {
 				if (typeof el.width == 'array') return `${el.width[0]}px `
 				if (typeof el.width == 'number') return `${el.width}px `
 				if (typeof el.width == 'string') return `${el.width} `
 				return el.width + ' '
 			}
-			*/
+
 
 			let gridTemplateColumns = this.columns.reduce((prev, el) => prev + getElWidth(el), '')
 			if (this.$scopedSlots.buttons)

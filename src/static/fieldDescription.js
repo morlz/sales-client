@@ -155,25 +155,24 @@ let dataObj = {
 	],
 
 	discountFieldDescription: [
-		{ field: "td.mestoXR.NAME", label: "Склад" },
-		{ field: "UN", label: "Фаб.н." },
-		{ field: "td.salon.NAME", label: "Салон" },
-		{ field: "MODEL", label: "Модель" },
-		{ field: "td.TIP", label: "Тип", inline: true },
-		{ field: "ISP", label: "Исп." },
-		{ field: "cloth1", label: "Ткань 1" },
-		{ field: "cloth2", label: "Ткань 2" },
-		{ field: "cloth3", label: "Ткань 3" },
-		{ field: "KAT", label: "Кат." },
+		{ field: "td.mestoXR.NAME", label: "Склад", width: 100 },
+		{ field: "UN", label: "Фаб.н.", width: 60 },
+		{ field: "td.salon.NAME", label: "Салон", width: 100 },
+		{ field: "MODEL", label: "Модель", width: 100 },
+		{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
+		{ field: "cloth1.NAME", label: "Ткань 1", width: 120 },
+		{ field: "cloth2.NAME", label: "Ткань 2", width: 120 },
+		{ field: "cloth3.NAME", label: "Ткань 3", width: 120 },
+		{ field: "KAT", label: "Кат.", width: 50 },
 		//{ field: "COMMENT", label: "Примечание" },
-		{ field: "DEKOR", label: "Декор" },
-		{ field: "Vid_stegki", label: "Стежка" },
-		{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", format: {
+		{ field: "DEKOR", label: "Декор", width: 80 },
+		{ field: "Vid_stegki", label: "Стежка", width: 80 },
+		{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", width: 100, format: {
 			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
 					`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
 				:	data
 		} },
-		{ field: "td.DATE_CEX", label: "Цех", inline: true, format: {
+		{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
 			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 		} },
 	],

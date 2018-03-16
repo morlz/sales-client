@@ -56,6 +56,9 @@ class Infinite extends EventEmitter {
 	}
 
 	async more (payload, params = {}) {
+		if (this.loadingAll)
+			return (this.log ? console.warn('[inf] [more] stopped because already function "start" is used') : null)
+
 		if (this._preloaded != false) {
 			if (this.log) console.log('[inf] [more] from memory');
 			this.cached = [...this.cached, ...this._preloaded]

@@ -1,17 +1,15 @@
 import api from '@/api'
+import Infinite from '@/lib/Infinite'
 
 const state = {
+	complete: false,
+	infinite: false,
 	filters: [],
 	sort: [],
-	perLoadingLimit: 30,
 	cached: {
 		list: [],
 		current: {},
 		models: []
-	},
-	offset: {
-		current: 0,
-		last: -1
 	},
 	loading: {
 		list: true,
@@ -31,65 +29,43 @@ const actions = {
 							"65536"
 						:	undefined
 
-		dispatch('discount_getModels', { filters: { 'td.salon.ID_SALONA': ID_SALONA, 'NAKC': NAKC } })
+		let filters = {
+			'td.salon.ID_SALONA': ID_SALONA,
+			'NAKC': NAKC
+		}
+
+		commit('discount_initInfinite', new Infinite({
+			method: api.discounts.getLimited,
+			filters
+		}))
+
+		state.infinite.on('cached', n => commit('discount_cacheSet', n))
+		state.infinite.on('complete', n => commit('discount_completeSet', n))
+
 		if (payload) {
 			await dispatch('discount_getOne', payload)
 		} else {
-			dispatch('salon_getList')
+			dispatch('discount_getModels', { filters })
 			commit('discount_filtersSet', {
 				...state.filters,
-				'td.salon.ID_SALONA': ID_SALONA
+				filters
 			})
-			await dispatch('discount_infinityStart')
+			await state.infinite.start()
 		}
 	},
-	async discount_sortChange({ commit, dispatch }, payload){
+	async discount_sortChange({ commit, dispatch, state }, payload){
+		console.log('sc');
 		commit("discount_sortSet", payload)
-		await dispatch('discount_infinityStart')
+		state.infinite.sort = payload
+		await state.infinite.start()
 	},
-	async discount_filtersChange({ commit, dispatch }, payload){
+	async discount_filtersChange({ commit, dispatch, state }, payload){
 		commit("discount_filtersSet", payload)
-		await dispatch('discount_infinityStart')
+		state.infinite.filters = { ...payload }
+		await state.infinite.start()
 	},
 	async discount_infinity({ commit, dispatch, state, getters }, payload){
-		if (state.offset.last == state.offset.current)
-			return setTimeout(a => payload.loaded(), 5e2)
-
-		commit('discount_lastOffsetSet', state.offset.current)
-		commit('discount_loadingBottomSet', true)
-		let res = await api.discounts.getLimited({
-			limit: state.perLoadingLimit,
-			offset: state.offset.current,
-			filters: getters.discount_filters,
-			sort: state.sort
-		})
-		commit('discount_loadingBottomSet', false)
-		commit('discount_loadingSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('discount_cacheAppend', res.data)
-		commit('discount_currentOffsetSet')
-		payload.loaded()
-		if (!res.data.length)
-			payload.complete()
-	},
-	async discount_infinityStart({ commit, dispatch, state, getters }){
-		commit('discount_lastOffsetSet', 0)
-		commit('discount_currentOffsetSet', 0)
-		commit('discount_loadingBottomSet', true)
-		commit('discount_loadingSet', true)
-		let res = await api.discounts.getLimited({
-			limit: state.perLoadingLimit,
-			offset: 0,
-			filters: getters.discount_filters,
-			sort: state.sort
-		})
-		commit('discount_loadingBottomSet', false)
-		commit('discount_loadingSet', false)
-		if (!res.data || res.data.error) return
-
-		commit('discount_cacheSet', res.data)
-		commit('discount_currentOffsetSet')
+		await state.infinite.more(payload)
 	},
 	async discount_getOne({ commit, dispatch }, payload){
 		commit('discount_loadingOneSet', true)
@@ -116,27 +92,29 @@ const actions = {
 const mutations = {
 	discount_cacheSet: (state, payload) => state.cached.list = payload,
 	discount_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
-	discount_filtersSet: (store, payload) => store.filters = payload,
-	discount_sortSet: (store, payload) => store.sort = payload,
-	discount_lastOffsetSet: (store, payload) => store.offset.last = payload,
-	discount_removeOneFromCache: (store, payload) => store.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
-	discount_currentSet: (store, payload) => store.cached.current = payload,
-	discount_currentOffsetSet: (store, payload) => store.offset.current = payload || store.cached.list.length,
-	discount_cachedModelsSet: (store, payload) => store.cached.models = payload,
-	discount_loadingSet: (store, payload) => store.loading.list = payload,
-	discount_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
-	discount_loadingOneSet: (store, payload) => store.loading.one = payload,
-	discount_loadingModelsSet: (store, payload) => store.loading.models = payload
+	discount_filtersSet: (state, payload) => state.filters = payload,
+	discount_sortSet: (state, payload) => state.sort = payload,
+	discount_lastOffsetSet: (state, payload) => state.offset.last = payload,
+	discount_removeOneFromCache: (state, payload) => state.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
+	discount_currentSet: (state, payload) => state.cached.current = payload,
+	discount_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
+	discount_cachedModelsSet: (state, payload) => state.cached.models = payload,
+	discount_loadingSet: (state, payload) => state.loading.list = payload,
+	discount_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
+	discount_loadingOneSet: (state, payload) => state.loading.one = payload,
+	discount_loadingModelsSet: (state, payload) => state.loading.models = payload,
+	discount_completeSet: (state, payload) => state.complete = payload,
+	discount_initInfinite: (state, payload) => state.infinite = payload,
 }
 
 const getters = {
 	discount_filters: state => ({ ...state.filters, 'NAKC': state.filters['td.salon.ID_SALONA'] == '1040' ? '65536' : undefined}),
 	discount_current: ({ cached }) => cached.current,
 	discount_cached: ({ cached }) => cached.list,
-	discount_cachedByModel: (store) => {
+	discount_cachedByModel: (state) => {
 		let models = []
 
-		store.cached.list.forEach(el => {
+		state.cached.list.forEach(el => {
 			let model = models.find(m => m.model == el.MODEL)
 			if (model) {
 				model.data.push(el)
@@ -159,6 +137,7 @@ const getters = {
 	discount_loadingBottom: ({ loading }) => loading.bottom,
 	discount_loadingOne: ({ loading }) => loading.one,
 	discount_loadingModels: ({ loading }) => loading.models,
+	discount_complete: state => state.complete
 }
 
 export default {

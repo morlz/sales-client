@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper">
+<div class="AppContent">
 	<div class="oneDiscountWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -56,67 +56,64 @@
 
 
 	<div class="manyDiscountWrapper" v-if="!isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/discount' }">Дисконт</router-link></li>
-		</ul>
+		<q-tabs v-model="currentTab">
+			<q-tab name="table" label="Таблица" slot="title"/>
+			<q-tab name="tile" label="Плитки" slot="title"/>
+		</q-tabs>
 
-		<furniture-models-switch/>
+		<furniture-models-wrap
+			:current="discount_filters.MODEL"
+			:loading="discount_loadingModels"
+			:models="discount_models"
+			@select="local_discount_filtersModelSet">
 
-		<furniture-models-wrap :current="discount_filters.MODEL" @select="local_discount_filtersModelSet" :loading="discount_loadingModels" :models="discount_models">
-			<q-tabs inverted v-model="currentTab" no-pane-border>
-				<q-tab name="table" label="Таблица" slot="title"/>
-				<q-tab name="tile" label="Плитки" slot="title"/>
+			<q-card v-if="currentTab == 'table'" class="manyDiscountWrapper__card">
+				<tabless
+					key="discount"
+					:data="discount_cached"
+					:complete="discount_complete"
+					:field-description="discountFieldDescriptionFilred"
+					:filters="discount_filters"
+					:select-fields="local_discount_selectFields"
+					ref="table"
+					@filter="local_discount_filterChange"
+					@sort="local_discount_sortChange"
+					@click="routerGoId"
+					@select="local_discount_handleFieldSelect"
+					@infinite="discount_infinity"
+				>
+					<template slot="cloth1" slot-scope="props">
+						<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
+						<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+					</template>
 
-				<q-tab-pane name="table">
-					<tabless
-						key="salon"
-						:data="discount_cached"
-						:fieldDescription="discountFieldDescriptionFilred"
-						:filters="discount_filters"
-						:select-fields="local_discount_selectFields"
-						:localSort="false"
-						ref="table"
-						@filter="local_discount_filterChange"
-						@sortChange="local_discount_sortChange"
-						@onClick="routerGoId"
-						@select="local_discount_handleFieldSelect"
-					>
-						<template slot="cloth1" slot-scope="props">
-							<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-							<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-						</template>
+					<template slot="cloth2" slot-scope="props">
+						<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
+						<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+					</template>
 
-						<template slot="cloth2" slot-scope="props">
-							<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-							<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-						</template>
+					<template slot="cloth3" slot-scope="props">
+						<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
+						<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+					</template>
 
-						<template slot="cloth3" slot-scope="props">
-							<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-							<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-						</template>
+					<template slot="buttons" slot-scope="props">
+						<q-btn color="primary" flat @click="discount_addToCart({ UN: props.row.UN })">
+							<q-icon name="shopping_cart"/>
+						</q-btn>
+					</template>
+				</tabless>
+			</q-card>
 
-						<template slot="buttons" slot-scope="props">
-							<q-btn color="primary" flat @click="discount_addToCart({ UN: props.row.UN })">
-								<q-icon name="shopping_cart"/>
-							</q-btn>
-						</template>
-					</tabless>
-				</q-tab-pane>
+			<div v-if="currentTab == 'tile'">
+				<discount-tile-view v-loading="discount_loading" />
 
-				<q-tab-pane name="tile">
-					<discount-tile-view v-loading="discount_loading" />
-				</q-tab-pane>
-
-			</q-tabs>
-
-			<infinite-loading :distance="800" @infinite="discount_infinity" ref="infiniteLoading">
-				<div class="end" slot="no-results" />
-				<div class="end" slot="no-more" />
-				<div class="spinner" slot="spinner" v-loading="discount_loadingBottom" />
-			</infinite-loading>
+				<infinite-loading :distance="800" @infinite="discount_infinity" ref="infiniteLoading" v-if="false">
+					<div class="end" slot="no-results" />
+					<div class="end" slot="no-more" />
+					<div class="spinner" slot="spinner" v-loading="discount_loadingBottom" />
+				</infinite-loading>
+			</div>
 		</furniture-models-wrap>
 	</div>
 </div>
@@ -127,14 +124,14 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/components/mixins'
-import tabless from '@/components/tableSS'
+import tabless from '@/components/tableSSNew'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
-import { QTabs, QTab, QTabPane, QBtn, QIcon } from 'quasar'
+import { QTabs, QTab, QTabPane, QBtn, QIcon, QCard } from 'quasar'
 let {
 	discountFieldDescription
 } = fieldDesription
@@ -153,7 +150,8 @@ export default {
 		QTabPane,
 		QBtn,
 		PreviewCloth,
-		QIcon
+		QIcon,
+		QCard
 	},
 	mixins: [mixins],
 	data() {
@@ -199,7 +197,8 @@ export default {
 			'discount_models',
 			'main_auth_settings',
 			'salon_list_discount',
-			'discount_loadingModels'
+			'discount_loadingModels',
+			'discount_complete'
 		]),
 		additionalFilters () {
 			return {}
@@ -240,6 +239,9 @@ export default {
 			'discount_getModels',
 			'discount_addToCart',
 		]),
+		...mapMutations([
+			'app_layout_headerShadowSet'
+		]),
 		async local_discount_filterChange (n) {
 			this.lastDiscountFilters = n
 			await this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
@@ -269,7 +271,11 @@ export default {
 		},
 	},
 	mounted () {
+		this.app_layout_headerShadowSet(false)
 		this.discount_init(this.oneId)
+	},
+	beforeDestrou () {
+		this.app_layout_headerShadowSet(true)
 	}
 }
 </script>
@@ -287,6 +293,15 @@ export default {
 		.cards {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.manyDiscountWrapper {
+		width: 100%;
+		height: 100%;
+
+		&__card {
+			height: ~"calc(100vh - 110px)";
 		}
 	}
 	@media screen and (max-width: 1250px) {
