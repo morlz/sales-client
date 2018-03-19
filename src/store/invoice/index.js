@@ -141,7 +141,8 @@ const actions = {
 		if (res.data.invoice)
 			dispatch('notify', 'Заказ создан')
 
-		console.log(res.data)
+		commit('cart_cachedListSet', { exist: [], new: [] })
+		router.push(`/docs/invoices/${res.data.invoice.ID}`)
 	},
 	async invoice_addFromCart ({ commit, dispatch, state }) {
 		let res = await api.invoices.addFromCart(state.cached.current.ID)

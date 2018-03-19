@@ -98,7 +98,7 @@
 					</template>
 
 					<template slot="buttons" slot-scope="props">
-						<q-btn color="primary" flat @click="discount_addToCart({ UN: props.row.UN })">
+						<q-btn color="primary" flat @click.stop="discount_addToCart({ UN: props.row.UN })">
 							<q-icon name="shopping_cart"/>
 						</q-btn>
 					</template>

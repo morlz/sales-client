@@ -25,6 +25,8 @@ import personal 		from '@/components/pages/admin/personal.vue'
 import permissions		from '@/components/pages/admin/Permissions.vue'
 import tests 			from '@/components/pages/admin/tests.vue'
 
+import sales 			from '@/components/pages/reports/sales.vue'
+
 const scrollBehavior = t => {
 	document.title = formatTitle(t.meta.name)
 	return { y: 0 }
@@ -54,6 +56,7 @@ let routes = [
 	{ path: '/preorder/clients/:id?', 		component: clients, 			meta: { name: "Клиенты" } },
 	{ path: '/preorder/preorders/:id?', 	component: preorders, 			meta: { name: "Предзаказы" } },
 	{ path: '/preorder/tasks/:id?', 		component: tasks, 				meta: { name: "Задачи" } },
+	{ path: '/reports/sales/', 				component: sales, 				meta: { name: "Отчёт по продажам" } },
 	{ path: '*', 							component: p404, 				meta: { name: "Ошибка 404. Страница не найдена" } }
 ]
 
