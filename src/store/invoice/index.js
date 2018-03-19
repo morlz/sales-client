@@ -2,6 +2,13 @@ import api from '@/api'
 import reduceInvoice from '@/lib/reducers/invoice'
 import Infinite from '@/lib/Infinite'
 
+const namesOf1cFles = {
+	blank: 'zagolovki',
+	products: 'tovar',
+	shipments: 'dostavka',
+	payments: 'oplati'
+}
+
 const state = {
 	filters: [],
 	sort: [],
@@ -174,6 +181,28 @@ const actions = {
 		if (!res.data || res.data.error) return
 
 		dispatch('notify', 'Заказ успешно выгружен в AX')
+	},
+	async invoice_exportTo1c ({ commit, dispatch }, payload) {
+		let res = await api.invoices.exportTo1c(payload)
+		if (!res.data || res.data.error) return
+
+		for (var prop in res.data)
+			if (res.data.hasOwnProperty(prop))
+				dispatch('invoice_download1cFile', { content: res.data[prop], name: namesOf1cFles[prop] })
+
+	},
+	invoice_download1cFile ({ commit, dispatch }, { content, name }) {
+		let el = document.createElement('a')
+
+		let normalize = content => content.split('\\n').join('\n').split('\\r').join('\r')
+
+		el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent( normalize(content) ))
+		el.setAttribute('download', `${name}.txt`)
+	    el.style.display = 'none'
+
+	    document.body.appendChild(el)
+	    el.click()
+	    document.body.removeChild(el)
 	}
 }
 
@@ -233,9 +262,14 @@ const getters = {
 	invoice_new_adSources: state => state.new.cached.adSources.map(el => ({ label: el.NAME , value: el.ID }))
 }
 
+const modules = {
+
+}
+
 export default {
 	state,
 	actions,
 	mutations,
-	getters
+	getters,
+	modules
 }

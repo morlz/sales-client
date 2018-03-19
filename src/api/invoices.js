@@ -58,5 +58,14 @@ export default {
 				id
 			}
 		})
+	},
+	async exportTo1c (id) {
+		return await core.invoke({
+			method: "get",
+			type: "save1c",
+			data: {
+				id
+			}
+		})
 	}
 }

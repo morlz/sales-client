@@ -6,7 +6,7 @@ Vue.use(Vuex)
 import main from '@/store/main'
 
 import clients from '@/store/clients/index'
-import invoices from '@/store/invoices'
+import invoice from '@/store/invoice'
 import shipments from '@/store/shipments'
 import furniture from '@/store/furniture'
 import preorders from '@/store/preorders'
@@ -28,7 +28,7 @@ export default new Vuex.Store({
 	modules: {
 		main,
 		clients,
-		invoices,
+		invoice,
 		preorders,
 		tasks,
 		managers,
