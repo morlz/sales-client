@@ -17,6 +17,7 @@ import cart from '@/api/cart'
 import errors from '@/api/errors'
 import images from '@/api/images'
 import print from '@/api/print'
+import reports from '@/api/reports'
 
 export default {
 	core,
@@ -37,5 +38,5 @@ export default {
 	cart,
 	images,
 	errors,
-	print
+	reports
 }

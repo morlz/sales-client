@@ -14,6 +14,7 @@ import tasks from '@/store/tasks'
 import managers from '@/store/managers'
 import salons from '@/store/salons'
 import storage from '@/store/storage'
+import reports from '@/store/reports'
 import discount from '@/store/discount'
 import permissions from '@/store/permissions'
 import personal from '@/store/personal'
@@ -37,6 +38,7 @@ export default new Vuex.Store({
 		furniture,
 		permissions,
 		storage,
+		reports,
 		discount,
 		personal,
 		cart,
