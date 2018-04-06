@@ -146,6 +146,7 @@ export default {
 			'reports_salesTwo_exportExcelVisibleSet'
 		]),
 		exportToExcel () {
+			this.$store.dispatch('notify', 'Создание файла')
 			this.reports_salesTwo_exportExcelVisibleSet(true)
 			let self = this
 			;(function recursiveCheck () {

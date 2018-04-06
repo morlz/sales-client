@@ -160,6 +160,7 @@ export default {
 			'reports_sales_exportToExcel'
 		]),
 		exportToExcel () {
+			this.$store.dispatch('notify', 'Создание файла')
 			this.reports_sales_exportToExcel(this.$refs.tableWrapper.innerHTML)
 		}
 	},
