@@ -140,7 +140,8 @@ export default {
 			'reports_salesTwo_salonSet',
 			'reports_salesTwo_dateFromSet',
 			'reports_salesTwo_dateToSet',
-			'reports_salesTwo_exportToExcel'
+			'reports_salesTwo_exportToExcel',
+			'reports_salesTwo_destroy'
 		]),
 		...mapMutations('reports/salesTwo', [
 			'reports_salesTwo_exportExcelVisibleSet'
@@ -162,6 +163,9 @@ export default {
 	},
 	async mounted () {
 		await this.reports_salesTwo_init()
+	},
+	beforeDestroy () {
+		this.reports_salesTwo_destroy()
 	}
 }
 </script>

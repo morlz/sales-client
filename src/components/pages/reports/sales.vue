@@ -157,7 +157,8 @@ export default {
 			'reports_sales_salonSet',
 			'reports_sales_dateFromSet',
 			'reports_sales_dateToSet',
-			'reports_sales_exportToExcel'
+			'reports_sales_exportToExcel',
+			'reports_sales_destroy'
 		]),
 		exportToExcel () {
 			this.$store.dispatch('notify', 'Создание файла')
@@ -174,6 +175,9 @@ export default {
 	},
 	async mounted () {
 		await this.reports_sales_init()
+	},
+	beforeDestroy () {
+		this.reports_sales_destroy()
 	}
 }
 </script>

@@ -27,6 +27,7 @@ import tests 			from '@/components/pages/admin/tests.vue'
 
 import sales 			from '@/components/pages/reports/sales.vue'
 import salesTwo			from '@/components/pages/reports/salesTwo.vue'
+import resume			from '@/components/pages/reports/resume.vue'
 
 const scrollBehavior = t => {
 	document.title = formatTitle(t.meta.name)
@@ -59,6 +60,7 @@ let routes = [
 	{ path: '/preorder/tasks/:id?', 		component: tasks, 				meta: { name: "Задачи" } },
 	{ path: '/reports/sales/', 				component: sales, 				meta: { name: "Отчёт по продажам" } },
 	{ path: '/reports/salesTwo/', 			component: salesTwo, 			meta: { name: "Отчёт 2" } },
+	{ path: '/reports/resume/', 			component: resume, 				meta: { name: "Итоги" } },
 	{ path: '*', 							component: p404, 				meta: { name: "Ошибка 404. Страница не найдена" } }
 ]
 

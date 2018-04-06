@@ -115,6 +115,11 @@ const state = {
 				{
 					name: "Отчёт 2",
 					path: "/reports/salesTwo",
+					icon: "fa-list-alt"
+				},
+				{
+					name: "Итоги продаж",
+					path: "/reports/resume",
 					icon: "fa-braille"
 				},
 			]

@@ -20,6 +20,9 @@ const actions = {
 			dispatch('reports_sales_getData')
 		])
 	},
+	reports_sales_destroy ({ commit }) {
+		commit('reports_sales_cachedSet', {})
+	},
 	async reports_sales_getData ({ commit, dispatch, state: { salon_id, date } }) {
 		commit('reports_sales_loaingSet', true)
 		let res = await api.reports.getSales({

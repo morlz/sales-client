@@ -8,7 +8,7 @@ const state = {
 		from: moment().subtract(1, 'month').toString(),
 		to: moment().toString()
 	},
-	cached: {},
+	cached: [],
 	loading: false,
 	groupByField: 'model',
 	exportToExcelHtmlVisible: false
@@ -21,6 +21,9 @@ const actions = {
 			dispatch('salon_getList', null, { root: true }),
 			dispatch('reports_salesTwo_getData')
 		])
+	},
+	reports_salesTwo_destroy ({ commit }) {
+		commit('reports_salesTwo_cachedSet', [])
 	},
 	async reports_salesTwo_getData ({ commit, dispatch, state: { salon_id, date } }) {
 		commit('reports_salesTwo_loaingSet', true)
