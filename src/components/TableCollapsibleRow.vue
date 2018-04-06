@@ -38,7 +38,7 @@ import {
 export default {
 	props: {
 		row: {
-			type: Object
+			type: [Object, Array]
 		},
 		head: {
 			type: Boolean,

@@ -10,4 +10,13 @@ export default {
 			params
 		})
 	},
+	async getSalesTwo (params) {
+		params = core.prepareArrays(params)
+
+		return await core.invoke({
+			method: "get",
+			type: "report/sales-two",
+			params
+		})
+	},
 }

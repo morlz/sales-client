@@ -46,7 +46,7 @@ export default {
 			required: true
 		},
 		rows: {
-			type: Array,
+			type: [Array, Object],
 			default: a => []
 		},
 		footer: {

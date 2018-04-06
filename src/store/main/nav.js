@@ -106,10 +106,16 @@ const state = {
 			name: "Отчёты",
 			icon: "el-icon-report",
 			can: { lvl: 1, action: "Report" },
-			childs: [{
+			childs: [
+				{
 					name: "Итоги продаж",
 					path: "/reports/sales",
 					icon: "el-icon-sell-result"
+				},
+				{
+					name: "Отчёт 2",
+					path: "/reports/salesTwo",
+					icon: "fa-braille"
 				},
 			]
 		},

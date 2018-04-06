@@ -53,20 +53,12 @@ const actions = {
 }
 
 const mutations = {
-	reports_sales_cachedSet: (state, payload) => state.cached = payload,
-	reports_sales_dateFromSet: (state, payload) => state.date.from = payload,
-	reports_sales_dateToSet: (state, payload) => state.date.to = payload,
-	reports_sales_salonSet: (state, payload) => state.salon_id = payload === undefined ? payload : payload + "",
-	reports_sales_loaingSet: (state, payload) => state.loading = payload,
-}
-
-const getters = {
-	reports_sales_cached: state => {
+	reports_sales_cachedSet: (state, payload) => {
 		let list = {}
 
-		for (var prop in state.cached)
-			if (state.cached.hasOwnProperty(prop))
-				state.cached[prop].map(el => {
+		for (var prop in payload)
+			if (payload.hasOwnProperty(prop))
+				payload[prop].map(el => {
 					let model = el.Model || (el.MODEL + ' ' + el.TIP)
 					if (!list[model])
 						list[model] = new SalesSofaModel()
@@ -77,11 +69,19 @@ const getters = {
 					list[model].akc.price += +el.sAKC || 0
 				})
 
-		return list
+		state.cached = list
 	},
+	reports_sales_dateFromSet: (state, payload) => state.date.from = payload,
+	reports_sales_dateToSet: (state, payload) => state.date.to = payload,
+	reports_sales_salonSet: (state, payload) => state.salon_id = payload === undefined ? payload : payload + "",
+	reports_sales_loaingSet: (state, payload) => state.loading = payload,
+}
+
+const getters = {
+	reports_sales_cached: state => state.cached,
 	reports_sales_loading: state => state.loading,
-	reports_sales_summ: (state, getters) => {
-		let list = Object.values(getters.reports_sales_cached)
+	reports_sales_summ: state => {
+		let list = Object.values(state.cached)
 
 		return {
 			price: SalesSofaModel.summAllPrice(list),

@@ -5,8 +5,8 @@
 			<slot name="start" :row="row"/>
 		</div>
 
-		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex">
-			{{ getFieldData(row, column) }}
+		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex"> 
+			{{ getFieldData(row, column, index) }}
 		</div>
 
 		<div class="tableCollapsible__rowColumnEnd" v-if="$scopedSlots.end({ row: {} })">
@@ -30,7 +30,7 @@ export default {
 			required: true
 		},
 		rows: {
-			type: Array,
+			type: [Array, Object],
 			default: a => []
 		},
 		accordion: {
@@ -46,9 +46,13 @@ export default {
 		TableCollapsibleRow
 	},
 	methods: {
-		getFieldData: (row, { field, fields }) => {
+		getFieldData: (row, { field, fields }, index) => {
+			if (field == 'index')
+				return index
+
 			if (field)
 				return field.split(".").reduce((prev, el) => (prev[el] || ""), row)
+
 			if (fields)
 				return fields.map(field => field.split(".").reduce((prev, el) => (prev[el] || ""), row)).join(' ')
 		},
@@ -56,6 +60,9 @@ export default {
 			if (this.$refs.rows && this.accordion)
 				this.$refs.rows.map((vm, vmIndex) => index != vmIndex ? vm.$emit('wannaClose'): null)
 		}
+	},
+	mounted () {
+		console.log('rows', this.rows);
 	}
 }
 </script>
