@@ -5,7 +5,7 @@
 			<slot name="start" :row="row"/>
 		</div>
 
-		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex"> 
+		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex">
 			{{ getFieldData(row, column, index) }}
 		</div>
 
@@ -60,9 +60,6 @@ export default {
 			if (this.$refs.rows && this.accordion)
 				this.$refs.rows.map((vm, vmIndex) => index != vmIndex ? vm.$emit('wannaClose'): null)
 		}
-	},
-	mounted () {
-		console.log('rows', this.rows);
 	}
 }
 </script>

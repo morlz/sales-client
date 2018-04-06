@@ -74,7 +74,7 @@ class SalesTwoItem {
 
 	get price () {
 		if (this.isZak)
-			return this._source.CENA
+			return +this._source.CENA
 
 		return +this._source.CENA_ZAL
 	}

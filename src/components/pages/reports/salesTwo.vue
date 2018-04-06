@@ -29,25 +29,13 @@
 		<q-card class="reportSalesTwo__content" v-loading="reports_salesTwo_loading" ref="tableWrapper">
 			<table-collapsible class="reportSalesTwo__collapsible" :rows="reports_salesTwo_cached" :columns="reportsSalesTwoFieldDescription">
 				<template slot-scope="{ row }">
-					<table class="reportSalesTwo__collapsible-table">
-						<thead>
-							<tr>
-								<td v-for="column, index in columns" :key="index">
-									<div :title="column.title" @click="reports_salesTwo_groupByFieldSet(column.field)">{{ column.name }}</div>
-								</td>
-							</tr>
-						</thead>
-
-						<tbody>
-							<tr v-for="item, index in row" :key="index">
-								<td v-for="column, index in columns">
-									<div :title="item[column.field]">{{ item[column.field] }}</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<sales-two-table :row="row" :columns="columns"/>
 				</template>
 			</table-collapsible>
+
+			<div ref="exportToExcel" v-if="reports_salesTwo_exportExcelVisible">
+				<sales-two-table :row="reports_salesTwo_cachedAll" :columns="columns" />
+			</div>
 		</q-card>
 	</div>
 
@@ -63,6 +51,7 @@ import {
 } from 'vuex'
 
 import Datetime from '@/components/Datetime'
+import SalesTwoTable from '@/components/SalesTwoTable'
 import TableCollapsible from '@/components/TableCollapsible'
 
 import { QCard, QBtn, QSelect, QField, QIcon } from 'quasar'
@@ -75,7 +64,8 @@ export default {
 		QSelect,
 		QField,
 		QIcon,
-		TableCollapsible
+		TableCollapsible,
+		SalesTwoTable
 	},
 	data() {
 		return {
@@ -97,11 +87,6 @@ export default {
 			]
 		}
 	},
-	watch: {
-		reports_salesTwo_cached (n) {
-			console.log(n)
-		}
-	},
 	computed: {
 		...mapState('reports/salesTwo', [
 			'date',
@@ -114,7 +99,9 @@ export default {
 		]),
 		...mapGetters('reports/salesTwo', [
 			'reports_salesTwo_cached',
-			'reports_salesTwo_loading'
+			'reports_salesTwo_loading',
+			'reports_salesTwo_cachedAll',
+			'reports_salesTwo_exportExcelVisible'
 		]),
 		local_salon_list () {
 			return this.salon_listWithAll.map(el => ({ value: el.ID_SALONA, label: el.NAME }))
@@ -156,10 +143,20 @@ export default {
 			'reports_salesTwo_exportToExcel'
 		]),
 		...mapMutations('reports/salesTwo', [
-			'reports_salesTwo_groupByFieldSet'
+			'reports_salesTwo_exportExcelVisibleSet'
 		]),
 		exportToExcel () {
-			this.reports_salesTwo_exportToExcel(this.$refs.tableWrapper.innerHTML)
+			this.reports_salesTwo_exportExcelVisibleSet(true)
+			let self = this
+			;(function recursiveCheck () {
+				self.$nextTick(() => {
+					if (self.$refs.exportToExcel) {
+						self.reports_salesTwo_exportToExcel(self.$refs.exportToExcel.innerHTML)
+						self.reports_salesTwo_exportExcelVisibleSet(false)
+					} else
+						self.$nextTick(a => recursiveCheck())
+				})
+			})()
 		}
 	},
 	async mounted () {
@@ -170,13 +167,6 @@ export default {
 
 
 <style lang="less">
-
-.nth-child-width(@index, @width) {
-	&:nth-child(@{index}) > div {
-		width: @width;
-	}
-}
-
 .reportSalesTwo {
 	&__actions {
 		display: grid;
@@ -214,56 +204,6 @@ export default {
 					height: 0;
 				}
 			}
-		}
-	}
-
-	&__collapsible-table {
-		table-layout: fixed;
-		border: 0;
-		border-collapse: collapse;
-		thead {
-			text-align: center;
-			color: rgba(0,0,0,.54);
-			user-select: none;
-			cursor: pointer;
-			font-size: 12px;
-		}
-
-		tbody {
-			td {
-				text-align: center;
-			}
-			tr {
-				transition: all 0.15s ease-in-out;
-				&:hover {
-					background: #ecf5ff;
-				}
-			}
-		}
-
-		td {
-			padding: 4px;
-			border: 1px solid #ededed;
-			.nth-child-width(1, 100px);
-			.nth-child-width(2, 80px);
-			.nth-child-width(3, 160px);
-			.nth-child-width(4, 100px);
-			.nth-child-width(5, 150px);
-			.nth-child-width(6, 60px);
-			.nth-child-width(7, 60px);
-			.nth-child-width(8, 60px);
-			.nth-child-width(9, 100px);
-			.nth-child-width(10, 100px);
-			.nth-child-width(11, 100px);
-			.nth-child-width(12, 70px);
-			.nth-child-width(13, 70px);
-			.nth-child-width(14, 70px);
-		}
-
-		td > div {
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 		}
 	}
 }

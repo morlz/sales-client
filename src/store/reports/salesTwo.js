@@ -10,7 +10,8 @@ const state = {
 	},
 	cached: {},
 	loading: false,
-	groupByField: 'model'
+	groupByField: 'model',
+	exportToExcelHtmlVisible: false
 }
 
 const actions = {
@@ -60,11 +61,14 @@ const mutations = {
 	reports_salesTwo_salonSet: (state, payload) => state.salon_id = payload === undefined ? payload : payload + "",
 	reports_salesTwo_loaingSet: (state, payload) => state.loading = payload,
 	reports_salesTwo_groupByFieldSet: (state, payload) => state.groupByField = payload,
+	reports_salesTwo_exportExcelVisibleSet: (state, payload) => state.exportToExcelHtmlVisible = payload,
 }
 
 const getters = {
 	reports_salesTwo_cached: state => SalesTwoItem.groupByField(state.cached, state.groupByField),
+	reports_salesTwo_cachedAll: state => state.cached,
 	reports_salesTwo_loading: state => state.loading,
+	reports_salesTwo_exportExcelVisible: state => state.exportToExcelHtmlVisible
 }
 
 export default {
