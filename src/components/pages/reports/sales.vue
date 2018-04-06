@@ -5,23 +5,29 @@
 			<q-field helper="Салон">
 				<q-select v-model="salon" :options="local_salon_list" filter/>
 			</q-field>
+
 			<q-field helper="С">
-				<q-datetime v-model="dateFrom"/>
+				<datetime v-model="dateFrom"/>
 			</q-field>
+
 			<q-field helper="По">
-				<q-datetime v-model="dateTo"/>
+				<datetime v-model="dateTo"/>
 			</q-field>
-			<q-btn>
-				<q-icon name="open_in_new"/>
-				{{ !app_view_mobile ? 'Открыть в новом окне' : ''}}
-			</q-btn>
-			<q-btn>
-				Экспорт в Excel
-			</q-btn>
+
+			<q-field>
+				<q-btn v-if="false">
+					<q-icon name="open_in_new"/>
+					{{ !app_view_mobile ? 'Открыть в новом окне' : ''}}
+				</q-btn>
+				<q-btn @click="exportToExcel">
+					<q-icon name="fa-download"/>
+					{{ !app_view_mobile ? 'Экспорт в Excel' : ''}}
+				</q-btn>
+			</q-field>
 		</q-card>
 
-		<q-card class="reportSales__content" v-loading="reports_sales_loading">
-			<table class="reportSales__table" ref="table">
+		<q-card class="reportSales__content" v-loading="reports_sales_loading" ref="tableWrapper">
+			<table class="reportSales__table">
 				<thead>
 					<tr>
 						<td rowspan="2">Модель</td>
@@ -84,13 +90,15 @@ import {
 	mapMutations
 } from 'vuex'
 
-import { QCard, QBtn, QDatetime, QSelect, QField, QIcon } from 'quasar'
+import Datetime from '@/components/Datetime'
+
+import { QCard, QBtn, QSelect, QField, QIcon } from 'quasar'
 
 export default {
 	components: {
 		QCard,
 		QBtn,
-		QDatetime,
+		Datetime,
 		QSelect,
 		QField,
 		QIcon
@@ -148,8 +156,12 @@ export default {
 			'reports_sales_init',
 			'reports_sales_salonSet',
 			'reports_sales_dateFromSet',
-			'reports_sales_dateToSet'
+			'reports_sales_dateToSet',
+			'reports_sales_exportToExcel'
 		]),
+		exportToExcel () {
+			this.reports_sales_exportToExcel(this.$refs.tableWrapper.innerHTML)
+		}
 	},
 	filters: {
 		price (n) {
@@ -170,7 +182,7 @@ export default {
 .reportSales {
 	&__actions {
 		display: grid;
-		grid-gap: 10px;
+		grid-gap: 15px;
 		padding: 0 10px;
 		justify-content: start;
 		align-items: center;

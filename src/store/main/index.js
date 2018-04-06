@@ -45,12 +45,13 @@ const getters = {
 	app_layout_headerShadow: state => state.layout.header.shadow
 }
 
-const modules = [
+const modules = {
 	nav,
 	auth,
 	notify,
-	events
-]
+	events,
+	files
+}
 
 export default {
 	state,

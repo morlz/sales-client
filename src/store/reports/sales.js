@@ -1,54 +1,6 @@
 import api from '@/api'
 import moment from 'moment'
-
-class SofaModelListItem {
-	constructor() {
-		this.count = {
-			podium: 0,
-			storage: 0,
-			order: 0
-		}
-
-		this.price = {
-			podium: 0,
-			storage: 0,
-			order: 0
-		}
-
-		this.akc = {
-			count: 0,
-			price: 0
-		}
-	}
-
-	get priceAll () {
-		return Object.values(this.price).reduce((prev, el) => el + prev, 0)
-	}
-
-	get countAll () {
-		return Object.values(this.count).reduce((prev, el) => el + prev, 0)
-	}
-
-	static summAllPrice (arr) {
-		return {
-			all: arr.reduce((prev, el) => prev + el.priceAll, 0),
-			podium: arr.reduce((prev, el) => prev + el.price.podium, 0),
-			storage: arr.reduce((prev, el) => prev + el.price.storage, 0),
-			order: arr.reduce((prev, el) => prev + el.price.order, 0),
-			akc: arr.reduce((prev, el) => prev + el.akc.price, 0)
-		}
-	}
-
-	static summAllCount (arr) {
-		return {
-			all: arr.reduce((prev, el) => prev + el.countAll, 0),
-			podium: arr.reduce((prev, el) => prev + el.count.podium, 0),
-			storage: arr.reduce((prev, el) => prev + el.count.storage, 0),
-			order: arr.reduce((prev, el) => prev + el.count.order, 0),
-			akc: arr.reduce((prev, el) => prev + el.akc.count, 0)
-		}
-	}
-}
+import SalesSofaModel from '@/lib/reports/SalesSofaModel'
 
 const state = {
 	salon_id: undefined,
@@ -91,6 +43,12 @@ const actions = {
 	async reports_sales_salonSet ({ commit, dispatch }, payload) {
 		commit('reports_sales_salonSet', payload)
 		await dispatch('reports_sales_getData')
+	},
+	reports_sales_exportToExcel ({ commit, dispatch }, content) {
+		dispatch('files/file_downoad', {
+			filename: 'ExcelFile.xls',
+			content
+		}, { root: true })
 	}
 }
 
@@ -111,7 +69,7 @@ const getters = {
 				state.cached[prop].map(el => {
 					let model = el.Model || (el.MODEL + ' ' + el.TIP)
 					if (!list[model])
-						list[model] = new SofaModelListItem()
+						list[model] = new SalesSofaModel()
 
 					list[model].count[prop] += +el.DCOUNT
 					list[model].price[prop] += +el.SUMM_ZAL
@@ -126,8 +84,8 @@ const getters = {
 		let list = Object.values(getters.reports_sales_cached)
 
 		return {
-			price: SofaModelListItem.summAllPrice(list),
-			count: SofaModelListItem.summAllCount(list)
+			price: SalesSofaModel.summAllPrice(list),
+			count: SalesSofaModel.summAllCount(list)
 		}
 	},
 }
