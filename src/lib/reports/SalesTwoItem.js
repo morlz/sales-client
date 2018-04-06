@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 class SalesTwoItem {
 	constructor (source, options = {}) {
 		this._source = source
@@ -19,7 +21,7 @@ class SalesTwoItem {
 	}
 
 	get date () {
-		return this._source.invoice.DATE
+		return moment(this._source.invoice.DATE).format('DD-MM-Y')
 	}
 
 	get salon () {
@@ -46,23 +48,23 @@ class SalesTwoItem {
 
 	get cloth1 () {
 		if (this.isZak)
-			return this._source.TKAN
+			return this._getCloth(this._source.cloth1, this._source.TKAN)
 
-		return this._source.furniture.TKAN
+		return this._getCloth(this._source.furniture.cloth1, this._source.furniture.TKAN)
 	}
 
 	get cloth2 () {
 		if (this.isZak)
-			return this._source.KOMP
+			return this._getCloth(this._source.cloth2, this._source.KOMP)
 
-		return this._source.furniture.KOMP
+		return this._getCloth(this._source.furniture.cloth2, this._source.furniture.KOMP)
 	}
 
 	get cloth3 () {
 		if (this.isZak)
-			return this._source.KOMP1
+			return this._getCloth(this._source.cloth3, this._source.KOMP1)
 
-		return this._source.furniture.KOMP1
+		return this._getCloth(this._source.furniture.cloth3, this._source.furniture.KOMP1)
 	}
 
 	get kat () {
@@ -93,6 +95,10 @@ class SalesTwoItem {
 
 	get priceWithDiscount () {
 		return +this._source.PRICE_DISC
+	}
+
+	_getCloth (cloth, id) {
+		return (cloth ? cloth.NAME : null) || id
 	}
 
 	static groupByField (arr, field) {
