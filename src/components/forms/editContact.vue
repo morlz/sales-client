@@ -42,7 +42,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import rules from '@/static/formRules'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 
 let {
 	contacts

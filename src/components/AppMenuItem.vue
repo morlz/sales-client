@@ -41,7 +41,7 @@
 import { mapGetters } from 'vuex'
 import { tween, timeline, easing } from 'popmotion'
 import throttle from 'lodash.throttle'
-import { QSlideTransition, QSideLink, Ripple, QIcon } from 'quasar'
+import { QSlideTransition, Ripple, QIcon, QItem } from 'quasar'
 
 export default {
 	name: 'AppMenuItem',
@@ -65,7 +65,6 @@ export default {
 	},
 	components: {
 		QSlideTransition,
-		QSideLink,
 		QIcon
 	},
 	directives: {
@@ -140,7 +139,7 @@ export default {
 			return this.$route.path == this.content.path
 		},
 		isLink () {
-			return this.content.path ? QSideLink : 'div'
+			return this.content.path ? QItem : 'div'
 		},
 		childsShow () {
 			return this.open || this.initial

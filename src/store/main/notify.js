@@ -1,6 +1,6 @@
 import api from '@/api'
 import { Notification } from 'element-ui'
-import { Toast, Alert } from 'quasar'
+import { Notify } from 'quasar'
 import 'quasar-extras/animate/bounceInRight.css'
 import 'quasar-extras/animate/bounceOutRight.css'
 
@@ -11,13 +11,13 @@ const state = {
 const actions = {
 	notify ({ commit, dispatch }, payload) {
 		if (typeof payload == 'object')
-			Toast.create(payload.title + ' ' + payload.message)
+			Notify.create(payload.title + ' ' + payload.message)
 		else
-			Toast.create(payload)
+			Notify.create(payload)
 		//Notification(payload)
 	},
 	alert (store, payload) {
-		Alert.create({
+		Notify.create({
 			html: payload,
 			enter: 'bounceInRight',
 			leave: 'bounceOutRight',

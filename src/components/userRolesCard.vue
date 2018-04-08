@@ -16,7 +16,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 import { QBtn } from 'quasar'
 
 export default {

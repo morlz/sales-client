@@ -19,7 +19,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import addContactForm from '@/components/forms/addContact.vue'
 import editContactForm from '@/components/forms/editContact.vue'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 import tabless from '@/components/tableSS.vue'
 
 let {

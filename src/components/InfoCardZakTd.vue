@@ -185,7 +185,7 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 import TableCollapsible from '@/components/TableCollapsible.vue'
 import TableTwoCollumns from '@/components/TableTwoCollumns.vue'
 import TableTwoCollumnsRow from '@/components/TableTwoCollumnsRow.vue'

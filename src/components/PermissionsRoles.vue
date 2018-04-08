@@ -75,7 +75,7 @@ import PermissionsRolesController from '@/components/PermissionsRolesController'
 
 import permissionRole from '@/components/permissionRole.vue'
 import permissionController from '@/components/permissionController.vue'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 
 import { QList, QItem, QItemMain, QItemSide, QCheckbox, QItemTile, QCard, QCardMain, QCardTitle, QCardActions, QBtn, QField, QInput, QIcon } from 'quasar'
 

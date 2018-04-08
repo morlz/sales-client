@@ -23,7 +23,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
 import editTaskForm from '@/components/forms/editTask.vue'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 import tabless from '@/components/tableSS.vue'
 
 let {

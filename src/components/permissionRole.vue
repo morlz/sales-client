@@ -21,7 +21,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 
 let { lvls } = fieldDescription
 

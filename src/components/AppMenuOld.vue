@@ -8,7 +8,7 @@
 import AppMenuItem from '@/components/AppMenuItemOld.vue'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 
 export default {
 	mixins: [mixins],

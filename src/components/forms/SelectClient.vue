@@ -64,7 +64,7 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 
 import phoneFormat from '@/lib/phoneFormat'
 import SelectClientCreate from '@/components/forms/SelectClientCreate'

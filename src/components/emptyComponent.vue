@@ -8,12 +8,16 @@
 import {
 	mapActions,
 	mapGetters,
-	mapMutations
+	mapMutations,
+	mapState
 } from 'vuex'
 
 import {} from 'quasar'
 
 export default {
+	props: {
+
+	},
 	components: {
 
 	},
@@ -29,6 +33,9 @@ export default {
 	methods: {
 
 	},
+	mounted () {
+
+	}
 }
 </script>
 

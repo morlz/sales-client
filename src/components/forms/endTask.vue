@@ -16,7 +16,7 @@
 <script>
 import nextTaskForm from '@/components/forms/nextTask.vue'
 import prevTaskForm from '@/components/forms/prevTask.vue'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {

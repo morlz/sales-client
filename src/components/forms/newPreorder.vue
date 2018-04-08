@@ -15,7 +15,7 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/components/mixins'
+import mixins from '@/mixins'
 
 import newPreorderMainForm from '@/components/forms/newPreorderMain.vue'
 import clientSelectForm from '@/components/forms/SelectClient'
