@@ -35,7 +35,12 @@ export default [
 
 			{ path: '/reports/sales/', 				component: () => import ('pages/reports/sales'), 				meta: { name: "Отчёт по продажам" } },
 			{ path: '/reports/salesTwo/', 			component: () => import ('pages/reports/salesTwo'), 			meta: { name: "Отчёт 2" } },
-			{ path: '/reports/resume/', 			component: () => import ('pages/reports/resume'), 				meta: { name: "Итоги" } }
+			{ path: '/reports/resume/', 			component: () => import ('pages/reports/resume/index'), 		meta: { name: "Итоги" },
+				children: [
+					{ path: '', 					component: () => import ('pages/reports/resume/all'), 			meta: { name: "Лучшие салоны" } },
+					{ path: 'best', 				component: () => import ('pages/reports/resume/best'), 			meta: { name: "Лучшие салоны" } },
+				]
+			}
 		]
 	},
 	{ // Always leave this as last one
