@@ -70,7 +70,8 @@ export default {
 			method: "post",
 			type: "roles",
 			data: {
-				name
+				name,
+				type: 'action'
 			}
 		})
 	},
@@ -130,11 +131,14 @@ export default {
 			type: "role/groups"
 		})
 	},
-	async createGroup (data) {
+	async createGroup (name) {
 		return await core.invoke({
 			method: "post",
 			type: "role/create-group",
-			data
+			data: {
+				name,
+				type: 'group'
+			}
 		})
 	},
 	async deleteGroup (id) {

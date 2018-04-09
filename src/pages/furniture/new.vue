@@ -1,15 +1,9 @@
 <template>
-<div class="mainWrapper furnitureNewWrapper">
-	<ul class="breadcrumb">
-		<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-		<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-		<li><router-link :to="{ path: '/furniture/new' }">Заказать изготовление</router-link></li>
-	</ul>
-
-	<div class="newFurniture">
-		<newFurnitureForm />
+<q-page class="mainWrapper furnitureNewWrapper">
+	<div class="newFurniture AppContent__inner">
+		<new-furniture-form />
 	</div>
-</div>
+</q-page>
 </template>
 
 <script>
@@ -22,24 +16,9 @@ import {
 import newFurnitureForm from '@/components/forms/newFurniture'
 
 export default {
-	data() {
-		return {}
-	},
 	components: {
 		newFurnitureForm
 	},
-	watch: {
-
-	},
-	computed: {
-
-	},
-	methods: {
-
-	},
-	mounted () {
-
-	}
 }
 </script>
 
@@ -48,5 +27,4 @@ export default {
 .furnitureNewWrapper {
 
 }
-
 </style>

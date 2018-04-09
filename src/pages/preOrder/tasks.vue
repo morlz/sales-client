@@ -1,5 +1,5 @@
 <template>
-<div class="AppContent" v-if="auth_can(1, 'Task')">
+<q-page class="AppContent" v-if="auth_can(1, 'Task')">
 	<div class="oneTaskWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -13,7 +13,7 @@
 	<div class="manyTasksWrapper" v-if="!isOne">
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
 
-		<q-card class="manyTasksWrapper__card">
+		<q-card class="manyTasksWrapper__card AppContent__inner">
 			<tabless
 				key="tasks"
 				:data="task_cached"
@@ -28,7 +28,7 @@
 			/>
 		</q-card>
 	</div>
-</div>
+</q-page>
 </template>
 
 

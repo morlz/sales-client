@@ -9,7 +9,7 @@
 
 		<q-item-main>
 			<q-slide-transition>
-				<q-item-tile v-if="!edit" @click="salonGroups_selectItem({ type: 'groups', id: item.id})" class="permissionsGroup__name">
+				<q-item-tile v-if="!edit" @click.native="salonGroups_selectItem({ type: 'groups', id: item.id})" class="permissionsGroup__name">
 					{{ item.name }}
 				</q-item-tile>
 			</q-slide-transition>

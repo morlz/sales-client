@@ -1,6 +1,6 @@
 <template>
-<div class="AppContent">
-	<div class="reportSalesTwo">
+<q-page class="AppContent">
+	<div class="reportSalesTwo AppContent__inner">
 		<q-card class="reportSalesTwo__actions">
 			<q-field helper="Салон">
 				<q-select v-model="salon" :options="local_salon_list" filter/>
@@ -39,7 +39,7 @@
 		</q-card>
 	</div>
 
-</div>
+</q-page>
 </template>
 
 <script>
@@ -173,10 +173,13 @@ export default {
 
 <style lang="less">
 .reportSalesTwo {
+	display: grid;
+	grid-gap: 10px;
+
 	&__actions {
 		display: grid;
 		grid-gap: 15px;
-		padding: 0 10px;
+		padding: 5px 10px;
 		justify-content: start;
 		align-items: center;
 		grid-template-columns: repeat(auto-fill, minmax(200px, max-content));

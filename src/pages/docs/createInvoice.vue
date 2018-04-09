@@ -1,10 +1,5 @@
 <template>
-<div class="mainWrapper">
-	<ul class="breadcrumb">
-		<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-		<li><router-link :to="{ path: '/docs/createInvoice' }">Оформление заказа</router-link></li>
-	</ul>
-
+<q-page class="mainWrapper">
 	<div class="createInvoiceForm">
 		<q-stepper ref="stepper" vertical class="createInvoiceForm__stepper" v-model="step">
 			<q-step title="Вид оплаты и рекламный источник" name="pay">
@@ -83,8 +78,7 @@
 			</q-step>
 		</q-stepper>
 	</div>
-
-</div>
+</q-page>
 </template>
 
 <script>
@@ -198,7 +192,7 @@ export default {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 	&__stepper {
-
+		background: #fff;
 	}
 
 	&__radioWrapper {

@@ -1,46 +1,48 @@
 <template>
-<div class="mainWrapper">
-	<el-breadcrumb separator="/" class="bc">
-		<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-		<el-breadcrumb-item :to="{ path: `/profile/${oneId}` }">{{ fio }}</el-breadcrumb-item>
-	</el-breadcrumb>
-	<div class="mainProfile cards">
-		<el-card class="card">
-			<h2 class="title" slot="header">Основная ифнормация</h2>
+<q-page class="AppContent">
+	<div class="ManagerPofile AppContent__inner">
+		<q-card>
+			<q-card-title>
+				Основная ифнормация
+			</q-card-title>
 
-			<div class="gridInfo">
-				<div class="info">
-					<div class="avatar"></div>
-					<div class="name">{{fio}}</div>
-					<div class="dolz">{{data.UPOST}}</div>
+			<q-card-main>
+				<div class="gridInfo">
+					<div class="info">
+						<div class="avatar"></div>
+						<div class="name">{{fio}}</div>
+						<div class="dolz">{{data.UPOST}}</div>
+					</div>
+					<div class="contacts">
+						<div>Телефон</div>
+						<div>{{data.phone}}</div>
+						<div>Эл почта</div>
+						<div>{{data.email}}</div>
+						<div>Скайп</div>
+						<div>{{data.skype}}</div>
+					</div>
 				</div>
-				<div class="contacts">
-					<div>Телефон</div>
-					<div>{{data.phone}}</div>
-					<div>Эл почта</div>
-					<div>{{data.email}}</div>
-					<div>Скайп</div>
-					<div>{{data.skype}}</div>
-				</div>
-			</div>
+			</q-card-main>
 
+			<q-card-actions>
+				<q-btn type="primary">Редактировать</q-btn>
+			</q-card-actions>
+		</q-card>
 
-			<div class="buttons">
-				<el-button type="primary">Редактировать</el-button>
-			</div>
-		</el-card>
+		<q-card>
+			<q-card-title>
+				Подробная информация
+			</q-card-title>
 
-		<el-card class="card">
-			<h2 class="title" slot="header">Подробная информация</h2>
-
-			<div class="">
+			<q-card-main>
 				{{ data }}
-			</div>
+			</q-card-main>
 
-			<div class="buttons"></div>
-		</el-card>
+			<q-card-actions>
+			</q-card-actions>
+		</q-card>
 	</div>
-</div>
+</q-page>
 </template>
 
 <script>

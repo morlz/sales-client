@@ -1,30 +1,25 @@
 <template>
-	<el-card class="tasks">
-		<div slot="header">
-			<h2>Задачи</h2>
-		</div>
+	<q-card class="tasks">
+		<q-card-title>
+			Задачи
+		</q-card-title>
 
-		<tabless
-			:data="data"
-			:fieldDescription="clientTasksFieldDescription"
-			:onClick="goToPreorder"
-			:buttons="afterTableTasksButtons"
-			:buttonsCondition="task_buttonCondition"
-			:minify="true"/>
-		<edit-task-form v-if="auth_can(3, 'Task')"/>
+		<q-card-main>
+			<table-collapsible :columns="clientTasksFieldDescription" :rows="data"/>
+		</q-card-main>
 
-		<div class="buttons">
-			<el-button v-if="auth_can(3, 'Task') && (taskToEnd.id || !data.length)" @click="clickEndHandle" type="primary">Добавить задачу (Завершить)</el-button>
-		</div>
-	</el-card>
+		<q-card-actions>
+			<q-btn v-if="auth_can(3, 'Task') && (taskToEnd.id || !data.length)" @click="clickEndHandle" color="primary" icon="add">Добавить задачу (Завершить)</q-btn>
+		</q-card-actions>
+	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import editTaskForm from '@/components/forms/editTask.vue'
+import editTaskForm from '@/components/forms/editTask'
 import mixins from '@/mixins'
-import tabless from '@/components/tableSS.vue'
+import TableCollapsible from '@/components/TableCollapsible'
 
 let {
 	clientTasksFieldDescription
@@ -35,7 +30,7 @@ export default {
 	mixins: [mixins],
 	components: {
 		editTaskForm,
-		tabless
+		TableCollapsible
 	},
 	data () {
 		return {

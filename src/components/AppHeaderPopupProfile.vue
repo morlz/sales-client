@@ -1,13 +1,7 @@
 <template>
 <div class="profileWrapper">
 
-	<el-popover
-		ref="popoverProfie"
-		class="modal"
-		popper-class="el-popover-empty"
-		placement="bottom"
-		trigger="click"
-	>
+	<q-popover ref="popoverProfie">
 		<div class="profileModalWrapper">
 			<div class="bg">
 				<div class="avatar"></div>
@@ -22,23 +16,24 @@
 				<q-btn flat color="negative" @click="logOut">Выйти</q-btn>
 			</div>
 		</div>
-	</el-popover>
+	</q-popover>
 
-	<QBtn v-popover:popoverProfie class="name" flat wait-for-ripple>
+	<q-btn class="name" flat wait-for-ripple>
 		<q-icon name="account_circle" v-if="app_view_mobile"/>
 		{{ app_view_mobile ? '' : fio }}
-	</QBtn>
+	</q-btn>
 </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { QBtn, QIcon } from 'quasar'
+import { QBtn, QIcon, QPopover } from 'quasar'
 
 export default {
 	components: {
 		QBtn,
-		QIcon
+		QIcon,
+		QPopover
 	},
 	methods: {
 		...mapMutations([]),
@@ -46,7 +41,7 @@ export default {
 			'logOut'
 		]),
 		goToProfile () {
-			router.push({ path: `/profile/${this.loginedAs.id}` })
+			router.push({ path: `/admin/personal/${this.loginedAs.ID_M}` })
 		}
 	},
 	computed: {

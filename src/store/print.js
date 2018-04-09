@@ -1,5 +1,8 @@
+import Mustache from 'mustache'
 import api from '@/api'
-import Mustache  from 'mustache'
+
+console.log(api);
+
 
 const state = {
 	cached: {

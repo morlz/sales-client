@@ -1,12 +1,12 @@
 <template>
 <div class="cartWrapper">
-	<el-popover ref="cartPopover" :trigger="app_view_desktop ? 'click' : 'manual'">
+	<q-popover ref="cartPopover" :disable="!app_view_desktop">
 		<div class="cartItems" v-loading="cart_loadingList">
 			<app-header-popup-cart-content/>
 
 			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length" @click="goToCreateInvoice">Оформить документ</q-btn>
 		</div>
-	</el-popover>
+	</q-popover>
 
 	<q-modal maximized v-if="!app_view_desktop" v-model="modal" ref="modal" class="cartModal">
 		<q-modal-layout>
@@ -22,7 +22,7 @@
 		</q-modal-layout>
 	</q-modal>
 
-	<q-btn class="cartPopoverToggleButton" v-popover:cartPopover v-loading="cart_loadingList" flat @click="modal = !modal" wait-for-ripple>
+	<q-btn class="cartPopoverToggleButton" v-loading="cart_loadingList" flat @click="modal = !modal" wait-for-ripple>
 		<q-icon name="shopping_cart" v-if="app_view_mobile"/>
 		<template v-if="!app_view_mobile">
 			Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
@@ -42,7 +42,7 @@ import tabless from '@/components/tableSS.vue'
 import TableCollapsible from '@/components/TableCollapsible.vue'
 import AppHeaderPopupCartContent from '@/components/AppHeaderPopupCartContent'
 
-import { QBtn, QIcon, QModal, QModalLayout, QToolbar, QToolbarTitle } from 'quasar'
+import { QBtn, QIcon, QModal, QModalLayout, QToolbar, QToolbarTitle, QPopover } from 'quasar'
 
 export default {
 	data() {
@@ -59,7 +59,8 @@ export default {
 		QModalLayout,
 		QToolbar,
 		QToolbarTitle,
-		AppHeaderPopupCartContent
+		AppHeaderPopupCartContent,
+		QPopover
 	},
 	methods: {
 		...mapActions([
@@ -106,6 +107,7 @@ export default {
     }
 }
 .cartItems {
+	padding: 20px;
 	display: grid;
 	width: 800px;
 	max-height: 600px;

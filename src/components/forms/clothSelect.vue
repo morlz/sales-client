@@ -10,27 +10,27 @@
 		</div>
 	</div>
 
-	<el-dialog title="Выбор ткани" :visible.sync="open" :key="index" class="clothDialog" width="500px" top="100px">
-		<div class="search">
-			<el-input v-model="local_search" placeholder="Поиск"/>
-		</div>
+	<q-modal v-model="open" :content-css="{ padding: '30px' }">
+		<q-field>
+			<q-input v-model="local_search" float-label="Поиск"/>
+		</q-field>
 
-		<div class="itemsWrapper" v-loading="furniture_clothSelectForm.loading.list">
-			<div class="items">
-				<div
-					class="item"
-					v-for="item, index in furniture_clothSelectForm.cached"
-					v-html="clothLabel(item)"
-					@click="select(item)"/>
-			</div>
+		<q-list v-loading="furniture_clothSelectForm.loading.list" no-border>
+			<q-item v-for="item, index in furniture_clothSelectForm.cached" @click.native="select(item)" :key="index">
+				<q-item-main>
+					{{ item.name }}
+				</q-item-main>
+
+				<q-item-side side="right" v-html="itemStatus(item)"/>
+			</q-item>
 
 			<infinite-loading :distance="800" @infinite="local_furniture_clothSelectForm_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<div class="spinner" slot="spinner" v-loading="furniture_clothSelectForm.loading.bottom" />
 			</infinite-loading>
-		</div>
-	</el-dialog>
+		</q-list>
+	</q-modal>
 </div>
 </template>
 
@@ -41,6 +41,7 @@ import {
 	mapMutations
 } from 'vuex'
 import InfiniteLoading from 'vue-infinite-loading'
+import { QModal, QModalLayout } from 'quasar'
 
 export default {
 	props: {
@@ -59,7 +60,9 @@ export default {
 		}
 	},
 	components: {
-		InfiniteLoading
+		InfiniteLoading,
+		QModal,
+		QModalLayout
 	},
 	watch: {
 		local_search (query) {
@@ -103,15 +106,10 @@ export default {
 		...mapMutations([
 			'furniture_clothSelectForm_visibleSet'
 		]),
-		clothLabel (item) {
-			let status
-
-			if (item.StatusActive == 1)
-				status = `<div class="statusRED">${item.cStatus ? 'Не используется' : 'Отсутствует'}</div>`
-
-			status = status || item.KAT
-
-			return `${item.name} [${status}]`;
+		itemStatus (item) {
+			return item.StatusActive == 1 ?
+				`<div class="statusRED">[${item.cStatus ? 'Не используется' : 'Отсутствует'}]</div>`
+			:	item.KAT
 		},
 		select (item) {
 			this.$emit('input', item)
@@ -200,6 +198,12 @@ export default {
 			display: inline;
 			color: red;
 		}
+	}
+}
+
+.ClothSelectModal {
+	.modal-content {
+		padding: 30px;
 	}
 }
 

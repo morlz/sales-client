@@ -10,7 +10,7 @@
 			v-for="client, index in client_select_cached.list"
 			:key="index"
 			:class="{ 'clientList__item-selected': client_select.id == client.id }"
-			@click="selectClient(client)">
+			@click.native="selectClient(client)">
 
 			<q-item-main>
 				{{ mainContact(client).fio }}
@@ -26,7 +26,6 @@
 				{{ client.salon.NAME }}
 			</q-item-side>
 		</q-item>
-
 
 		<template v-if="client_select_cached.list.length == 30">
 			Показано {{ client_select_cached.list.length }} клиентов. Тут пока нет бесконечной прокрутки :(

@@ -1,34 +1,36 @@
 <template>
-	<el-card class="card userProfileCard" v-if="auth_can(1, 'Manager')">
-		<h2 class="title" slot="header">Основная ифнормация</h2>
+	<q-card class="card ManagerProfileCard" v-if="auth_can(1, 'Manager')">
+		<q-card-title>
+			Основная ифнормация
+		</q-card-title>
 
-		<div class="gridInfo">
-			<div class="info">
-				<div class="avatar"></div>
-				<div class="name">{{fio}}</div>
-				<div class="dolz">{{data.UPOST}}</div>
+		<q-card-main>
+			<div class="gridInfo">
+				<div class="info">
+					<div class="avatar"></div>
+					<div class="name">{{fio}}</div>
+					<div class="dolz">{{data.UPOST}}</div>
+				</div>
+				<div class="contacts">
+					<div>Телефон</div>
+					<div>{{data.phone}}</div>
+					<div>Эл почта</div>
+					<div>{{data.email}}</div>
+					<div>Скайп</div>
+					<div>{{data.skype}}</div>
+				</div>
 			</div>
-			<div class="contacts">
-				<div>Телефон</div>
-				<div>{{data.phone}}</div>
-				<div>Эл почта</div>
-				<div>{{data.email}}</div>
-				<div>Скайп</div>
-				<div>{{data.skype}}</div>
-			</div>
-		</div>
+		</q-card-main>
 
-
-		<div class="buttons">
-			<QBtn color="primary" v-if="auth_can(3, 'RoleSetup')">Редактировать</QBtn>
-		</div>
-	</el-card>
+		<q-card-actions>
+			<q-btn color="primary" v-if="auth_can(3, 'RoleSetup')">Редактировать</q-btn>
+		</q-card-actions>
+	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/mixins'
-import { QBtn } from 'quasar'
 
 export default {
 	mixins: [mixins],
@@ -37,9 +39,6 @@ export default {
 			type: Object,
 			required: true
 		}
-	},
-	components: {
-		QBtn
 	},
 	computed: {
 		data () {
@@ -54,7 +53,7 @@ export default {
 
 
 <style lang="less">
-.userProfileCard {
+.ManagerProfileCard {
 	.gridInfo {
 		display: grid;
 		.info {

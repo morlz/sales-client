@@ -1,10 +1,7 @@
 import api from '@/api'
 
 const state = {
-	open: {
-		left: false,
-		right: false
-	},
+	open: false,
 	names: {
 		show: false
 	},
@@ -17,7 +14,7 @@ const state = {
 		{
 			name: 'Помощь',
 			path: "/help",
-			icon: "el-icon-info"
+			icon: "fa-info"
 		},
 		{
 			name: "Мебель",
@@ -164,7 +161,7 @@ const mutations = {
 }
 
 const getters = {
-	nav_open: (state, getters) => ({ ...state.open, left: state.open.left || getters.app_view_desktop }),
+	nav_open: state => state.open,
 	nav_namesShow: state => state.names.show,
 	nav_items: state => state.menuItems
 }

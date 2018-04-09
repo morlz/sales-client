@@ -39,5 +39,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="stylus">
+.AppContent
+	background #eee
+	&__inner
+		margin 10px
 </style>

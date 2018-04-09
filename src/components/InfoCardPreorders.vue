@@ -1,26 +1,33 @@
 <template>
-	<el-card class="preorders" v-if="auth_can(1, 'Preorder')">
-		<div slot="header">
-			<h2>Предзаказы</h2>
-		</div>
-		<el-tabs>
-			<el-tab-pane label="Предстоящие">
-				<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
-			</el-tab-pane>
+	<q-card class="preorders" v-if="auth_can(1, 'Preorder')">
+		<q-card-title>
+			Предзаказы
+		</q-card-title>
 
-			<el-tab-pane label="Выполеные">
-				<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
-			</el-tab-pane>
-		</el-tabs>
-	</el-card>
+		<q-card-main>
+			<q-tabs inverted>
+				<q-tab slot="title" label="Предстоящие" name="next" default/>
+				<q-tab slot="title" label="Выполеные" name="end"/>
+
+				<q-tab-pane name="next">
+					<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
+				</q-tab-pane>
+
+				<q-tab-pane name="end">
+					<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
+				</q-tab-pane>
+			</q-tabs>
+		</q-card-main>
+	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import editTaskForm from '@/components/forms/editTask.vue'
 import mixins from '@/mixins'
-import tabless from '@/components/tableSS.vue'
+import tabless from '@/components/tableSS'
+
+import { QTabs, QTab, QTabPane } from 'quasar'
 
 let {
 	clientPreordersFieldDescription
@@ -34,8 +41,10 @@ export default {
 	},
 	mixins: [mixins],
 	components: {
-		editTaskForm,
-		tabless
+		tabless,
+		QTabs,
+		QTab,
+		QTabPane
 	},
 	data () {
 		return {

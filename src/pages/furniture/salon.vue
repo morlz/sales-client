@@ -1,5 +1,5 @@
 <template>
-<div class="AppContent">
+<q-page class="AppContent">
 	<div class="oneFurnitureWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -69,6 +69,7 @@
 		</q-tabs>
 
 		<furniture-models-wrap
+			class="AppContent__inner"
 			:current="furniture_filters.MODEL"
 			:loading="furniture_loadingModels"
 			:models="furniture_models"
@@ -130,7 +131,7 @@
 		</q-card>
 		</furniture-models-wrap>
 	</div>
-</div>
+</q-page>
 </template>
 
 

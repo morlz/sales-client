@@ -92,22 +92,18 @@ const actions = {
 			}
 		})
 	},
-	permissions_createRole({ commit, dispatch, state }) {
+	async permissions_createRole({ commit, dispatch, state }) {
 		if (!state.add.role)
-			dispatch ('notify', {
-				title: "Ошибка добавления роли",
-				message: "Имя новой роли не должно быть пустым"
-			})
+			return dispatch ('notify', 'Ошибка добавления роли, имя новой роли не должно быть пустым')
 
-		if (state.add.role)
-			api.permissions
-				.createRole(state.add.role)
-				.then(({ data }) => {
-					if (!data.error) {
-						commit("permissions_appendCachedRoles", data)
-						dispatch("notify", { title: "Успешно", message: "Новая роль создана" })
-					}
-				})
+		let res = await api.permissions.createRole(state.add.role)
+		if (!res.data || res.data.error) return
+
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		commit("permissions_appendCachedRoles", res.data)
+		dispatch("notify", "Новая роль успешно создана")
 	},
 	permissions_createController({ commit, dispatch, state }) {
 		if (!state.add.controller)

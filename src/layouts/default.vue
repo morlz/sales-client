@@ -5,17 +5,21 @@
 
 	<transition name="fadeZoom" appear key="mainTransition">
 		<q-layout
-			view="lhh LpR lff"
+			view="lhh Lpr lff"
 			v-if="logined"
-			:left-style="menuWrapperStyle"
-			:left-class="{ menuWrapper: true }"
-			:header-class="{ 'app__headerNoShadow' : !app_layout_headerShadow }"
-			v-model="open"
 			ref="layout"
 			class="app"
 		>
-			<app-menu/>
-			<app-header/>
+			<q-layout-header :class="{ 'app__headerNoShadow' : !app_layout_headerShadow }">
+				<app-header/>
+			</q-layout-header>
+
+			<q-layout-drawer
+				side="left"
+				v-model="menuLeftOpen"
+				:content-style="menuWrapperStyle">
+				<app-menu/>
+			</q-layout-drawer>
 
 			<q-page-container class="app__content">
 				<router-view />
@@ -53,6 +57,7 @@ import AppMainAuth from '@/pages/main/auth'
 export default {
 	data() {
 		return {
+			menuLeftOpen: true,
 			layoutLoaded: false,
 			layoutLoadedCheckInterval: false,
 		}
@@ -67,22 +72,6 @@ export default {
 	watch: {
 		local_nav_open (n) {
 			this.nav_openLeftSet(n)
-		},
-		nav_open (n) {
-			if (this.app_view_desktop) return
-			if (!this.layoutLoaded) return
-			if (this.$refs.layout.leftState.openedSmall != n.left)
-				this.$refs.layout.leftState.openedSmall = n.left
-
-			let pos = n.left ? 0 : -300
-			if (this.$refs.layout.leftState.position != pos)
-				this.$refs.layout.leftState.position = pos
-
-			if (this.$refs.layout.backdrop.percentage != +n.left)
-				this.$refs.layout.backdrop.percentage = +n.left
-
-			if (this.$refs.layout.backdrop.touchEvent != true)
-				this.$refs.layout.backdrop.touchEvent = true
 		}
 	},
 	computed: {
@@ -93,23 +82,10 @@ export default {
 			'app_view_desktop',
 			'app_layout_headerShadow'
 		]),
-		open: {
-			get () {
-				return this.nav_open
-			},
-			set (n) {
-				this.nav_openSet(n)
-			}
-		},
-		local_nav_open () {
-			if (!this.layoutLoaded)
-				return false
-
-			return this.$refs.layout.leftState.openedSmall
-		},
 		menuWrapperStyle () {
 			return {
-				width: !this.app_view_desktop ? '300px' : '80px'
+				width: !this.app_view_desktop ? '300px' : '80px',
+				overflow: 'visible'
 			}
 		}
 	},

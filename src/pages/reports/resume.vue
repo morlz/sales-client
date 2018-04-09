@@ -1,13 +1,13 @@
 <template>
-<div class="AppContent">
+<q-page class="AppContent">
 	<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 		<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 	</q-tabs>
 
-	<q-card>
+	<q-card class="AppContent__inner">
 		<div :is="tabs.find(el => el.type == currentTab).component"/>
 	</q-card>
-</div>
+</q-page>
 </template>
 
 <script>

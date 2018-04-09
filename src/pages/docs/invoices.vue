@@ -1,13 +1,6 @@
 <template>
-	<div class="AppContent">
-		<div class="oneInvoiceWrapper" v-if="isOne">
-			<ul class="breadcrumb">
-				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-				<li><router-link :to="{ path: '/' }">Документы</router-link></li>
-				<li><router-link :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</router-link></li>
-				<li><router-link :to="{ path: `/docs/${type}/${invoice_current.ID}` }">Счёт {{ invoice_current.N_DOC }}</router-link></li>
-			</ul>
-
+	<q-page class="AppContent">
+		<div class="oneInvoiceWrapper AppContent__inner" v-if="isOne">
 			<div class="oneInvoice" v-loading="invoice_loadingOne">
 				<info-card-invoice :content="invoice_current" v-ga="`m`"/>
 				<info-card-client :content="invoice_current.client || invoice_current.clientOld" v-ga="`c`"/>
@@ -40,7 +33,7 @@
 				</q-field>
 			</div>
 
-			<q-card class="manyInvoicesWrapper__card">
+			<q-card class="manyInvoicesWrapper__card AppContent__inner">
 				<tabless
 					key="invoices"
 					:data="invoice_cached"
@@ -55,7 +48,7 @@
 				/>
 			</q-card>
 		</div>
-	</div>
+	</q-page>
 </template>
 
 
@@ -276,6 +269,7 @@ export default {
 	}
 	.oneInvoice {
 		display: grid;
+		grid-gap: 10px;
 		grid-template: 	"m c"
 						"m a"
 						"z z"

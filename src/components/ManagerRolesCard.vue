@@ -1,36 +1,37 @@
 <template>
-	<el-card class="card userRoles">
-		<h2 class="title" slot="header">Роли</h2>
+	<q-card class="card userRoles">
+		<q-card-title>
+			Роли
+		</q-card-title>
 
-		<el-transfer
-			:titles="['Все', 'Выбраные']"
-			v-model="local_personal_currentRolesSetup"
-			:data="transferData"
-		/>
+		<q-card-main>
+			<q-list>
+				<q-item v-for="item, index in transferData" :key="index">
+					<q-item-main>
+						<q-checkbox
+							:value="local_personal_currentRolesSetup.includes(item.key)"
+							:label="item.label"
+							@input="local_personal_currentRolesSetupSet($event, item.key)"/>
+					</q-item-main>
+				</q-item>
+			</q-list>
+		</q-card-main>
 
-		<div class="buttons">
-			<QBtn color="primary" @click="personal_saveRoleSetupState" v-if="auth_can(3, 'RoleSetup')">Сохранить выбраные роли</QBtn>
-		</div>
-	</el-card>
+		<q-card-actions>
+			<q-btn color="primary"@click="personal_saveRoleSetupState" v-if="auth_can(3, 'RoleSetup')">Сохранить выбраные роли</q-btn>
+		</q-card-actions>
+	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/mixins'
-import { QBtn } from 'quasar'
+import { QCheckbox } from 'quasar'
 
 export default {
 	mixins: [mixins],
 	components: {
-		QBtn
-	},
-	methods: {
-		...mapActions([
-			'personal_saveRoleSetupState'
-		]),
-		...mapMutations([
-			'personal_currentRolesSetupSet'
-		]),
+		QCheckbox
 	},
 	computed: {
 		...mapGetters([
@@ -53,6 +54,19 @@ export default {
 			set (val) {
 				this.personal_currentRolesSetupSet( val.map( role_id => ( { role_id, manager_id: this.personal_current.ID_M } ) ) )
 			}
+		}
+	},
+	methods: {
+		...mapActions([
+			'personal_saveRoleSetupState'
+		]),
+		...mapMutations([
+			'personal_currentRolesSetupSet'
+		]),
+		local_personal_currentRolesSetupSet (n, role_id) {
+			this.local_personal_currentRolesSetup = n ?
+				[...this.local_personal_currentRolesSetup, role_id]
+			:	this.local_personal_currentRolesSetup.filter(el => el != role_id)
 		}
 	},
 }

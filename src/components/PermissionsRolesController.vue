@@ -6,7 +6,7 @@
 
 		<q-item-main>
 			<q-slide-transition>
-				<q-item-tile v-if="!edit" @click="permissions_selectItem({ type: 'controllers', id: item.id})" class="permissionsController__name">
+				<q-item-tile v-if="!edit" @click.native="permissions_selectItem({ type: 'controllers', id: item.id})" class="permissionsController__name">
 					{{ item.name }}
 				</q-item-tile>
 			</q-slide-transition>

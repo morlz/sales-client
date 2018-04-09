@@ -1,5 +1,5 @@
 <template>
-<div class="permissions">
+<q-page class="permissions">
 	<q-tabs class="permissions__tabs">
 		<q-tab slot="title" name="roles" label="Роли" default/>
 		<q-tab slot="title" name="groups" label="Группы салонов"/>
@@ -12,7 +12,7 @@
 			<permissions-groups/>
 		</q-tab-pane>
 	</q-tabs>
-</div>
+</q-page>
 </template>
 
 <script>

@@ -1,25 +1,19 @@
 <template>
-<div class="AppContent" v-if="auth_can(1, 'Preorder')">
-	<div class="oneRecordWrapper" v-if="isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: `/preorder/preorders` }">Список предзаказов</router-link></li>
-			<li><router-link :to="{ path: `/preorder/preorders/${oneId}` }">Предзаказ №{{oneId}}</router-link></li>
-		</ul>
+<q-page class="AppContent" v-if="auth_can(1, 'Preorder')">
+	<div class="OnePreorderWrapper AppContent__inner" v-if="isOne" v-loading="preorder_loadingOne">
+		<info-card-preorder :content="preorder_current" v-if="auth_can(1, 'Preorder')"/>
+		<info-card-contact-faces :content="preorder_current.contactFaces" allow-create v-if="auth_can(1, 'ContactFace')"/>
+		<info-card-tasks :content="preorder_current.tasks" v-if="auth_can(1, 'Task')"/>
 
-		<el-form class="cards" v-loading="preorder_loadingOne">
-			<preorder-info :content="preorder_current" v-if="auth_can(1, 'Preorder')"/>
-			<contact-faces :content="preorder_current.contactFaces" allowCreate v-if="auth_can(1, 'ContactFace')"/>
-			<tasks :content="preorder_current.tasks" v-if="auth_can(1, 'Task')"/>
+		<q-card class="files">
+			<q-card-title>
+				Прикреплённые файлы
+			</q-card-title>
 
-			<el-card class="files">
-				<h2 slot="header">Прикреплённые файлы</h2>
-
-				<el-upload action="">
-					<el-button type="primary">Загрузить файл</el-button>
-				</el-upload>
-			</el-card>
-		</el-form>
+			<q-card-main>
+				<q-uploader :url="url" />
+			</q-card-main>
+		</q-card>
 	</div>
 
 	<div class="manyRecordsWrapper" v-if="!isOne">
@@ -40,7 +34,7 @@
 				v-if="currentTab == 'all'" />
 		</div>
 
-		<q-card v-if="currentTab == 'all'" class="manyRecordsWrapper__card">
+		<q-card v-if="currentTab == 'all'" class="manyRecordsWrapper__card AppContent__inner">
 			<tabless
 				key="preorders"
 				:data="preorder_cached"
@@ -59,7 +53,7 @@
 			<new-preorder-form @go-back="currentTab = 'all'"/>
 		</div>
 	</div>
-</div>
+</q-page>
 </template>
 
 
@@ -69,6 +63,8 @@
 //v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')"
 
 import fieldDescription from '@/static/fieldDescription'
+
+
 
 let {
 	recordsManyFieldDescription
@@ -80,18 +76,18 @@ import {
 	mapMutations
 } from 'vuex'
 import mixins from '@/mixins'
-import tabless from '@/components/tableSSNew.vue'
-import addContactForm from '@/components/forms/addContact.vue'
-import editContactForm from '@/components/forms/editContact.vue'
-import editTaskForm from '@/components/forms/editTask.vue'
-import newPreorderForm from '@/components/forms/newPreorder.vue'
+import tabless from '@/components/tableSSNew'
+import addContactForm from '@/components/forms/addContact'
+import editContactForm from '@/components/forms/editContact'
+import editTaskForm from '@/components/forms/editTask'
+import newPreorderForm from '@/components/forms/newPreorder'
 import InfiniteLoading from 'vue-infinite-loading'
 
-import preorderInfo from '@/components/preorder/preorderInfo.vue'
-import contactFaces from '@/components/preorder/contactFaces.vue'
-import tasks from '@/components/preorder/tasks.vue'
+import InfoCardPreorder from '@/components/InfoCardPreorder'
+import InfoCardContactFaces from '@/components/InfoCardContactFaces'
+import InfoCardTasks from '@/components/InfoCardTasks'
 
-import { QTabs, QTab, QInput, QCard } from 'quasar'
+import { QTabs, QTab, QInput, QCard, QUploader } from 'quasar'
 
 export default {
 	data() {
@@ -111,14 +107,14 @@ export default {
 		addContactForm,
 		editContactForm,
 		editTaskForm,
-		preorderInfo,
-		contactFaces,
-		tasks,
+		InfoCardPreorder,
+		InfoCardContactFaces,
+		InfoCardTasks,
 		newPreorderForm,
 		QTabs,
 		QTab,
 		QInput,
-		QCard
+		QUploader
 	},
 	watch: {
 		oneId (n) {
@@ -231,36 +227,32 @@ export default {
 	}
 }
 
-.oneRecordWrapper {
-	.cards {
-		display: grid;
-		grid-gap: 20px;
-		grid-template-columns: 1fr 1fr;
-		.tasks, .files {
-			grid-column: ~"1 / 3";
-		}
+.OnePreorderWrapper {
+	display: grid;
+	grid-gap: 10px;
+	grid-template-columns: 1fr 1fr;
+	.tasks, .files {
+		grid-column: ~"1 / 3";
+	}
 
-		.info {
-			.el-steps {
-				margin-bottom: 10px;
-			}
+	.info {
+		.el-steps {
+			margin-bottom: 10px;
 		}
+	}
 
-		.contacts {
-			.buttons {
-				margin-top: 10px;
-			}
+	.contacts {
+		.buttons {
+			margin-top: 10px;
 		}
 	}
 }
 
 @media screen and (max-width: 1250px) {
-	.oneRecordWrapper {
-		.cards {
-			grid-template-columns: 1fr;
-			.tasks, .files {
-				grid-column: ~"1 / 2";
-			}
+	.OnePreorderWrapper {
+		grid-template-columns: 1fr;
+		.tasks, .files {
+			grid-column: ~"1 / 2";
 		}
 	}
 }

@@ -13,13 +13,17 @@ const config = {
 }
 
 module.exports = function(ctx) {
+	const options = config[ctx.dev ? 'dev' : 'prod']
+
 	return {
 		// app plugins (/src/plugins)
 		plugins: [
 			'i18n',
 			'axios',
 			'ElementUI',
-			'routerSync'
+			'routerSync',
+			'FastGridArea',
+			'VueGoogleMaps'
 		],
 		css: [
 			'app.styl',
@@ -39,16 +43,12 @@ module.exports = function(ctx) {
 		},
 		build: {
 			scopeHoisting: true,
-			vueRouterMode: 'history',
+			vueRouterMode: 'hash',
 			// gzip: true,
 			// analyze: true,
 			// extractCSS: false,
 			// useNotifier: false,
 			extendWebpack(cfg) {
-				const buildFor = process.env.NODE_ENV === 'development' ? 'dev' : 'prod'
-				console.log('Build for:', buildFor)
-				const options = config[buildFor]
-
 				cfg.output = {
 					...cfg.output,
 					path: options.filesPath,
@@ -60,7 +60,8 @@ module.exports = function(ctx) {
 						if (cfg.plugins[prop].constructor.name === 'HtmlWebpackPlugin')
 							cfg.plugins[prop].options.filename = path.join(options.filesPath, 'index.html')
 
-				cfg.resolve.alias['@'] = path.resolve('src')
+				cfg.resolve.alias['@'] = path.resolve('src');
+
 			}
 		},
 		devServer: {
@@ -93,6 +94,15 @@ module.exports = function(ctx) {
 				'QItem',
 				'QItemMain',
 				'QItemSide',
+				'QItemTile',
+				'QCollapsible',
+				'QCard',
+				'QCardMain',
+				'QCardActions',
+				'QCardTitle',
+				'QSelect',
+				'QInput',
+				'QField'
 			],
 			directives: [
 				'Ripple'

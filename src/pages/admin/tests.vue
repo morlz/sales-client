@@ -1,5 +1,5 @@
 <template>
-<div class="mainWrapper adminTestsWrapper">
+<q-page class="mainWrapper adminTestsWrapper">
 	<ul class="breadcrumb">
 		<li><router-link :to="{ path: '/' }">Главная</router-link></li>
 		<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
@@ -38,7 +38,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</q-page>
 </template>
 
 

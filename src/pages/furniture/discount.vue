@@ -1,5 +1,5 @@
 <template>
-<div class="AppContent">
+<q-page class="AppContent">
 	<div class="oneDiscountWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -62,6 +62,7 @@
 		</q-tabs>
 
 		<furniture-models-wrap
+			class="AppContent__inner"
 			:current="discount_filters.MODEL"
 			:loading="discount_loadingModels"
 			:models="discount_models"
@@ -116,7 +117,7 @@
 			</div>
 		</furniture-models-wrap>
 	</div>
-</div>
+</q-page>
 </template>
 
 

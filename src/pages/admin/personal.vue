@@ -1,22 +1,15 @@
 <template>
-<div class="AppContent" v-if="auth_can(1, 'Manager')">
+<q-page class="AppContent" v-if="auth_can(1, 'Manager')">
 	<div class="onePersonalWrapper" v-if="isOne" v-loading="personal_loadingOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Администрирование</router-link></li>
-			<li><router-link :to="{ path: `/admin/personal` }">Персонал</router-link></li>
-			<li><router-link :to="{ path: `/admin/personal/${personal_current.id}` }">{{ personal_current.FIO }}</router-link></li>
-		</ul>
+		<div class="cards AppContent__inner">
+			<manager-profile-card :content="personal_current"/>
 
-		<div class="cards">
-			<user-profile-card :content="personal_current"/>
-
-			<user-roles-card v-if="auth_can(1, 'RoleSetup')" />
+			<manager-roles-card v-if="auth_can(1, 'RoleSetup')" />
 		</div>
 	</div>
 
 	<div class="manyPersoalWrapper" v-if="!isOne">
-		<q-card class="manyPersoalWrapper__card">
+		<q-card class="manyPersoalWrapper__card AppContent__inner">
 			<tabless
 				key="personal"
 				:data="personal_cached"
@@ -31,7 +24,7 @@
 			/>
 		</q-card>
 	</div>
-</div>
+</q-page>
 </template>
 
 <script>
@@ -45,8 +38,8 @@ import mixins from '@/mixins'
 import tabless from '@/components/tableSSNew'
 import InfiniteLoading from 'vue-infinite-loading'
 import fieldDesription from '@/static/fieldDescription'
-import userProfileCard from '@/components/userProfileCard.vue'
-import userRolesCard from '@/components/userRolesCard.vue'
+import ManagerProfileCard from '@/components/ManagerProfileCard'
+import ManagerRolesCard from '@/components/ManagerRolesCard'
 import { QCard } from 'quasar'
 
 let {
@@ -58,8 +51,8 @@ export default {
 	components: {
 		InfiniteLoading,
 		tabless,
-		userProfileCard,
-		userRolesCard,
+		ManagerProfileCard,
+		ManagerRolesCard,
 		QCard
 	},
 	data() {

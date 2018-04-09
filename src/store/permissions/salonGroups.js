@@ -29,9 +29,7 @@ const actions = {
 	async salonGroups_createGroup ({ commit, dispatch, state }) {
 		if (!state.add.group)
 			return dispatch('alert', 'Имя новой группы не может быть пустым')
-		let res = await api.permissions.createGroup({
-			name: state.add.group
-		})
+		let res = await api.permissions.createGroup(state.add.group)
 
 		if (!res.data || res.data.error) return
 

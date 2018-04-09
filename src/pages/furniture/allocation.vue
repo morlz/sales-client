@@ -1,5 +1,5 @@
 <template>
-<div class="allocation">
+<q-page class="allocation">
 	<div class="allocation__layout">
 		<q-toolbar color="orange" v-ga="'h'">
 			<q-toolbar-title @click="p">Тест</q-toolbar-title>
@@ -51,7 +51,7 @@
 			</q-card>
 		</transition>
 	</div>
-</div>
+</q-page>
 </template>
 
 <script>

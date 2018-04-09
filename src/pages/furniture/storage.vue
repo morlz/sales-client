@@ -1,5 +1,5 @@
 <template>
-<div class="AppContent">
+<q-page class="AppContent">
 	<div class="oneStorageWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -57,6 +57,7 @@
 		</q-tabs>
 
 		<furniture-models-wrap
+			class="AppContent__inner"
 			:current="storage_filters.MODEL"
 			:loading="storage_loadingModels"
 			:models="storage_models"
@@ -101,7 +102,7 @@
 			</q-card>
 		</furniture-models-wrap>
 	</div>
-</div>
+</q-page>
 </template>
 
 

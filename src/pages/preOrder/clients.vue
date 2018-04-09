@@ -1,24 +1,17 @@
 <template>
-	<div class="AppContent" v-if="auth_can(1, 'Client')">
+	<q-page class="AppContent" v-if="auth_can(1, 'Client')">
 		<div class="oneClientWrapper" v-if="isOne">
-			<ul class="breadcrumb">
-				<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-				<li><router-link :to="{ path: `/preorder/clients` }">Список клиентов</router-link></li>
-				<li><router-link :to="{ path: `/preorder/clients/${client_current.id}` }">{{ client_currentFIO }}</router-link></li>
-			</ul>
+			<div class="cards AppContent__inner" v-loading="client_loadingOne">
+				<info-card-client :content="client_current" v-if="auth_can(1, 'Client')"/>
+				<info-card-contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/>
+				<info-card-tasks :content="client_current.tasks" v-if="auth_can(1, 'Task')"/>
+				<info-card-preorders :content="client_current.preorders" v-if="auth_can(1, 'Preorder')"/>
 
-
-			<div class="cards" v-loading="client_loadingOne">
-				<client-info :content="client_current" v-if="auth_can(1, 'Client')"/>
-				<contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/>
-				<tasks :content="client_current.tasks" v-if="auth_can(1, 'Task')"/>
-				<preorders :content="client_current.preorders" v-if="auth_can(1, 'Preorder')"/>
-
-				<el-card class="orders">
-					<div slot="header">
-						<h2>Заказы</h2>
-					</div>
-				</el-card>
+				<q-card class="orders">
+					<q-card-title>
+						Заказы
+					</q-card-title>
+				</q-card>
 			</div>
 		</div>
 
@@ -36,7 +29,7 @@
 				</q-field>
 			</div>
 
-			<q-card class="manyClientsWrapper__card">
+			<q-card class="manyClientsWrapper__card AppContent__inner">
 				<tabless
 					key="clientsinf"
 					:data="client_cached"
@@ -51,7 +44,7 @@
 				/>
 			</q-card>
 		</div>
-	</div>
+	</q-page>
 </template>
 
 
@@ -64,13 +57,13 @@ let {
 } = fieldDescription
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import tabless from '@/components/tableSSNew.vue'
-import lightTable from '@/components/lightTable.vue'
+import tabless from '@/components/tableSSNew'
+import lightTable from '@/components/lightTable'
 
-import clientInfo from '@/components/preorder/clientInfo.vue'
-import contactFaces from '@/components/preorder/contactFaces.vue'
-import tasks from '@/components/preorder/tasks.vue'
-import preorders from '@/components/preorder/preorders.vue'
+import InfoCardClient from '@/components/InfoCardClient'
+import InfoCardContactFaces from '@/components/InfoCardContactFaces'
+import InfoCardTasks from '@/components/InfoCardTasks'
+import InfoCardPreorders from '@/components/InfoCardPreorders'
 
 
 import mixins from '@/mixins'
@@ -93,10 +86,10 @@ export default {
 		tabless,
 		lightTable,
 		InfiniteLoading,
-		clientInfo,
-		contactFaces,
-		tasks,
-		preorders,
+		InfoCardClient,
+		InfoCardContactFaces,
+		InfoCardTasks,
+		InfoCardPreorders,
 		QField,
 		QInput,
 		QCard

@@ -5,69 +5,68 @@
 			<q-card-title>Конфигурация</q-card-title>
 
 			<q-card-main class="mainForm">
-				<el-form label-position="top">
-					<el-steps direction="vertical" :active="furniture_new_active.currentStep" finish-status="success">
-						<el-step title="Модель">
-							<el-form-item slot="description">
-								<el-select v-model="model" :disabled="furniture_new_active.model" filterable v-loading="furniture_new_loading.models">
-									<el-option v-for="item, index in furniture_new_cached.models" :value="item.ITEMID" :label="item.ITEMNAME" :key="index" />
-								</el-select>
-							</el-form-item>
-						</el-step>
+				<q-timeline class="newFurnitureForm__timeline">
+					<q-timeline-entry title="Модель">
+						<q-select
+							v-model="model"
+							:disable="furniture_new_active.model"
+							filter
+							v-loading="furniture_new_loading.models"
+							:options="models"
+							float-label="Модель"
+						/>
+					</q-timeline-entry>
 
-						<el-step title="Тип">
-							<el-form-item slot="description">
-								<el-select
-									v-model="type"
-									v-loading="furniture_new_loading.types"
-									v-if="!furniture_new_freeTrim"
-									:disabled="furniture_new_active.type">
+					<q-timeline-entry title="Тип">
+						<q-select
+							v-if="!furniture_new_freeTrim"
+							v-model="type"
+							:disable="furniture_new_active.type"
+							filter
+							v-loading="furniture_new_loading.type"
+							:options="types"
+							float-label="Тип"
+						/>
 
-									<el-option v-for="item, index in furniture_new_cached.types"
-										:value="item.CONFIGID"
-										:label="item.NAME.substr(0, 80)"
-										:key="index" />
+						<palermo-construct-form
+							v-if="furniture_new_freeTrim"
+							v-model="type"
+							v-loading="furniture_new_loading.types"
+							:disable="furniture_new_active.type"
+							:data="furniture_new_cached.types" />
+					</q-timeline-entry>
 
-								</el-select>
+					<q-timeline-entry title="Декор">
+						<q-select
+							v-model="dekor"
+							:disable="furniture_new_active.dekor"
+							filter
+							v-loading="furniture_new_loading.dekor"
+							:options="dekors"
+							float-label="Декор"
+						/>
+					</q-timeline-entry>
 
-								<palermo-construct-form
-									v-model="type"
-									v-loading="furniture_new_loading.types"
-									v-if="furniture_new_freeTrim"
-									:disabled="furniture_new_active.type"
-									:data="furniture_new_cached.types" />
 
-							</el-form-item>
-						</el-step>
-						<el-step title="Декор">
-							<el-form-item slot="description">
-								<el-select v-model="dekor" :disabled="furniture_new_active.dekor" v-loading="furniture_new_loading.dekor">
-									<el-option v-for="item, index in furniture_new_cached.dekor" :value="item.CONFIGID" :label="item.CONFIGID" :key="index" />
-								</el-select>
-							</el-form-item>
-						</el-step>
-						<el-step title="Ткани">
-							<el-form-item slot="description">
-								<div class="cloth">
-									<cloth-select-form v-model="cloth0" :index="0" :disabled="furniture_new_active.cloth[0]" />
-									<cloth-select-form v-model="cloth1" :index="1" :disabled="furniture_new_active.cloth[1]" />
-									<cloth-select-form v-model="cloth2" :index="2" :disabled="furniture_new_active.cloth[2]" />
-								</div>
-							</el-form-item>
-						</el-step>
-						<el-step title="Дополнительная информация" description="Примечание, количество и цена">
-							<div slot="description">
-								<el-form-item label="Примечание">
-									<el-input v-model="sign" type="textarea" :disabled="furniture_new_active.sign" placeholder="Формат ввода отреза x.y м., где x - метры, y - сантиметры" />
-								</el-form-item>
+					<q-timeline-entry title="Ткани">
+						<div class="cloth">
+							<cloth-select-form v-model="cloth0" :index="0" :disabled="furniture_new_active.cloth[0]" />
+							<cloth-select-form v-model="cloth1" :index="1" :disabled="furniture_new_active.cloth[1]" />
+							<cloth-select-form v-model="cloth2" :index="2" :disabled="furniture_new_active.cloth[2]" />
+						</div>
+					</q-timeline-entry>
 
-								<el-form-item label="Количество">
-									<el-input-number v-model.number="count" :disabled="furniture_new_active.count" />
-								</el-form-item>
-							</div>
-						</el-step>
-					</el-steps>
-				</el-form>
+					<q-timeline-entry title="Дополнительная информация">
+						<q-field helper="Формат ввода отреза x.y м., где x - метры, y - сантиметры">
+							<q-input v-model="sign" type="textarea" float-label="Примечание" :disable="furniture_new_active.sign"/>
+						</q-field>
+
+						<q-field>
+							<q-input v-model.number="count" float-label="Количество" :disable="furniture_new_active.count"/>
+						</q-field>
+					</q-timeline-entry>
+
+				</q-timeline>
 			</q-card-main>
 		</q-card>
 
@@ -118,7 +117,7 @@ import {
 import clothSelectForm from '@/components/forms/clothSelect.vue'
 import palermoConstructForm from '@/components/forms/palermoConstruct.vue'
 import gallery from '@/components/gallery.vue'
-import { QCard, QCardTitle, QCardMain, QCardActions, QBtn } from 'quasar'
+import { QCard, QCardTitle, QCardMain, QCardActions, QBtn, QTimeline, QTimelineEntry } from 'quasar'
 
 export default {
 	components: {
@@ -129,7 +128,9 @@ export default {
 		QCardTitle,
 		QCardMain,
 		QCardActions,
-		QBtn
+		QBtn,
+		QTimeline,
+		QTimelineEntry,
 	},
 	computed: {
 		...mapGetters([
@@ -187,7 +188,17 @@ export default {
 		edit: {
 			get () { return this.furniture_new_selected.edit },
 			set (n) { this.furniture_new_editSet(n) }
-		}
+		},
+
+		models () {
+			return this.furniture_new_cached.models.map(el => ({ value: el.ITEMID, label: el.ITEMNAME }))
+		},
+		types () {
+			return this.furniture_new_cached.types.map(el => ({ value: el.CONFIGID, label: el.NAME.substr(0, 80) }))
+		},
+		dekors () {
+			return this.furniture_new_cached.dekor.map(el => ({ value: el.CONFIGID, label: el.CONFIGID }))
+		},
 	},
 	methods: {
 		...mapActions([
@@ -221,6 +232,19 @@ export default {
 	color: #5a5e66;
 
 	.newFurnitureForm {
+		&__timeline {
+			.q-timeline {
+				&-dot {
+					left: 10px;
+				}
+				&-content {
+					width: 100%;
+				}
+			}
+		}
+
+
+
 		.el {
 			&-step {
 				&__description {

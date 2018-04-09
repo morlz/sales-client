@@ -26,7 +26,7 @@ const actions = {
 			rolesSetup: state.cached.currentRolesSetup
 		})
 
-		if (!res.data || rs.data.error) return
+		if (!res.data || res.data.error) return
 		dispatch("notify", { title: "Успешно", message: "Роли сохранены" })
 	},
 	async personal_init ({ commit, dispatch }, payload) {

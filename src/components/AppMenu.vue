@@ -43,13 +43,15 @@ export default {
 			return this.onlyCan({
 				childs: this.nav_items,
 				name: "Меню",
-				icon: this.nav_open.left ? 'menu' : 'el-icon-back',
-				click: this.app_view_mobile ? e => !this.nav_openLeftSet(false) : e => this.nav_namesShowSet(!this.nav_namesShow)
+				icon: this.nav_open || this.app_view_desktop ? 'fa-bars' : 'fa-arrow-left',
+				click: this.app_view_mobile ?
+					e => !this.nav_openLeftSet(false)
+				:	e => this.nav_namesShowSet(!this.nav_namesShow)
 			})
 		},
 		menuStyles () {
 			return {
-				'pointer-events': !this.app_view_desktop && this.nav_open.left ? 'all': 'none'
+				'pointer-events': !this.app_view_desktop && this.nav_open ? 'all': 'none'
 			}
 		}
 	},

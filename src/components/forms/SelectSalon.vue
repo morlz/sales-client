@@ -22,8 +22,10 @@
 				</q-field>
 
 				<q-list class="selectSalonForm__list" no-border>
-					<q-item v-for="item, index in salonsListFiltred" :key="index" @click="clickHandler(item.ID_SALONA)">
-						<q-item-main>{{ item.NAME }}</q-item-main>
+					<q-item v-for="item, index in salonsListFiltred" :key="index" @click.native="clickHandler(item.ID_SALONA)">
+						<q-item-main>
+							{{ item.NAME }}
+						</q-item-main>
 					</q-item>
 				</q-list>
 			</div>

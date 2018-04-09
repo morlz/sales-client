@@ -1,5 +1,5 @@
 <template>
-<div class="AppContent">
+<q-page class="AppContent">
 	<div class="oneShipmentWrapper" v-if="isOne">
 		<ul class="breadcrumb">
 			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
@@ -40,7 +40,7 @@
 	</div>
 
 	<div class="manyShipmntsWrapper" v-if="!isOne">
-		<div 
+		<div
 			class="manyShipmntsWrapper__horGroup AppContent__headerTabs"
 			:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 			<q-field class="manyShipmntsWrapper__salon">
@@ -48,7 +48,7 @@
 			</q-field>
 		</div>
 
-		<q-card class="manyShipmntsWrapper__card">
+		<q-card class="manyShipmntsWrapper__card AppContent__inner">
 			<tabless
 				key="shipments"
 				:data="shipment_cached"
@@ -63,7 +63,7 @@
 			/>
 		</q-card>
 	</div>
-</div>
+</q-page>
 </template>
 
 

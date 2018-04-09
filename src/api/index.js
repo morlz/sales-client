@@ -38,5 +38,6 @@ export default {
 	cart,
 	images,
 	errors,
-	reports
+	reports,
+	print
 }

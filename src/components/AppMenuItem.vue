@@ -377,7 +377,7 @@ export default {
 	width: @menuItem-width;
 	cursor: pointer;
 	user-select: none;
-
+	padding: 0;
 
 	&:hover {
 		> .menuItem {
@@ -404,6 +404,8 @@ export default {
 		pointer-events: all;
 		i {
 			pointer-events: none;
+			width: 50px;
+			background-repeat: no-repeat;
 		}
 	}
 

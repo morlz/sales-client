@@ -9,7 +9,7 @@
 		</q-item-side>
 
 		<q-item-main>
-			<q-item-tile @click="salonGroups_selectItem({ type: 'salons', id: item.ID_SALONA})" class="permissionsSalon__name">
+			<q-item-tile @click.native="salonGroups_selectItem({ type: 'salons', id: item.ID_SALONA})" class="permissionsSalon__name">
 				{{ item.NAME }}
 			</q-item-tile>
 		</q-item-main>
