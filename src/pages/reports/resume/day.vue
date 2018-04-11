@@ -1,6 +1,6 @@
 <template>
 <div>
-
+	123
 </div>
 </template>
 
@@ -40,6 +40,6 @@ export default {
 </script>
 
 
-<style lang="stylus">
+<style lang="less">
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div class="appWrapper">
+<div class="AppWrapper">
 	<q-ajax-bar :delay="200"/>
 	<q-window-resize-observable @resize="app_view_resize" />
 
@@ -8,9 +8,9 @@
 			view="lhh Lpr lff"
 			v-if="logined"
 			ref="layout"
-			class="app"
+			class="AppWrapper__layout"
 		>
-			<q-layout-header :class="{ 'app__headerNoShadow' : !app_layout_headerShadow }">
+			<q-layout-header :class="{ 'AppWrapper__headerNoShadow' : !app_layout_headerShadow }">
 				<app-header/>
 			</q-layout-header>
 
@@ -21,7 +21,7 @@
 				<app-menu/>
 			</q-layout-drawer>
 
-			<q-page-container class="app__content">
+			<q-page-container class="AppWrapper__container">
 				<router-view />
 			</q-page-container>
 		</q-layout>
@@ -126,18 +126,20 @@ export default {
 }
 
 
-.appWrapper {
-    height: 100%;
-    .app {
-		&__content {
-			height: 100%;
-			overflow: auto;
-		}
+.AppWrapper {
+    height: 100vh;
 
-		&__headerNoShadow {
-			box-shadow: none;
-		}
-    }
+	&__layout {
+
+	}
+
+	&__container {
+
+	}
+
+	&__headerNoShadow {
+		box-shadow: none;
+	}
 
 	.layout-page-container {
 		height: calc(100% ~"-" 50px);

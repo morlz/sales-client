@@ -64,7 +64,7 @@ const mutations = {
 }
 
 const getters = {
-	salon_list: state => state.cached.list.sort(api.core.sortFnFactory(salon => salon.NAME, true)),
+	salon_list: state => state.cached.list.sort(api.core.sortFnFactory(salon => salon.NAME, true)).filter(el => el.ID_SALONA != '999'),
 	salon_listWithAll: (state, getters) => [ { NAME: "Все салоны" }, ...getters.salon_list ],
 	salon_list_discount: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 10),
 	salon_list_furniture: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10),

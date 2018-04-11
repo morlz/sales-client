@@ -56,5 +56,6 @@ export default {
 
 
 <style lang="stylus">
-
+.ReportsWrapper
+	height calc(100vh - 120px)
 </style>

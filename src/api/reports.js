@@ -19,4 +19,13 @@ export default {
 			params
 		})
 	},
+	async getResume (params) {
+		params = core.prepareArrays(params)
+
+		return core.invoke({
+			method: 'get',
+			type: 'report/resume',
+			params
+		})
+	}
 }

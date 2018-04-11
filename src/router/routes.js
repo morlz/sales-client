@@ -37,8 +37,10 @@ export default [
 			{ path: '/reports/salesTwo/', 			component: () => import ('pages/reports/salesTwo'), 			meta: { name: "Отчёт 2" } },
 			{ path: '/reports/resume/', 			component: () => import ('pages/reports/resume/index'), 		meta: { name: "Итоги" },
 				children: [
-					{ path: '', 					component: () => import ('pages/reports/resume/all'), 			meta: { name: "Лучшие салоны" } },
-					{ path: 'best', 				component: () => import ('pages/reports/resume/best'), 			meta: { name: "Лучшие салоны" } },
+					{ path: '', 					component: () => import ('pages/reports/resume/all'), 			meta: { name: "Итоги всех салонов" } },
+					{ path: 'salon/:id/:date?', 	component: () => import ('pages/reports/resume/salon'), 		meta: { name: "Итоги салона" } },
+					{ path: 'day/:date',			component: () => import ('pages/reports/resume/day'), 			meta: { name: "Итоги дня" } },
+					{ path: 'best/:day?', 			component: () => import ('pages/reports/resume/best'), 			meta: { name: "Лучшие салоны" } },
 				]
 			}
 		]
