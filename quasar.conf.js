@@ -23,7 +23,8 @@ module.exports = function(ctx) {
 			'ElementUI',
 			'routerSync',
 			'FastGridArea',
-			'VueGoogleMaps'
+			'VueGoogleMaps',
+			'moment'
 		],
 		css: [
 			'app.styl',
@@ -102,7 +103,13 @@ module.exports = function(ctx) {
 				'QCardTitle',
 				'QSelect',
 				'QInput',
-				'QField'
+				'QField',
+				'QInnerLoading',
+				'QSpinnerBall',
+				'QTabs',
+				'QTab',
+				'QTabPane',
+				'QTooltip'
 			],
 			directives: [
 				'Ripple'
@@ -111,7 +118,8 @@ module.exports = function(ctx) {
 			plugins: [
 				'Notify',
 				'LocalStorage'
-			]
+			],
+			i18n: 'ru'
 		},
 		// animations: 'all' --- includes all animations
 		animations: [

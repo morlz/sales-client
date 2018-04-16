@@ -15,8 +15,10 @@ const state = {
 }
 
 const actions = {
-	async reports_salesTwo_init ({ commit, dispatch, rootGetters }) {
-		commit('reports_salesTwo_salonSet', rootGetters.auth_currentSalon.ID_SALONA)
+	async reports_salesTwo_init ({ commit, dispatch, rootGetters }, setSalon = true) {
+		if (setSalon)
+			commit('reports_salesTwo_salonSet', rootGetters.auth_currentSalon.ID_SALONA)
+
 		await Promise.all([
 			dispatch('salon_getList', null, { root: true }),
 			dispatch('reports_salesTwo_getData')

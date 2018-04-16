@@ -1,31 +1,40 @@
 <template>
 <div class="ReportResumeAll" ref="scroller">
+	<div class="ReportResumeAll__filters">
+		<datetime class="ReportResumeAll__filter-date" v-model="month" default-view="month" float-label="Выберите год и месяц (день не имеет значения)"/>
+
+		<div>
+			Продажи за {{ currentWeekText }} (по товарным чекам), тыс. рублей
+		</div>
+	</div>
+
 	<div
 		class="ReportResumeAll__row"
 		v-for="salon, index in reports_resume_cached"
 		:key="salon.id || (1e4 + index)"
 		:style="rowStyle"
-		@mouseenter="report_resume_hoverSet({ type: 'row', data: index })"
-		:class="{
-			'ReportResumeAll__title' : salon.title,
-			'ReportResumeAll__row_hover': reports_resume_hover.row == index,
-			'ReportResumeAll__row_sort': reports_resume_currentSortSalon.index + 1 == index && reports_resume_currentSortMonth.index == -1
-		}"
+		:class="{ 'ReportResumeAll__title' : salon.title }"
 		ref="rows"
 	>
-		<div class="ReportResumeAll__salonName" @click="report_resume_sortSalonSet(salon.id)">
-
-			<q-input value="" @input="report_resume_salonNameFilterSet" float-label="Поиск по салону или группе" v-if="salon.title"/>
+		<div class="ReportResumeAll__salonName">
+			<div class="ReportResumeAll__salonNameHeader" v-if="salon.title" @click="reports_resume_sortSet({ type: 'salon', index: 1 })">
+				<q-input value="" @input="reports_resume_salonNameFilterSet" float-label="Поиск по салону или группе" />
+				<q-icon :name="!sortDirection ? 'arrow_upward' : 'arrow_downward'" class="cursor-pointer">
+					<q-tooltip>
+						 {{ !sortDirection ? 'Сортировать по алфавиту' : 'Сортировать по обратному алфавиту' }}
+					</q-tooltip>
+				</q-icon>
+			</div>
 
 			<template v-else>
-				<report-resume-salon
-					:value="salon.name"
-					:sort="reports_resume_currentSortSalon.index + 1 == index && reports_resume_currentSortMonth.index == -1"
-					:show-arrow="reports_resume_hover.row == index || reports_resume_currentSortSalon.index + 1 == index && reports_resume_currentSortMonth.index == -1"
-					:sort-direction="reports_resume_currentSortSalon.direction"
-					:no-link="salon.itog"
-					:salon="+salon.id"
-				/>
+				<div
+					class="ReportResumeAll__salonName-text"
+					@click="goToDay(salon.id, -1)"
+					:style="{
+						fontWeight: salon.best ? 'bold' : 'normal'
+					}">
+					{{ salon.name }}
+				</div>
 			</template>
 		</div>
 
@@ -33,28 +42,33 @@
 			class="ReportResumeAll__item"
 			v-for="item, iIndex in salon.months"
 			:key="iIndex"
-			@click="checkMonthClick(iIndex, index)"
-			@mouseenter="report_resume_hoverSet({ type: 'column', data: iIndex })"
-			:class="{
-				'ReportResumeAll__item_hover': reports_resume_hover.column == iIndex,
-				'ReportResumeAll__item_sort': reports_resume_currentSortMonth.index == iIndex
-			}"
+			@click="reports_resume_sortSet({ type: 'month', index: iIndex + 1 })"
+			:class="{ 'ReportResumeAll__item_sort': sortByMonth && sortIndex === iIndex }"
 		>
 			<report-resume-month
 				v-if="salon.title"
 				:value="item"
-				:sort="reports_resume_currentSortMonth.index == iIndex"
-				:show-arrow="reports_resume_hover.column == iIndex || reports_resume_currentSortMonth.index == iIndex"
-				:sort-direction="reports_resume_currentSortMonth.direction"
-				:no-link="reports_resume_currentSortSalon.direction ? iIndex + 1 == salon.months.length : !iIndex"
+				sort
+				show-arrow
+				:sort-direction="sortDirection"
+				:no-link="iIndex + 1 == salon.months.length"
 				:date="reports_resume_currentDate"
 			/>
 
-			<div v-else @click="goToDay(salon.id, iIndex, salon.footer)" :title="getTitle(reports_resume_currentDate, iIndex, salon.footer)">
-				{{ item }}
+			<div
+				v-else
+				@click="goToDay(salon.id, iIndex, salon.footer)"
+				:title="getTitle(reports_resume_currentDate, iIndex, salon.footer)"
+				:style="{
+					opacity: money(item) === '0.00' ? '0.3' : 1,
+					fontWeight: salon.best && iIndex + 1 == salon.months.length ? 'bold' : 'normal'
+				}">
+				{{ item | money }}
 			</div>
 		</div>
 	</div>
+
+	<loading :value="loading"/>
 </div>
 </template>
 
@@ -65,93 +79,122 @@ import {
 	mapMutations,
 	mapState
 } from 'vuex'
-
+import Datetime from '@/components/Datetime'
 import ReportResumeMonth from '@/components/ReportResumeMonth'
 import ReportResumeSalon from '@/components/ReportResumeSalon'
+import Loading from '@/components/Loading'
 import inViewport from 'in-viewport'
 import { tween, easing } from 'popmotion'
 import moment from 'moment'
+
+const money = item => ((+item / 1000).toFixed() + '')
+		.split('').reverse()
+		.reduce((prev, el, index) => index % 3 ? [...prev, el] : [...prev, ' ', el], [])
+		.reverse().join('').trim() + '.'
+		+ ((+item / 1000) % 1).toFixed(2).substr(2, 2)
 
 export default {
 	components: {
 		ReportResumeMonth,
 		ReportResumeSalon,
-	},
-	watch: {
-		reports_resume_currentSortSalon () {
-			let element = this.$refs.rows[this.reports_resume_currentSortSalon.index]
-			if (inViewport(element)) return
-
-			this.$nextTick(() => {
-				let from = this.$refs.scroller.scrollTop,
-					to = element.offsetTop - this.$refs.scroller.offsetHeight / 2
-
-				tween({ from, to, ease: easing.easeInOut, duration: 500 })
-					.start(v => this.$refs.scroller.scrollTop = v)
-			})
-		}
+		Datetime,
+		Loading
 	},
 	computed: {
+		...mapState ('reports/resume', {
+			loading: state => state.loading.all,
+			sortIndex: state => Math.abs(state.sort.index) - 1,
+			sortDirection: state => !(state.sort.index < 0),
+			sortByMonth: state => state.sort.type === 'month'
+		}),
 		...mapGetters('reports/resume', [
 			'reports_resume_cached',
-			'reports_resume_hover',
-			'reports_resume_currentSortSalon',
-			'reports_resume_currentSortMonth',
 			'reports_resume_currentDate',
 			'reports_resume_currentMonthLength'
 		]),
 		rowStyle () {
 			return {
-				gridTemplateColumns: `300px repeat(${this.reports_resume_currentMonthLength + 1}, 50px)`
+				gridTemplateColumns: `250px	repeat(${this.reports_resume_currentMonthLength}, minmax(50px, 1fr)) 100px`
 			}
+		},
+		month: {
+			get () {
+				return this.$store.state.reports.resume.date.format('YYYY-MM-DD')
+			},
+			set (n) {
+				this.$store.dispatch('reports/resume/reports_resume_dateSet', n)
+			}
+		},
+		currentWeekText () {
+			return moment(this.reports_resume_currentDate).locale('ru').format('MMMM YYYY')
 		}
 	},
 	methods: {
+		money,
 		...mapActions('reports/resume', [
-			'report_resume_all_init',
-			'report_resume_all_destroy'
+			'reports_resume_all_init',
+			'reports_resume_all_destroy'
 		]),
 		...mapMutations('reports/resume', [
-			'report_resume_sortMonthSet',
-			'report_resume_sortSalonSet',
-			'report_resume_salonNameFilterSet',
-			'report_resume_hoverSet'
+			'reports_resume_sortSet',
+			'reports_resume_salonNameFilterSet'
+		]),
+		...mapMutations('reports/salesTwo', [
+			'reports_salesTwo_dateFromSet',
+			'reports_salesTwo_dateToSet',
+			'reports_salesTwo_salonSet'
 		]),
 		checkMonthClick (item, index) {
 			if (index) return
-			this.report_resume_sortMonthSet(item + 1)
+			this.reports_resume_sortMonthSet(item + 1)
 		},
 		goToDay (salon, day, footer = false) {
 			let date = moment(this.reports_resume_currentDate)
-			date.set('day', day)
-			if (footer)
-				return router.push(`/reports/resume/day/${date.format('Y-M-D')}`)
-
-			if (!day && !this.reports_resume_currentSortSalon.direction || day == this.reports_resume_currentMonthLength && this.reports_resume_currentSortSalon.direction)
-				return router.push(`/reports/resume/salon/${salon}`)
-
-			router.push(`/reports/resume/salon/${salon}/${date.format('Y-M-D')}`)
-		},
-		getTitle (date, day, footer = false) {
-			//if (this.reports_resume_currentSortSalon.direction ^ (!day || day == ))
-			let formated = (day && day < 10 ? '0' + day : day) + moment(date).format('-MM-YYYY')
-
+			date.set('date', day + 1)
 			if (footer) {
 				if (day == this.reports_resume_currentMonthLength) return
+				return router.push(`/reports/resume/day/${date.format('YYYY-MM-DD')}`)
+			}
+
+			this.reports_salesTwo_salonSet(salon)
+
+			let isDay = !(day === this.reports_resume_currentMonthLength || day === -1)
+
+			date.set('date', isDay ? day + 1 : 1)
+
+			if (!isDay)
+				date.add(2, 'month')
+
+			this.reports_salesTwo_dateToSet(date.add(1, 'day').format('YYYY-MM-DD'))
+			if (!isDay)
+				date.subtract(1, 'day')
+			this.reports_salesTwo_dateFromSet(date.subtract(1, isDay ? 'day' : 'month').format('YYYY-MM-DD'))
+			this.$router.push({ path: '/reports/salesTwo', props: { salon: true }})
+		},
+		getTitle (date, day, footer = false) {
+			day++
+
+			let formated = moment(date).set('date', day).format('YYYY-MM-DD')
+
+			if (footer) {
+				if (day - 1 == this.reports_resume_currentMonthLength) return
 				return `Перейти к всему дню ${formated}`
 			}
 
-			if (!day && !this.reports_resume_currentSortSalon.direction || day == this.reports_resume_currentMonthLength && this.reports_resume_currentSortSalon.direction)
+			if (day == this.reports_resume_currentMonthLength + 1 || day == 0)
 				return `Перейти к салону`
 
 			return 'Перейти к ' + formated
 		}
 	},
+	filters: {
+		money
+	},
 	created () {
-		this.report_resume_all_init()
+		this.reports_resume_all_init()
 	},
 	destroyed () {
-		this.report_resume_all_destroy()
+		this.reports_resume_all_destroy()
 	}
 }
 </script>
@@ -171,15 +214,26 @@ $background-color-sort = #eee
 	align-content start
 	transform translateZ(0)
 	font-size 12px
+	position relative
+
+	&__filters
+		display grid
+		justify-content start
+		grid-template-columns 300px 1fr
+		align-items center
+		grid-gap 10px
 
 	&__row
 		display grid
 		grid-gap 5px
 		align-items center
 		transition background .15s ease-in-out
+		&:hover
+			background $background-color-hover
 
 		&_hover
 			background $background-color-hover
+
 		&_sort
 			background $background-color-sort
 
@@ -191,15 +245,28 @@ $background-color-sort = #eee
 		padding 5px
 		user-select none
 
+		&-text
+			cursor pointer
+
 	&__item
 		border-bottom 1px solid #eee
 		padding 4px
-		text-align center
+		text-align right
 		white-space nowrap
 		cursor pointer
+
 		&_hover
 			background $background-color-hover
+
 		&_sort
 			background $background-color-sort
+
+	&__filter-date
+		width 300px
+
+	&__salonNameHeader
+		display grid
+		align-items start
+		grid-template-columns 1fr 30px
 
 </style>

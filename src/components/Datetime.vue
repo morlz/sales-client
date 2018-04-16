@@ -19,7 +19,7 @@ import {
 import { QDatetime } from 'quasar'
 
 export default {
-	props: ['value'],
+	props: ['value', 'defaultView', 'floatLabel'],
 	components: {
 		QDatetime
 	},

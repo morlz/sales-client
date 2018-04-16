@@ -38,7 +38,6 @@
 			</div>
 		</q-card>
 	</div>
-
 </q-page>
 </template>
 
@@ -66,6 +65,9 @@ export default {
 		QIcon,
 		TableCollapsible,
 		SalesTwoTable
+	},
+	params: {
+		salon: Boolean
 	},
 	data() {
 		return {
@@ -162,7 +164,7 @@ export default {
 		}
 	},
 	async mounted () {
-		await this.reports_salesTwo_init()
+		await this.reports_salesTwo_init(!this.salon)
 	},
 	beforeDestroy () {
 		this.reports_salesTwo_destroy()

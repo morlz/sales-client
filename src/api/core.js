@@ -101,16 +101,38 @@ class Core extends EventEmitter {
 		}
 	}
 
+	sortFnFactorySpecial (field, revert = false) {
+		return (a, b) => {
+			if ((a && typeof a.__sort === 'string') || (b && typeof b.__sort === 'string')) {
+				console.log(a, b);
+				if (a.__sort === b.__sort) return 0
+				if (a.__sort === 'start') return -1
+				if (b.__sort === 'start') return 1
+				if (a.__sort === 'end') return 1
+				if (b.__sort === 'end') return -1
+			}
+
+			if (typeof field == 'function') {
+				if (field(a) > field(b)) return revert ? 1 : -1
+				if (field(a) < field(b)) return revert ? -1 : 1
+			}
+			if (a[field] > b[field]) return revert ? 1 : -1
+			if (a[field] < b[field]) return revert ? -1 : 1
+			return 0
+		}
+	}
+
 	get apiPath () {
 		return process.env.NODE_ENV == 'development' ? `web` : `nsl/web`
 	}
 }
 
 const core = new Core()
-const { sortFnFactory } = core
+const { sortFnFactory, sortFnFactorySpecial } = core
 
 export default core
 export {
 	sortFnFactory,
+	sortFnFactorySpecial,
 	_wait
 }

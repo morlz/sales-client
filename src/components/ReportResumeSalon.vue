@@ -35,8 +35,7 @@ export default {
 	methods: {
 		goToDay () {
 			if (this.noLink) return
-			let date = moment(this.date)
-			router.push(`/reports/resume/salon/${this.salon}`)
+			router.push(`/reports/resume/salon/${this.salon}/${moment(this.date).format('Y-M')}`)
 		}
 	}
 }
