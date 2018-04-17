@@ -15,10 +15,10 @@ import {
 import {} from 'quasar'
 
 export default {
-	props: {
+	components: {
 
 	},
-	components: {
+	props: {
 
 	},
 	data() {

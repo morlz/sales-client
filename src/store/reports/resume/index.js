@@ -3,7 +3,7 @@ import moment from 'moment'
 import sortWithRotate from '@/lib/sortWithRotate'
 import groupBy from 'lodash.groupby'
 import ResumeSalon from '@/lib/reports/ResumeSalon'
-import salon from './salon'
+import allChart from './allChart'
 
 
 const state = {
@@ -109,7 +109,7 @@ const getters = {
 }
 
 const modules = {
-	salon
+	allChart
 }
 
 export default {

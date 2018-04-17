@@ -142,7 +142,7 @@ export default {
 	}
 
 	.layout-page-container {
-		height: calc(100% ~"-" 50px);
+		height: ~"calc(100% - 50px)";
 	}
 }
 

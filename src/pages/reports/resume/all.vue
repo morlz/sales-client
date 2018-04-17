@@ -86,12 +86,8 @@ import Loading from '@/components/Loading'
 import inViewport from 'in-viewport'
 import { tween, easing } from 'popmotion'
 import moment from 'moment'
+import money from '@/filters/MoneyThousand'
 
-const money = item => ((+item / 1000).toFixed() + '')
-		.split('').reverse()
-		.reduce((prev, el, index) => index % 3 ? [...prev, el] : [...prev, ' ', el], [])
-		.reverse().join('').trim() + '.'
-		+ ((+item / 1000) % 1).toFixed(2).substr(2, 2)
 
 export default {
 	components: {

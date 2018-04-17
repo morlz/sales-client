@@ -30,7 +30,7 @@ export default {
 			currentTab: "all",
 			tabs: [
 				{ name: "Все салоны", 				type: "all", 		to: '/reports/resume' },
-				{ name: "Лучшие салоны", 			type: "best",  		to: '/reports/resume/best'},
+				{ name: "Продажи за всё время",		type: "byMonth",  	to: '/reports/resume/month'},
 			],
 		}
 	},
