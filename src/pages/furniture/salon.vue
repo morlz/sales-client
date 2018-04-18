@@ -1,69 +1,49 @@
 <template>
 <q-page class="AppContent">
-	<div class="oneFurnitureWrapper" v-if="isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/salon' }">В салоне</router-link></li>
-			<li><router-link :to="{ path: `/furniture/salon/${furniture_current.ID}` }">{{ furniture_current.ID }}</router-link></li>
-		</ul>
+	<div class="FurnitureSofa AppContent__inner" v-if="isOne">
+		<q-card>
+			<q-card-title>
+				Основная информация
+			</q-card-title>
 
-		<div class="cards" v-loading="furniture_loadingOne">
-			<el-card class="card">
-				<div class="title" slot="header">
-					<h2>Основная информация</h2>
-				</div>
+			<q-card-main class="FurnitureSofa__main">
+				<q-list v-for="list, listIndex in one.lists" :key="listIndex">
+					<template v-if="list.label">
+						<q-list-header>
+							{{ list.label }}
+						</q-list-header>
 
-				<div class="infoGrid">
-					<div>Модель</div>
-					<div>{{ furniture_current.MODEL }}</div>
-					<div>Салон</div>
-					<div>{{ currentSalonName.NAME }}</div>
-					<div>Фаб.н.</div>
-					<div>{{ furniture_current.UN }}</div>
-					<div>М.хр.</div>
-					<div>{{ furniture_current.mXR }}</div>
-					<div>Тип</div>
-					<div>{{ furniture_current.TIP }}</div>
-					<div>Исп.</div>
-					<div>{{ furniture_current.ISP }}</div>
-					<div>Дней на складе</div>
-					<div>{{ furniture_current.DATE_VX }}</div>
-					<div>Ткань 1</div>
-					<div>{{ furniture_current.cOSNOVA }}</div>
-					<div>Ткань 2</div>
-					<div>{{ furniture_current.cKOMP }}</div>
-					<div>Ткань 3</div>
-					<div>{{ furniture_current.cKOMP2 }}</div>
-					<div>Примечание</div>
-					<div>{{ furniture_current.COMMENT }}</div>
-					<div>Категория</div>
-					<div>{{ furniture_current.KAT }}</div>
-					<div>Декор</div>
-					<div>{{ furniture_current.DEKOR }}</div>
-					<div>Стежка</div>
-					<div>{{ furniture_current.stegka }}</div>
-					<div>Состояние</div>
-					<div>{{ furniture_current.Sostoynie }}</div>
-					<div>Цена</div>
-					<div>{{ furniture_current.CENA }} руб.</div>
-					<div>Цена модели опт</div>
-					<div>{{ furniture_current.ModelPriceOpt }} руб.</div>
-					<div>Цена модели розн</div>
-					<div>{{ furniture_current.ModelPriceR }} руб.</div>
-					<div class="lc">Цена (зал)</div>
-					<div class="lc">{{ furniture_current.CENA_ZAL }} руб.</div>
-				</div>
+						<q-item-separator/>
+					</template>
 
-				<div class="buttons">
-					<q-btn color="primary" @click="furniture_addToCart(furniture_current)">Добавить в корзину</q-btn>
-				</div>
-			</el-card>
-		</div>
+					<q-item v-for="row, rowIndex in list.items" :key="rowIndex">
+						<q-item-main>
+							{{ row.label }}
+						</q-item-main>
+
+						<q-item-side right>
+							<template v-if="row.component">
+								<div :is="row.component" v-bind="row.props()"/>
+							</template>
+
+							<template v-else>
+								{{ (row.filter ? row.filter : el => el) ( getContentByPath(row.source) ) }}
+							</template>
+						</q-item-side>
+					</q-item>
+				</q-list>
+			</q-card-main>
+
+			<q-card-actions>
+				<q-btn color="primary" @click="furniture_addToCart(furniture_current)">Добавить в корзину</q-btn>
+			</q-card-actions>
+		</q-card>
+
+		<loading :value="furniture_loadingOne"/>
 	</div>
 
 
-	<div class="manyFurnitureWrapper" v-if="!isOne">
+	<div class="FurnitureSalon" v-if="!isOne">
 		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 		</q-tabs>
@@ -78,12 +58,12 @@
 			<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
 			<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
 
-			<q-card class="manyFurnitureWrapper__card">
+			<q-card class="FurnitureSalon__items">
 				<tabless
 					key="salon"
 					:data="furniture_cached"
 					:complete="furniture_complete"
-					:field-description="furnitureSalonFieldDescriptionFiltred"
+					:field-description="FurnitureSalon"
 					:filters="furniture_filters"
 					:select-fields="local_furniture_selectFields"
 					:selectable="currentTab == 'new'"
@@ -142,40 +122,32 @@ import mixins from '@/mixins'
 import tabless from '@/components/tableSSNew'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
-import InfiniteLoading from 'vue-infinite-loading'
-import fieldDesription from '@/static/fieldDescription'
+import { FurnitureSalon } from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
 import SelectPlaceForm from '@/components/forms/SelectPlace'
 import SelectSalonForm from '@/components/forms/SelectSalon'
+import SinleItemPageMixin from '@/mixins/SingleItemPage'
+import PreviewSalon from '@/components/PreviewSalon'
+import money from '@/filters/Money'
+import Loading from '@/components/Loading'
 
-import { QTabs, QTab, QBtn, QIcon, QCard, QCardMain } from 'quasar'
-
-let {
-	furnitureSalonFieldDescription
-} = fieldDesription
 
 
 
 export default {
 	components: {
 		tabless,
-		InfiniteLoading,
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
-		QTabs,
-		QTab,
-		QBtn,
 		PreviewCloth,
-		QIcon,
 		SelectPlaceForm,
-		QCard,
-		QCardMain,
-		SelectSalonForm
+		SelectSalonForm,
+		Loading
 	},
-	mixins: [mixins],
+	mixins: [mixins, SinleItemPageMixin],
 	data() {
 		return {
-			furnitureSalonFieldDescription,
+			FurnitureSalon,
 			currentTab: 'storage',
 			lastFurnituresFilters: {},
 			tabs: [
@@ -185,7 +157,62 @@ export default {
 			],
 			selectPlaceModal: false,
 			selectSalonModal: false,
-			selected: {}
+			selected: {},
+			one: {
+				lists: {
+					info: {
+						items: [
+							{ label: 'Фабричный номер', source: 'furniture_current.UN' },
+							{ label: 'Модель', source: 'furniture_current.MODEL' },
+							{ label: 'Тип', source: 'furniture_current.TIP' },
+							{ label: 'Исполнение', source: 'furniture_current.ISP' },
+							{ label: 'Категория', source: 'furniture_current.KAT' },
+							{ label: 'Декор', source: 'furniture_current.DEKOR' },
+							{ label: 'Стежка', source: 'furniture_current.Vid_stegki' },
+						]
+					},
+					storage: {
+						label: 'Информация о складе',
+						items: [
+							{
+								label: 'Местоположение',
+								component: PreviewSalon,
+								props: () => ({ content: this.getContentByPath('furniture_current.td.salon') || {} })
+							},
+							{ label: 'Место хранения', source: 'furniture_current.mXR.NAME' },
+							{
+								label: 'Прибытие на слкад',
+								source: 'furniture_current.DATE_VX',
+								filter: el => this.$moment(el).fromNow() + ` (${this.$moment().diff(this.$moment(el), 'days')} дн.)`
+							},
+						]
+					},
+					cloth: {
+						label: 'Ткани',
+						items: [
+							{ label: 'Ткань 1', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.cloth1') || {} }) },
+							{ label: 'Ткань 2', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.cloth2') || {} }) },
+							{ label: 'Ткань 3', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.cloth3') || {} }) },
+						]
+					},
+					sost: {
+						label: 'Состояние',
+						items: [
+							{ label: 'Примечание', source: 'furniture_current.COMMENT' },
+							{ label: 'Состояние', source: 'furniture_current.Sostoynie' },
+						]
+					},
+					price: {
+						label: 'Цены',
+						items: [
+							{ label: 'Цена', source: 'furniture_current.CENA', filter: el => money(el) + ' руб.' },
+							{ label: 'Цена модели опт', source: 'furniture_current.ModelPriceOpt', filter: el => money(el) + ' руб.' },
+							{ label: 'Цена модели розн', source: 'furniture_current.ModelPriceR', filter: el => money(el) + ' руб.' },
+							{ label: 'Цена зал', source: 'furniture_current.CENA_ZAL', filter: el => money(el) + ' руб.' },
+						]
+					}
+				}
+			}
 		}
 	},
 	watch: {
@@ -193,6 +220,8 @@ export default {
 			await this.furniture_filtersChange (Object.assign({}, this.lastFurnituresFilters, n))
 		},
 		oneId (n) {
+			this.app_layout_headerShadowSet(!!n)
+
 			if (n != undefined)
 				this.furniture_getOne(n)
 		},
@@ -225,9 +254,6 @@ export default {
 		},
 		additionalFilters () {
 			return { type: this.currentTab }
-		},
-		currentSalonName () {
-			return this.salon_list_furniture.find(salon => salon.id == this.furniture_current.ID_SALONA) || {}
 		},
 		local_furniture_selectFields () {
 			let rez = []
@@ -293,7 +319,7 @@ export default {
 		},
 	},
 	async mounted () {
-		this.app_layout_headerShadowSet(false)
+		this.app_layout_headerShadowSet(!!this.oneId)
 		await this.furniture_init(this.oneId)
 		this.lastFurnituresFilters = this.furniture_filters
 	},
@@ -306,41 +332,17 @@ export default {
 
 
 
-<style lang="less">
-	.oneFurnitureWrapper {
-		.el-main {
-			padding: 0;
-		}
-		.buttons {
-			margin: 0 0 10px 0;
-		}
-		.cards {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-		}
+<style lang="stylus">
+.FurnitureSalon
+	&__items
+		width 100%
+		height calc(100vh - 120px)
 
-		&__discount {
-			font-weight: bold;
-			color: red;
-			display: grid;
-			s {
-				font-size: 70%;
-			}
-		}
-	}
-	.manyFurnitureWrapper {
-		width: 100%;
-		height: 100%;
 
-		&__card {
-			height: ~"calc(100vh - 115px)";
-		}
-	}
-	@media screen and (max-width: 1250px) {
-		.oneFurnitureWrapper {
-			.cards {
-				grid-template-columns: 1fr;
-			}
-		}
-	}
+.FurnitureSofa
+	&__main
+		position relative
+		display grid
+		grid-gap 10px
+
 </style>

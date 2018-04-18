@@ -38,7 +38,7 @@
 					key="invoices"
 					:data="invoice_cached"
 					:complete="invoice_complete"
-					:field-description="invoicesFieldDescriptionFiltred"
+					:field-description="DocsInvoicesFiltred"
 					:filters="invoice_filters"
 					ref="table"
 					@filter="local_invoice_filtersChange"
@@ -54,43 +54,15 @@
 
 
 <script>
-
-/*			<el-breadcrumb separator="/" class="bc">
-				<el-breadcrumb-item :to="{ path: '/' }">Главная</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: '/' }">Документы</el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ path: `/docs/${type}` }">{{ type == 'invoices' ? 'Выставеные счета' : 'Перемещения' }}</el-breadcrumb-item>
-			</el-breadcrumb>*/
-
-
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import tabless from '@/components/tableSSNew.vue'
-import InfoCardClient from '@/components/InfoCardClient.vue'
-import InfoCardInvoice from '@/components/InfoCardInvoice.vue'
-import InfoCardZakTd from '@/components/InfoCardZakTd.vue'
-import InfoCardShipments from '@/components/InfoCardShipments.vue'
-import InfoCardInvoiceAdditional from '@/components/InfoCardInvoiceAdditional.vue'
-import fieldDesription from '@/static/fieldDescription'
-import InfiniteLoading from 'vue-infinite-loading'
+import tabless from '@/components/tableSSNew'
+import InfoCardClient from '@/components/InfoCardClient'
+import InfoCardInvoice from '@/components/InfoCardInvoice'
+import InfoCardZakTd from '@/components/InfoCardZakTd'
+import InfoCardShipments from '@/components/InfoCardShipments'
+import InfoCardInvoiceAdditional from '@/components/InfoCardInvoiceAdditional'
+import { DocsInvoices } from '@/static/fieldDescription'
 import mixins from '@/mixins'
-
-import {
-	QTabs,
-	QTab,
-	QCard,
-	QCardTitle,
-	QCardMain,
-	QList,
-	QItem,
-	QItemMain,
-	QItemSide,
-	QSelect,
-	QField
-} from 'quasar'
-
-let {
-	invoicesFieldDescription
-} = fieldDesription
-
 
 export default {
 	props: {
@@ -98,7 +70,7 @@ export default {
 	},
 	data () {
 		return {
-			invoicesFieldDescription,
+			DocsInvoices,
 			currentTab: '',
 			lastInvoicesFilters: {},
 			tabs: [
@@ -112,19 +84,7 @@ export default {
 	},
 	mixins: [mixins],
 	components: {
-		QTabs,
-		QTab,
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QList,
-		QItem,
-		QItemMain,
-		QItemSide,
-		QSelect,
-		QField,
 		tabless,
-		InfiniteLoading,
 		InfoCardClient,
 		InfoCardInvoice,
 		InfoCardZakTd,
@@ -134,11 +94,6 @@ export default {
 	watch: {
 		async additionalFilters (n) {
 			await this.invoice_filtersChange (Object.assign({}, this.lastInvoicesFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-			})
 		},
 		oneId () {
 			if (this.oneId !== undefined)
@@ -182,10 +137,10 @@ export default {
 		local_salon_list () {
 			return this.salon_listWithAll.map( el => ({ label: el.NAME, value: el.ID_SALONA }) )
 		},
-		invoicesFieldDescriptionFiltred () {
+		DocsInvoicesFiltred () {
 			if (this.local_currentSalon)
-				return this.invoicesFieldDescription.filter(el => el.field != 'storage.NAME')
-			return this.invoicesFieldDescription
+				return this.DocsInvoices.filter(el => el.field != 'storage.NAME')
+			return this.DocsInvoices
 		}
 	},
 	methods: {
@@ -204,26 +159,14 @@ export default {
 		async local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n
 			await this.invoice_filtersChange (Object.assign({}, this.additionalFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async local_invoice_sortChange (n) {
 			await this.invoice_sortChange (n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		}
 	},
 	async mounted () {
 		this.app_layout_headerShadowSet(false)
 		await this.invoice_init(this.oneId || { page: this.type })
-		if (this.$refs.infiniteLoading)
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	},
 	beforeDestrou () {
 		this.app_layout_headerShadowSet(true)

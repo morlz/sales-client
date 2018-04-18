@@ -1,42 +1,41 @@
 <template>
 <q-page class="AppContent">
-	<div class="oneShipmentWrapper" v-if="isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Документы</router-link></li>
-			<li><router-link :to="{ path: `/docs/shipments` }">Доставки</router-link></li>
-			<li><router-link :to="{ path: `/docs/shipments/${shipment_current.ID_OTG}` }">Счёт {{ shipment_current.ID_OTG }}</router-link></li>
-		</ul>
+	<div class="DocsShipment AppContent__inner" v-if="isOne">
+		<q-card>
+			<q-card-title>
+				Основная информация
+			</q-card-title>
 
-		<div class="cards" v-loading="shipment_loadingOne">
-			<el-card class="card">
-				<div class="title" slot="header">
-					<h2>Основная информация</h2>
-				</div>
+			<q-card-main class="FurnitureSofa__main">
+				<q-list v-for="list, listIndex in one.lists" :key="listIndex">
+					<template v-if="list.label">
+						<q-list-header>
+							{{ list.label }}
+						</q-list-header>
 
-				<div class="infoGrid">
-					<div>Номер документа</div>
-					<div>{{ shipment_current.N_DOC }}</div>
-					<div>Дата ввода</div>
-					<div>{{ shipment_current.DATEV }}</div>
-					<div>Оплата доставки</div>
-					<div>{{ shipment_current.PL_OTGR }}</div>
-					<div>Вид</div>
-					<div>{{ shipment_current.VIDDOST }}</div>
-					<div>Примечание</div>
-					<div></div>
-					<div>В работе</div>
-					<div>{{ shipment_current.DATEWORK }}</div>
-					<div class="lc">Склад</div>
-					<div class="lc">{{ shipment_current.NAME }}</div>
-				</div>
+						<q-item-separator/>
+					</template>
 
-				<div class="buttons">
+					<q-item v-for="row, rowIndex in list.items" :key="rowIndex">
+						<q-item-main>
+							{{ row.label }}
+						</q-item-main>
 
-				</div>
-			</el-card>
-		</div>
+						<q-item-side right>
+							<template v-if="row.component">
+								<div :is="row.component" v-bind="row.props()"/>
+							</template>
 
+							<template v-else>
+								{{ (row.filter ? row.filter : el => el) ( getContentByPath(row.source) ) }}
+							</template>
+						</q-item-side>
+					</q-item>
+				</q-list>
+			</q-card-main>
+		</q-card>
+
+		<loading :value="shipment_loadingOne"/>
 	</div>
 
 	<div class="manyShipmntsWrapper" v-if="!isOne">
@@ -53,7 +52,7 @@
 				key="shipments"
 				:data="shipment_cached"
 				:complete="shipment_complete"
-				:field-description="shipmentsFieldDescriptionFiltred"
+				:field-description="DocsShipmentsFiltred"
 				:filters="shipment_filters"
 				ref="table"
 				@filter="local_shipment_filterChange"
@@ -74,30 +73,22 @@ import {
 	mapActions,
 	mapMutations
 } from 'vuex'
-import tabless from '@/components/tableSSNew.vue'
-import fieldDesription from '@/static/fieldDescription'
-import InfiniteLoading from 'vue-infinite-loading'
+import tabless from '@/components/tableSSNew'
+import { DocsShipments } from '@/static/fieldDescription'
 import mixins from '@/mixins'
-
-import { QSelect, QField, QCard } from 'quasar'
-
-let {
-	shipmentsFieldDescription
-} = fieldDesription
+import SinleItemPageMixin from '@/mixins/SingleItemPage'
+import Loading from '@/components/Loading'
 
 
 export default {
-	mixins: [mixins],
+	mixins: [mixins, SinleItemPageMixin],
 	components: {
 		tabless,
-		InfiniteLoading,
-		QSelect,
-		QField,
-		QCard
+		Loading
 	},
 	data() {
 		return {
-			shipmentsFieldDescription,
+			DocsShipments,
 			lastShipmentsFilters: {},
 
 			datePickerOptions: {
@@ -126,19 +117,33 @@ export default {
 						picker.$emit('pick', [start, end]);
 					}
 				}]
+			},
+
+			one: {
+				lists: {
+					info: {
+						label: '',
+						items: [
+							{ label: 'Номер документа', source: 'shipment_current.N_DOC' },
+							{ label: 'Дата ввода', source: 'shipment_current.DATEV' },
+							{ label: 'Оплата доставки', source: 'shipment_current.PL_OTGR' },
+							{ label: 'Вид', source: 'shipment_current.VIDDOST' },
+							{ label: 'В работе', source: 'shipment_current.DATEWORK' },
+							{ label: 'Склад', source: 'shipment_current.NAME' },
+							{ label: 'Адрес', source: 'shipment_current.KUDA' },
+						]
+					}
+				}
 			}
 		}
 	},
 	watch: {
 		async additionalFilters(n) {
 			await this.shipment_filtersChange(Object.assign({}, this.lastShipmentsFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-			})
 		},
 		oneId() {
+			this.app_layout_headerShadowSet(!!this.oneId)
+
 			if (this.oneId !== undefined)
 				this.shipment_getOne(this.oneId)
 		}
@@ -175,10 +180,10 @@ export default {
 		local_salon_list () {
 			return this.salon_listWithAll.map( el => ({ label: el.NAME, value: el.ID_SALONA }) )
 		},
-		shipmentsFieldDescriptionFiltred () {
+		DocsShipmentsFiltred () {
 			if (this.local_currentSalon)
-				return this.shipmentsFieldDescription.filter(el => el.field != 'salon.NAME')
-			return this.shipmentsFieldDescription
+				return this.DocsShipments.filter(el => el.field != 'salon.NAME')
+			return this.DocsShipments
 		}
 	},
 	methods: {
@@ -197,26 +202,14 @@ export default {
 		async local_shipment_filterChange(n) {
 			this.lastShipmentsFilters = n
 			await this.shipment_filtersChange(Object.assign({}, this.additionalFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async local_shipment_sortChange(n) {
 			await this.shipment_sortChange(n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		}
 	},
 	async mounted() {
-		this.app_layout_headerShadowSet(false)
+		this.app_layout_headerShadowSet(!!this.oneId)
 		await this.shipment_init(this.oneId)
-		if (this.$refs.infiniteLoading)
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	},
 	beforeDestroy() {
 		this.app_layout_headerShadowSet(true)
@@ -254,20 +247,6 @@ export default {
 
 	&__card {
 		height: ~"calc(100vh - 120px)";
-	}
-}
-
-.oneShipmentWrapper {
-	.cards {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-	}
-}
-@media screen and (max-width: 1250px) {
-	.oneShipmentWrapper {
-		.cards {
-			grid-template-columns: 1fr;
-		}
 	}
 }
 </style>

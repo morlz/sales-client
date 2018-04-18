@@ -1,61 +1,6 @@
 <template>
 <q-page class="AppContent">
-	<div class="oneDiscountWrapper" v-if="isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: '/' }">Мебель</router-link></li>
-			<li><router-link :to="{ path: '/furniture/discount' }">Дисконт</router-link></li>
-			<li><router-link :to="{ path: `/furniture/discount/${discount_current.UN}` }">{{ discount_current.UN }}</router-link></li>
-		</ul>
-
-		<div class="cards" v-loading="discount_loadingOne">
-			<el-card class="card">
-				<div class="title" slot="header">
-					<h2>Основная информация</h2>
-				</div>
-
-				<div class="infoGrid">
-					<div>Уч. №</div>
-					<div>{{ discount_current.UCH_N }}</div>
-					<div>Фаб.н.</div>
-					<div>{{ discount_current.UN }}</div>
-					<div>Склад</div>
-					<div>{{ discount_current.mXR }}</div>
-					<div>Тип</div>
-					<div>{{ discount_current.TIP }}</div>
-					<div>Исп.</div>
-					<div>{{ discount_current.ISP }}</div>
-					<div>Дней на складе</div>
-					<div>{{ discount_current.DATE_VX }}</div>
-					<div>Ткань 1</div>
-					<div>{{ discount_current.TKAN }}</div>
-					<div>Ткань 2</div>
-					<div>{{ discount_current.cKOMP }}</div>
-					<div>Ткань 3</div>
-					<div>{{ discount_current.cKOMP1 }}</div>
-					<div>Кат</div>
-					<div>{{ discount_current.KAT }}</div>
-					<div>Примечание</div>
-					<div>{{ discount_current.COMMENT }}</div>
-					<div>Декор</div>
-					<div>{{ discount_current.DEKOR }}</div>
-					<div>Стежка</div>
-					<div>{{ discount_current.stegka }}</div>
-					<div>Цена руб.</div>
-					<div>{{ discount_current.CENA_ZAL }}</div>
-					<div class="lc">Цех</div>
-					<div class="lc">{{ discount_current.DATE_CEX }}</div>
-				</div>
-
-				<div class="buttons">
-					<q-btn color="primary" @click="discount_addToCart(discount_current)">Добавить в корзину</q-btn>
-				</div>
-			</el-card>
-		</div>
-	</div>
-
-
-	<div class="manyDiscountWrapper" v-if="!isOne">
+	<div class="FurnitureDiscount">
 		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 			<q-tab name="table" label="Таблица" slot="title"/>
 			<q-tab name="tile" label="Плитки" slot="title"/>
@@ -68,18 +13,18 @@
 			:models="discount_models"
 			@select="local_discount_filtersModelSet">
 
-			<q-card v-if="currentTab == 'table'" class="manyDiscountWrapper__card">
+			<q-card v-if="currentTab == 'table'" class="FurnitureDiscount__items">
 				<tabless
 					key="discount"
 					:data="discount_cached"
 					:complete="discount_complete"
-					:field-description="discountFieldDescriptionFilred"
+					:field-description="FurnitureDiscountFilred"
 					:filters="discount_filters"
 					:select-fields="local_discount_selectFields"
 					ref="table"
 					@filter="local_discount_filterChange"
 					@sort="local_discount_sortChange"
-					@click="routerGoId"
+					@click="rowClickHandler"
 					@select="local_discount_handleFieldSelect"
 					@infinite="discount_infinity"
 				>
@@ -129,35 +74,21 @@ import tabless from '@/components/tableSSNew'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
-import InfiniteLoading from 'vue-infinite-loading'
-import fieldDesription from '@/static/fieldDescription'
+import { FurnitureDiscount } from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
-import { QTabs, QTab, QTabPane, QBtn, QIcon, QCard } from 'quasar'
-let {
-	discountFieldDescription
-} = fieldDesription
-
-
 
 export default {
 	components: {
 		tabless,
 		discountTileView,
-		InfiniteLoading,
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
-		QTabs,
-		QTab,
-		QTabPane,
-		QBtn,
 		PreviewCloth,
-		QIcon,
-		QCard
 	},
 	mixins: [mixins],
 	data() {
 		return {
-			discountFieldDescription,
+			FurnitureDiscount,
 			lastDiscountFilters: {},
 			lastDiscountSort: {},
 			currentTab: 'table'
@@ -166,19 +97,9 @@ export default {
 	watch: {
 		async additionalFilters (n) {
 			await this.discount_filtersChange (Object.assign({}, this.lastDiscountFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async additionalSort (n) {
 			await this.discount_sortChange (Object.assign({}, n, this.lastDiscountSort))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		oneId (n) {
 			if (n != undefined)
@@ -214,10 +135,10 @@ export default {
 
 			return Object.assign({}, obj2)
 		},
-		discountFieldDescriptionFilred () {
+		FurnitureDiscountFilred () {
 			if (this.main_auth_settings.showModels)
-				return this.discountFieldDescription.filter(el => el.field != 'MODEL')
-			return this.discountFieldDescription
+				return this.FurnitureDiscount.filter(el => el.field != 'MODEL')
+			return this.FurnitureDiscount
 		},
 		local_discount_selectFields () {
 			let rez = []
@@ -247,20 +168,10 @@ export default {
 		async local_discount_filterChange (n) {
 			this.lastDiscountFilters = n
 			await this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async local_discount_sortChange (n) {
 			this.lastDiscountSort = n
 			await this.discount_sortChange (Object.assign({}, n, this.additionalSort))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		local_discount_handleFieldSelect (data) {
 			if (data.field != 'td.salon.NAME') return
@@ -271,10 +182,13 @@ export default {
 			let filters = { ...this.discount_filters, MODEL }
 			this.local_discount_filterChange(filters)
 		},
+		rowClickHandler (e, item) {
+			this.$router.push(`/furniture/salon/${item.UN}`)
+		}
 	},
 	mounted () {
 		this.app_layout_headerShadowSet(false)
-		this.discount_init(this.oneId)
+		this.discount_init()
 	},
 	beforeDestrou () {
 		this.app_layout_headerShadowSet(true)
@@ -285,33 +199,9 @@ export default {
 
 
 
-<style lang="less">
-	.oneDiscountWrapper {
-		.el-main {
-			padding: 0;
-		}
-		.buttons {
-			margin: 0 0 10px 0;
-		}
-		.cards {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-		}
-	}
-
-	.manyDiscountWrapper {
-		width: 100%;
-		height: 100%;
-
-		&__card {
-			height: ~"calc(100vh - 115px)";
-		}
-	}
-	@media screen and (max-width: 1250px) {
-		.oneDiscountWrapper {
-			.cards {
-				grid-template-columns: 1fr;
-			}
-		}
-	}
+<style lang="stylus">
+.FurnitureDiscount
+	&__items
+		width 100%
+		height calc(100vh - 120px)
 </style>

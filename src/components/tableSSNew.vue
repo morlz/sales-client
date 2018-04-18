@@ -1,62 +1,60 @@
 <template>
 	<div class="tableSS">
-		<q-slide-transition>
-			<div v-show="showHeader" class="tableSS__header">
-				<div class="tableSS__actions" :class="{ 'tableSS__actions-selected' : selectedCount }">
-					<div class="tableSS__selectedCount" v-if="selectedCount">Выбрано {{ selectedCount }} шт.</div>
-					<div class="tableSS__rowsCount" v-else>{{ rows.length }} строк.</div>
-					<slot name="selected" :selected="selected" :count="selectedCount"/>
+		<div :style="headerStyle" class="tableSS__header">
+			<div class="tableSS__actions" :class="{ 'tableSS__actions-selected' : selectedCount }">
+				<div class="tableSS__selectedCount" v-if="selectedCount">Выбрано {{ selectedCount }} шт.</div>
+				<div class="tableSS__rowsCount" v-else>{{ rows.length }} строк.</div>
+				<slot name="selected" :selected="selected" :count="selectedCount"/>
+			</div>
+
+			<div class="tableSS__head" :style="rowStyle">
+				<div v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</div>
+
+				<q-checkbox v-model="selectAll" v-if="selectable" class="tableSS__checkbox"/>
+
+				<div
+					class="tableSS__item-head"
+					v-for="column, index in columns"
+					@click="thClick(column, index)"
+					ref="ths">
+					<i :class="sortableIconClass(column, index)" />
+					{{ column.label }}
 				</div>
 
-				<div class="tableSS__head" :style="rowStyle">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber">№</div>
-
-					<q-checkbox v-model="selectAll" v-if="selectable" class="tableSS__checkbox"/>
-
-					<div
-						class="tableSS__item-head"
-						v-for="column, index in columns"
-						@click="thClick(column, index)"
-						ref="ths">
-						<i :class="sortableIconClass(column, index)" />
-						{{ column.label }}
-					</div>
-
-					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
-						<slot name="buttons"/>
-					</div>
-				</div>
-
-				<div class="tableSS__search" :style="rowStyle">
-					<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
-
-					<div v-if="selectable" class="tableSS__checkbox"/>
-
-					<div class="tableSS__item-search" v-for="column, index in columnsSearchFields">
-						<slot name="search">
-							<q-input
-								v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
-								:key="index"
-								v-if="column.type == 'search'"
-								:disabled="column.search === false"/>
-
-							<q-select
-								v-if="column.type == 'select'"
-								v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
-								:key="index"
-								:filter="column.filterable"
-								:options="formatSelectOptions(column)"
-								@change="selectChange($event, column)"
-							/>
-						</slot>
-					</div>
-
-					<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
-						<slot name="buttons"/>
-					</div>
+				<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
+					<slot name="buttons"/>
 				</div>
 			</div>
-		</q-slide-transition>
+
+			<div class="tableSS__search" :style="rowStyle">
+				<div v-if="lineNumbers && !minify" class="tableSS__lineNumber"/>
+
+				<div v-if="selectable" class="tableSS__checkbox"/>
+
+				<div class="tableSS__item-search" v-for="column, index in columnsSearchFields">
+					<slot name="search">
+						<q-input
+							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
+							:key="index"
+							v-if="column.type == 'search'"
+							:disabled="column.search === false"/>
+
+						<q-select
+							v-if="column.type == 'select'"
+							v-model="search[column.fields && column.fields.output ? column.fields.output : column.field]"
+							:key="index"
+							:filter="column.filterable"
+							:options="formatSelectOptions(column)"
+							@change="selectChange($event, column)"
+						/>
+					</slot>
+				</div>
+
+				<div class="tableSS__item-head tableSS__item-buttons" v-if="$scopedSlots.buttons">
+					<slot name="buttons"/>
+				</div>
+			</div>
+		</div>
 
 		<tabless-clusterize :content="items" :item-height="itemHeight" class="tableSS__main" v-if="big" ref="main" :style="mainStyle" @mousewheel.native="scrollHandler">
 			<div
@@ -128,7 +126,7 @@
 
 					<q-checkbox :value="!!selected[index]" @input="changeSelectedRow($event, index)" v-if="selectable" class="tableSS__checkbox"/>
 
-					<div class="tableSS__item" v-for="column, index in columns">
+					<div class="tableSS__item" v-for="column, columnIndex in columns" :key="columnIndex">
 						{{ column.rowType }}
 						<slot :name="column.field" :row="item" :column="column">
 							<div v-if="column.type != 'array' && column.type != 'html'">{{ getFieldData(item, column.field, column.format) }}</div>
@@ -162,7 +160,7 @@
 				</template>
 			</div>
 
-			<infinite-loading slot="end" :distance="2000" @infinite="infiniteHandler" ref="infiniteLoading">
+			<infinite-loading slot="end" :distance="3000" @infinite="infiniteHandler" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<q-spinner-ball :size="50" slot="spinner" class="spinner"/>
@@ -187,6 +185,9 @@ import {
 
 export default {
 	props: {
+		k: {
+			type: String
+		},
 		data: {
 			type: Array,
 			default: a => []
@@ -309,6 +310,12 @@ export default {
 		},
 	},
 	computed: {
+		headerStyle () {
+			return {
+				transform: `translateY(${this.showHeader ? '0' : '-100%'})`,
+				marginTop: this.showHeader ? '0' : '-160px'
+			}
+		},
 		mainStyle () {
 			return {
 				height: `calc(100%${this.showHeader ? ' - 160px' : ''})`
@@ -571,13 +578,14 @@ export default {
 		overflow: hidden;
 		width: min-content;
 		min-width: 100%;
+		transition: all .3s ease-in-out
 	}
 
 	&__main {
 		overflow-x: hidden;
 		overflow-y: auto;
 		transition: height 0.3s ease-in-out;
-		transform: translateZ(0);
+		//transform: translateZ(0);
 		width: min-content;
 		min-width: 100%;
 	}

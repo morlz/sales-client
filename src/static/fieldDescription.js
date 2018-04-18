@@ -80,103 +80,6 @@ let dataObj = {
 		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
 	],
 
-	furnitureSalonFieldDescription: [
-		{ field: "td.lastPlace.invoice.N_DOC", label: "№ док.", width: 80 },
-		{ field: "td.salon.NAME", label: "Салон", width: 120},
-		{ field: "MODEL", label: "Модель", width: 100},
-		{ field: "td.TIP", label: "Тип", width: 150, inline: true },
-		{ field: "cloth1.NAME", label: "Ткань 1", width: 150, fields: { output: 'cloth1.NAME' } },
-		{ field: "cloth2.NAME", label: "Ткань 2", width: 150, fields: { output: 'cloth2.NAME' } },
-		{ field: "cloth3.NAME", label: "Ткань 3", width: 150, fields: { output: 'cloth3.NAME' } },
-		{ field: "KAT", label: "Кат", width: 30, },
-		{ field: "td.CENA_ZAL", label: "Цена руб.", width: 70, type: "html", format: {
-			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
-					`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
-				:	data
-		} },
-		{ field: "DEKOR", label: "Декор", width: 50 },
-		{ field: "Vid_stegki", label: "Стежка", width: 50 },
-		{ field: "td.DATE_VX", label: "Дни", width: 40, search: false, align: 'right', format: {
-			get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
-			set: data => undefined
-		} },
-		{ field: "UN", label: "Фаб.н.", width: 60 },
-	],
-
-	invoicesFieldDescription: [
-		{ field: "N_DOC", label: "Номер документа", width: 80 },
-		{ field: "DATE", label: "Дата оформления", inline: true, width: 100, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "shipments", type: 'array', width: 100, fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
-			get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "manager.fio", label: "Менеджер", width: 150, search: false },
-		{ field: "client.fio", label: "Клиент", width: 150, search: false },
-		{ field: "adSource.NAME", label: "Р. Ист.", width: 100 },
-		{ field: "storage.NAME", label: "Салон", width: 150 },
-	],
-
-	shipmentsFieldDescription: [
-		{ field: "invoice.N_DOC", label: "№ Док", width: 80 },
-		{ field: "DATEV", label: "Дата ввода", inline: true, width: 120, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "PL_OTGR", label: "Оплата доставки", inline: true, width: 120, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "VIDDOST", label: "Вид", width: 100 },
-		{ field: "", label: "Примечание", width: 200 },
-		{ field: "DATEWORK", label: "В работе", inline: true, width: 120, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "salon.NAME", label: "Склад", width: 150 },
-	],
-
-	storageFieldDescription: [
-		{ field: "UN", label: "Фаб. №", width: 60 },
-		{ field: "MODEL", label: "Модель", width: 100 },
-		{ field: "td.mestoXR.NAME", label: "Место. хр.", width: 100 },
-		{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
-		{ field: "cloth1.NAME", label: "Ткань 1", width: 150 },
-		{ field: "cloth2.NAME", label: "Ткань 2", width: 150 },
-		{ field: "cloth3.NAME", label: "Ткань 3", width: 150 },
-		{ field: "KAT", label: "Кат.", width: 60 },
-		{ field: "td.ModelPriceR", label: "Цена (р)", width: 60 },
-		{ field: "COMMENT", label: "Примечание", width: 350 },
-		{ field: "DEKOR", label: "Декор", width: 80 },
-		{ field: "Vid_stegki", label: "Стежка", width: 80 },
-		{ field: "NAKC", label: "Акция", width: 50 },
-		{ field: "td.Sostoynie", label: "Сост.", width: 100 },
-		{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "invoice.N_DOC", label: "Номер заказа", width: 50 },
-	],
-
-	discountFieldDescription: [
-		{ field: "td.mestoXR.NAME", label: "Склад", width: 100 },
-		{ field: "UN", label: "Фаб.н.", width: 60 },
-		{ field: "td.salon.NAME", label: "Салон", width: 100 },
-		{ field: "MODEL", label: "Модель", width: 100 },
-		{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
-		{ field: "cloth1.NAME", label: "Ткань 1", width: 120 },
-		{ field: "cloth2.NAME", label: "Ткань 2", width: 120 },
-		{ field: "cloth3.NAME", label: "Ткань 3", width: 120 },
-		{ field: "KAT", label: "Кат.", width: 50 },
-		//{ field: "COMMENT", label: "Примечание" },
-		{ field: "DEKOR", label: "Декор", width: 80 },
-		{ field: "Vid_stegki", label: "Стежка", width: 80 },
-		{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", width: 100, format: {
-			get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
-					`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
-				:	data
-		} },
-		{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-	],
-
 	lvls: [
 		"Нет доступа",
 		"Чтение",
@@ -213,3 +116,109 @@ let dataObj = {
 
 
 export default dataObj
+
+export let FurnitureSalon = [
+	{ field: "td.lastPlace.invoice.N_DOC", label: "№ док.", width: 80 },
+	{ field: "td.salon.NAME", label: "Салон", width: 120},
+	{ field: "MODEL", label: "Модель", width: 100},
+	{ field: "td.TIP", label: "Тип", width: 150, inline: true },
+	{ field: "cloth1.NAME", label: "Ткань 1", width: 150, fields: { output: 'cloth1.NAME' } },
+	{ field: "cloth2.NAME", label: "Ткань 2", width: 150, fields: { output: 'cloth2.NAME' } },
+	{ field: "cloth3.NAME", label: "Ткань 3", width: 150, fields: { output: 'cloth3.NAME' } },
+	{ field: "KAT", label: "Кат", width: 30, },
+	{ field: "td.CENA_ZAL", label: "Цена руб.", width: 70, type: "html", format: {
+		get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
+				`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
+			:	data
+	} },
+	{ field: "DEKOR", label: "Декор", width: 50 },
+	{ field: "Vid_stegki", label: "Стежка", width: 50 },
+	{ field: "td.DATE_VX", label: "Дни", width: 40, search: false, align: 'right', format: {
+		get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
+		set: data => undefined
+	} },
+	{ field: "UN", label: "Фаб.н.", width: 60 },
+]
+
+
+export let FurnitureStorage = [
+	{ field: "UN", label: "Фаб. №", width: 60 },
+	{ field: "MODEL", label: "Модель", width: 100 },
+	{ field: "td.mestoXR.NAME", label: "Место. хр.", width: 100 },
+	{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
+	{ field: "cloth1.NAME", label: "Ткань 1", width: 150 },
+	{ field: "cloth2.NAME", label: "Ткань 2", width: 150 },
+	{ field: "cloth3.NAME", label: "Ткань 3", width: 150 },
+	{ field: "KAT", label: "Кат.", width: 60 },
+	{ field: "td.ModelPriceR", label: "Цена (р)", width: 60 },
+	{ field: "COMMENT", label: "Примечание", width: 350 },
+	{ field: "DEKOR", label: "Декор", width: 80 },
+	{ field: "Vid_stegki", label: "Стежка", width: 80 },
+	{ field: "NAKC", label: "Акция", width: 50 },
+	{ field: "td.Sostoynie", label: "Сост.", width: 100 },
+	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "invoice.N_DOC", label: "Номер заказа", width: 50 },
+]
+
+export let FurnitureDiscount = [
+	{ field: "td.mestoXR.NAME", label: "Склад", width: 100 },
+	{ field: "UN", label: "Фаб.н.", width: 60 },
+	{ field: "td.salon.NAME", label: "Салон", width: 100 },
+	{ field: "MODEL", label: "Модель", width: 100 },
+	{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
+	{ field: "cloth1.NAME", label: "Ткань 1", width: 120 },
+	{ field: "cloth2.NAME", label: "Ткань 2", width: 120 },
+	{ field: "cloth3.NAME", label: "Ткань 3", width: 120 },
+	{ field: "KAT", label: "Кат.", width: 50 },
+	//{ field: "COMMENT", label: "Примечание" },
+	{ field: "DEKOR", label: "Декор", width: 80 },
+	{ field: "Vid_stegki", label: "Стежка", width: 80 },
+	{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", width: 100, format: {
+		get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
+				`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
+			:	data
+	} },
+	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+]
+
+export let DocsShipments = [
+	{ field: "invoice.N_DOC", label: "№ Док", width: 80 },
+	{ field: "DATEV", label: "Дата ввода", inline: true, width: 120, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "PL_OTGR", label: "Оплата доставки", inline: true, width: 120, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "VIDDOST", label: "Вид", width: 100 },
+	{ field: "", label: "Примечание", width: 200 },
+	{ field: "DATEWORK", label: "В работе", inline: true, width: 120, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "salon.NAME", label: "Склад", width: 150 },
+]
+
+export let DocsInvoices = [
+	{ field: "N_DOC", label: "Номер документа", width: 80 },
+	{ field: "DATE", label: "Дата оформления", inline: true, width: 100, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "shipments", width: 100, type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+		get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "manager.fio", label: "Менеджер", width: 150, search: false },
+	{ field: "client.fio", label: "Клиент", width: 150, search: false },
+	{ field: "adSource.NAME", label: "Р. Ист.", width: 100 },
+	{ field: "storage.NAME", label: "Салон", width: 150 },
+]
+
+/*
+{ field: "shipments", width: 100, fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+	get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
+} },
+
+{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+*/

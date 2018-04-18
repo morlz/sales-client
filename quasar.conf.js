@@ -96,11 +96,13 @@ module.exports = function(ctx) {
 				'QItemMain',
 				'QItemSide',
 				'QItemTile',
+				'QItemSeparator',
 				'QCollapsible',
 				'QCard',
 				'QCardMain',
 				'QCardActions',
 				'QCardTitle',
+				'QCardSeparator',
 				'QSelect',
 				'QInput',
 				'QField',
@@ -109,7 +111,8 @@ module.exports = function(ctx) {
 				'QTabs',
 				'QTab',
 				'QTabPane',
-				'QTooltip'
+				'QTooltip',
+				'QPopover'
 			],
 			directives: [
 				'Ripple'

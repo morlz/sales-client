@@ -1,6 +1,6 @@
 <template>
 	<q-toolbar class="header">
-		<q-btn class="header__menuToggle" @click="nav_openToggle" v-if="!app_view_desktop" flat/>
+		<q-btn class="header__menuToggle" @click="nav_openToggle" v-if="!app_view_desktop" flat icon="menu"/>
 		<q-toolbar-title> {{ route.meta.name }}</q-toolbar-title>
 		<app-header-popup-salon class="header__popupSalon"/>
 		<app-header-popup-cart class="header__popupCart"/>
@@ -70,23 +70,16 @@ export default {
 
 
 
-<style lang="less">
+<style lang="stylus">
+.header
+	height 50px
+	display grid
+	align-items center
+	grid-template-columns max-content 1fr max-content max-content max-content
 
-.header {
-	display: grid;
-	grid-template-columns: max-content 1fr max-content max-content max-content;
+	&__popupProfile
+	&__popupCart
+	&__popupSalon
+		justify-self end
 
-	&__menuToggle {
-		&:before {
-			font-family: fontAwesome;
-            content: "\f0c9";
-            color: #f6f6f6;
-			font-size: 18px;
-        }
-	}
-
-	&__popupProfile, &__popupCart, &__popupSalon {
-		justify-self: end;
-	}
-}
 </style>

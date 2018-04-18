@@ -155,9 +155,9 @@ const actions = {
 
 const mutations = {
 	nav_openSet: (state, payload) => state.open = payload,
-	nav_openLeftSet: (state, payload) => state.open.left = payload,
+	nav_openLeftSet: (state, payload) => state.open = !state.open,
 	nav_namesShowSet: (state, payload) => state.names.show = payload,
-	nav_openToggle: state => state.open.left = !state.open.left,
+	nav_openToggle: state => state.open = !state.open,
 }
 
 const getters = {

@@ -2,7 +2,7 @@
 <q-modal ref="modal" v-model="modal" :content-classes="modalClass">
 	<q-modal-layout :content-class="layoutClass">
 		<q-toolbar slot="header">
-			<q-btn flat @click="$refs.modal.close()" icon="keyboard_arrow_left"/>
+			<q-btn flat @click="$refs.modal.hide()" icon="keyboard_arrow_left"/>
 
 			<q-toolbar-title>
 				Выбор адреса

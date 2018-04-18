@@ -1,8 +1,10 @@
+import Vue from 'vue'
 import invoices 		from '@/pages/docs/invoices'
 import furnitureNew		from '@/pages/furniture/new'
 
-let movements = { ...invoices, name: "movements" },
-	furnitureEdit = { ...furnitureNew, name: 'furnitureEdit' }
+let movements = Vue.extend({ ...invoices, name: 'movements' }),
+	furnitureEdit = Vue.extend({ ...furnitureNew, name: 'furnitureEdit' })
+
 
 export default [
 	{
@@ -18,8 +20,8 @@ export default [
 			{ path: '/profile/:id?', 				component: () => import ('pages/main/ManagerProfile'), 			meta: { name: "Профиль" } },
 
 			{ path: '/furniture/allocation', 		component: () => import ('pages/furniture/allocation'), 		meta: { name: "Распределение грузов" } },
-			{ path: '/furniture/storage/:id?', 		component: () => import ('pages/furniture/storage'), 			meta: { name: "Мебель на складе" } },
-			{ path: '/furniture/discount/:id?', 	component: () => import ('pages/furniture/discount'), 			meta: { name: "Мебель дисконд" } },
+			{ path: '/furniture/storage', 			component: () => import ('pages/furniture/storage'), 			meta: { name: "Мебель на складе" } },
+			{ path: '/furniture/discount', 			component: () => import ('pages/furniture/discount'), 			meta: { name: "Мебель дисконд" } },
 			{ path: '/furniture/salon/:id?', 		component: () => import ('pages/furniture/salon'), 				meta: { name: "Мебель в салоне" } },
 			{ path: '/furniture/new/', 				component: furnitureNew, 										meta: { name: "Заказ на изготовление" } },
 			{ path: '/furniture/edit/:id?', 		component: furnitureEdit, 										meta: { name: "Редактирование заказа" } },

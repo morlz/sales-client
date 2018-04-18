@@ -11,7 +11,7 @@
 			</q-card-title>
 
 			<q-card-main>
-				<q-uploader :url="url" />
+				<q-uploader :url="''" />
 			</q-card-main>
 		</q-card>
 	</div>

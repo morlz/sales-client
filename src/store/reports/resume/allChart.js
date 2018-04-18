@@ -56,7 +56,7 @@ const getters = {
 			datasets.push({
 				data,
 				label: year,
-				backgroundColor: getters.reports_resume_allChart_colors[index]
+				backgroundColor: getters.reports_resume_allChart_colors[index % getters.reports_resume_allChart_colors.length],
 			})
 		})
 
@@ -65,11 +65,22 @@ const getters = {
 			datasets
 		}
 	},
+	/*
 	reports_resume_allChart_colors: state => Array.apply(null, { length: Object.keys(state.cached.all).length })
 		.map(el => {
 			let [r, g, b] = hslToRgb(Math.random(), 1, Math.random() * 0.5)
 			return `rgba(${r}, ${g}, ${b}, 0.6)`
 		})
+	*/
+	reports_resume_allChart_colors: state => Object.values({
+		blue: "rgba(54, 162, 235, 0.7)",
+		green: "rgba(75, 192, 192, 0.7)",
+		grey: "rgba(201, 203, 207, 0.7)",
+		orange: "rgba(255, 159, 64, 0.7)",
+		purple: "rgba(153, 102, 255, 0.7)",
+		red: "rgba(255, 99, 132, 0.7)",
+		yellow: "rgba(255, 205, 86, 0.7)"
+	})
 }
 
 export default {

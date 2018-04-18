@@ -1,21 +1,31 @@
 <template>
-	<div class="modelsWrapper" :class="{ oneColumn: !main_auth_settings.showModels }">
-		<q-card class="modelList" v-if="main_auth_settings.showModels" v-loading="loading">
+	<div class="FurnitureModelsWrapper" :class="{ 'FurnitureModelsWrapper__noModels': !showModels }">
+		<q-card class="FurnitureModelsWrapper__models" v-if="showModels">
 			<q-card-title>Модель</q-card-title>
 
-			<q-card-main class="models">
-				<div class="model"
-					v-for="item, index in models"
-					:class="{ selected: current == item.MODEL || (!current && item.MODEL == 'Все модели') }"
-					@click="clickHandler(item.MODEL)"
-				>
-					<div class="name">{{ item.MODEL }}</div>
-					<div class="count">{{ item.count }}</div>
-				</div>
-			</q-card-main>
+			<q-scroll-area :style="{ width: '100%', height: '100%' }">
+				<q-list link no-border>
+					<q-item
+						v-for="item, index in models"
+						:class="{ 'FurnitureModelsWrapper__modelSelected': isSelected(item) }"
+						@click.native="$emit('select', item.MODEL)"
+						:key="index">
+
+						<q-item-main>
+							{{ item.MODEL }}
+						</q-item-main>
+
+						<q-item-side right>
+							{{ item.count }}
+						</q-item-side>
+					</q-item>
+				</q-list>
+			</q-scroll-area>
+
+			<loading :value="loading"/>
 		</q-card>
 
-		<div class="content">
+		<div class="FurnitureModelsWrapper__content">
 			<slot/>
 		</div>
 	</div>
@@ -23,7 +33,8 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { QCard, QCardTitle, QCardMain } from 'quasar'
+import Loading from '@/components/Loading'
+import { QScrollArea } from 'quasar'
 
 export default {
 	props: {
@@ -36,16 +47,15 @@ export default {
 		}
 	},
 	components: {
-		QCard,
-		QCardTitle,
-		QCardMain
+		Loading,
+		QScrollArea
 	},
 	methods: {
 		...mapMutations([
 			'main_auth_settings_set'
 		]),
-		clickHandler (data) {
-			this.$emit("select", data)
+		isSelected (item) {
+			return this.current == item.MODEL || (!this.current && item.MODEL == 'Все модели')
 		}
 	},
 	computed: {
@@ -65,45 +75,25 @@ export default {
 </script>
 
 
-<style lang="less">
-.modelsWrapper {
-	width: 100%;
-	height: ~"calc(100vh - 100px)";
-	display: grid;
-	grid-template-columns: 180px ~"calc(100% - 180px)";
-	grid-template-rows: ~"calc(100vh - 120px)";
-	align-items: start;
-	.modelList {
-		height: ~"calc(100% - 10px)";
-		overflow-y: auto;
-		.el-card__body {
-			padding: 7px;
-		}
-		align-self: start;
-		.modles {
-			height: 100%;
-		}
-		.model {
-			display: grid;
-			grid-auto-flow: column;
-			justify-content: space-between;
-			align-items: center;
-			cursor: pointer;
-			transition: all 0.3s ease-in-out;
-			&:hover {
-				background-color: rgba(51, 122, 183, 0.1);
-			}
-		}
-		.selected {
-			color: #409EFF;
-		}
-	}
-	.content {
-		height: 100%;
-	}
-}
+<style lang="stylus">
+.FurnitureModelsWrapper
+	height 100%
+	display grid
+	grid-template-columns 180px calc(100% - (180px + 10px))
+	grid-gap 10px
+	&__noModels
+		grid-template-columns 1fr
 
-.oneColumn {
-	grid-template-columns: 1fr;
-}
+	&__modelSelected
+		background-color #eee
+
+	&__models
+		position relative
+		height 100%
+		display grid
+		grid-template-rows min-content 1fr
+
+	&__content
+		width 100%
+		height 100%
 </style>

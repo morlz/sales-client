@@ -43,6 +43,7 @@ export default {
 	},
 	methods: {
 		createCache (n) {
+			console.log('[cluster] [createCache] cache changed')
 			cache = [...(n || this.content)]
 			this.$forceUpdate()
 		},
@@ -125,7 +126,7 @@ export default {
 				class: 'clusterize',
 				style: {
 					overflowY: 'auto',
-					transform: 'translateZ(0)'
+					//transform: 'translateZ(0)'
 				},
 				on: {
 					scroll: this.scrollHandlerThrottled

@@ -28,6 +28,7 @@
     "vue-gallery": "^1.3.2",
     "vue-i18n": "^7.3.3",
     "vue-infinite-loading": "^2.2.3",
+    "vue-link-popover": "^2.0.2",
     "vue2-google-maps": "^0.8.11",
     "vuedraggable": "^2.16.0",
     "vuex-router-sync": "^5.0.0"

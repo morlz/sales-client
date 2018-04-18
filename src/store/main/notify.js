@@ -10,17 +10,17 @@ const state = {
 
 const actions = {
 	notify ({ commit, dispatch }, payload) {
-		if (typeof payload == 'object')
-			Notify.create(payload.title + ' ' + payload.message)
-		else
-			Notify.create(payload)
-		//Notification(payload)
+		Notify.create({
+			message: typeof payload == 'object' ? payload.title + ' ' + payload.message : payload,
+			type: 'positive',
+			position: 'bottom-left'
+		})
 	},
 	alert (store, payload) {
 		Notify.create({
-			html: payload,
-			enter: 'bounceInRight',
-			leave: 'bounceOutRight',
+			message: payload,
+			position: 'top-right',
+			type: 'negative',
 		 })
 	},
 	catchErrorNotify ({ commit, dispatch }, payload) {

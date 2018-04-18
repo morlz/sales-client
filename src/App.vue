@@ -40,8 +40,5 @@ export default {
 </script>
 
 <style lang="stylus">
-.AppContent
-	background #eee
-	&__inner
-		margin 10px
+
 </style>

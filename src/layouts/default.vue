@@ -8,9 +8,9 @@
 			view="lhh Lpr lff"
 			v-if="logined"
 			ref="layout"
-			class="AppWrapper__layout"
+			class="AppLayout"
 		>
-			<q-layout-header :class="{ 'AppWrapper__headerNoShadow' : !app_layout_headerShadow }">
+			<q-layout-header :class="{ 'no-shadow' : !app_layout_headerShadow }">
 				<app-header/>
 			</q-layout-header>
 
@@ -21,8 +21,8 @@
 				<app-menu/>
 			</q-layout-drawer>
 
-			<q-page-container class="AppWrapper__container">
-				<router-view />
+			<q-page-container>
+				<router-view :key="$route.fullPath"/>
 			</q-page-container>
 		</q-layout>
 	</transition>
@@ -72,6 +72,9 @@ export default {
 	watch: {
 		local_nav_open (n) {
 			this.nav_openLeftSet(n)
+		},
+		nav_open (n) {
+			this.menuLeftOpen = !this.menuLeftOpen
 		}
 	},
 	computed: {
@@ -108,56 +111,22 @@ export default {
 </script>
 
 
-<style lang="less">
-.menuWrapper {
-	overflow: visible;
-	&::-webkit-scrollbar {
-		width: 0;
-		height: 0;
-	}
-}
-
-.layout-aside.fixed {
-	z-index: 3000;
-}
-
-.mainWrapper {
-	padding: 10px;
-}
+<style lang="stylus">
+.AppContent
+	background #eee
+	&__inner
+		margin 10px
+		box-sizing border-box
 
 
-.AppWrapper {
-    height: 100vh;
+.no-shadow
+	box-shadow: none;
 
-	&__layout {
-
-	}
-
-	&__container {
-
-	}
-
-	&__headerNoShadow {
-		box-shadow: none;
-	}
-
-	.layout-page-container {
-		height: ~"calc(100% - 50px)";
-	}
-}
+.AppLayout
+	height 100vh
 
 
+//@media screen and (max-width: 768px)
 
-@media screen and (max-width: 768px) {
-	.appWrapper {
-		.app {
-			.logo {
-				display: none;
-			}
-			.mainContentWrapper {
-				width: 100%;
-			}
-		}
-	}
-}
+
 </style>
