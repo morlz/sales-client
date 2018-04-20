@@ -59,11 +59,46 @@
 			<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
 
 			<q-card class="FurnitureSalon__items">
-				<tabless
+				<infinite-table
+					:columns="furnitureSalonFieldDescriptionFiltred"
+					:rows="furniture_cached"
+					:complete="furniture_complete"
+					@infinite="furniture_infinity"
+					@click="routerGoId"
+					>
+
+					<template slot="buttons" slot-scope="props">
+						<i aria-hidden="true" class="q-icon material-icons" @click.stop="furniture_addToCart({ UN: props.row.UN })">shopping_cart</i>
+						<i aria-hidden="true" class="q-icon material-icons" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(props.row))">local_shipping</i>
+
+
+						<!--
+
+						<template slot="cloth1" slot-scope="props">
+							<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
+							<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
+						</template>
+
+						<template slot="cloth2" slot-scope="props">
+							<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
+							<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
+						</template>
+
+						<template slot="cloth3" slot-scope="props">
+							<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
+							<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
+						</template>
+					-->
+					</template>
+				</infinite-table>
+
+
+
+				<!--<tabless
 					key="salon"
 					:data="furniture_cached"
 					:complete="furniture_complete"
-					:field-description="FurnitureSalon"
+					:field-description="furnitureSalonFieldDescriptionFiltred"
 					:filters="furniture_filters"
 					:select-fields="local_furniture_selectFields"
 					:selectable="currentTab == 'new'"
@@ -78,37 +113,8 @@
 					<template slot="selected" slot-scope="{ selected, count }">
 						<q-btn color="primary" v-if="count" @click="selectPlaceModal = !selectPlaceModal">Отметить прибывшие</q-btn>
 					</template>
-
-					<template slot="cloth1" slot-scope="props">
-						<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-						<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-					</template>
-
-					<template slot="cloth2" slot-scope="props">
-						<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-						<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-					</template>
-
-					<template slot="cloth3" slot-scope="props">
-						<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-						<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-					</template>
-
-					<template slot="buttons" slot-scope="props">
-						<q-btn color="primary" flat @click.stop="furniture_addToCart({ UN: props.row.UN })">
-							<q-icon name="shopping_cart"/>
-						</q-btn>
-
-						<q-btn flat @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(props.row))">
-							<q-icon name="local_shipping"/>
-						</q-btn>
-
-						<q-btn flat @click.stop>
-							<q-icon name="swap_horiz"/>
-						</q-btn>
-					</template>
-				</tabless>
-		</q-card>
+				</tabless>-->
+			</q-card>
 		</furniture-models-wrap>
 	</div>
 </q-page>
@@ -120,6 +126,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import mixins from '@/mixins'
 import tabless from '@/components/tableSSNew'
+import InfiniteTable from '@/components/InfiniteTable'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import { FurnitureSalon } from '@/static/fieldDescription'
@@ -136,6 +143,7 @@ import Loading from '@/components/Loading'
 
 export default {
 	components: {
+		InfiniteTable,
 		tabless,
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
@@ -266,7 +274,7 @@ export default {
 			return rez
 		},
 		furnitureSalonFieldDescriptionFiltred () {
-			let tmp = this.furnitureSalonFieldDescription
+			let tmp = this.FurnitureSalon
 
 			if (this.currentTab != 'new')
 				tmp = tmp.filter(el => el.field != 'td.lastPlace.invoice.N_DOC')
@@ -337,6 +345,13 @@ export default {
 	&__items
 		width 100%
 		height calc(100vh - 120px)
+
+	&__discount
+		color red
+		font-weight 600
+		s
+			font-size 12px
+			color #999
 
 
 .FurnitureSofa

@@ -585,7 +585,7 @@ export default {
 		overflow-x: hidden;
 		overflow-y: auto;
 		transition: height 0.3s ease-in-out;
-		//transform: translateZ(0);
+		transform: translateZ(0);
 		width: min-content;
 		min-width: 100%;
 	}

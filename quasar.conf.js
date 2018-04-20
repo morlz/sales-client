@@ -24,7 +24,7 @@ module.exports = function(ctx) {
 			'routerSync',
 			'FastGridArea',
 			'VueGoogleMaps',
-			'moment'
+			'moment',
 		],
 		css: [
 			'app.styl',

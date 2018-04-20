@@ -126,7 +126,7 @@ export default {
 				class: 'clusterize',
 				style: {
 					overflowY: 'auto',
-					//transform: 'translateZ(0)'
+					transform: 'translateZ(0)'
 				},
 				on: {
 					scroll: this.scrollHandlerThrottled

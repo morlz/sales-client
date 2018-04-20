@@ -128,7 +128,7 @@ export let FurnitureSalon = [
 	{ field: "KAT", label: "Кат", width: 30, },
 	{ field: "td.CENA_ZAL", label: "Цена руб.", width: 70, type: "html", format: {
 		get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
-				`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
+				`<div class="FurnitureSalon__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
 			:	data
 	} },
 	{ field: "DEKOR", label: "Декор", width: 50 },

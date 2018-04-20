@@ -74,7 +74,8 @@ const state = {
 
 const actions = {
 	async furniture_init ({ commit, dispatch, getters, state }, payload) {
-		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+		//let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+		let ID_SALONA = null
 
 
 		commit('furniture_initInfinite', new Infinite({

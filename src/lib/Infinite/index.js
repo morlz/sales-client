@@ -25,7 +25,8 @@ class Infinite extends EventEmitter {
 		this._autoSetPreloaded = false
 		this._complete = false
 
-		this.pageSize = options.pageSize || 200
+		this.firstPageSize = options.firstPageSize || 200
+		this.pageSize = options.pageSize || 1500
 		this.method = options.method
 		this.log = options.log || true
 
@@ -39,7 +40,7 @@ class Infinite extends EventEmitter {
 		this._preloaded = false
 
 		this.loadingAll++
-		let res = await this._load(params)
+		let res = await this._load({ ...params, limit: this.firstPageSize })
 		this.loadingAll--
 
 		if (this.log) console.log('[inf] [start] end');
@@ -56,6 +57,7 @@ class Infinite extends EventEmitter {
 	}
 
 	async more (payload, params = {}) {
+		if (this.loadingMore) return
 		if (this.loadingAll)
 			return (this.log ? console.warn('[inf] [more] stopped because already function "start" is used') : null)
 
