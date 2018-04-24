@@ -9,7 +9,7 @@ const state = {
 		{
 			name: 'Главная',
 			path: "/",
-			icon: "el-icon-home"
+			icon: "el-icon-home",
 		},
 		{
 			name: 'Помощь',
@@ -30,13 +30,13 @@ const state = {
 					name: "На складе",
 					path: "/furniture/storage",
 					icon: "el-icon-storage",
-					can: { lvl: 1, action: "Furniture" }
+					can: { lvl: 1, action: "Storage" }
 				},
 				{
 					name: "Дисконт",
 					path: "/furniture/discount",
 					icon: "el-icon-discount",
-					can: { lvl: 1, action: "Furniture" }
+					can: { lvl: 1, action: "Discount" }
 				},
 				{
 					name: 'Заказать изготовление',
@@ -48,6 +48,7 @@ const state = {
 					name: 'Распределение грузов',
 					path: '/furniture/allocation',
 					icon: 'el-icon-allocation',
+					can: { lvl: 1, action: 'CargoDistribution' }
 				}
 			]
 		},
@@ -65,7 +66,7 @@ const state = {
 					name: "Перемещения",
 					path: "/docs/movements",
 					icon: "el-icon-movement",
-					can: { lvl: 1, action: "Invoice" }
+					can: { lvl: 1, action: "Movement" }
 				},
 				{
 					name: "Доставки",
@@ -78,7 +79,7 @@ const state = {
 		{
 			name: 'Наработки',
 			icon: "el-icon-code",
-			can: { lvl: 1, action: "Developments" },
+			can: { lvl: 1, action: "CRM" },
 			childs: [{
 					name: "Клиенты",
 					path: "/preorder/clients",
@@ -107,17 +108,20 @@ const state = {
 				{
 					name: "Итоги продаж",
 					path: "/reports/sales",
-					icon: "el-icon-sell-result"
+					icon: "el-icon-sell-result",
+					can: { lvl: 1, action: "ReportSales" },
 				},
 				{
 					name: "Отчёт 2",
 					path: "/reports/salesTwo",
-					icon: "fa-list-alt"
+					icon: "fa-list-alt",
+					can: { lvl: 1, action: "ReportSalesTwo" },
 				},
 				{
 					name: "Итоги продаж",
 					path: "/reports/resume",
-					icon: "fa-braille"
+					icon: "fa-braille",
+					can: { lvl: 1, action: "ReportResume" },
 				},
 			]
 		},
@@ -136,13 +140,13 @@ const state = {
 					name: "Настройка прав",
 					path: "/admin/permissions",
 					icon: "group_work",
-					can: { lvl: 1, action: "Group" }
+					can: { lvl: 1, action: "Role" }
 				},
 				{
 					name: "Тестирование",
 					path: "/admin/tests",
 					icon: "fa-bug",
-					can: { lvl: 1, action: "Role" }
+					can: { lvl: 1, action: "Tests" }
 				},
 			]
 		},

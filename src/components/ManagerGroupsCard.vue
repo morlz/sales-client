@@ -1,7 +1,7 @@
 <template>
-	<q-card class="card userRoles" v-if="auth_can(1, 'RoleSetup')">
+	<q-card class="ManagerGroupsCard" v-if="auth_can(1, 'RoleSetup')">
 		<q-card-title>
-			Роли
+			Группы салонов
 		</q-card-title>
 
 		<q-card-main>
@@ -36,13 +36,15 @@ export default {
 	computed: {
 		...mapGetters([
 			'personal_currentRoleSetup',
-			'personal_roles',
 			'personal_current'
 		]),
+		...mapGetters('salonGroups', [
+			'salonGroups_groups'
+		]),
 		transferData () {
-			return this.personal_roles.map(role => {
+			return this.salonGroups_groups.map(role => {
 				return {
-					key: role.id,
+					key: +role.id,
 					label: role.name
 				}
 			})

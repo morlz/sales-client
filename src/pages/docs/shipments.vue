@@ -48,7 +48,7 @@
 		</div>
 
 		<q-card class="manyShipmntsWrapper__card AppContent__inner">
-			<tabless
+			<!--<tabless
 				key="shipments"
 				:data="shipment_cached"
 				:complete="shipment_complete"
@@ -59,6 +59,17 @@
 				@sort="local_shipment_sortChange"
 				@click="routerGoId"
 				@infinite="shipment_infinity"
+			/>-->
+
+
+			<infinite-table
+				:columns="DocsShipmentsFiltred"
+				:rows="shipment_cached"
+				:complete="shipment_complete"
+				@infinite="shipment_infinity"
+				@click="routerGoId"
+				@sort="local_shipment_sortChange"
+				@filter="local_shipment_filterChange"
 			/>
 		</q-card>
 	</div>
@@ -73,17 +84,16 @@ import {
 	mapActions,
 	mapMutations
 } from 'vuex'
-import tabless from '@/components/tableSSNew'
+import InfiniteTable from '@/components/InfiniteTable'
 import { DocsShipments } from '@/static/fieldDescription'
-import mixins from '@/mixins'
-import SinleItemPageMixin from '@/mixins/SingleItemPage'
+import { AuthMixin, RouteMixin, SingleItemPageMixin } from '@/mixins'
 import Loading from '@/components/Loading'
 
 
 export default {
-	mixins: [mixins, SinleItemPageMixin],
+	mixins: [AuthMixin, RouteMixin, SingleItemPageMixin],
 	components: {
-		tabless,
+		InfiniteTable,
 		Loading
 	},
 	data() {

@@ -26,26 +26,36 @@
 			</q-tabs>
 
 			<q-input
+				v-if="currentTab == 'all'"
 				inverted
 				v-model="searchByPhone"
 				:value="preorder_filtersPhone"
 				placeholder="Поиск по номеру телефона"
-				class="manyRecordsWrapper__phone"
-				v-if="currentTab == 'all'" />
+				class="manyRecordsWrapper__phone" />
 		</div>
 
 		<q-card v-if="currentTab == 'all'" class="manyRecordsWrapper__card AppContent__inner">
-			<tabless
+			<!--<tabless
 				key="preorders"
 				:data="preorder_cached"
 				:complete="preorder_complete"
-				:field-description="recordsManyFieldDescription"
+				:field-description="CRMPreorders"
 				:filters="preorder_filters"
 				ref="table"
 				@filter="local_record_filtersChange"
 				@sort="local_record_sortChange"
 				@click="routerGoId"
 				@infinite="preorder_infinity"
+			/>-->
+
+			<infinite-table
+				:columns="CRMPreorders"
+				:rows="preorder_cached"
+				:complete="preorder_complete"
+				@infinite="preorder_infinity"
+				@click="routerGoId"
+				@sort="local_record_sortChange"
+				@filter="local_record_filtersChange"
 			/>
 		</q-card>
 
@@ -62,37 +72,27 @@
 
 //v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')"
 
-import fieldDescription from '@/static/fieldDescription'
-
-
-
-let {
-	recordsManyFieldDescription
-} = fieldDescription
-
 import {
 	mapGetters,
 	mapActions,
 	mapMutations
 } from 'vuex'
-import mixins from '@/mixins'
-import tabless from '@/components/tableSSNew'
+import { CRMPreorders } from '@/static/fieldDescription'
+import { AuthMixin, RouteMixin } from '@/mixins'
+import InfiniteTable from '@/components/InfiniteTable'
 import addContactForm from '@/components/forms/addContact'
 import editContactForm from '@/components/forms/editContact'
 import editTaskForm from '@/components/forms/editTask'
 import newPreorderForm from '@/components/forms/newPreorder'
-import InfiniteLoading from 'vue-infinite-loading'
-
 import InfoCardPreorder from '@/components/InfoCardPreorder'
 import InfoCardContactFaces from '@/components/InfoCardContactFaces'
 import InfoCardTasks from '@/components/InfoCardTasks'
-
-import { QTabs, QTab, QInput, QCard, QUploader } from 'quasar'
+import { QUploader } from 'quasar'
 
 export default {
 	data() {
 		return {
-			recordsManyFieldDescription,
+			CRMPreorders,
 			searchByPhone: "",
 			searchByPhoneQuery: "",
 			seachTimeout: false,
@@ -100,10 +100,9 @@ export default {
 			lastFilters: {}
 		}
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	components: {
-		tabless,
-		InfiniteLoading,
+		InfiniteTable,
 		addContactForm,
 		editContactForm,
 		editTaskForm,
@@ -111,9 +110,6 @@ export default {
 		InfoCardContactFaces,
 		InfoCardTasks,
 		newPreorderForm,
-		QTabs,
-		QTab,
-		QInput,
 		QUploader
 	},
 	watch: {
@@ -128,10 +124,6 @@ export default {
 		},
 		additionalFilters (n) {
 			this.preorder_filtersChange (Object.assign({}, n, this.lastFilters))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-			})
 		}
 	},
 	computed: {
@@ -167,23 +159,17 @@ export default {
 		async local_record_filtersChange (n) {
 			this.lastFilters = n
 			await this.preorder_filtersChange (Object.assign({}, n, this.additionalFilters))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-			})
 		},
 		async local_record_sortChange (n) {
 			await this.preorder_sortChange(n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
-			})
 		}
 	},
-	mounted() {
-		this.app_layout_headerShadowSet(false)
+	created () {
 		this.preorder_init(this.oneId)
 		this.searchByPhone = this.preorder_filtersPhone
+	},
+	mounted () {
+		this.app_layout_headerShadowSet(false)
 	},
 	beforeDestroy () {
 		this.app_layout_headerShadowSet(true)

@@ -44,7 +44,7 @@
 		<q-card-actions class="infoCardInvoice_actions">
 			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">Выгрузить в AX</q-btn>
 			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">Выгрузить в 1С</q-btn>
-			<q-btn color="primary" @click="invoice_print(data)">Печать</q-btn>
+			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
@@ -74,7 +74,8 @@ export default {
 	props: {
 		content: {
 			type: Object
-		}
+		},
+		type: String
 	},
 	mixins: [mixins],
 	components: {

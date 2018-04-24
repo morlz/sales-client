@@ -28,7 +28,7 @@
 							float-label="Тип"
 						/>
 
-						<palermo-construct-form
+						<module-sofa-create
 							v-if="furniture_new_freeTrim"
 							v-model="type"
 							v-loading="furniture_new_loading.types"
@@ -91,8 +91,10 @@
 							</div>
 							<div>Цена</div>
 							<div class="price" v-loading="furniture_new_loading.price">{{ price }}</div>
-							<div>Цена оптовая</div>
-							<div class="price" v-loading="furniture_new_loading.price">{{ furniture_new_cached.opt }}</div>
+							<template v-if="auth_can(1, 'SeeOptPrice')">
+								<div>Цена оптовая</div>
+								<div class="price" v-loading="furniture_new_loading.price">{{ furniture_new_cached.opt }}</div>
+							</template>
 						</div>
 					</el-form>
 				</div>
@@ -114,15 +116,16 @@ import {
 	mapMutations
 } from 'vuex'
 
+import { AuthMixin } from '@/mixins'
 import clothSelectForm from '@/components/forms/clothSelect.vue'
-import palermoConstructForm from '@/components/forms/palermoConstruct.vue'
+import ModuleSofaCreate from '@/components/forms/ModuleSofaCreate'
 import gallery from '@/components/gallery.vue'
 import { QCard, QCardTitle, QCardMain, QCardActions, QBtn, QTimeline, QTimelineEntry } from 'quasar'
 
 export default {
 	components: {
 		clothSelectForm,
-		palermoConstructForm,
+		ModuleSofaCreate,
 		gallery,
 		QCard,
 		QCardTitle,
@@ -132,6 +135,7 @@ export default {
 		QTimeline,
 		QTimelineEntry,
 	},
+	mixins: [AuthMixin],
 	computed: {
 		...mapGetters([
 			'furniture_new_loading',

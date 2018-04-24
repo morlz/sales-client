@@ -1,15 +1,6 @@
 import api from '@/api'
+
 import salonGroups from './salonGroups'
-
-const compare = (a, b) => {
-	if (a.id < b.id)
-		return -1
-
-	if (a.id > b.id)
-		return 1
-
-	return 0
-}
 
 const types = [
 	"roles",
@@ -231,25 +222,29 @@ const mutations = {
 const getters = {
 	permissions_selectedType: state => state.selected.type,
 	permissions_managers: state => state.managers,
-	personal_roles: state => state.roles,
-	permissions_roles: state => state.roles.map(el => {
-		el.selected = state.selected.type == "roles" && el.id == state.selected.id
-		el.levelVisible = state.selected.type == "controllers"
+	personal_roles: state => state.roles.filter(el => el.type == 'action'),
+	permissions_roles: state => state.roles
+		.map(el => {
+			el.selected = state.selected.type == "roles" && el.id == state.selected.id
+			el.levelVisible = state.selected.type == "controllers"
 
-		let relation = state.controllersSetup.find(itm => itm.action_id == state.selected.id && itm.role_id == el.id)
-		el.access_level = relation ? relation.access_level : 0
+			let relation = state.controllersSetup.find(itm => itm.action_id == state.selected.id && itm.role_id == el.id)
+			el.access_level = relation ? relation.access_level : 0
 
-		return { ...el }
-	}).sort(compare),
-	permissions_controllers: state => state.controllers.map(el => {
-		el.selected = state.selected.type == "controllers" && el.id == state.selected.id
-		el.levelVisible = state.selected.type == "roles"
+			return { ...el }
+		})
+		.sort( api.core.sortFnFactory(item => item.id) ),
+	permissions_controllers: state => state.controllers
+		.map(el => {
+			el.selected = state.selected.type == "controllers" && el.id == state.selected.id
+			el.levelVisible = state.selected.type == "roles"
 
-		let relation = state.controllersSetup.find(itm => itm.role_id == state.selected.id && itm.action_id == el.id)
-		el.access_level = relation ? relation.access_level : 0
+			let relation = state.controllersSetup.find(itm => itm.role_id == state.selected.id && itm.action_id == el.id)
+			el.access_level = relation ? relation.access_level : 0
 
-		return { ...el }
-	}).sort(compare),
+			return { ...el }
+		})
+		.sort( api.core.sortFnFactory(item => item.id) ),
 	permissions_ranges: state => state.ranges,
 	permissions_rolesSetup: state => state.rangesSetup,
 	permissions_rangesSetup: state => state.rangesSetup,

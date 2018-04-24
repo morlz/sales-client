@@ -5,22 +5,33 @@
 			<manager-profile-card :content="personal_current"/>
 
 			<manager-roles-card v-if="auth_can(1, 'RoleSetup')" />
+			<manager-groups-card v-if="auth_can(1, 'RoleSetup')" />
 		</div>
 	</div>
 
 	<div class="manyPersoalWrapper" v-if="!isOne">
 		<q-card class="manyPersoalWrapper__card AppContent__inner">
-			<tabless
+			<!--<tabless
 				key="personal"
 				:data="personal_cached"
 				:complete="personal_complete"
-				:field-description="personalFieldDescription"
+				:field-description="AdminPersonal"
 				:filters="personal_filters"
 				ref="table"
 				@filter="local_personal_filtersChange"
 				@sort="local_personal_sortChange"
 				@click="routerGoId"
 				@infinite="personal_infinity"
+			/>-->
+
+			<infinite-table
+				:columns="AdminPersonal"
+				:rows="personal_cached"
+				:complete="personal_complete"
+				@infinite="personal_infinity"
+				@click="routerGoId"
+				@sort="local_personal_sortChange"
+				@filter="local_personal_filtersChange"
 			/>
 		</q-card>
 	</div>
@@ -34,30 +45,24 @@ import {
 	mapMutations
 } from 'vuex'
 
-import mixins from '@/mixins'
-import tabless from '@/components/tableSSNew'
-import InfiniteLoading from 'vue-infinite-loading'
-import fieldDesription from '@/static/fieldDescription'
+import { AuthMixin, RouteMixin } from '@/mixins'
+import InfiniteTable from '@/components/InfiniteTable'
+import { AdminPersonal } from '@/static/fieldDescription'
 import ManagerProfileCard from '@/components/ManagerProfileCard'
 import ManagerRolesCard from '@/components/ManagerRolesCard'
-import { QCard } from 'quasar'
-
-let {
-	personalFieldDescription
-} = fieldDesription
+import ManagerGroupsCard from '@/components/ManagerGroupsCard'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	components: {
-		InfiniteLoading,
-		tabless,
+		InfiniteTable,
 		ManagerProfileCard,
 		ManagerRolesCard,
-		QCard
+		ManagerGroupsCard
 	},
 	data() {
 		return {
-			personalFieldDescription
+			AdminPersonal
 		}
 	},
 	watch: {
@@ -89,23 +94,13 @@ export default {
 		]),
 		local_personal_filtersChange (n) {
 			this.personal_filtersChange(n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		local_personal_sortChange (n) {
 			this.personal_sortChange(n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading) this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		}
 	},
 	async mounted() {
 		await this.personal_init(this.oneId)
-		if (this.$refs.infiniteLoading)
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	},
 	beforeDestroy () {
 		this.personal_destroy()

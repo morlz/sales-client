@@ -66,8 +66,10 @@ const mutations = {
 const getters = {
 	salon_list: state => state.cached.list.sort(api.core.sortFnFactory(salon => salon.NAME, true)).filter(el => el.ID_SALONA != '999'),
 	salon_listWithAll: (state, getters) => [ { NAME: "Все салоны" }, ...getters.salon_list ],
-	salon_list_discount: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 10),
-	salon_list_furniture: (state, getters) => getters.salon_listWithAll.filter(el => el.ID_SALONA != 1040 && el.ID_SALONA != 10),
+	salon_list_discount: (state, getters) => getters.salon_listWithAll
+		.filter(el => ![0, 10, 122].includes(+el.ID_SALONA))
+		.sort( api.core.sortFnFactory(item => [undefined, "1040"].includes(item.ID_SALONA) ? '_' : item.NAME, true) ),
+	salon_list_furniture: (state, getters) => getters.salon_listWithAll.filter(el => ![0, 10, 122, 1040].includes(+el.ID_SALONA)),
 	salon_loadingList: state => state.loading.list,
 	salon_places: state => state.cached.places
 }

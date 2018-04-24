@@ -8,10 +8,10 @@
 import AppMenuItem from '@/components/AppMenuItem.vue'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	components: {
 		AppMenuItem
 	},

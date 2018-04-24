@@ -1,33 +1,22 @@
 <template>
-<div class="palermoConstructorWrapper">
-	<el-dropdown :hide-on-click="false" class="selected">
-		<div class="items">
-			<div class="item" v-for="item, index in selected" :key="index" @click="remove(index)">
-				{{ showName ? item.NAME : item.CRSEACHNAME }}
-			</div>
-			<div class="removeAll" @click="removeAll">
-				<i class="el-icon-circle-close"/>
-			</div>
-		</div>
+<div class="ModuleSofaCreate">
+	<q-field :max="current.length">
+		<q-chips-input v-model="current" />
+	</q-field>
 
-		<el-dropdown-menu slot="dropdown" class="palermoConstructorDropdown" placement="bottom">
-			<div class="palermoConstructorDropdownItems">
-				<el-dropdown-item v-for="item, index in data" class="palermoConstructorDropdownItem" :key="index">
-					<div class="g" @click="add(item)">
-						<div>{{ item.CONFIGID }}</div>
-						<div>{{ item.CRSEACHNAME }}</div>
-						<div>{{ item.NAME }}</div>
-					</div>
-				</el-dropdown-item>
-			</div>
-		</el-dropdown-menu>
-	</el-dropdown>
 
-	<el-switch
-		class="nameSwitch"
-		v-model="showName"
-		active-text="Показывать имя"
-		inactive-text="Показывать код"/>
+	<q-popover anchor="bottom left" self="bottom right">
+		<q-list link>
+			<q-item v-for="item, index in data" :key="index" @click.native="add(item)">
+				<q-item-main>{{ item.NAME }}</q-item-main>
+				<q-item-side right>
+					{{ item.CONFIGID }} {{ item.CRSEACHNAME }}
+				</q-item-side>
+			</q-item>
+		</q-list>
+	</q-popover>
+
+	<q-checkbox v-model="showName" label="Показывать названия"/>
 </div>
 </template>
 
@@ -37,8 +26,13 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
+import { QChipsInput, QCheckbox } from 'quasar'
 
 export default {
+	components: {
+		QChipsInput,
+		QCheckbox
+	},
 	props: {
 		value: {
 			type: String,
@@ -59,26 +53,28 @@ export default {
 			showName: false
 		}
 	},
-	components: {
-
-	},
 	watch: {
 		selected (n) {
-			if (!n.length)
-				n = ""
-			else
-				n = n.map(el => el.CRSEACHNAME).join('-')
-
-			this.$emit('input', n)
+			this.$emit('input', n.length ? n.map(el => el.CRSEACHNAME).join('-') : '')
 		},
 		value (n) {
 			let splited = n.split('-').map(el => this.data.find(d => d.CRSEACHNAME == el)).filter(el => el)
 			if (this.selected != splited)
 				this.selected = splited
-		}
+		},
 	},
 	computed: {
-
+		current: {
+			get () {
+				return this.selected.map(item => this.showName ? item.NAME : item.CRSEACHNAME)
+			},
+			set (val) {
+				this.selected = val.filter(el => this.names.includes(el)).map(el => this.data.find(item => item.CRSEACHNAME === el))
+			}
+		},
+		names () {
+			return this.data.map(el => el.CRSEACHNAME)
+		}
 	},
 	methods: {
 		add (item) {

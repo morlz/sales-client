@@ -8,7 +8,6 @@
 			<slot/>
 		</q-popover>
 	</div>
-
 </template>
 
 <script>

@@ -1,33 +1,35 @@
 <template>
 <div class="cartWrapper">
-	<q-popover ref="cartPopover" :disable="!app_view_desktop">
-		<div class="cartItems" v-loading="cart_loadingList">
-			<app-header-popup-cart-content/>
+	<template v-if="auth_can(1, 'Cart')">
+		<q-popover ref="cartPopover" :disable="!app_view_desktop">
+			<div class="cartItems" v-loading="cart_loadingList">
+				<app-header-popup-cart-content/>
 
-			<q-btn color="primary" class="goButton" v-if="cart_exist.length || cart_new.length" @click="goToCreateInvoice">Оформить документ</q-btn>
-		</div>
-	</q-popover>
+				<q-btn color="primary" class="goButton" v-if="(cart_exist.length || cart_new.length) && auth_can(2, 'Invoice')" @click="goToCreateInvoice">Оформить документ</q-btn>
+			</div>
+		</q-popover>
 
-	<q-modal maximized v-if="!app_view_desktop" v-model="modal" ref="modal" class="cartModal">
-		<q-modal-layout>
-			<q-toolbar slot="header">
-				<q-btn flat wait-for-ripple @click="modal = false">
-					<q-icon name="keyboard_arrow_left"/>
-				</q-btn>
-				<q-toolbar-title>{{cart_cachedSumm}} руб. {{cart_cachedCount}} шт.</q-toolbar-title>
-				<q-btn flat icon-right="redo" @click="goToCreateInvoice" v-if="cart_exist.length || cart_new.length">Оформить</q-btn>
-			</q-toolbar>
+		<q-modal maximized v-if="!app_view_desktop" v-model="modal" ref="modal" class="cartModal">
+			<q-modal-layout>
+				<q-toolbar slot="header">
+					<q-btn flat wait-for-ripple @click="modal = false">
+						<q-icon name="keyboard_arrow_left"/>
+					</q-btn>
+					<q-toolbar-title>{{cart_cachedSumm}} руб. {{cart_cachedCount}} шт.</q-toolbar-title>
+					<q-btn flat icon-right="redo" @click="goToCreateInvoice" v-if="cart_exist.length || cart_new.length">Оформить</q-btn>
+				</q-toolbar>
 
-			<app-header-popup-cart-content class="cartModal__content"/>
-		</q-modal-layout>
-	</q-modal>
+				<app-header-popup-cart-content class="cartModal__content"/>
+			</q-modal-layout>
+		</q-modal>
 
-	<q-btn class="cartPopoverToggleButton" v-loading="cart_loadingList" flat @click="modal = !modal" wait-for-ripple>
-		<q-icon name="shopping_cart" v-if="app_view_mobile"/>
-		<template v-if="!app_view_mobile">
-			Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
-		</template>
-	</q-btn>
+		<q-btn class="cartPopoverToggleButton" v-loading="cart_loadingList" flat @click="modal = !modal" wait-for-ripple>
+			<q-icon name="shopping_cart" v-if="app_view_mobile"/>
+			<template v-if="!app_view_mobile">
+				Корзина {{cart_cachedCount}} шт. {{cart_cachedSumm}} руб.
+			</template>
+		</q-btn>
+	</template>
 </div>
 </template>
 
@@ -41,26 +43,37 @@ import {
 import tabless from '@/components/tableSS.vue'
 import TableCollapsible from '@/components/TableCollapsible.vue'
 import AppHeaderPopupCartContent from '@/components/AppHeaderPopupCartContent'
+import { AuthMixin } from '@/mixins'
 
-import { QBtn, QIcon, QModal, QModalLayout, QToolbar, QToolbarTitle, QPopover } from 'quasar'
+import { QModal, QModalLayout, QToolbar, QToolbarTitle, QPopover } from 'quasar'
 
 export default {
-	data() {
-		return {
-			modal: false,
-		}
-	},
 	components: {
 		TableCollapsible,
 		tabless,
-		QBtn,
-		QIcon,
 		QModal,
 		QModalLayout,
 		QToolbar,
 		QToolbarTitle,
 		AppHeaderPopupCartContent,
 		QPopover
+	},
+	mixins: [AuthMixin],
+	data() {
+		return {
+			modal: false,
+		}
+	},
+	computed: {
+		...mapGetters([
+			'cart_exist',
+			'cart_new',
+			'cart_cachedCount',
+			'cart_cachedSumm',
+			'cart_loadingList',
+			'app_view_mobile',
+			'app_view_desktop'
+		]),
 	},
 	methods: {
 		...mapActions([
@@ -75,18 +88,8 @@ export default {
 			this.modal = false
 		}
 	},
-	computed: {
-		...mapGetters([
-			'cart_exist',
-			'cart_new',
-			'cart_cachedCount',
-			'cart_cachedSumm',
-			'cart_loadingList',
-			'app_view_mobile',
-			'app_view_desktop'
-		]),
-	},
-	mounted () {
+	created () {
+		if (!this.auth_can(1, 'Cart')) return
 		this.cart_init()
 	}
 }

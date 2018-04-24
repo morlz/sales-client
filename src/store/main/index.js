@@ -25,8 +25,8 @@ const state = {
 
 const actions = {
 	app_init ({ commit, dispatch, rootState }) {
-		dispatch('event_createHandlers')
 		dispatch('auth_init')
+		dispatch('event_createHandlers')
 		commit('app_titleUpdate', rootState.route.meta.name)
 	},
 }

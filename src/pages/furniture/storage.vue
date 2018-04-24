@@ -1,7 +1,7 @@
 <template>
 <q-page class="AppContent">
 	<div class="FurnitureStorage">
-		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
+		<q-tabs v-model="currentTab" class="AppContent__headerTabs" v-if="tabs.length > 1">
 			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 		</q-tabs>
 
@@ -13,6 +13,7 @@
 			@select="local_storage_filtersModelSet" >
 
 			<q-card class="FurnitureStorage__items">
+				<!--
 				<tabless
 					key="storage"
 					:data="storage_cached"
@@ -48,6 +49,23 @@
 						</q-btn>
 					</template>
 				</tabless>
+			-->
+
+
+				<infinite-table
+					:columns="FurnitureStorageFiltred"
+					:rows="storage_cached"
+					:complete="storage_complete"
+					@infinite="storage_infinity"
+					@click="rowClickHandler"
+					@sort="local_storage_sortChange"
+					@filter="local_storage_filterChange"
+					>
+
+					<template slot="buttons" slot-scope="props">
+						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="storage_addToCart({ UN: props.row.UN })">shopping_cart</i>
+					</template>
+				</infinite-table>
 			</q-card>
 		</furniture-models-wrap>
 	</div>
@@ -58,8 +76,8 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import mixins from '@/mixins'
-import tabless from '@/components/tableSSNew'
+import { AuthMixin } from '@/mixins'
+import InfiniteTable from '@/components/InfiniteTable'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import PreviewCloth from '@/components/PreviewCloth'
@@ -67,22 +85,17 @@ import { FurnitureStorage } from '@/static/fieldDescription'
 
 export default {
 	components: {
-		tabless,
+		InfiniteTable,
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
 		PreviewCloth,
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	data() {
 		return {
 			FurnitureStorage,
 			lastStorageFilters: {},
-			currentTab: 'sgp',
-			tabs: [
-				{ name: "СГП", type: "sgp" },
-				{ name: "Интернет", type: "internet" },
-				{ name: "e-commerce", type: "e" },
-			]
+			currentTab: 'sgp'
 		}
 	},
 	watch: {
@@ -122,6 +135,17 @@ export default {
 				return this.FurnitureStorage.filter(el => el.field != 'MODEL')
 			return this.FurnitureStorage
 		},
+		tabs () {
+			let res = [{ name: "СГП", type: "sgp" }]
+
+			if (this.auth_can(1, 'StorageInternet'))
+				res.push({ name: "Интернет", type: "internet" })
+
+			if (this.auth_can(1, 'StorageEComerce'))
+				res.push({ name: "e-commerce", type: "e" })
+
+			return res
+		}
 	},
 	methods: {
 		...mapActions([
@@ -158,7 +182,7 @@ export default {
 		}
 	},
 	async mounted () {
-		this.app_layout_headerShadowSet(false)
+		this.app_layout_headerShadowSet(this.tabs.length < 2)
 		await this.storage_init()
 	},
 	beforeDestroy() {

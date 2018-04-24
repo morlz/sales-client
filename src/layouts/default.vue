@@ -6,7 +6,7 @@
 	<transition name="fadeZoom" appear key="mainTransition">
 		<q-layout
 			view="lhh Lpr lff"
-			v-if="logined"
+			v-if="logined && auth_can(1, 'App')"
 			ref="layout"
 			class="AppLayout"
 		>
@@ -52,22 +52,23 @@ import {
 import AppMenu from '@/components/AppMenu'
 import AppHeader from '@/components/AppHeader'
 import AppMainAuth from '@/pages/main/auth'
-
+import { AuthMixin } from '@/mixins'
 
 export default {
-	data() {
-		return {
-			menuLeftOpen: true,
-			layoutLoaded: false,
-			layoutLoadedCheckInterval: false,
-		}
-	},
 	components: {
 		AppMenu,
 		AppHeader,
 		AppMainAuth,
 		QAjaxBar,
 		QWindowResizeObservable
+	},
+	mixins: [AuthMixin],
+	data() {
+		return {
+			menuLeftOpen: true,
+			layoutLoaded: false,
+			layoutLoadedCheckInterval: false,
+		}
 	},
 	watch: {
 		local_nav_open (n) {
@@ -100,7 +101,7 @@ export default {
 			'nav_openLeftSet'
 		])
 	},
-	mounted() {
+	created () {
 		this.layoutLoadedCheckInterval = setInterval(() => {
 			if (!this.$refs.layout) return
 			clearTimeout(this.layoutLoadedCheckInterval)

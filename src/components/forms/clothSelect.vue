@@ -10,26 +10,30 @@
 		</div>
 	</div>
 
-	<q-modal v-model="open" :content-css="{ padding: '30px' }">
+	<q-modal v-model="open" :content-css="{ padding: '30px', maxWidth: '100vw', width: '600px', height: '800px', maxHeight: '100vh' }">
 		<q-field>
 			<q-input v-model="local_search" float-label="Поиск"/>
 		</q-field>
 
-		<q-list v-loading="furniture_clothSelectForm.loading.list" no-border>
-			<q-item v-for="item, index in furniture_clothSelectForm.cached" @click.native="select(item)" :key="index">
-				<q-item-main>
-					{{ item.name }}
-				</q-item-main>
+		<div class="clothSelectWrapper__wrapper">
+			<q-list no-border link>
+				<q-item v-for="item, index in furniture_clothSelectForm.cached" @click.native="select(item)" :key="index">
+					<q-item-main>
+						{{ item.name }}
+					</q-item-main>
 
-				<q-item-side side="right" v-html="itemStatus(item)"/>
-			</q-item>
+					<q-item-side right v-html="itemStatus(item)"/>
+				</q-item>
+			</q-list>
+
+			<loading :value="furniture_clothSelectForm_loading"/>
 
 			<infinite-loading :distance="800" @infinite="local_furniture_clothSelectForm_infinity" ref="infiniteLoading">
 				<div class="end" slot="no-results" />
 				<div class="end" slot="no-more" />
 				<div class="spinner" slot="spinner" v-loading="furniture_clothSelectForm.loading.bottom" />
 			</infinite-loading>
-		</q-list>
+		</div>
 	</q-modal>
 </div>
 </template>
@@ -41,9 +45,19 @@ import {
 	mapMutations
 } from 'vuex'
 import InfiniteLoading from 'vue-infinite-loading'
-import { QModal, QModalLayout } from 'quasar'
+import { QModal, QModalLayout, QScrollArea } from 'quasar'
+import Loading from '@/components/Loading'
+import { AuthMixin } from '@/mixins'
 
 export default {
+	components: {
+		InfiniteLoading,
+		QModal,
+		QModalLayout,
+		QScrollArea,
+		Loading
+	},
+	mixins: [AuthMixin],
 	props: {
 		value: {},
 		index: {},
@@ -58,11 +72,6 @@ export default {
 			searchTimeout: false,
 			noImage: "https://www.head.com/shop/en/skin/frontend/rwd/headsports/images/no-img-available.png"
 		}
-	},
-	components: {
-		InfiniteLoading,
-		QModal,
-		QModalLayout
 	},
 	watch: {
 		local_search (query) {
@@ -87,7 +96,8 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'furniture_clothSelectForm'
+			'furniture_clothSelectForm',
+			'furniture_clothSelectForm_loading'
 		]),
 		local_furniture_clothSelectForm: {
 			get () {
@@ -111,9 +121,22 @@ export default {
 				`<div class="statusRED">[${item.cStatus ? 'Не используется' : 'Отсутствует'}]</div>`
 			:	item.KAT
 		},
-		select (item) {
-			this.$emit('input', item)
-			this.open = false
+		async select (item) {
+			if (!this.auth_can(1, 'SelectBrokenCloth') && +item.StatusActive)
+				return this.$store.dispatch('alert', `Ткань ${item.name} (${item.id}) отсутствует у поставщика и недоступна для заказа`)
+
+			try {
+				if (+item.StatusActive)
+					await this.$q.dialog({
+						title: 'Внимание',
+						message: `Ткань ${item.name} (${item.id}) отсутствует у поставщика и недоступна для заказа. Вы уверены что хотите продолжить?`,
+						ok: 'Продолжить',
+						cancel: 'Отмена'
+					})
+
+				this.$emit('input', item)
+				this.open = false
+			} catch (err) {}
 		},
 		local_furniture_clothSelectForm_infinity (payload) {
 			this.furniture_clothSelectForm_infinity({ payload, index: this.index })
@@ -123,80 +146,50 @@ export default {
 </script>
 
 
-<style lang="less">
-.clothSelectWrapper {
-	.clothSelected {
-		width: 100px;
-		height: 100px;
-		background-size: cover;
-		transition: all 0.3s ease-in-out;
+<style lang="stylus">
+
+.clothSelected {
+	width: 100px;
+	height: 100px;
+	background-size: cover;
+	transition: all 0.3s ease-in-out;
+	box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.2);
+	border-radius: 3px;
+	display: grid;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	user-select: none;
+	.buttonName {}
+	.edit {
+		opacity: 0;
+		box-sizing: border-box;
+		padding: 8px;
+		line-height: 14px;
+		background: #fff;
 		box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.2);
-		border-radius: 3px;
-		display: grid;
-		justify-content: center;
-		align-items: center;
-		position: relative;
-		user-select: none;
-		.buttonName {}
-		.edit {
-			opacity: 0;
-			box-sizing: border-box;
-			padding: 8px;
-			line-height: 14px;
-			background: #fff;
-			box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.2);
-			transition: all 0.3s ease-in-out;
-		}
-		.clothNameWrapper {
-			position: absolute;
-			bottom: 0;
-			width: 0;
-			height: 0;
-			left: 50%;
-			.clothName {
-				padding: 10px;
-				line-height: 20px;
-				position: absolute;
-				width: 120px;
-				left: -70px;
-				text-align: center;
-			}
-		}
-		&:hover {
-			cursor: pointer;
-			box-shadow: 0 4px 7px 1px rgba(0, 0, 0, 0.2);
-			.edit {
-				opacity: 1;
-			}
-		}
+		transition: all 0.3s ease-in-out;
 	}
-
-	.disabled {
-		background: #f5f7fa;
-		color: #b4bccc;
-		&:hover {
-			cursor: not-allowed;
-		}
-	}
-
-	.itemsWrapper {
-		height: 500px;
-		margin-top: 10px;
-		overflow-y: auto;
-		.item {
-			height: 40px;
-			box-sizing: border-box;
+	.clothNameWrapper {
+		position: absolute;
+		bottom: 0;
+		width: 0;
+		height: 0;
+		left: 50%;
+		.clothName {
 			padding: 10px;
-			cursor: pointer;
-			transition: all 0.3s ease-in-out;
-			user-select: none;
-			&:hover {
-				background: rgba(64, 158, 255, 0.1);
-			}
+			line-height: 20px;
+			position: absolute;
+			width: 120px;
+			left: -70px;
+			text-align: center;
 		}
-		.statusRED {
-			display: inline;
-			color: red;
+	}
+	&:hover {
+		cursor: pointer;
+		box-shadow: 0 4px 7px 1px rgba(0, 0, 0, 0.2);
+		.edit {
+			opacity: 1;
 		}
 	}
 }
@@ -207,4 +200,12 @@ export default {
 	}
 }
 
+
+.clothSelectWrapper
+	&__wrapper
+		height calc(100% - 50px)
+		overflow-y auto
+		user-select none
+		.statusRED
+			color red
 </style>

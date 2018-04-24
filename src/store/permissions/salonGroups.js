@@ -2,7 +2,8 @@ import api from '@/api'
 
 const state = {
 	cached: {
-		groups: []
+		groups: [],
+		groupsSetup: []
 	},
 	selected: {
 		type: "",
@@ -24,7 +25,7 @@ const actions = {
 		let res = await api.permissions.getGroups()
 		if (!res.data || res.data.error) return
 
-		commit('salonGroups_cacheSet', { type: 'groups', data: res.data })
+		commit('salonGroups_cacheSet', { groups: res.data })
 	},
 	async salonGroups_createGroup ({ commit, dispatch, state }) {
 		if (!state.add.group)
@@ -82,7 +83,7 @@ const actions = {
 }
 
 const mutations = {
-	salonGroups_cacheSet: (state, payload) => state.cached[payload.type] = payload.data,
+	salonGroups_cacheSet: (state, payload) => state.cached = { ...state.cached, ...payload },
 	salonGroups_cacheAppend: (state, payload) => state.cached.groups.push(payload),
 	salonGroups_cacheUpdateItem: (state, payload) => state.cached.groups = [...state.cached.groups.filter(el => el.id != payload.id), payload],
 	salonGroups_cacheRemoveItem: (state, payload) => state.cached.groups = state.cached.groups.filter(el => el.id != (payload.id || payload)),

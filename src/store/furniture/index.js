@@ -74,9 +74,7 @@ const state = {
 
 const actions = {
 	async furniture_init ({ commit, dispatch, getters, state }, payload) {
-		//let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
-		let ID_SALONA = null
-
+		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
 
 		commit('furniture_initInfinite', new Infinite({
 			method: api.furnitures.getLimited,
@@ -117,9 +115,9 @@ const actions = {
 	async furniture_getOne({ commit, dispatch }, payload){
 		commit('furniture_loadingOneSet', true)
 		let res = await api.furnitures.getOne(payload)
+		commit('furniture_loadingOneSet', false)
 		if (!res.data || res.data.error) return
 		commit('furniture_currentSet', res.data)
-		commit('furniture_loadingOneSet', false)
 	},
 	async furniture_getModels({ commit, dispatch }, payload){
 		commit('furniture_loadingModelsSet', true)
@@ -566,10 +564,10 @@ const getters = {
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
 	furniture_models: ({ cached }) => [
-			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
+			{ MODEL: "Все модели", value: undefined, count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
 			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
 		]
-		.sort(api.core.sortFnFactory(model => model.value == "" ? "_": model.MODEL, true)),
+		.sort(api.core.sortFnFactory(model => model.value == undefined ? "_": model.MODEL, true)),
 	furniture_loading: ({ loading }) => loading.list,
 	furniture_loadingBottom: ({ loading }) => loading.bottom,
 	furniture_loadingOne: ({ loading }) => loading.one,
@@ -653,7 +651,7 @@ const getters = {
 	},
 	furniture_new_cachedImages: state => state.new.cached.images.map(imageId => api.images.getUrl(imageId.VALUERECID)),
 	furniture_clothSelectForm: state => state.clothSelectForm,
-
+	furniture_clothSelectForm_loading: state => state.clothSelectForm.loading.list,
 }
 
 const modules = {

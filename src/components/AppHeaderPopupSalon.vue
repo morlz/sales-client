@@ -1,13 +1,15 @@
 <template>
 <div class="salonWrapper">
-	<select-current-salon-form v-model="modal"/>
+	<template v-if="auth_can(1, 'Salon')">
+		<select-current-salon-form v-model="modal"/>
 
-	<q-btn class="salonPopoverToggleButton" flat wait-for-ripple @click="modal = !modal">
-		<q-icon name="fa-building" v-if="app_view_mobile"/>
-		<template v-if="!app_view_mobile">
-			{{ auth_currentSalon ? auth_currentSalon.NAME : '...' }}
-		</template>
-	</q-btn>
+		<q-btn class="salonPopoverToggleButton" flat wait-for-ripple @click="modal = !modal">
+			<q-icon name="fa-building" v-if="app_view_mobile"/>
+			<template v-if="!app_view_mobile">
+				{{ auth_currentSalon ? auth_currentSalon.NAME : '...' }}
+			</template>
+		</q-btn>
+	</template>
 </div>
 </template>
 
@@ -17,20 +19,18 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
-
-import { QBtn, QIcon } from 'quasar'
 import SelectCurrentSalonForm from '@/components/forms/SelectCurrentSalon'
+import { AuthMixin } from '@/mixins'
 
 export default {
+	components: {
+		SelectCurrentSalonForm
+	},
+	mixins: [AuthMixin],
 	data() {
 		return {
 			modal: false,
 		}
-	},
-	components: {
-		QBtn,
-		QIcon,
-		SelectCurrentSalonForm
 	},
 	computed: {
 		...mapGetters([

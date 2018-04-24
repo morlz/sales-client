@@ -31,8 +31,11 @@ const actions = {
 	},
 	async personal_init ({ commit, dispatch }, payload) {
 		if (payload) {
-			dispatch('personal_getOne', payload)
-			dispatch('permissions_getRoles')
+			return Promise.all([
+				dispatch('personal_getOne', payload),
+				dispatch('permissions_getRoles'),
+				dispatch('salonGroups/salonGroups_getGroups'),
+			])
 		} else {
 			commit('personal_initInfinite', new Infinite({
 				method: api.personals.getLimited

@@ -7,7 +7,10 @@ const state = {
 const actions = {
 	event_createHandlers ({ commit, dispatch }) {
 		api.core.on("error", err => {
-			console.log(err)
+			console.log('[events] [error]', err)
+
+			if (err.status === 401)
+				return dispatch('logOut')
 
 			let { title } = api.errors.getStatusDescription ( err.status ),
 				notify = (title ? title : `Ошибка ${err.status ? err.status : ''}`) + ' ' + err.message

@@ -1,6 +1,6 @@
 <template>
 <q-page class="AppContent">
-	<div class="FurnitureSofa AppContent__inner" v-if="isOne">
+	<div class="FurnitureSofa AppContent__inner" v-if="isOne && auth_can(1, 'Furniture')">
 		<q-card>
 			<q-card-title>
 				Основная информация
@@ -16,7 +16,7 @@
 						<q-item-separator/>
 					</template>
 
-					<q-item v-for="row, rowIndex in list.items" :key="rowIndex">
+					<q-item v-for="row, rowIndex in list.items" :key="rowIndex" v-if="typeof row.hide !== 'function' || !row.hide()">
 						<q-item-main>
 							{{ row.label }}
 						</q-item-main>
@@ -34,7 +34,7 @@
 				</q-list>
 			</q-card-main>
 
-			<q-card-actions>
+			<q-card-actions v-if="furniture_current.td && !cart_alreadyIn(furniture_current.td.ID, true)">
 				<q-btn color="primary" @click="furniture_addToCart(furniture_current)">Добавить в корзину</q-btn>
 			</q-card-actions>
 		</q-card>
@@ -60,16 +60,20 @@
 
 			<q-card class="FurnitureSalon__items">
 				<infinite-table
-					:columns="furnitureSalonFieldDescriptionFiltred"
+					:columns="FurnitureSalonFiltred"
 					:rows="furniture_cached"
 					:complete="furniture_complete"
+					:select-fields="local_furniture_selectFields"
+					:filter-values="furniture_filters"
 					@infinite="furniture_infinity"
 					@click="routerGoId"
+					@sort="local_furniture_sortChange"
+					@filter="local_furniture_filterChange"
 					>
 
 					<template slot="buttons" slot-scope="props">
-						<i aria-hidden="true" class="q-icon material-icons" @click.stop="furniture_addToCart({ UN: props.row.UN })">shopping_cart</i>
-						<i aria-hidden="true" class="q-icon material-icons" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(props.row))">local_shipping</i>
+						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="furniture_addToCart({ UN: props.row.UN })">shopping_cart</i>
+						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(4, 'MovingSofaBetweenSalons')" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(props.row))">local_shipping</i>
 
 
 						<!--
@@ -110,9 +114,6 @@
 					@infinite="furniture_infinity"
 					@selected="transfer_selectedSet"
 				>
-					<template slot="selected" slot-scope="{ selected, count }">
-						<q-btn color="primary" v-if="count" @click="selectPlaceModal = !selectPlaceModal">Отметить прибывшие</q-btn>
-					</template>
 				</tabless>-->
 			</q-card>
 		</furniture-models-wrap>
@@ -124,7 +125,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin } from '@/mixins'
 import tabless from '@/components/tableSSNew'
 import InfiniteTable from '@/components/InfiniteTable'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
@@ -133,12 +134,9 @@ import { FurnitureSalon } from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
 import SelectPlaceForm from '@/components/forms/SelectPlace'
 import SelectSalonForm from '@/components/forms/SelectSalon'
-import SinleItemPageMixin from '@/mixins/SingleItemPage'
 import PreviewSalon from '@/components/PreviewSalon'
 import money from '@/filters/Money'
 import Loading from '@/components/Loading'
-
-
 
 
 export default {
@@ -152,7 +150,7 @@ export default {
 		SelectSalonForm,
 		Loading
 	},
-	mixins: [mixins, SinleItemPageMixin],
+	mixins: [AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin],
 	data() {
 		return {
 			FurnitureSalon,
@@ -214,7 +212,7 @@ export default {
 						label: 'Цены',
 						items: [
 							{ label: 'Цена', source: 'furniture_current.CENA', filter: el => money(el) + ' руб.' },
-							{ label: 'Цена модели опт', source: 'furniture_current.ModelPriceOpt', filter: el => money(el) + ' руб.' },
+							{ label: 'Цена модели опт', source: 'furniture_current.ModelPriceOpt', filter: el => money(el) + ' руб.', hide: a => this.auth_can(1, 'SeeOptPrice') },
 							{ label: 'Цена модели розн', source: 'furniture_current.ModelPriceR', filter: el => money(el) + ' руб.' },
 							{ label: 'Цена зал', source: 'furniture_current.CENA_ZAL', filter: el => money(el) + ' руб.' },
 						]
@@ -264,16 +262,24 @@ export default {
 			return { type: this.currentTab }
 		},
 		local_furniture_selectFields () {
-			let rez = []
+			let rez = {}
 			if (this.salon_list_furniture)
-				rez.push({ data: this.salon_list_furniture, field: "td.salon.NAME", fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA' }, filterable: true })
+				rez['td.salon.NAME'] = {
+					data: this.salon_list_furniture,
+					field: "td.salon.NAME",
+					fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA' }
+				}
 
 			if (this.furniture_models)
-				rez.push({ data: this.furniture_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+				rez['MODEL'] = {
+					data: this.furniture_models,
+					field: "MODEL",
+					fields: { label: "MODEL", value: 'value' }
+				}
 
 			return rez
 		},
-		furnitureSalonFieldDescriptionFiltred () {
+		FurnitureSalonFiltred () {
 			let tmp = this.FurnitureSalon
 
 			if (this.currentTab != 'new')
@@ -309,21 +315,25 @@ export default {
 			'furniture_destroy',
 			'app_layout_headerShadowSet'
 		]),
-		async local_furniture_filterChange (n) {
+		local_furniture_filterChange (n) {
+			if (n['MODEL'] == 'Все модели')
+				delete n['MODEL']
+
+			if (this.lastFurnituresFilters['td.salon.ID_SALONA'] != n['td.salon.ID_SALONA'])
+				this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': n['td.salon.ID_SALONA'] }, type: this.furniture_type })
+
 			this.lastFurnituresFilters = n
-			await this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
+			this.furniture_filtersChange (Object.assign({}, this.additionalFilters, n))
 		},
 		async local_furniture_sortChange (n) {
 			await this.furniture_sortChange (n)
 		},
-		local_furniture_handleFieldSelect (data) {
-			if (data.field != 'td.salon.NAME') return
-			this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': data.value }, type: this.furniture_type })
-		},
-		local_furniture_filtersModelSet (MODEL) {
-			if (MODEL == 'Все модели') MODEL = undefined
-			let filters = { ...this.furniture_filters, MODEL, type: this.furniture_type }
-			this.local_furniture_filterChange(filters)
+		local_furniture_filtersModelSet (model) {
+			this.local_furniture_filterChange({
+				...this.furniture_filters,
+				MODEL: model == 'Все модели' ? undefined : model,
+				type: this.furniture_type
+			})
 		},
 	},
 	async mounted () {

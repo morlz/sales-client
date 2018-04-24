@@ -14,7 +14,7 @@
 			@select="local_discount_filtersModelSet">
 
 			<q-card v-if="currentTab == 'table'" class="FurnitureDiscount__items">
-				<tabless
+				<!--<tabless
 					key="discount"
 					:data="discount_cached"
 					:complete="discount_complete"
@@ -48,7 +48,25 @@
 							<q-icon name="shopping_cart"/>
 						</q-btn>
 					</template>
-				</tabless>
+				</tabless>-->
+
+
+				<infinite-table
+					:columns="FurnitureDiscountFilred"
+					:rows="discount_cached"
+					:complete="discount_complete"
+					:select-fields="local_discount_selectFields"
+					:filter-values="discount_filters"
+					@infinite="discount_infinity"
+					@click="rowClickHandler"
+					@sort="local_discount_sortChange"
+					@filter="local_discount_filterChange"
+					>
+
+					<template slot="buttons" slot-scope="props">
+						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="discount_addToCart({ UN: props.row.UN })">shopping_cart</i>
+					</template>
+				</infinite-table>
 			</q-card>
 
 			<div v-if="currentTab == 'tile'">
@@ -69,8 +87,8 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import mixins from '@/mixins'
-import tabless from '@/components/tableSSNew'
+import { AuthMixin } from '@/mixins'
+import InfiniteTable from '@/components/InfiniteTable'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
@@ -79,13 +97,13 @@ import PreviewCloth from '@/components/PreviewCloth'
 
 export default {
 	components: {
-		tabless,
+		InfiniteTable,
 		discountTileView,
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
 		PreviewCloth,
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	data() {
 		return {
 			FurnitureDiscount,
@@ -141,12 +159,21 @@ export default {
 			return this.FurnitureDiscount
 		},
 		local_discount_selectFields () {
-			let rez = []
+			let rez = {}
+
 			if (this.salon_list_discount)
-				rez.push({ data: this.salon_list_discount, field: "td.salon.NAME", fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA'}, filterable: true })
+				rez["td.salon.NAME"] = {
+					data: this.salon_list_discount,
+					field: "td.salon.NAME",
+					fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA'}
+				}
 
 			if (this.discount_models)
-				rez.push({ data: this.discount_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+				rez['MODEL'] = {
+					data: this.discount_models,
+					field: "MODEL",
+					fields: { label: "MODEL" }
+				}
 
 			return rez
 		},
@@ -166,6 +193,12 @@ export default {
 			'discount_destroy'
 		]),
 		async local_discount_filterChange (n) {
+			if (n['MODEL'] == 'Все модели')
+				delete n['MODEL']
+
+				if (this.lastDiscountFilters['td.salon.ID_SALONA'] != n['td.salon.ID_SALONA'])
+					this.discount_getModels({ filters: { 'td.salon.ID_SALONA': n['td.salon.ID_SALONA'] } })
+
 			this.lastDiscountFilters = n
 			await this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
 		},
@@ -177,10 +210,11 @@ export default {
 			if (data.field != 'td.salon.NAME') return
 			this.discount_getModels({ filters: { 'td.salon.ID_SALONA': data.value }})
 		},
-		local_discount_filtersModelSet (MODEL) {
-			if (MODEL == 'Все модели') MODEL = ""
-			let filters = { ...this.discount_filters, MODEL }
-			this.local_discount_filterChange(filters)
+		local_discount_filtersModelSet (model) {
+			this.local_discount_filterChange({
+				...this.discount_filters,
+				MODEL: model == 'Все модели' ? undefined : model
+			})
 		},
 		rowClickHandler (e, item) {
 			this.$router.push(`/furniture/salon/${item.UN}`)

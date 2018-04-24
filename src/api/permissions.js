@@ -131,6 +131,15 @@ export default {
 			type: "role/groups"
 		})
 	},
+	async getGroupSetup (id) {
+		return await core.invoke({
+			method: 'get',
+			type: 'rolesetups/manager',
+			params: {
+				id
+			}
+		})
+	},
 	async createGroup (name) {
 		return await core.invoke({
 			method: "post",

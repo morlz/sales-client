@@ -1,21 +1,36 @@
 <template>
 <div class="profileWrapper">
-
 	<q-popover ref="popoverProfie">
-		<div class="profileModalWrapper">
-			<div class="bg">
-				<div class="avatar"></div>
-				<div class="fio">{{ fio }}</div>
-				<div class="dol">{{ loginedAs.UPOST }}</div>
-				<div class="salon">{{ auth_currentSalon ? auth_currentSalon.NAME : '...' }}</div>
-			</div>
-			<div class="buttons">
+		<q-card>
+			<q-card-media>
+				<img :src="avatar"/>
+			</q-card-media>
+
+			<q-card-title>{{ fio }}</q-card-title>
+
+			<q-card-main>
+				<q-list no-border>
+					<q-item>
+						<q-item-main>Должность</q-item-main>
+						<q-item-side right>{{ loginedAs.UPOST }}</q-item-side>
+					</q-item>
+
+					<q-item>
+						<q-item-main>Салон</q-item-main>
+						<q-item-side right>
+							<preview-salon :content="auth_currentSalon"/>
+						</q-item-side>
+					</q-item>
+				</q-list>
+			</q-card-main>
+
+			<q-card-actions>
 				<q-btn flat>Задачи</q-btn>
 				<q-btn flat>Заказы</q-btn>
 				<q-btn flat @click="goToProfile">Профиль</q-btn>
 				<q-btn flat color="negative" @click="logOut">Выйти</q-btn>
-			</div>
-		</div>
+			</q-card-actions>
+		</q-card>
 	</q-popover>
 
 	<q-btn class="name" flat wait-for-ripple>
@@ -27,13 +42,12 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { QBtn, QIcon, QPopover } from 'quasar'
+import PreviewSalon from '@/components/PreviewSalon'
+
 
 export default {
 	components: {
-		QBtn,
-		QIcon,
-		QPopover
+		PreviewSalon
 	},
 	methods: {
 		...mapMutations([]),
@@ -52,6 +66,9 @@ export default {
 		]),
 		fio () {
 			return `${this.loginedAs.FIO} ${this.loginedAs.IMY} ${this.loginedAs.OTCH}`
+		},
+		avatar () {
+			return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'
 		}
 	}
 }

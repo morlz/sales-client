@@ -30,17 +30,27 @@
 			</div>
 
 			<q-card class="manyClientsWrapper__card AppContent__inner">
-				<tabless
+				<!--<tabless
 					key="clientsinf"
 					:data="client_cached"
 					:complete="client_complete"
-					:field-description="clientManyFieldDescription"
+					:field-description="CRMClients"
 					:filters="client_filters"
 					ref="table"
 					@filter="local_client_filtersChange"
 					@sort="local_client_sortChange"
 					@click="routerGoId"
 					@infinite="client_infinity"
+				/>-->
+
+				<infinite-table
+					:columns="CRMClients"
+					:rows="client_cached"
+					:complete="client_complete"
+					@infinite="client_infinity"
+					@click="routerGoId"
+					@sort="local_client_sortChange"
+					@filter="local_client_filtersChange"
 				/>
 			</q-card>
 		</div>
@@ -50,14 +60,10 @@
 
 
 <script>
-import fieldDescription from '@/static/fieldDescription'
-
-let {
-	clientManyFieldDescription,
-} = fieldDescription
+import { CRMClients } from '@/static/fieldDescription'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import tabless from '@/components/tableSSNew'
+import InfiniteTable from '@/components/InfiniteTable'
 import lightTable from '@/components/lightTable'
 
 import InfoCardClient from '@/components/InfoCardClient'
@@ -66,33 +72,29 @@ import InfoCardTasks from '@/components/InfoCardTasks'
 import InfoCardPreorders from '@/components/InfoCardPreorders'
 
 
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin } from '@/mixins'
 import InfiniteLoading from 'vue-infinite-loading'
 
-import { QField, QInput, QCard } from 'quasar'
 
 export default {
 	data () {
 		return {
-			clientManyFieldDescription,
+			CRMClients,
 			lastClientsFilters: [],
 			searchByPhone: "",
 			searchByPhone2: "",
 			seachTimeout: false
 		}
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	components: {
-		tabless,
+		InfiniteTable,
 		lightTable,
 		InfiniteLoading,
 		InfoCardClient,
 		InfoCardContactFaces,
 		InfoCardTasks,
 		InfoCardPreorders,
-		QField,
-		QInput,
-		QCard
 	},
 	watch: {
 		oneId () {

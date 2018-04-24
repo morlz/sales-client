@@ -1,5 +1,5 @@
 <template>
-<base-preview>
+<base-preview v-if="Object.keys(content).length">
 	<template slot="button">
 		{{ content.NAME }}
 	</template>

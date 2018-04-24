@@ -14,7 +14,7 @@
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
 
 		<q-card class="manyTasksWrapper__card AppContent__inner">
-			<tabless
+			<!--<tabless
 				key="tasks"
 				:data="task_cached"
 				:complete="task_complete"
@@ -25,6 +25,16 @@
 				@sort="local_task_sortChange"
 				@click="routerGoId"
 				@infinite="task_infinity"
+			/>-->
+
+			<infinite-table
+				:columns="tasksManyFieldDescription"
+				:rows="task_cached"
+				:complete="task_complete"
+				@infinite="task_infinity"
+				@click="routerGoId"
+				@sort="local_task_sortChange"
+				@filter="local_task_filtersChange"
 			/>
 		</q-card>
 	</div>
@@ -47,14 +57,18 @@ import {
 	mapActions,
 	mapMutations
 } from 'vuex'
-import mixins from '@/mixins'
-import tabless from '@/components/tableSSNew.vue'
-import InfiniteLoading from 'vue-infinite-loading'
-import editTaskForm from '@/components/forms/editTask.vue'
-import endTaskForm from '@/components/forms/endTask.vue'
-import { QCard } from 'quasar'
+import { AuthMixin, RouteMixin } from '@/mixins'
+import InfiniteTable from '@/components/InfiniteTable'
+import editTaskForm from '@/components/forms/editTask'
+import endTaskForm from '@/components/forms/endTask'
 
 export default {
+	components: {
+		InfiniteTable,
+		editTaskForm,
+		endTaskForm
+	},
+	mixins: [AuthMixin, RouteMixin],
 	data() {
 		return {
 			tasksManyFieldDescription,
@@ -62,14 +76,6 @@ export default {
 			clientContactsFieldDescription,
 			clientTasksFieldDescription,
 		}
-	},
-	mixins: [mixins],
-	components: {
-		tabless,
-		InfiniteLoading,
-		editTaskForm,
-		endTaskForm,
-		 QCard
 	},
 	watch: {
 		oneId() {
@@ -105,25 +111,13 @@ export default {
 		]),
 		async local_task_filtersChange(n) {
 			await this.task_filtersChange(n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async local_task_sortChange(n) {
 			await this.task_sortChange(n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		}
 	},
-	async mounted() {
+	async created () {
 		await this.task_init(this.oneId)
-		if (this.$refs.infiniteLoading)
-			this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
 	},
 	beforeDestroy () {
 		this.task_destroy()

@@ -6,7 +6,7 @@ import { uid } from 'quasar'
 export default class ResumeSalon {
 	constructor (invoices, date = moment()) {
 		this.date = date
-		this.salon = invoices[0].salon
+		this.salon = invoices[0].salon || {}
 		this.invoices = invoices || []
 		this._months = []
 		this.best = false
@@ -18,7 +18,7 @@ export default class ResumeSalon {
 	}
 
 	get name () {
-		return this.salon.NAME
+		return this.salon.NAME || ''
 	}
 
 	get group () {

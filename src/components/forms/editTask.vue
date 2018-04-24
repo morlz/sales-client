@@ -36,10 +36,10 @@
 <script>
 //<el-date-picker type="date" v-model="editTaskForm.date" placeholder="Дата контакта" :editable="false" />
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin } from '@/mixins'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	data () {
 		return {
 			formOpen: false,

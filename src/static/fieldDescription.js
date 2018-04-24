@@ -16,35 +16,11 @@ let dataObj = {
 		{ field: "salon.NAME", label: "Салон", type: "string", width: 100 },
 	],
 
-	recordsManyFieldDescription: [
-		//{field: "id", label: "№", type: "number" },
-		{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
-		{ field: "created_at", label: "Дата создания", inline: true, width: 100, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
-		}},
-		{ field: "status.title", label: "Статус", type: "string", width: 100 },
-		{ field: "manager.FIO", label: "Менеджер", type: "string", width: 100 },
-		{ field: "salon.NAME", label: "Салон", type: "string", width: 120 },
-		{ field: "calc_summ", label: "Сумма расчета", type: "number", width: 100 },
-		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number", width: 100 },
-	],
-
 	adSources: [
 		{ value: "1", label: "Реклама" },
 		{ value: "2", label: "Рассылка по почте" },
 		{ value: "3", label: "Рассылка по телефону" },
 		{ value: "4", label: "Интернет" },
-	],
-
-	clientManyFieldDescription: [
-		//{ field: "id", label: "№", type: "number" },
-		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
-		{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
-		{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
-		{ field: "created_at", label: "Создан", inline: true, width: 120, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
-		} },
-		{ field: "notactive", label: "Неактивен", type: "string", width: 100 },
 	],
 
 	clientContactsFieldDescription: [
@@ -86,17 +62,6 @@ let dataObj = {
 		"Создание",
 		"Обновление",
 		"Удаление"
-	],
-
-	personalFieldDescription: [
-		{ field: "LOGIN", label: "Логин", width: 80 },
-		{ field: "FIO", label: "Фамилия", width: 100 },
-		{ field: "IMY", label: "Имя", width: 100 },
-		{ field: "OTCH", label: "Отчество", width: 100 },
-		{ field: "S_DATE", label: "Дата создания", width: 100 },
-		{ field: "RABOTAET", label: "Работает", width: 50 },
-		{ field: "roles", label: "Роли", type: 'array', fields: ['name'], width: 120 },
-		{ field: "salon.NAME", label: "Салон", width: 120 },
 	],
 
 	cartPopupExistFieldDescription: [
@@ -213,6 +178,41 @@ export let DocsInvoices = [
 	{ field: "client.fio", label: "Клиент", width: 150, search: false },
 	{ field: "adSource.NAME", label: "Р. Ист.", width: 100 },
 	{ field: "storage.NAME", label: "Салон", width: 150 },
+]
+
+export let CRMClients = [
+	//{ field: "id", label: "№", type: "number" },
+	{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
+	{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
+	{ field: "created_at", label: "Создан", inline: true, width: 120, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+	} },
+	{ field: "notactive", label: "Неактивен", type: "string", width: 100 },
+]
+
+export let CRMPreorders = [
+	//{field: "id", label: "№", type: "number" },
+	{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+	{ field: "created_at", label: "Дата создания", inline: true, width: 100, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+	}},
+	{ field: "status.title", label: "Статус", type: "string", width: 100 },
+	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 100 },
+	{ field: "salon.NAME", label: "Салон", type: "string", width: 120 },
+	{ field: "calc_summ", label: "Сумма расчета", type: "number", width: 100 },
+	{ field: "prepay_summ", label: "Сумма предзаказа", type: "number", width: 100 },
+]
+
+export let AdminPersonal = [
+	{ field: "LOGIN", label: "Логин", width: 80 },
+	{ field: "FIO", label: "Фамилия", width: 100 },
+	{ field: "IMY", label: "Имя", width: 100 },
+	{ field: "OTCH", label: "Отчество", width: 100 },
+	{ field: "S_DATE", label: "Дата создания", width: 100 },
+	{ field: "RABOTAET", label: "Работает", width: 50 },
+	{ field: "roles", label: "Роли", type: 'array', fields: ['name'], width: 120 },
+	{ field: "salon.NAME", label: "Салон", width: 120 },
 ]
 
 /*

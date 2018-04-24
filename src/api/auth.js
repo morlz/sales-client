@@ -2,11 +2,13 @@ import core from '@/api/core'
 import { LocalStorage } from 'quasar'
 
 export default {
-	async signIn (params) {
+	async signIn (id) {
 		return await core.invoke({
 			method: "get",
 			type: "auth/signin",
-			params
+			data: {
+				id
+			}
 		})
 	},
 	async logOut () {

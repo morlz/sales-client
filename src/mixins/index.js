@@ -34,26 +34,11 @@ export default {
 				path: `/preorder/preorders/${id}`
 			})
 		},
-		auth_can(minlvl, action) {
-			return !!this.auth_permisiions.find(perm => perm.name == action && perm.access_level >= minlvl)
-		},
 		task_buttonCondition(row) {
 			return !row.end_date
 		}
 	},
 	computed: {
-		...mapGetters([
-			'auth_permisiions'
-		]),
-		refInfinite() {
-			return this.$refs.infiniteLoading
-		},
-		isOne() {
-			return this.$route.params.id !== undefined
-		},
-		oneId() {
-			return this.$route.params.id
-		},
 		afterTableContactButtons() {
 			let rez = []
 
@@ -87,4 +72,17 @@ export default {
 			return rez
 		}
 	}
+}
+
+
+import AuthMixin from './Auth'
+import RouteMixin from './Route'
+import CartMixin from './Cart'
+import SingleItemPageMixin from './SingleItemPage'
+
+export {
+	AuthMixin,
+	RouteMixin,
+	CartMixin,
+	SingleItemPageMixin
 }

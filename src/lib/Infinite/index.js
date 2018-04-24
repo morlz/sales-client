@@ -25,8 +25,8 @@ class Infinite extends EventEmitter {
 		this._autoSetPreloaded = false
 		this._complete = false
 
-		this.firstPageSize = options.firstPageSize || 200
-		this.pageSize = options.pageSize || 1500
+		this.firstPageSize = options.firstPageSize || 60
+		this.pageSize = options.pageSize || 200
 		this.method = options.method
 		this.log = options.log || true
 

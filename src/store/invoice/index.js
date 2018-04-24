@@ -1,5 +1,6 @@
 import api from '@/api'
 import reduceInvoice from '@/lib/reducers/invoice'
+import reduceMovement from '@/lib/reducers/movement'
 import Infinite from '@/lib/Infinite'
 
 const namesOf1cFles = {
@@ -111,10 +112,14 @@ const actions = {
 		if (res.data && res.data.error) return
 		commit('invoice_currentSet', res.data)
 	},
-	invoice_print({ commit, dispatch }, payload) {
-		payload = reduceInvoice(payload)
-		console.log({ ...payload })
-		dispatch('print_run', { template: 'invoice', data: payload })
+	invoice_print({ commit, dispatch }, { data, type }) {
+		console.log({ ...data })
+
+		let options = type == 'movements' ?
+			{ template: 'deliveryNote', data: reduceMovement(data) }
+		:	{ template: 'invoice', data: reduceInvoice(data) }
+
+		dispatch('print_run', options)
 	},
 	async invoice_new_init ({ commit, dispatch }) {
 		await dispatch('invoice_new_getAdSources')

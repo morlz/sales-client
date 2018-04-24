@@ -1,21 +1,30 @@
 <template>
 <div class="InfiniteTable">
 	<div class="InfiniteTable__head InfiniteTableHead" :style="{ transform: `translate(-${scroll.left}px, ${head ? '0' : '-100%'})` }">
-		<div class="InfiniteTableHead__names">
-			<div v-for="column, index in table.columns" :key="index" :style="{ width: `${widths[index]}px` }" @click="handleSort($event, index)">
-				{{ column.label }}
-			</div>
-		</div>
-
 		<div class="InfiniteTableHead__searches">
-			<div v-for="column, index in table.columns" :key="index">
-				<q-input :value="filters[column.field]" @input="handleSearch($event, index)" :style="{ width: `${widths[index]}px` }"/>
-			</div>
+			<infinite-table-column
+				v-for="column, index in table.columns"
+				:key="index"
+				:column="column"
+				:width="widths[index]"
+				:sort="sort"
+				:select="selectFields[ column.field ]"
+				:filters="filters"
+				@sort="handleSort($event, index)"
+				@input="handleSearch"/>
 		</div>
 	</div>
 
-	<virtual-scroller class="InfiniteTable__scroll" :items="table.rows" item-height="50" content-tag="table" ref="scroll" emit-update @update="chunkRenderHandler" @scroll.native="scrollHandler">
-		<tr slot-scope="props" :key="props.itemKey" ref="trs" @click="rowClickHandler($event, props.item, props.itemIndex)">
+	<virtual-scroller
+		class="InfiniteTable__scroll"
+		:items="table.rows"
+		item-height="51"
+		content-tag="table"
+		ref="scroll"
+		emit-update
+		@update="chunkRenderHandler"
+		@scroll.native="throttledScrollHandler">
+		<tr slot-scope="props" ref="trs" @click="rowClickHandler($event, props.item, props.itemIndex)">
 			<td v-for="column, cIndex in table.columns" :title="column.getValue(props.item)" :key="cIndex">
 				<div :style="column.style">
 					<div v-html="column.getValue(props.item)"/>
@@ -43,17 +52,15 @@ import {
 import { QScrollArea, Scroll } from 'quasar'
 import { InfiniteTable, InfiniteRow, InfiniteColumn } from '@/lib/InfiniteTable'
 import throttle from 'lodash.throttle'
-
+import InfiniteTableColumn from '@/components/InfiniteTableColumn'
 import { VirtualScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-
-
-
 
 export default {
 	components: {
 		QScrollArea,
-		VirtualScroller
+		VirtualScroller,
+		InfiniteTableColumn
 	},
 	directives: {
 		Scroll
@@ -72,7 +79,12 @@ export default {
 		scrollFire: {
 			type: Number,
 			default: a => 100
-		}
+		},
+		selectFields: {
+			type: Object,
+			default: a => ({})
+		},
+		filterValues: Object
 	},
 	data() {
 		return {
@@ -86,9 +98,15 @@ export default {
 				direction: false,
 				column: -1
 			},
-			_filters: {},
+			filters: {},
 			infinite: {
 				send: false
+			},
+			filterTimeout: false,
+			first: true,
+			indexes: {
+				start: 0,
+				end: 0
 			}
 		}
 	},
@@ -97,20 +115,28 @@ export default {
 			this.table.columns = n
 		},
 		rows (n) {
-			let time = Date.now()
 			this.table.rows = n
 			this.$nextTick(this.updateViewport)
 			this.$nextTick(this.checkForMore)
-			console.log('rows update in', Date.now() - time);
 		},
 		sort (n) {
 			this.$emit('sort', {
-				sortColumn: this.table.columns[n.column],
+				sortColumn: this.table.columns[n.column].field,
 				sortType: n.direction ? 'asc' : 'desk'
 			})
 		},
-		filters (n) {
-			this.$emit('filter', n)
+		formatedFilters (n) {
+			if (this.first)
+				return this.first = false
+
+			if (this.filterTimeout)
+				clearTimeout(this.filterTimeout)
+
+			this.filterTimeout = setTimeout(a => this.filterTimeout = this.$emit('filter', n), 500)
+		},
+		filterValues (n) {
+			this.first = true
+			this.filters = { ...JSON.parse(JSON.stringify(n)) }
 		}
 	},
 	computed: {
@@ -120,23 +146,22 @@ export default {
 		sortIcon () {
 			return this.sort.direction ? 'sort-amount-up' : 'sort-amount-downs'
 		},
-		filters: {
-			get () {
-				return { ...this._filters }
-			},
-			set (val) {
-				this._filters = { ...val }
-			}
+		formatedFilters () {
+			return Object.keys(this.filters).reduce((prev, key) => this.filters[key] ? { ...prev, [key]: this.filters[key] }  : prev, {})
 		}
 	},
 	methods: {
-		scrollHandler () {
+		scrollHandler (e) {
 			if (!this.$refs.scroll) return
-			this.scroll.left = this.$refs.scroll.$el.scrollLeft
+			this.scroll.left = 	this.$refs.scroll.$el.scrollLeft
 		},
 		chunkRenderHandler (start, end) {
-			this.checkForMore(end)
 			this.updateViewport()
+
+			let n = { start, end }
+			if (n == this.indexes) return
+			this.indexes = n
+			this.checkForMore()
 		},
 		updateViewport () {
 			if (!this.$refs.trs) return
@@ -145,31 +170,29 @@ export default {
 
 			this.widths = Object.values(el.querySelectorAll('td')).map(el => el.offsetWidth)
 		},
-		handleSearch (e, index) {
-			console.log(e, index)
+		handleSearch (payload) {
+			this.filters = { ...this.filters, ...payload }
 		},
-		handleSort (e, index) {
-			if (this.sort.column === index)
-				return this.sort.direction = !this.sort.direction
-
-			this.sort.column = index
-			this.sort.direction = false
+		handleSort (e, column) {
+			this.sort = {
+				column,
+				direction: this.sort.column === column ? !this.sort.direction : false
+			}
 		},
 		rowClickHandler (e, row, index) {
 			this.$emit('click', e, this.table.rows[index], index)
 		},
 		moreContent () {
-			console.log('more');
 			this.$emit('infinite', {
 				loaded: a => this.infinite.send = false,
-				complete: a => a
+				complete: a => console.log('complete fn')
 			})
 		},
-		checkForMore (index) {
+		checkForMore () {
 			if (this.infinite.send || this.complete)
 				return
 
-			if (this.rows.length - index < this.scrollFire)
+			if (this.rows.length - this.indexes.end < this.scrollFire)
 				this.moreContent()
 		}
 	},
@@ -177,7 +200,9 @@ export default {
 		this.$nextTick(this.updateViewport)
 	},
 	created () {
-		this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, ''), prev), {})
+		const getVal = field => this.filterValues && this.filterValues[field] ? this.filterValues[field] : ''
+
+		this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev), {})
 		this.table = new InfiniteTable(this.columns, this.rows)
 	}
 }
@@ -185,7 +210,7 @@ export default {
 
 
 <style lang="stylus">
-$header-height = 100px
+$header-height = 50px
 
 .InfiniteTable
 	min-width 100%
@@ -201,7 +226,7 @@ $header-height = 100px
 		z-index 1000
 
 	&__scroll
-		height calc(100% - 100px)
+		height calc(100% - 50px)
 		overflow auto
 		transform translateZ(0)
 		margin-top $header-height
@@ -230,11 +255,19 @@ $header-height = 100px
 			transition background .2s ease-in-out
 			td
 				border-bottom 1px solid #e0e0e0
+
+				&:first-child
+					padding-left 5px
+
+				&:last-child
+					padding-right 5px
+
 				> div
 					margin 0 3px
 					box-sizing border-box
 					height 50px
 					line-height 50px
+					min-width 50px
 					overflow hidden
 					> div
 						display inline-block
@@ -248,18 +281,11 @@ $header-height = 100px
 .InfiniteTableHead
 	background #fff
 	border-bottom 1px solid #e0e0e0
-	&__names
 	&__searches
 		padding 0 3px
 		height 50px
 		display grid
 		grid-auto-flow column
 		align-items center
-
-	&__names
-		font-size 12px
-		user-select none
-		color rgba(0,0,0,.54)
-		text-align center
 
 </style>

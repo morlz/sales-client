@@ -4,11 +4,13 @@ const path = require('path')
 const config = {
 	dev: {
 		filesPath: path.resolve(__dirname, 'dist'),
+		indexPath: path.resolve(__dirname, 'dist'),
 		publicPath: '/'
 	},
 	prod: {
-		filesPath: path.resolve(__dirname, '..', 'sales-server-test', 'web'),
-		publicPath: path.join('nsl', 'web')
+		filesPath: path.resolve(__dirname, '..', 'sales-server', 'web'),
+		indexPath: path.resolve(__dirname, '..', 'sales-server', 'web'),
+		publicPath: path.join('/nsl', '/web/')
 	}
 }
 
@@ -59,10 +61,9 @@ module.exports = function(ctx) {
 				for (var prop in cfg.plugins)
 					if (cfg.plugins.hasOwnProperty(prop))
 						if (cfg.plugins[prop].constructor.name === 'HtmlWebpackPlugin')
-							cfg.plugins[prop].options.filename = path.join(options.filesPath, 'index.html')
+							cfg.plugins[prop].options.filename = path.join(options.indexPath, 'index.html')
 
-				cfg.resolve.alias['@'] = path.resolve('src');
-
+				cfg.resolve.alias['@'] = path.resolve('src')
 			}
 		},
 		devServer: {
@@ -101,6 +102,7 @@ module.exports = function(ctx) {
 				'QCard',
 				'QCardMain',
 				'QCardActions',
+				'QCardMedia',
 				'QCardTitle',
 				'QCardSeparator',
 				'QSelect',
@@ -120,7 +122,8 @@ module.exports = function(ctx) {
 			// Quasar plugins
 			plugins: [
 				'Notify',
-				'LocalStorage'
+				'LocalStorage',
+				'Dialog'
 			],
 			i18n: 'ru'
 		},

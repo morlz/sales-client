@@ -23,17 +23,17 @@
 		</q-card-main>
 
 		<q-card-actions>
-			<q-btn color="primary" v-if="auth_can(3, 'RoleSetup')">Редактировать</q-btn>
+			<q-btn color="primary" v-if="auth_can(3, 'Manager')">Редактировать</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	props: {
 		content: {
 			type: Object,

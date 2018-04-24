@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 import {
 	mapActions,
 	mapGetters
@@ -13,7 +13,7 @@ import {
 
 export default {
 	name: 'App',
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	watch: {
 		logined (n) {
 			if (!n) return

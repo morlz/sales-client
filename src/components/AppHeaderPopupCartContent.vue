@@ -47,7 +47,7 @@ import tabless from '@/components/tableSS.vue'
 import TableCollapsible from '@/components/TableCollapsible.vue'
 import fieldDescription from '@/static/fieldDescription'
 
-import { QBtn, QIcon } from 'quasar'
+import { AuthMixin } from '@/mixins'
 
 let {
 	cartPopupExistFieldDescription,
@@ -55,22 +55,16 @@ let {
 } = fieldDescription
 
 export default {
+	components: {
+		TableCollapsible,
+		tabless,
+	},
+	mixins: [AuthMixin],
 	data() {
 		return {
 			cartPopupExistFieldDescription,
 			cartPopupNewFieldDescription
 		}
-	},
-	components: {
-		TableCollapsible,
-		tabless,
-		QBtn,
-		QIcon,
-	},
-	methods: {
-		...mapActions([
-			'cart_removeItem'
-		]),
 	},
 	computed: {
 		...mapGetters([
@@ -79,6 +73,9 @@ export default {
 			'cart_removing',
 		]),
 		local_cart_cachedExistButtons () {
+			if (!this.auth_can(4, 'Cart'))
+				return []
+
 			return [{
 				type: "danger",
 				loading: {
@@ -92,6 +89,9 @@ export default {
 			}]
 		},
 		local_cart_cachedNewButtons () {
+			if (!this.auth_can(4, 'Cart'))
+				return []
+
 			return [{
 				type: "danger",
 				loading: {
@@ -104,7 +104,12 @@ export default {
 				click: (e, row) => this.cart_removeItem({ id: row.ID, type: 'new' })
 			}]
 		}
-	}
+	},
+	methods: {
+		...mapActions([
+			'cart_removeItem'
+		]),
+	},
 }
 </script>
 

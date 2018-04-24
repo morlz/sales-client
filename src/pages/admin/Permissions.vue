@@ -1,8 +1,14 @@
 <template>
 <q-page class="permissions">
 	<q-tabs class="permissions__tabs">
-		<q-tab slot="title" name="roles" label="Роли" default/>
-		<q-tab slot="title" name="groups" label="Группы салонов"/>
+		<q-tab slot="title" name="roles" label="Роли" default v-if="auth_can({
+			Role: 1,
+			ActionSetup: 1
+		})"/>
+		<q-tab slot="title" name="groups" label="Группы салонов" v-if="auth_can({
+			Group: 1,
+			Salon: 1
+		})"/>
 
 		<q-tab-pane name="roles" class="permissions__inner">
 			<permissions-roles/>
@@ -24,8 +30,8 @@ import {
 
 import PermissionsRoles from '@/components/PermissionsRoles'
 import PermissionsGroups from '@/components/PermissionsGroups'
-
 import { QTabs, QTab, QTabPane } from 'quasar'
+import { AuthMixin } from '@/mixins'
 
 export default {
 	components: {
@@ -35,15 +41,7 @@ export default {
 		PermissionsRoles,
 		PermissionsGroups
 	},
-	data() {
-		return {}
-	},
-	watch: {
-
-	},
-	computed: {
-
-	},
+	mixins: [AuthMixin],
 	methods: {
 		...mapMutations([
 			'app_layout_headerShadowSet'

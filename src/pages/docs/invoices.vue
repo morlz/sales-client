@@ -2,7 +2,7 @@
 	<q-page class="AppContent">
 		<div class="oneInvoiceWrapper AppContent__inner" v-if="isOne">
 			<div class="oneInvoice" v-loading="invoice_loadingOne">
-				<info-card-invoice :content="invoice_current" v-ga="`m`"/>
+				<info-card-invoice :content="invoice_current" v-ga="`m`" :type="type"/>
 				<info-card-client :content="invoice_current.client || invoice_current.clientOld" v-ga="`c`"/>
 				<info-card-invoice-additional :content="invoice_current" v-ga="`a`"/>
 				<info-card-zak-td :content="invoice_current" v-ga="`z`"/>
@@ -28,13 +28,16 @@
 					<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
 				</q-tabs>
 
-				<q-field class="manyInvoicesWrapper__salon">
+				<q-field class="manyInvoicesWrapper__salon" v-if="auth_can({
+						InvoiceSelectSalon: 1,
+						Salon: 1,
+					})">
 					<q-select v-model="local_currentSalon" :options="local_salon_list" filter inverted/>
 				</q-field>
 			</div>
 
 			<q-card class="manyInvoicesWrapper__card AppContent__inner">
-				<tabless
+				<!--<tabless
 					key="invoices"
 					:data="invoice_cached"
 					:complete="invoice_complete"
@@ -45,6 +48,16 @@
 					@sort="local_invoice_sortChange"
 					@click="routerGoId"
 					@infinite="invoice_infinity"
+				/>-->
+
+				<infinite-table
+					:columns="DocsInvoicesFiltred"
+					:rows="invoice_cached"
+					:complete="invoice_complete"
+					@infinite="invoice_infinity"
+					@click="routerGoId"
+					@sort="local_invoice_sortChange"
+					@filter="local_invoice_filtersChange"
 				/>
 			</q-card>
 		</div>
@@ -55,16 +68,25 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import tabless from '@/components/tableSSNew'
+import InfiniteTable from '@/components/InfiniteTable'
 import InfoCardClient from '@/components/InfoCardClient'
 import InfoCardInvoice from '@/components/InfoCardInvoice'
 import InfoCardZakTd from '@/components/InfoCardZakTd'
 import InfoCardShipments from '@/components/InfoCardShipments'
 import InfoCardInvoiceAdditional from '@/components/InfoCardInvoiceAdditional'
 import { DocsInvoices } from '@/static/fieldDescription'
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin } from '@/mixins'
 
 export default {
+	components: {
+		InfiniteTable,
+		InfoCardClient,
+		InfoCardInvoice,
+		InfoCardZakTd,
+		InfoCardShipments,
+		InfoCardInvoiceAdditional
+	},
+	mixins: [AuthMixin, RouteMixin],
 	props: {
 		type: String
 	},
@@ -81,15 +103,6 @@ export default {
 				{ name: "Отказ", type: 'deny' },
 			]
 		}
-	},
-	mixins: [mixins],
-	components: {
-		tabless,
-		InfoCardClient,
-		InfoCardInvoice,
-		InfoCardZakTd,
-		InfoCardShipments,
-		InfoCardInvoiceAdditional
 	},
 	watch: {
 		async additionalFilters (n) {

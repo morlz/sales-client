@@ -39,6 +39,8 @@ const actions = {
 			filters
 		}))
 
+		dispatch('salon_getList')
+
 		state.infinite.on('cached', n => commit('discount_cacheSet', n))
 		state.infinite.on('complete', n => commit('discount_completeSet', n))
 

@@ -3,7 +3,7 @@
 	<div class="gradient" :style="gradientStyles"/>
 
 	<div class="mainAuth">
-		<q-card class="authTile" v-loading="auth_loadingForm">
+		<q-card class="authTile">
 			<q-card-title>Авторизация</q-card-title>
 
 			<q-card-main>
@@ -20,6 +20,8 @@
 				<q-btn color="primary" @click="auth_signIn" @keyup.enter.native="authHandler">Вход</q-btn>
 				<q-btn color="secondary" disabled>Востановить пароль</q-btn>
 			</q-card-actions>
+
+			<loading :value="!!auth_loadingForm"/>
 		</q-card>
 	</div>
 
@@ -31,18 +33,12 @@
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import formRules from '@/static/formRules'
-import { QField, QInput, QCard, QCardTitle, QCardMain, QCardActions, QBtn } from 'quasar'
 import SelectCurrentSalonForm from '@/components/forms/SelectCurrentSalon'
+import Loading from '@/components/Loading'
 
 export default {
 	components: {
-		QField,
-		QInput,
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QCardActions,
-		QBtn,
+		Loading,
 		SelectCurrentSalonForm
 	},
 	data () {
@@ -142,9 +138,10 @@ export default {
 			}
 		}
 	},
-	mounted () {
+	created () {
 		if (this.app_view_desktop)
 			this.interval = setInterval(this.updateGradient, 50)
+
 		this.updateGradient()
 	},
 	beforeDestroy () {
@@ -175,6 +172,7 @@ export default {
 	        }
 	    }
 		.authTile {
+			position: relative;
 			width: 350px;
 			padding: 20px;
 			background: #fff;
