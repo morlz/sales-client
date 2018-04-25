@@ -6,7 +6,7 @@
 				<info-card-client :content="invoice_current.client || invoice_current.clientOld" v-ga="`c`"/>
 				<info-card-invoice-additional :content="invoice_current" v-ga="`a`"/>
 				<info-card-zak-td :content="invoice_current" v-ga="`z`"/>
-				<!-- <info-card-shipments :content="invoice_current.shipments" v-ga="`s`"/> -->
+				<info-card-shipments :content="invoice_current" v-ga="`s`"/>
 
 				<q-card v-ga="`p`">
 					<q-card-title>
@@ -177,8 +177,10 @@ export default {
 			await this.invoice_sortChange (n)
 		}
 	},
-	async mounted () {
-		this.app_layout_headerShadowSet(false)
+	mounted () {
+		this.app_layout_headerShadowSet(!!this.oneId)
+	},
+	async created () {
 		await this.invoice_init(this.oneId || { page: this.type })
 	},
 	beforeDestrou () {

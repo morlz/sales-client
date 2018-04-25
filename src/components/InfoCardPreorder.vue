@@ -47,13 +47,13 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin } from '@/mixins'
 
 
 
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	props: ['content'],
 	computed: {
 		...mapGetters([

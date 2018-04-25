@@ -80,7 +80,7 @@
 						</div>
 					</template>
 
-					<div slot="end" slot-scope="{ row }" class="infoCardZak__buttons">
+					<div slot="end" slot-scope="{ row }" class="infoCardZak__buttons" v-if="!+row.V_DAX">
 						<q-btn flat @click.stop="invoice_editZak(row)">
 							<q-icon name="edit"/>
 						</q-btn>
@@ -167,7 +167,7 @@
 						</div>
 					</template>
 
-					<div slot="end" slot-scope="{ row }">
+					<div slot="end" slot-scope="{ row }" v-if="!+row.VDAX">
 						<q-btn flat @click.stop="invoice_removeTd(row)">
 							<q-icon name="delete"/>
 						</q-btn>
@@ -176,7 +176,7 @@
 			</template>
 		</q-card-main>
 
-		<q-card-actions>
+		<q-card-actions v-if="!+data.IS_CLOSE">
 			<q-btn color="primary" @click="invoice_addFromCart">Добавить из корзины</q-btn>
 		</q-card-actions>
 	</q-card>
@@ -190,40 +190,14 @@ import TableCollapsible from '@/components/TableCollapsible.vue'
 import TableTwoCollumns from '@/components/TableTwoCollumns.vue'
 import TableTwoCollumnsRow from '@/components/TableTwoCollumnsRow.vue'
 import PreviewCloth from '@/components/PreviewCloth.vue'
-import {
-	QBtn,
-	QCard,
-	QCardTitle,
-	QCardMain,
-	QCardActions,
-	QList,
-	QItem,
-	QIcon,
-	QItemMain,
-	QItemSide,
-	QItemTile,
-	QItemSeparator,
-	QCollapsible
-} from 'quasar'
-
-import reduceTd from '@/lib/reducers/td'
+import { QCollapsible } from 'quasar'
+import reduceShipmentTd from '@/lib/reducers/invoice/shipmentTd'
+import reduceShipmentZak from '@/lib/reducers/invoice/shipmentZak'
 
 export default {
 	mixins: [mixins],
 	props: ["content"],
 	components: {
-		QBtn,
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QCardActions,
-		QList,
-		QItem,
-		QIcon,
-		QItemMain,
-		QItemSide,
-		QItemTile,
-		QItemSeparator,
 		QCollapsible,
 		TableCollapsible,
 		TableTwoCollumns,
@@ -233,23 +207,20 @@ export default {
 	data () {
 		return {
 			colsZak: [
-				{ fields: ["TIP", "MODEL"], label: "Наименование" },
+				{ fields: ["MODEL", "TIP"], label: "Наименование" },
 				{ field: "KAT", label: "Категория" },
 				{ field: "CENA", label: "Цена" },
 				{ field: "Vid_stejki", label: "Стёжка" },
 				{ field: "DEKOR", label: "Декор" },
 			],
 			colsTd: [
-				{ fields: ["furniture.TIP", "furniture.MODEL"], label: "Наименование" },
+				{ fields: ["furniture.MODEL", "furniture.TIP"], label: "Наименование" },
 				{ field: "furniture.KAT", label: "Категория" },
 				{ field: "CENA_ZAL", label: "Цена" },
 				{ field: "furniture.Vid_stejki", label: "Стёжка" },
 				{ field: "furniture.DEKOR", label: "Декор" },
 			]
 		}
-	},
-	watch: {
-
 	},
 	methods: {
 		...mapActions([
@@ -267,10 +238,10 @@ export default {
 			return this.content || {}
 		},
 		td () {
-			return this.data.td || []
+			return (this.data.td || []).map(el => reduceShipmentTd(el))
 		},
 		zak () {
-			return this.data.zak || []
+			return (this.data.zak || []).map(el => reduceShipmentZak(el))
 		}
 	}
 }

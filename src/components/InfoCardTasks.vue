@@ -18,7 +18,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
 import editTaskForm from '@/components/forms/editTask'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 import TableCollapsible from '@/components/TableCollapsible'
 
 let {
@@ -27,7 +27,7 @@ let {
 
 export default {
 	props: ['content'],
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	components: {
 		editTaskForm,
 		TableCollapsible

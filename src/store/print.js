@@ -52,7 +52,7 @@ const actions = {
 		printPage.document.close()
 		printPage.focus()
 		printPage.print()
-		//printPage.close()
+		printPage.close()
 	}
 }
 

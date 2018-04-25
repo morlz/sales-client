@@ -45,27 +45,17 @@
 			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">Выгрузить в AX</q-btn>
 			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">Выгрузить в 1С</q-btn>
 			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
+			<q-btn color="negative" @click="invoice_remove(data.ID)" v-if="auth_can(4, 'Invoice')" :disable="!canRemove">Удалить</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 import moment from 'moment'
 import {
-	QCard,
-	QCardTitle,
-	QCardMain,
-	QCardActions,
-	QList,
-	QItem,
-	QItemMain,
-	QItemSide,
-	QItemTile,
-	QItemSeparator,
 	QCollapsible,
-	QBtn
 } from 'quasar'
 
 import PreviewManager from '@/components/PreviewManager.vue'
@@ -77,20 +67,9 @@ export default {
 		},
 		type: String
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	components: {
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QCardActions,
-		QList,
-		QItem,
-		QItemMain,
-		QItemSide,
-		QItemTile,
-		QItemSeparator,
 		QCollapsible,
-		QBtn,
 		PreviewManager
 	},
 	data () {
@@ -103,7 +82,8 @@ export default {
 		...mapActions([
 			'invoice_print',
 			'invoice_exportToAx',
-			'invoice_exportTo1c'
+			'invoice_exportTo1c',
+			'invoice_remove'
 		]),
 		date (d) {
 			return moment(d).isValid() ? moment(d).format("DD-MM-YYYY") : d
@@ -115,6 +95,12 @@ export default {
 		},
 		fio () {
 			return this.data.FIO ? `${this.data.FIO} ${this.data.IMY} ${this.data.OTCH}` : `${this.data.lastname} ${this.data.name} ${this.data.patronymic}`
+		},
+		canRemove () {
+			return !(
+				(this.data.td ? this.data.td.reduce((prev, el) => +el.VDAX + prev, 0) : 0) +
+				(this.data.zak ? this.data.zak.reduce((prev, el) => +el.V_DAX + prev, 0) : 0)
+			)
 		}
 	}
 }

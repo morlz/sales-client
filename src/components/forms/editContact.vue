@@ -42,14 +42,14 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import rules from '@/static/formRules'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 
 let {
 	contacts
 } = rules
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	data () {
 		return {
 			formOpen: false,

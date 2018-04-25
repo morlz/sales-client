@@ -24,7 +24,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin } from '@/mixins'
 import tabless from '@/components/tableSS'
 
 import { QTabs, QTab, QTabPane } from 'quasar'
@@ -39,11 +39,9 @@ export default {
 			required: true
 		}
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	components: {
 		tabless,
-		QTabs,
-		QTab,
 		QTabPane
 	},
 	data () {

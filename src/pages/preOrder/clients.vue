@@ -129,7 +129,7 @@ export default {
 		]),
 		additionalFilters () {
 			return {
-				'contacts.phone': this.searchByPhone2
+				'contacts.phone': this.searchByPhone2 == '' ? undefined : this.searchByPhone2
 			}
 		}
 	},

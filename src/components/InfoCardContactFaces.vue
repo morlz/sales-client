@@ -22,7 +22,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import addContactForm from '@/components/forms/addContact'
 import editContactForm from '@/components/forms/editContact'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 import TableCollapsible from '@/components/TableCollapsible'
 
 let {
@@ -39,7 +39,7 @@ export default {
 			required: true
 		}
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	components: {
 		editContactForm,
 		addContactForm,

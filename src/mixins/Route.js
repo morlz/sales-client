@@ -8,10 +8,13 @@ export default {
 		},
 	},
 	methods: {
-		routerGoId(e, id) {
+		routerGoId(e, id, a, to = this.$route.fullPath) {
 			id = id.id || id.ID || id.UN || id.ID_OTG || id
-			let path = `${this.$route.fullPath}/${id}`
+			let path = `${to}/${id}`
 			this.$router.push({ path })
 		},
+		routerGoIdPath (path) {
+			return (e, id) => this.routerGoId(e, id, null, path)
+		}
 	}
 }

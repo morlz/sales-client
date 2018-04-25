@@ -67,5 +67,14 @@ export default {
 				id
 			}
 		})
+	},
+	async remove (id) {
+		return await core.invoke({
+			method: 'delete',
+			type: 'invoice',
+			data: {
+				id
+			}
+		})
 	}
 }

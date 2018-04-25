@@ -64,7 +64,7 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 
 import phoneFormat from '@/lib/phoneFormat'
 import SelectClientCreate from '@/components/forms/SelectClientCreate'
@@ -74,7 +74,7 @@ import SelectClientList from '@/components/forms/SelectClientList'
 import { QField, QInput, QOptionGroup, QCard, QCardTitle, QCardMain, QCheckbox, QToggle, QList, QItem, QItemMain, QItemSide, QItemTile, QBtn, QSlideTransition } from 'quasar'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	components: {
 		QField,
 		QInput,

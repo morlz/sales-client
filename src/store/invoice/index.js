@@ -113,8 +113,6 @@ const actions = {
 		commit('invoice_currentSet', res.data)
 	},
 	invoice_print({ commit, dispatch }, { data, type }) {
-		console.log({ ...data })
-
 		let options = type == 'movements' ?
 			{ template: 'deliveryNote', data: reduceMovement(data) }
 		:	{ template: 'invoice', data: reduceInvoice(data) }
@@ -159,6 +157,18 @@ const actions = {
 		commit('invoice_currentZakAppend', res.data.new)
 
 		dispatch('notify', 'Предметы успешно добавлены из корзины в заказ')
+	},
+	async invoice_remove ({ commit, dispatch }, id) {
+		commit('invoice_loadingOneSet', true)
+		let res = await api.invoices.remove(id)
+		commit('invoice_loadingOneSet', false)
+
+		if (!res.data || res.data.error) return
+		if (!res.data.id)
+			return dispatch('alert', 'Заказ не удалён! Что-то пошло не так...')
+
+		dispatch('notify', 'Заказ успешно удалён')
+		router.push('/')
 	},
 	async invoice_removeTd ({ commit, dispatch, state }, payload) {
 		let res = await api.invoices.removeItem({

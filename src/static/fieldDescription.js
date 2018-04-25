@@ -171,7 +171,7 @@ export let DocsInvoices = [
 	{ field: "DATE", label: "Дата оформления", inline: true, width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 	} },
-	{ field: "shipments", width: 100, type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+	{ field: "shipments.0.PL_OTGR", width: 100, type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
 		get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
 	} },
 	{ field: "manager.fio", label: "Менеджер", width: 150, search: false },
@@ -181,8 +181,9 @@ export let DocsInvoices = [
 ]
 
 export let CRMClients = [
-	//{ field: "id", label: "№", type: "number" },
-	{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+	{ field: "lastname", label: "Фамилия", type: "string", width: 150 },
+	{ field: "name", label: "Имя", type: "string", width: 150 },
+	{ field: "patronymic", label: "Отчество", type: "string", width: 150 },
 	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
 	{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
 	{ field: "created_at", label: "Создан", inline: true, width: 120, format: {
