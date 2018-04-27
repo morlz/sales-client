@@ -30,14 +30,6 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import mixins from '@/mixins'
 import {
-	QCard,
-	QCardTitle,
-	QCardMain,
-	QList,
-	QItem,
-	QItemMain,
-	QItemSide,
-	QItemTile,
 	QItemSeparator,
 	QCollapsible
 } from 'quasar'
@@ -48,14 +40,6 @@ export default {
 	mixins: [mixins],
 	props: ["content"],
 	components: {
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QList,
-		QItem,
-		QItemMain,
-		QItemSide,
-		QItemTile,
 		QItemSeparator,
 		QCollapsible,
 		PreviewSalon

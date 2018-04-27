@@ -38,14 +38,38 @@
 						{{ date(data.shipments[0].PL_OTGR) }}
 					</q-item-side>
 				</q-item>
+
+				<q-item>
+					<q-item-side>Оплачено</q-item-side>
+					<q-item-main/>
+					<q-item-side>
+						{{ data.paid }} руб.
+					</q-item-side>
+				</q-item>
+
+				<q-item>
+					<q-item-side>Сумма заказа</q-item-side>
+					<q-item-main/>
+					<q-item-side>
+						{{ data.price }} руб.
+					</q-item-side>
+				</q-item>
+
+				<q-item>
+					<q-item-side>Осталось оплатить</q-item-side>
+					<q-item-main/>
+					<q-item-side>
+						{{ data.need }} руб.
+					</q-item-side>
+				</q-item>
 			</q-list>
 		</q-card-main>
 
-		<q-card-actions class="infoCardInvoice_actions">
+		<q-card-actions class="infoCardInvoice__actions">
 			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">Выгрузить в AX</q-btn>
 			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">Выгрузить в 1С</q-btn>
 			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
-			<q-btn color="negative" @click="invoice_remove(data.ID)" v-if="auth_can(4, 'Invoice')" :disable="!canRemove">Удалить</q-btn>
+			<q-btn color="negative" @click="invoice_remove(data.ID)" v-if="auth_can(4, 'Invoice')" :disable="!data.canRemove">Удалить</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
@@ -59,6 +83,7 @@ import {
 } from 'quasar'
 
 import PreviewManager from '@/components/PreviewManager.vue'
+import Invoice from '@/lib/Invoice'
 
 export default {
 	props: {
@@ -71,12 +96,6 @@ export default {
 	components: {
 		QCollapsible,
 		PreviewManager
-	},
-	data () {
-		return {}
-	},
-	watch: {
-
 	},
 	methods: {
 		...mapActions([
@@ -91,34 +110,26 @@ export default {
 	},
 	computed: {
 		data () {
-			return this.content || {}
+			if (!this.content)
+				return {}
+
+			return this.content instanceof Invoice ? this.content : new Invoice(this.content)
 		},
 		fio () {
 			return this.data.FIO ? `${this.data.FIO} ${this.data.IMY} ${this.data.OTCH}` : `${this.data.lastname} ${this.data.name} ${this.data.patronymic}`
 		},
-		canRemove () {
-			return !(
-				(this.data.td ? this.data.td.reduce((prev, el) => +el.VDAX + prev, 0) : 0) +
-				(this.data.zak ? this.data.zak.reduce((prev, el) => +el.V_DAX + prev, 0) : 0)
-			)
-		}
 	}
 }
 </script>
 
 
-<style lang="less">
-.infoCardInvoice {
-	display: grid;
-	grid-auto-flow: row;
-	grid-template-rows: min-content 1fr max-content;
+<style lang="stylus">
+.infoCardInvoice
+	display grid
+	grid-auto-flow row
+	grid-template-rows min-content 1fr max-content
 
-	&_actions {
-		margin: 10px;
-		display: grid;
-		grid-auto-flow: column;
-		grid-gap: 10px;
-	}
-}
-
+	&__actions
+		display grid
+		grid-auto-flow column
 </style>

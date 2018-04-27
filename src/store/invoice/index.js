@@ -2,6 +2,8 @@ import api from '@/api'
 import reduceInvoice from '@/lib/reducers/invoice'
 import reduceMovement from '@/lib/reducers/movement'
 import Infinite from '@/lib/Infinite'
+import { Invoice } from '@/lib'
+import Vue from 'vue'
 
 const namesOf1cFles = {
 	blank: 'zagolovki',
@@ -172,7 +174,7 @@ const actions = {
 	},
 	async invoice_removeTd ({ commit, dispatch, state }, payload) {
 		let res = await api.invoices.removeItem({
-			id: payload.ID,
+			id: payload.id,
 			type: 'td'
 		})
 		if (!res.data || res.data.error) return
@@ -181,7 +183,7 @@ const actions = {
 	},
 	async invoice_removeZak ({ commit, dispatch, state }, payload) {
 		let res = await api.invoices.removeItem({
-			id: payload.ID,
+			id: payload.id,
 			type: 'zak'
 		})
 		if (!res.data || res.data.error) return
@@ -219,6 +221,20 @@ const actions = {
 	    document.body.appendChild(el)
 	    el.click()
 	    document.body.removeChild(el)
+	},
+	async invoice_addPayment ({ commit, dispatch }, payload) {
+		let res = await api.invoices.addPayment(payload)
+		if (!res.data || res.data.error) return
+
+		commit('invoice_currentPaymentAppend', [res.data])
+		dispatch('notify', 'Оплата успешно добавлена.')
+	},
+	async invoice_removePayment ({ commit, dispatch }, payload) {
+		let res = await api.invoices.removePayment(payload)
+		if (!res.data || res.data.error) return
+
+		commit('invoice_currentPaymentRemove', res.data)
+		dispatch('notify', 'Оплата успешно удалена.')
 	}
 }
 
@@ -230,12 +246,51 @@ const mutations = {
 	invoice_sortSet: (state, payload) => state.sort = payload,
 	invoice_lastOffsetSet: (state, payload) => state.offset.last = payload,
 	invoice_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
-	invoice_currentSet: (state, payload) => state.cached.current = payload,
+	invoice_currentSet: (state, payload) => state.cached.current = payload instanceof Invoice ? payload : new Invoice (payload),
 	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
-	invoice_currentTdRemove: (state, payload) => state.cached.current.td = state.cached.current.td.filter(el => el.ID != payload.ID),
-	invoice_currentZakRemove: (state, payload) => state.cached.current.zak = state.cached.current.zak.filter(el => el.ID != payload.ID),
+	invoice_currentTdUpdate: (state, payload) => payload.map(el => {
+		let index = state.cached.current.td.findIndex(td => td.ID == el.ID)
+		Vue.set(state.cached.current.td, index, {
+			...state.cached.current.td[index],
+			...el
+		})
+	}),
+	invoice_currentZakUpdate: (state, payload) => payload.map(el => {
+		let index = state.cached.current.zak.findIndex(zak => zak.ID == el.ID)
+		Vue.set(state.cached.current.zak, index, {
+			...state.cached.current.zak[index],
+			...el
+		})
+	}),
+	invoice_currentTdRemove: (state, payload) =>
+		state.cached.current.td = state.cached.current.td.filter(
+			el => Array.isArray(payload) ?
+				!payload.map(p => p.ID || p).includes(el.ID)
+			:	el.ID != payload.ID
+		),
+	invoice_currentZakRemove: (state, payload) =>
+		state.cached.current.zak = state.cached.current.zak.filter(
+			el => Array.isArray(payload) ?
+				!payload.map(p => p.ID || p).includes(el.ID)
+			:	el.ID != payload.ID
+		),
+	invoice_currentRemoveShipment: (state, payload) =>
+		state.cached.current.shipments = state.cached.current.shipments.filter(
+			el => el.ID_OTG != (payload.ID_OTG || payload)
+		),
 	invoice_currentTdAppend: (state, payload) => state.cached.current.td = [...state.cached.current.td, ...payload],
 	invoice_currentZakAppend: (state, payload) => state.cached.current.zak = [...state.cached.current.zak, ...payload],
+	invoice_currentShipmentsUpdate: (state, payload) =>
+		payload.map(el => {
+			let index = state.cached.current.shipments.findIndex(ship => ship.ID_OTG == el.ID_OTG)
+			Vue.set(state.cached.current.shipments, index, {
+				...state.cached.current.shipments[index],
+				...el
+			})
+		}),
+	invoice_currentShipmensAppend: (state, payload) => state.cached.current.shipments = [...state.cached.current.shipments, payload],
+	invoice_currentPaymentAppend: (state, payload) => state.cached.current.payments = [...state.cached.current.payments, ...payload],
+	invoice_currentPaymentRemove: (state, payload) => state.cached.current.payments = state.cached.current.payments.filter(el => el.ID_PL != payload.ID_PL),
 	invoice_loadingSet: (state, payload) => state.loading.list = payload,
 	invoice_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	invoice_loadingOneSet: (state, payload) => state.loading.one = payload,

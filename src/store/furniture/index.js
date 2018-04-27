@@ -398,13 +398,13 @@ const actions = {
 		const getCloth = (payload, index) => {
 			switch (index) {
 				case 0:
-					return payload.TKAN
+					return payload.cloth1 ? payload.cloth1.TKAN : ""
 					break;
 				case 1:
-					return payload.KOMP
+					return payload.cloth2 ? payload.cloth2.TKAN : ""
 					break;
 				case 2:
-					return payload.KOMP1
+					return payload.cloth3 ? payload.cloth3.TKAN : ""
 					break;
 			}
 		}
@@ -414,7 +414,7 @@ const actions = {
 		commit('furniture_new_editSet', payload)
 
 		if (models.length) {
-			let model = models.find(el => el.ITEMNAME == payload.MODEL)
+			let model = models.find(el => el.ITEMNAME == payload.model)
 			if (!model)
 				return dispatch('alert', 'Модель не надена')
 
@@ -422,14 +422,14 @@ const actions = {
 		}
 
 		if (state.new.cached.types.length) {
-			let type = state.new.cached.types.find(el => el.NAME == payload.TIP)
+			let type = state.new.cached.types.find(el => el.NAME == payload.type)
 			if (!type)
 				return dispatch('alert', 'Тип не найден')
 			await dispatch('furniture_new_typeSelect', type.CONFIGID)
 		}
 
 		if (state.new.cached.dekor.length) {
-			let dekor = state.new.cached.dekor.find(el => el.CONFIGID == payload.DEKOR)
+			let dekor = state.new.cached.dekor.find(el => el.CONFIGID == payload.dekor)
 			if (!dekor)
 				return dispatch('alert', 'Декор не найден')
 			await dispatch('furniture_new_dekorSelect', dekor.CONFIGID)
@@ -446,8 +446,8 @@ const actions = {
 			}
 		}
 
-		commit('furniture_new_priceSet', { r: +payload.CENA, opt: +payload.cenaOpt })
-		commit('furniture_new_signSet', payload.COMMENT)
+		commit('furniture_new_priceSet', { r: +payload.price, opt: +payload.priceOpt })
+		commit('furniture_new_signSet', payload.comment)
 	},
 
 	furniture_new_waitModels ({ state }) {
@@ -474,13 +474,13 @@ const actions = {
 	},
 	async furniture_new_save ({ commit, dispatch }) {
 		let data = await dispatch('furniture_new_collectData')
-		let res = await api.furnitures.updateZak( merge(data, { id: state.new.selected.edit.ID }) )
+		let res = await api.furnitures.updateZak( merge(data, { id: state.new.selected.edit.id }) )
 		if (!res.data || res.data.error) return
 
 		if (res.data.errors)
 			return dispatch('handleFormErrors', res.data.errors)
 
-		router.push(`/docs/invoices/${state.new.selected.edit.INVOICE_ID}`)
+		router.push(`/docs/invoices/${state.new.selected.edit.invoice_id}`)
 		dispatch('notify', 'Успешно изменено')
 	}
 }

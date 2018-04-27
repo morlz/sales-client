@@ -188,6 +188,20 @@ export default {
 	watch: {
 		addrM(n, o) {
 			this.selected.onMapPart = n
+		},
+		initial (n) {
+			if (this.initial.lat && this.initial.lng) {
+				let cords = {
+					lat: +this.initial.lat,
+					lng: +this.initial.lng
+				}
+				this.map.center = cords
+				this.marker = cords
+
+			}
+
+			this.selected.onMapPart = this.initial.address
+			this.map.show = true
 		}
 	},
 	computed: {
@@ -349,7 +363,7 @@ export default {
 			return !this.app_view_mobile || this.additional.show
 		},
 		mobileViewIcon () {
-			return this.additional.show ? `keyboard_arrow_up` : `fa-sliders`
+			return this.additional.show ? `keyboard_arrow_up` : `more_vert`
 		}
 	},
 	methods: {

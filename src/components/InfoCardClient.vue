@@ -1,20 +1,18 @@
 <template>
-	<q-card>
+	<q-card class="InfoCardClient">
 		<q-card-title>
 			Информация о клиенте
 		</q-card-title>
 
 		<q-card-main>
 			<q-list highlight no-border	>
-
 				<q-item>
 					<q-item-side>Имя</q-item-side>
 					<q-item-main/>
 					<q-item-side>
-						{{ fio }}
+						<preview-client :content="data"/>
 					</q-item-side>
 				</q-item>
-
 
 				<q-item v-if="data.signs">
 					<q-item-side>Приметы</q-item-side>
@@ -31,15 +29,26 @@
 						{{ data.notactive }}
 					</q-item-side>
 				</q-item>
+			</q-list>
 
-				<q-item>
-					<q-item-side>Контактные лица</q-item-side>
-					<q-item-main/>
+			<h6 class="InfoCardClient__contacts">Контакные лица</h6>
+
+			<q-list no-border>
+				<q-item v-for="contact, index in data.contactfaces" :key="index">
+					<q-item-side>{{ contact.regard }}</q-item-side>
+
+					<q-item-main>
+						{{ contact.fio }}
+					</q-item-main>
+
 					<q-item-side>
-						<template v-for="contact, index in data.contactfaces">
-							<q-item-tile>{{ contact.fio }}</q-item-tile>
-							<q-item-tile>{{ contact.regard }} {{ contact.phone }} {{ contact.email }} </q-item-tile>
-						</template>
+						<q-item-tile v-if="contact.phone" class="hiddenNumber">
+							{{ contact.phone }}
+						</q-item-tile>
+
+						<q-item-tile v-if="contact.email">
+							{{ contact.email }}
+						</q-item-tile>
 					</q-item-side>
 				</q-item>
 			</q-list>
@@ -49,43 +58,20 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
+import PreviewClient from '@/components/PreviewClient'
 import {
-	QCard,
-	QCardTitle,
-	QCardMain,
-	QList,
-	QItem,
-	QItemMain,
-	QItemSide,
-	QItemTile,
 	QItemSeparator,
 	QCollapsible
 } from 'quasar'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	props: ["content"],
 	components: {
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QList,
-		QItem,
-		QItemMain,
-		QItemSide,
-		QItemTile,
 		QItemSeparator,
-		QCollapsible
-	},
-	data () {
-		return {}
-	},
-	watch: {
-
-	},
-	methods: {
-
+		QCollapsible,
+		PreviewClient
 	},
 	computed: {
 		data () {
@@ -99,7 +85,10 @@ export default {
 </script>
 
 
-<style lang="less">
-
+<style lang="stylus">
+.InfoCardClient
+	&__contacts
+		font-size 18px
+		font-weight normal
 
 </style>

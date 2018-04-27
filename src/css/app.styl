@@ -115,6 +115,9 @@ body.with-layout-side-opened
 		height calc(100vh - 50px)
 		//overflow scroll
 
+	&-field-content > div::before
+		transform scaleY(1.5)
+
 
 .breadcrumb
 	a
@@ -184,3 +187,10 @@ h6
 		background $separator-background
 		width 100%
 		height 1px
+
+
+.hiddenNumber
+	filter blur(5px)
+	transition all .3s ease-in-out .5s
+	&:hover
+		filter blur(0)

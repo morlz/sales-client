@@ -114,10 +114,14 @@ module.exports = function(ctx) {
 				'QTab',
 				'QTabPane',
 				'QTooltip',
-				'QPopover'
+				'QPopover',
+				'QModal',
+				'QModalLayout',
+				'QCheckbox'
 			],
 			directives: [
-				'Ripple'
+				'Ripple',
+				'CloseOverlay'
 			],
 			// Quasar plugins
 			plugins: [

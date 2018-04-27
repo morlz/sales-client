@@ -7,15 +7,7 @@
 				<info-card-invoice-additional :content="invoice_current" v-ga="`a`"/>
 				<info-card-zak-td :content="invoice_current" v-ga="`z`"/>
 				<info-card-shipments :content="invoice_current" v-ga="`s`"/>
-
-				<q-card v-ga="`p`">
-					<q-card-title>
-						Оплата
-					</q-card-title>
-
-					<q-card-main>
-					</q-card-main>
-				</q-card>
+				<info-card-payments :content="invoice_current" v-ga="`p`"/>
 			</div>
 		</div>
 
@@ -73,6 +65,7 @@ import InfoCardClient from '@/components/InfoCardClient'
 import InfoCardInvoice from '@/components/InfoCardInvoice'
 import InfoCardZakTd from '@/components/InfoCardZakTd'
 import InfoCardShipments from '@/components/InfoCardShipments'
+import InfoCardPayments from '@/components/InfoCardPayments'
 import InfoCardInvoiceAdditional from '@/components/InfoCardInvoiceAdditional'
 import { DocsInvoices } from '@/static/fieldDescription'
 import { AuthMixin, RouteMixin } from '@/mixins'
@@ -84,6 +77,7 @@ export default {
 		InfoCardInvoice,
 		InfoCardZakTd,
 		InfoCardShipments,
+		InfoCardPayments,
 		InfoCardInvoiceAdditional
 	},
 	mixins: [AuthMixin, RouteMixin],
@@ -216,7 +210,7 @@ export default {
 	}
 
 	&__card {
-		height: ~"calc(100vh - 115px)";
+		height: ~"calc(100vh - 120px)";
 	}
 }
 

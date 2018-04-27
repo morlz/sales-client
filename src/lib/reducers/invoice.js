@@ -3,7 +3,7 @@ import reduceZak from '@/lib/reducers/zak'
 import { date } from 'quasar'
 
 export default invoice => {
-	let paid = invoice.oplata.reduce((prev, el) => prev + +el.SUM_OPL, 0)
+	let paid = invoice.payments.reduce((prev, el) => prev + +el.SUM_OPL, 0)
 
 	return {
 		...invoice,
@@ -32,13 +32,13 @@ export default invoice => {
 						:	'Доставка'
 		},
 		shipmentCount () {
-			return this.shipments.length
+			return (this.shipments || []).length
 		},
 		shipmentSumm () {
-			return this.shipments.reduce((prev, el) => prev + +el.SUM_DOST, 0)
+			return (this.shipments || []).reduce((prev, el) => prev + +el.SUM_DOST, 0)
 		},
 		shipment () {
-			return this.shipments[0] || {}
+			return (this.shipments || [])[0] || {}
 		},
 		productReadyDate () {
 			return this.shipment().PL_OTGR
@@ -58,7 +58,7 @@ export default invoice => {
 			return 'Error template compiling!! Client not found.'
 		},
 		hasPayment () {
-			return this.oplata && this.oplata.length
+			return this.payments && this.payments.length
 		}
 	}
 }

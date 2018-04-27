@@ -1,5 +1,9 @@
 <template>
-<base-preview v-if="Object.keys(content).length">
+<div v-if="typeof content === 'string'">
+	{{ content }}
+</div>
+
+<base-preview v-else-if="Object.keys(content).length">
 	<template slot="button">
 		{{ content.NAME }}
 	</template>
@@ -51,7 +55,7 @@ export default {
 	},
 	props: {
 		content: {
-			type: Object,
+			type: [Object, String],
 			default: a => ({})
 		},
 		inline: {

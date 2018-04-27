@@ -10,8 +10,8 @@ export default zak => {
 		cloth3: zak.cloth3 ? zak.cloth3.NAME || zak.KOMP1 : zak.KOMP1,
 		SKIDKA: +zak.SKIDKA ?
 					zak.SKIDKA + +zak.S_TYPE == 0 ?
-											zak.SKIDKA + 'руб.'
-										:	zak.SKIDKA + '%'
+											zak.SKIDKA + '%'
+										:	zak.SKIDKA + ' руб.'
 				:	0,
 		itogSumm: +zak.SKIDKA ?
 					+zak.S_TYPE ? price - +zak.SKIDKA : price - (price * +zak.SKIDKA / 100)

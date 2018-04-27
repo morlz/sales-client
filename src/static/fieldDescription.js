@@ -216,6 +216,14 @@ export let AdminPersonal = [
 	{ field: "salon.NAME", label: "Салон", width: 120 },
 ]
 
+export let InfoCardSofaHead = [
+	{ fields: ["model", "type"], label: "Наименование" },
+	{ field: "kat", label: "Категория" },
+	{ field: "price", label: "Цена" },
+	{ field: "stegka", label: "Стёжка" },
+	{ field: "dekor", label: "Декор" },
+]
+
 /*
 { field: "shipments", width: 100, fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
 	get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data

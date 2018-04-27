@@ -1,6 +1,7 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
 
+
 const state = {
 	complete: false,
 	infinite: false,
@@ -66,6 +67,53 @@ const actions = {
 		if (res.data && res.data.error) return
 		commit('shipment_currentSet', res.data)
 	},
+	async shipment_create ({ commit, dispatch }, payload) {
+		let res = await api.shipments.create(payload)
+		if (!res.data || res.data.error) return
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		if (!res.data.ID_OTG)
+		 	return dispatch('alert', 'Доставка не создана!')
+
+		commit('invoice_currentShipmensAppend', res.data)
+		dispatch('notify', 'Доставка успешно создана!')
+	},
+	async shipment_remove ({ commit, dispatch }, payload) {
+		let res = await api.shipments.remove(payload)
+		if (!res.data || res.data.error) return
+
+		if (!res.data.shipment)
+			return dispatch('alert', 'Ошибка! Доставка не удалена.')
+
+		commit('invoice_currentTdUpdate', res.data.td)
+		commit('invoice_currentZakUpdate', res.data.zak)
+		commit('invoice_currentRemoveShipment', res.data.shipment)
+		dispatch('notify', 'Доставка успешно удалена.')
+	},
+	async shipment_addRows ({ commit, dispatch }, payload) {
+		let res = await api.shipments.addRows(payload)
+		if (!res.data || res.data.error) return
+
+		commit('invoice_currentTdUpdate', res.data.td)
+		commit('invoice_currentZakUpdate', res.data.zak)
+		dispatch('notify', 'Строки успешно доавлены в доставку.')
+	},
+	async shipment_removeRow ({ commit, dispatch }, payload) {
+		let res = await api.shipments.removeRow(payload)
+		if (!res.data || res.data.error) return
+
+		commit('invoice_currentTdUpdate', res.data.td)
+		commit('invoice_currentZakUpdate', res.data.zak)
+		dispatch('notify', 'Строка успешно удалена из доставки')
+	},
+	async shipment_update ({ commit, dispatch }, payload) {
+		let res = await api.shipments.update(payload)
+		if (!res.data || res.data.error) return
+
+		commit('invoice_currentShipmentsUpdate', [res.data])
+		dispatch('notify', 'Доставка успешно изменена')
+	}
 }
 
 const mutations = {

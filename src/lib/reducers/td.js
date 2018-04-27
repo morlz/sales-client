@@ -21,8 +21,8 @@ export default td => {
 		S_TYPE: td.S_TYPE,
 		SKIDKA: +td.SKIDKA ?
 					td.SKIDKA + +td.S_TYPE == 0 ?
-											td.SKIDKA + 'руб.'
-										:	td.SKIDKA + '%'
+											td.SKIDKA + '%'
+										:	td.SKIDKA + ' руб.'
 				:	0,
 		itogSumm: +td.SKIDKA ?
 					+td.S_TYPE ? price - +td.SKIDKA : price - (price * +td.SKIDKA / 100)

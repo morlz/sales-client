@@ -76,5 +76,21 @@ export default {
 				id
 			}
 		})
+	},
+	async addPayment (data) {
+		return await core.invoke({
+			method: 'post',
+			type: 'payment/create',
+			data
+		})
+	},
+	async removePayment (id) {
+		return await core.invoke({
+			method: 'delete',
+			type: 'payment',
+			data: {
+				id
+			}
+		})
 	}
 }
