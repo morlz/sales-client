@@ -4,6 +4,7 @@ import cookie from '@/api/cookie'
 import EventEmitter from 'browser-event-emitter'
 import path from 'path'
 import auth from '@/api/auth'
+import Vue from 'vue'
 
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
@@ -13,39 +14,6 @@ class Core extends EventEmitter {
 		super(arguments)
 		if (process.env.NODE_ENV == 'development') console.log("[api] [core] init")
 	}
-
-	async fakeInvoke (params = {}) {
-		if (!params.data) params.data = {}
-		await _wait()
-		let rez = { data: { error: { message: "Not found" } }, status: 404 }
-
-		if (params.data.id !== undefined) {
-			if (db[params.type][params.data.id]) {
-				rez.data = db[params.type][params.data.id]
-				rez.status = 200
-				return rez
-			}
-		}
-
-		if (params.data.phone !== undefined) {
-			if (db[params.type]) {
-				rez.data = db[params.type].filter(el => el.phone.indexOf(params.data.phone) + 1 || el.name.toLowerCase().indexOf(params.data.phone.toLowerCase()) + 1)
-				rez.status = 200
-				return rez
-			}
-		}
-
-		if (params.data.id === undefined) {
-			if (db[params.type]) {
-				rez.data = db[params.type]
-				rez.status = 200
-				return rez
-			}
-		}
-
-		return rez
-	}
-
 	async invoke (params = {}) {
 		//await _wait(1000, 1000) //emit real server
 		if (!params.data) params.data = {}
@@ -74,19 +42,37 @@ class Core extends EventEmitter {
 	}
 
 	prepareArrays (params) {
-		for (var prop in params) {
-			if (params.hasOwnProperty(prop)) {
-				if (typeof params[prop] == 'object' || Array.isArray(params[prop])) params[prop] = JSON.stringify(params[prop])
-			}
-		}
+		for (var prop in params)
+			if (params.hasOwnProperty(prop))
+				if (typeof params[prop] == 'object' || Array.isArray(params[prop]))
+					params[prop] = JSON.stringify(params[prop])
+
+
 		return params
 	}
 
-	assignItem (path, payload, field = "id") {
-		if (!path) return
-		let data = path.find(el => el[field] == payload[field])
-		if (!data) return
-		for (var prop in payload) if (payload.hasOwnProperty(prop)) data[prop] = payload[prop]
+	assignItem (path, payload, field = 'id') {
+		if (!Array.isArray(path))
+			return console.warn('[core] [assignItem] 1 st arg must be an Array')
+		const findIndex = el => typeof field == 'function' ? field(el) == field(payload) : el[field] == payload[field]
+		let index = path.findIndex(findIndex)
+		if (index == -1)
+			return console.warn('[core] [assignItem] cannot find item')
+
+		Vue.set(path, index, {
+			...path[index],
+			...payload
+		})
+	}
+
+	assignItems (source, items, field = 'id') {
+		if (!Array.isArray(source))
+			return console.warn('[core] [assignItems] source (arg 1) must be an Array')
+
+		if (!Array.isArray(items))
+			return console.warn('[core] [assignItems] items (arg 2) must be an Array')
+
+		items.map(item => this.assignItem(source, item, field))
 	}
 
 	sortFnFactory (field, revert = false) {
@@ -104,7 +90,6 @@ class Core extends EventEmitter {
 	sortFnFactorySpecial (field, revert = false) {
 		return (a, b) => {
 			if ((a && typeof a.__sort === 'string') || (b && typeof b.__sort === 'string')) {
-				console.log(a, b);
 				if (a.__sort === b.__sort) return 0
 				if (a.__sort === 'start') return -1
 				if (b.__sort === 'start') return 1

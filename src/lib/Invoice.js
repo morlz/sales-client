@@ -1,9 +1,21 @@
-import { BaseModel, Shipment, Payment, Manager, Salon, Zak, Td } from '@/lib'
-
+import BaseModel from '@/lib/BaseModel'
+import { Shipment, Payment, Manager, Salon, Zak, Td, Marker, Client, AdSource } from '@/lib'
 
 export default class Invoice extends BaseModel {
 	constructor (arg) {
-		super(arg)
+		super()
+		this.define({
+			payments: [Payment],
+			shipments: [Shipment],
+			zak: [Zak],
+			td: [Td],
+			salon: Salon,
+			manager: Manager,
+			storage: Salon,
+			marker: Marker,
+			client: Client,
+			adSource: AdSource
+		}, arg)
 	}
 
 	get canRemove () {
@@ -25,71 +37,5 @@ export default class Invoice extends BaseModel {
 
 	get need () {
 		return this.price - this.paid
-	}
-
-	get payments () {
-		return this._payments || []
-	}
-
-	set payments (val) {
-		if (!Array.isArray(val))
-			return console.warn('Invoice payments must be an Array')
-
-		this._payments = val.map(el => el instanceof Payment ? el : new Payment(el))
-	}
-
-	get zak () {
-		return this._zak || []
-	}
-
-	set zak (val) {
-		if (!Array.isArray(val))
-			return console.warn('Invoice zak must be an Array')
-
-		this._zak = val.map(el => el instanceof Zak ? el : new Zak(el))
-	}
-
-	get td () {
-		return this._td || []
-	}
-
-	set td (val) {
-		if (!Array.isArray(val))
-			return console.warn('Invoice td must be an Array')
-
-		this._td = val.map(el => el instanceof Td ? el : new Td(el))
-	}
-
-	get shipments () {
-		return this._shipments || []
-	}
-
-	set shipments (val) {
-		if (!Array.isArray(val))
-			return console.warn('Invoice shipments must be an Array')
-
-		this._shipments = val.map(el => el instanceof Shipment ? el : new Shipment(el))
-	}
-
-	get manager () {
-		return this._manager
-	}
-
-	set manager (val) {
-		if (typeof val !== 'object')
-			return console.warn('Invoice salon must be an Object')
-
-		this._manager = val instanceof Manager ? val : new Manager(val)
-	}
-
-	get salon () {
-		return this._salon
-	}
-
-	set salon (val) {
-		if (typeof val !== 'object')
-			return console.warn('Invoice manager must be an Object')
-
-		this._salon = val instanceof Salon ? val : new Salon(val)
 	}
 }

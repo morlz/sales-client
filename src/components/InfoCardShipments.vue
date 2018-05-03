@@ -11,7 +11,7 @@
 
 			<template v-else>
 				<q-tabs inverted v-model="currentTab" v-if="data.length > 1">
-					<q-tab v-for="shipment, index in data" :key="index" slot="title" :name="shipment.ID_OTG + ''" :label="shipment.PL_OTGR" :default="!index"/>
+					<q-tab v-for="shipment, index in data" :key="index" slot="title" :name="shipment.ID_OTG + ''" :label="shipment.date" :default="!index"/>
 				</q-tabs>
 
 				<template v-if="!edit">
@@ -44,7 +44,7 @@
 							<q-item-side>Плановая дата</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
-								{{ shipment.PL_OTGR }}
+								{{ shipment.PL_OTGR }} ({{ shipment.timeFormNow }})
 							</q-item-side>
 						</q-item>
 
@@ -60,7 +60,7 @@
 							<q-item-side>Цена доставки</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
-								{{ shipment.SUM_DOST }}
+								{{ shipment.SUM_DOST }} руб.
 							</q-item-side>
 						</q-item>
 
@@ -68,7 +68,7 @@
 							<q-item-side>Цена товара</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
-								{{ shipment.SUM_TOVAR }}
+								{{ shipment.SUM_TOVAR }} руб.
 							</q-item-side>
 						</q-item>
 
@@ -76,8 +76,13 @@
 							<q-item-side>Телефон</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
-								<q-item-tile v-if="shipment.TEL1">{{ shipment.TEL1 }}</q-item-tile>
-								<q-item-tile v-if="shipment.TEL2">{{ shipment.TEL2 }}</q-item-tile>
+								<q-item-tile v-if="shipment.TEL1">
+									<base-phone :value="shipment.TEL1" :place="{ shipment }"/>
+								</q-item-tile>
+
+								<q-item-tile v-if="shipment.TEL2">
+									<base-phone :value="shipment.TEL2" :place="{ shipment }"/>
+								</q-item-tile>
 							</q-item-side>
 						</q-item>
 
@@ -159,6 +164,7 @@ import InfoCardSofaInner from '@/components/InfoCardSofaInner'
 import { InfoCardSofaHead } from '@/static/fieldDescription'
 import InvoiceAddShipmentForm from '@/components/forms/InvoiceAddShipment'
 import InvoiceAddRowsToShipmentForm from '@/components/forms/InvoiceAddRowsToShipment'
+import BasePhone from '@/components/BasePhone'
 
 export default {
 	components: {
@@ -168,7 +174,8 @@ export default {
 		InvoiceAddRowsToShipmentForm,
 		SelectAddressForm,
 		QBtnToggle,
-		QDatetime
+		QDatetime,
+		BasePhone
 	},
 	mixins: [AuthMixin],
 	props: {
@@ -182,7 +189,7 @@ export default {
 			currentTab: '',
 			addShipmentFormOpen: false,
 			addRowsToShipmentFormOpen: false,
-			InfoCardSofaHead,
+			InfoCardSofaHead: InfoCardSofaHead.filter(el => el.field != 'instance'),
 			edit: false,
 			editFields: {},
 			options: {
@@ -212,7 +219,7 @@ export default {
 				type: this.editFields.type,
 				price: this.editFields.SUM_DOST,
 				comment: this.editFields.NOTE,
-				date: this.editFields.PL_OTGR,
+				date: this.$moment(this.editFields.PL_OTGR).format('YYYY-MM-DD'),
 				to: this.editFields.marker
 			})
 			this.edit = false
@@ -221,13 +228,11 @@ export default {
 	computed: {
 		data () {
 			return ((this.content || {}).shipments || []).map(shipment => {
-				return {
-					...shipment,
-					rows: [
-						...this.content.td.filter(el => el.NZVR == shipment.ID_OTG).map(el => reduceShipmentTd(el)),
-						...this.content.zak.filter(el => el.NZV == shipment.ID_OTG).map(el => reduceShipmentZak(el))
-					]
-				}
+				shipment.rows = [
+					...this.content.td.filter(el => el.NZVR == shipment.ID_OTG).map(el => reduceShipmentTd(el)),
+					...this.content.zak.filter(el => el.NZV == shipment.ID_OTG).map(el => reduceShipmentZak(el))
+				];
+				return shipment
 			})
 		},
 		shipment () {

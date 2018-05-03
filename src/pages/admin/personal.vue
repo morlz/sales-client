@@ -87,6 +87,7 @@ export default {
 			'personal_filtersChange',
 			'personal_sortChange',
 			'personal_init',
+			'personal_getRoleSetup'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
@@ -101,6 +102,8 @@ export default {
 	},
 	async mounted() {
 		await this.personal_init(this.oneId)
+		if (this.oneId && this.auth_can(1, 'RoleSetup'))
+			this.personal_getRoleSetup(this.oneId)
 	},
 	beforeDestroy () {
 		this.personal_destroy()

@@ -4,8 +4,18 @@
 
 		<table-two-collumns v-ga="'c1'">
 			<table-two-collumns-row>
-				<template slot="label">Цена</template>
-				{{ content.price }}
+				<template slot="label">Цена дивана</template>
+				{{ content.instance.originalPrice }} руб.
+			</table-two-collumns-row>
+
+			<table-two-collumns-row>
+				<template slot="label">Скидка</template>
+				{{ content.instance.discountString }}
+			</table-two-collumns-row>
+
+			<table-two-collumns-row>
+				<template slot="label">Итоговая цена</template>
+				{{ content.instance.price }} руб.
 			</table-two-collumns-row>
 
 			<table-two-collumns-row>
@@ -21,11 +31,6 @@
 			<table-two-collumns-row>
 				<template slot="label">Тип</template>
 				{{ content.type }}
-			</table-two-collumns-row>
-
-			<table-two-collumns-row v-if="content.discount">
-				<template slot="label">Скидка</template>
-				{{ content.discount }} {{ content.discountType == 1 ? 'руб.' : '%' }}
 			</table-two-collumns-row>
 		</table-two-collumns>
 
@@ -61,6 +66,13 @@
 				<template slot="label">Примечание</template>
 				{{ content.comment }}
 			</table-two-collumns-row>
+
+			<table-two-collumns-row>
+				<template slot="label">Доставка</template>
+				<div :style="{ color: content.shipment_id ? 'green' : 'red' }">
+					<q-icon :name="content.shipment_id ? 'done' : 'warning'"/> {{ content.shipment_id ? 'Назначена ' + shipmentDate : 'Не назначена' }}
+				</div>
+			</table-two-collumns-row>
 		</table-two-collumns>
 
 		<div class="separator-g" v-ga="`sg2`"/>
@@ -74,7 +86,13 @@ import TableTwoCollumns from '@/components/TableTwoCollumns'
 import TableTwoCollumnsRow from '@/components/TableTwoCollumnsRow'
 import PreviewCloth from '@/components/PreviewCloth'
 export default {
-	props: ["content"],
+	props: {
+		content: {
+			type: Object,
+			default: a => ({})
+		},
+		shipments: Array
+	},
 	components: {
 		TableTwoCollumns,
 		TableTwoCollumnsRow,
@@ -84,6 +102,11 @@ export default {
 		...mapGetters([
 			'app_view_mobile'
 		]),
+		shipmentDate () {
+			if (!this.shipments) return ''
+
+			return 'на ' + this.$moment(this.shipments.find(el => el.ID_OTG == this.content.shipment_id).PL_OTGR).format('DD MMMM YYYY')
+		}
 	}
 }
 </script>

@@ -71,6 +71,9 @@ export default {
 			:	this.local_personal_currentRolesSetup.filter(el => el != role_id)
 		}
 	},
+	created () {
+		this.$store.dispatch('salonGroups/salonGroups_getGroups')
+	}
 }
 </script>
 

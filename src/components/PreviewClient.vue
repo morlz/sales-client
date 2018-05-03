@@ -18,6 +18,22 @@
 						<preview-salon :content="content.salon"/>
 					</q-item-side>
 				</q-item>
+
+				<q-item v-if="content.manager">
+					<q-item-side>Менеджер</q-item-side>
+					<q-item-main/>
+					<q-item-side>
+						<preview-manager :content="content.manager"/>
+					</q-item-side>
+				</q-item>
+
+				<q-item v-if="content.signs">
+					<q-item-side>Приметы</q-item-side>
+					<q-item-main/>
+					<q-item-side right>
+						{{ content.signs }}
+					</q-item-side>
+				</q-item>
 			</q-list>
 
 			<h6 class="PreviewClient__contacts">Контакные лица</h6>
@@ -31,8 +47,8 @@
 					</q-item-main>
 
 					<q-item-side>
-						<q-item-tile v-if="contact.phone" class="hiddenNumber">
-							{{ contact.phone }}
+						<q-item-tile v-if="contact.phone">
+							<base-phone :value="contact.phone" :place="{ contact }"/>
 						</q-item-tile>
 
 						<q-item-tile v-if="contact.email">
@@ -55,12 +71,16 @@
 
 <script>
 import BasePreview from '@/components/BasePreview'
+import BasePhone from '@/components/BasePhone'
 import PreviewSalon from '@/components/PreviewSalon'
+import PreviewManager from '@/components/PreviewManager'
 
 export default {
 	components: {
 		BasePreview,
-		PreviewSalon
+		PreviewSalon,
+		PreviewManager,
+		BasePhone
 	},
 	props: {
 		content: {

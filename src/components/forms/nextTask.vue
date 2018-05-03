@@ -1,62 +1,55 @@
 <template>
-<el-card class="next card nextTask" v-if="auth_can(3, 'Task')">
-	<h2 slot="header">Следующая задача</h2>
+	<q-card v-if="auth_can(3, 'Task')">
+		<q-card-title>Следующая задача</q-card-title>
 
-	<el-form label-width="130px">
-		<el-form-item label="Тип">
-			<el-select v-model="form.type">
-				<el-option v-for="item, index in currentScenario" :value="item.id" :label="item.title" :key="index" />
-			</el-select>
-		</el-form-item>
+		<q-card-main>
+			<q-field helper="Тип">
+				<q-select v-model="form.type" :options="currentScenario"/>
+			</q-field>
 
-		<transition-group class="nextFormTransitionWrapper" name="fade">
-			<div v-show="form.type == 1" key="1" class="nextFormTransition">
-				<el-form-item label="Описание">
-					<el-input type="textarea" v-model="form.description" placeholder="Описание" />
-				</el-form-item>
-			</div>
+			<q-slide-transition>
+				<div v-if="form.type == '1'">
+					<q-field>
+						<q-input v-model="form.description" float-label="Описание"/>
+					</q-field>
+				</div>
+			</q-slide-transition>
 
-			<div v-show="form.type == 2" key="1" class="nextFormTransition">
-				<el-form-item label="Дата">
-					<el-date-picker type="date" v-model="form.date" placeholder="Плановая дата" :id="null" />
-				</el-form-item>
+			<q-slide-transition>
+				<div v-if="form.type == '2'">
+					<q-field>
+						<q-datetime v-model="form.date" float-label="Плановая дата"/>
+					</q-field>
 
-				<el-form-item label="Описание">
-					<el-input type="textarea" v-model="form.description" placeholder="Описание" />
-				</el-form-item>
-			</div>
+					<q-field>
+						<q-input v-model="form.description" type="textarea" float-label="Описание"/>
+					</q-field>
 
-			<div v-show="form.type == 3" key="3" class="nextFormTransition">
-				<el-form-item label="Дата">
-					<el-date-picker type="date" v-model="form.date" placeholder="Плановая дата" :id="null" />
-				</el-form-item>
+				</div>
+			</q-slide-transition>
 
-				<el-form-item>
-					<el-checkbox v-model="form.podium">Заказ на подиум</el-checkbox>
-				</el-form-item>
+			<q-slide-transition>
+				<div v-if="form.type == '3'">
+					<q-field>
+						<q-datetime v-model="form.date" float-label="Плановая дата"/>
+					</q-field>
 
-				<el-form-item label="Тип оплаты">
-					<el-select v-model="form.payment_type" :disabled="form.podium">
-						<el-option value="???" label="???" />
-					</el-select>
-				</el-form-item>
+					<q-field>
+						<q-toggle v-model="form.podium" label="Заказ на подиум"/>
+					</q-field>
 
-				<el-form-item label="Регион">
-					<el-input v-model="form.region" placeholder="Регион" :disabled="form.podium" />
-				</el-form-item>
+					<q-field>
+						<q-input v-model="form.comment" type="textarea" float-label="Комментарий" :disable="form.podium"/>
+					</q-field>
 
-				<el-form-item label="Адрес">
-					<el-input v-model="form.address" placeholder="Адрес" :disabled="form.podium" />
-				</el-form-item>
+				</div>
+			</q-slide-transition>
+		</q-card-main>
 
-				<el-form-item label="Комментарий">
-					<el-input type="textarea" v-model="form.comment" placeholder="Комментарий" :disabled="form.podium" />
-				</el-form-item>
-			</div>
-		</transition-group>
-	</el-form>
-	<slot name="buttons" />
-</el-card>
+		<q-card-actions>
+			<slot name="buttons"/>
+		</q-card-actions>
+	</q-card>
 </template>
 
 <script>
@@ -66,16 +59,20 @@ import {
 	mapMutations
 } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
+import { QSlideTransition } from 'quasar'
 
 export default {
+	components: {
+		QSlideTransition
+	},
 	props: {
 		scenario: {
 			type: String,
 			default: () => "CREATE_PREORDER"
 		}
 	},
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	data() {
 		return {
 			form: {
@@ -120,7 +117,12 @@ export default {
 			'loginedAs'
 		]),
 		currentScenario() {
-			return this.scenarios[this.scenario].map(el => this.task_types.find(type => type.id == el) || {})
+			return this.scenarios[this.scenario]
+				.map(el => this.task_types.find(type => type.id == el) || {})
+				.map(el => ({
+					label: el.title,
+					value: el.id
+				}))
 		},
 		local_task_nextForm() {
 			return Object.assign({}, this.form)

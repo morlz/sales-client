@@ -6,12 +6,7 @@
 				<info-card-contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/>
 				<info-card-tasks :content="client_current.tasks" v-if="auth_can(1, 'Task')"/>
 				<info-card-preorders :content="client_current.preorders" v-if="auth_can(1, 'Preorder')"/>
-
-				<q-card class="orders">
-					<q-card-title>
-						Заказы
-					</q-card-title>
-				</q-card>
+				<info-card-invoices :content="client_current.invoices" v-if="auth_can(1, 'Invoice')" />
 			</div>
 		</div>
 
@@ -70,11 +65,10 @@ import InfoCardClient from '@/components/InfoCardClient'
 import InfoCardContactFaces from '@/components/InfoCardContactFaces'
 import InfoCardTasks from '@/components/InfoCardTasks'
 import InfoCardPreorders from '@/components/InfoCardPreorders'
+import InfoCardInvoices from '@/components/InfoCardInvoices'
 
 
 import { AuthMixin, RouteMixin } from '@/mixins'
-import InfiniteLoading from 'vue-infinite-loading'
-
 
 export default {
 	data () {
@@ -90,11 +84,11 @@ export default {
 	components: {
 		InfiniteTable,
 		lightTable,
-		InfiniteLoading,
 		InfoCardClient,
 		InfoCardContactFaces,
 		InfoCardTasks,
 		InfoCardPreorders,
+		InfoCardInvoices
 	},
 	watch: {
 		oneId () {
@@ -107,11 +101,6 @@ export default {
 		},
 		async additionalFilters (n) {
 			await this.client_filtersChange (Object.assign({}, this.lastClientsFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		}
 	},
 	computed: {
@@ -148,19 +137,9 @@ export default {
 		async local_client_filtersChange (n) {
 			this.lastClientsFilters = n
 			await this.client_filtersChange (Object.assign({}, this.additionalFilters, n))
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		},
 		async local_client_sortChange (n) {
 			await this.client_sortChange (n)
-
-			this.$nextTick(() => {
-				if (this.$refs.infiniteLoading)
-					this.$refs.infiniteLoading.$emit('$InfiniteLoading:reset')
-			})
 		}
 	},
 	async mounted(){
@@ -211,12 +190,12 @@ export default {
 .oneClientWrapper {
 	.cards {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-gap: 20px;
-		.tasks,
+		grid-template-columns: 1fr;
+		grid-gap: 10px;
+		/*.tasks,
 		.preorders {
 			grid-column: ~"1 / 3";
-		}
+		}*/
 
 		h2 {
 			margin: 0;

@@ -1,4 +1,9 @@
+import { Td } from '@/lib'
+
 export default td => {
+	if (!(td instanceof Td))
+		td = new Td(td)
+
 	return {
 		id: td.ID,
 		price: td.CENA_ZAL,
@@ -15,6 +20,7 @@ export default td => {
 		comment: td.furniture.COMMENT,
 		dax: !!+td.VDAX,
 		shipment_id: td.NZVR,
-		rowType: 'td'
+		rowType: 'td',
+		instance: td
 	}
 }

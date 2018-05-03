@@ -1,5 +1,5 @@
 <template>
-<q-modal class="InvoiceAddPayment" v-model="modal" :content-css="{ minHeight: '350px', minWidth: '400px' }">
+<q-modal class="InvoiceAddPayment" v-model="modal" :content-css="{ minHeight: '380px', minWidth: '400px' }">
 	<q-modal-layout>
 		<q-toolbar slot="header">
 			<q-btn flat round dense v-close-overlay icon="keyboard_arrow_left" />

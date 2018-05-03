@@ -1,6 +1,6 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
-
+import { Client } from '@/lib'
 import select from '@/store/clients/select'
 
 const state = {
@@ -73,6 +73,17 @@ const actions = {
 
 		commit('preorder_currentContctAdd', res.data)
 	},
+	async client_update ({ commit, dispatch }, payload) {
+		let res = await api.clients.update(payload)
+		if (!res.data || res.data.error) return
+
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
+
+		commit('client_currentUpdate', res.data)
+		commit('preorder_currentClientUpdate', res.data)
+		dispatch('notify', 'Клиент успешно оновлён')
+	},
 	async client_updateContact({ commit, dispatch }, payload){
 		let res = await api.clients.editContact(payload)
 		if (!res.data || res.data.error) return
@@ -82,6 +93,7 @@ const actions = {
 
 		commit('client_currentContctUpdate', res.data)
 		commit('preorder_currentContctUpdate', res.data)
+		dispatch('notify', 'Контакное лицо успешно обновлено')
 	}
 }
 
@@ -96,7 +108,8 @@ const mutations = {
 	client_sortSet: (state, payload) => state.sort = payload,
 	client_lastOffsetSet: (state, payload) => state.offset.last = payload,
 	client_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
-	client_currentSet: (state, payload) => state.cached.current = payload,
+	client_currentSet: (state, payload) => state.cached.current = payload instanceof Client ? payload : new Client(payload),
+	client_currentUpdate: (state, payload) => state.cached.current ? state.cached.current.update(payload) : 0,
 	client_currentContctUpdate: (state, payload) => api.core.assignItem(state.cached.current.contactfaces, payload),
 	client_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
 	client_loadingSet: (state, payload) => state.loading.list = payload,

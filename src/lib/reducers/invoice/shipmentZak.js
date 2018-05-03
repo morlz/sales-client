@@ -1,4 +1,9 @@
+import { Zak } from '@/lib'
+
 export default zak => {
+	if (!(zak instanceof Zak))
+		zak = new Zak(zak)
+
 	return {
 		id: zak.ID,
 		invoice_id: zak.INVOICE_ID,
@@ -17,6 +22,7 @@ export default zak => {
 		comment: zak.COMMENT,
 		dax: !!+zak.V_DAX,
 		shipment_id: zak.NZV,
-		rowType: 'zak'
+		rowType: 'zak',
+		instance: zak
 	}
 }

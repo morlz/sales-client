@@ -5,9 +5,7 @@
 			<slot name="start" :row="row"/>
 		</div>
 
-		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex">
-			{{ getFieldData(row, column, index) }}
-		</div>
+		<div class="tableCollapsible__bodyColumn" v-for="column, cIndex in columns" :key="cIndex" v-html="getFieldData(row, column, index)"/>
 
 		<div class="tableCollapsible__rowColumnEnd" v-if="$scopedSlots.end({ row: {} })">
 			<slot name="end" :row="row"/>
@@ -46,15 +44,22 @@ export default {
 		TableCollapsibleRow
 	},
 	methods: {
-		getFieldData: (row, { field, fields }, index) => {
-			if (field == 'index')
+		getFieldData: (row, column, index) => {
+			if (column.field == 'index')
 				return index
 
-			if (field)
-				return field.split(".").reduce((prev, el) => (prev[el] || ""), row)
+			let res
 
-			if (fields)
-				return fields.map(field => field.split(".").reduce((prev, el) => (prev[el] || ""), row)).join(' ')
+			if (column.field)
+				res = column.field.split(".").reduce((prev, el) => (prev[el] || ""), row)
+
+			if (column.fields)
+				res = column.fields.map(field => field.split(".").reduce((prev, el) => (prev[el] || ""), row)).join(' ')
+
+			if (column.format && typeof column.format.get === 'function')
+				res = column.format.get(res, row)
+
+			return res
 		},
 		openHandler (index) {
 			if (this.$refs.rows && this.accordion)
