@@ -1,11 +1,11 @@
 <template>
-<div class="addPreorderFormWrapper" v-if="auth_can(2, 'Preorder')">
+<div class="NewPreorderForm" v-if="auth_can(2, 'Preorder')">
 	<new-preorder-main-form/>
 	<client-select-form/>
 	<next-task-form scenario="CREATE_PREORDER">
 		<div class="buttons" slot="buttons">
-			<el-button type="primary" @click="onAddForm">Создать предзаказ</el-button>
-			<el-button type="danger" @click="goBack">Отмена</el-button>
+			<q-btn color="primary" @click="onAddForm">Создать предзаказ</q-btn>
+			<q-btn color="secondary" @click="goBack" flat>Отмена</q-btn>
 		</div>
 	</next-task-form>
 </div>
@@ -15,7 +15,7 @@
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-import mixins from '@/mixins'
+import { AuthMixin } from '@/mixins'
 
 import newPreorderMainForm from '@/components/forms/newPreorderMain.vue'
 import clientSelectForm from '@/components/forms/SelectClient'
@@ -27,7 +27,7 @@ let {
 
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin],
 	components: {
 		newPreorderMainForm,
 		clientSelectForm,
@@ -48,20 +48,14 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
-.addPreorderFormWrapper {
-	display: grid;
-	grid-gap: 20px;
-	grid-template-columns: repeat(auto-fit, minmax(450px, auto));
-    h2 {
-        margin-left: 20px;
-    }
-	padding-bottom: 10px;
-}
+<style lang="stylus" scoped>
+.NewPreorderForm
+	padding 10px
+	display grid
+	grid-gap 10px
+	grid-template-columns repeat(auto-fit, minmax(300px, 1fr))
+    h2
+		margin-left 20px
 
-@media screen and (max-width: 1200px) {
-    .addPreorderFormWrapper {
 
-    }
-}
 </style>

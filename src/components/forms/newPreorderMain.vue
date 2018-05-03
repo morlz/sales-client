@@ -1,39 +1,40 @@
 <template>
-	<el-card class="card mainInfo">
-		<h2 slot="header">Основная информация</h2>
+	<q-card class="NewPreorderMain">
+		<q-card-title>Основная информация предзаказа</q-card-title>
 
-		<el-form label-width="100px">
-			<el-form-item label="Источник">
-				<el-select v-model="form.source" placeholder="Выбирите рекламный источник">
-					<el-option v-for="item in adSources" :key="item.value" :label="item.label" :value="item.value" />
-				</el-select>
-			</el-form-item>
+		<q-card-main class="NewPreorderMain__inner">
+			<q-field helper="Рекламный источник">
+				<q-select v-model="form.source" :options="adSources" filter/>
+			</q-field>
 
-			<el-form-item label="Бюджет">
-				<el-input v-model="form.budget" placeholder="Бюджет" />
-			</el-form-item>
+			<q-field>
+				<q-input v-model="form.budget" float-label="Бюджет"/>
+			</q-field>
 
-			<el-form-item label="Веростность">
-				<el-rate v-model="form.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" />
-			</el-form-item>
+			<q-field helper="Вероятность">
+				<q-rating v-model="form.chance" :max="5" size="30px"/>
+			</q-field>
 
-			<el-form-item label="Примечание">
-				<el-input type="textarea" v-model="form.description" placeholder="Примечание" />
-			</el-form-item>
-		</el-form>
-	</el-card>
+			<q-field>
+				<q-input v-model="form.description" float-label="Примечание" type="textarea"/>
+			</q-field>
+		</q-card-main>
+	</q-card>
 </template>
 
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
-
+import { QRating } from 'quasar'
 let {
 	adSources
 } = fieldDescription
 
 export default {
+	components: {
+		QRating
+	},
 	data () {
 		return {
 			adSources,
@@ -70,10 +71,9 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
-
-
-@media screen and (max-width: 1200px) {
-
-}
+<style lang="stylus">
+.NewPreorderMain
+	&__inner
+		display grid
+		grid-gap 10px
 </style>

@@ -482,6 +482,13 @@ const actions = {
 
 		router.push(`/docs/invoices/${state.new.selected.edit.invoice_id}`)
 		dispatch('notify', 'Успешно изменено')
+	},
+	async furniture_updateTdDiscount ({ commit, dispatch }, payload) {
+		let res = await api.furnitures.updateTdDiscount(payload)
+		if (!res.data || res.data.error) return
+
+		commit('invoice_currentTdUpdate', [res.data])
+		dispatch('notify', 'Скидка успешно изменена')
 	}
 }
 

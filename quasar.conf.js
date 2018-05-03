@@ -117,7 +117,9 @@ module.exports = function(ctx) {
 				'QPopover',
 				'QModal',
 				'QModalLayout',
-				'QCheckbox'
+				'QCheckbox',
+				'QToggle',
+				'QDatetime'
 			],
 			directives: [
 				'Ripple',

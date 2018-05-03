@@ -58,7 +58,8 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'personal_saveRoleSetupState'
+			'personal_saveRoleSetupState',
+			'permissions_getRoles',
 		]),
 		...mapMutations([
 			'personal_currentRolesSetupSet'
@@ -69,6 +70,9 @@ export default {
 			:	this.local_personal_currentRolesSetup.filter(el => el != role_id)
 		}
 	},
+	created () {
+		this.permissions_getRoles()
+	}
 }
 </script>
 

@@ -55,4 +55,11 @@ export default {
 			data
 		})
 	},
+	async update (data) {
+		return await core.invoke({
+			method: 'put',
+			type: 'client',
+			data
+		})
+	}
 }

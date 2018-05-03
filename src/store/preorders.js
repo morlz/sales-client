@@ -4,15 +4,15 @@ import Infinite from '@/lib/Infinite'
 const state = {
 	complete: false,
 	infinite: false,
-	filters: [],
-	sort: [],
+	filters: {},
+	sort: {},
 	cached: {
 		list: [],
 		current: {},
 		statuses: []
 	},
 	loading: {
-		list: true,
+		list: false,
 		one: true,
 		statuses: true,
 		bottom: false
@@ -21,15 +21,26 @@ const state = {
 }
 
 const actions = {
-	async preorder_init ({ commit, dispatch, state }, payload) {
+	async preorder_init ({ commit, dispatch, state, getters }, payload) {
 		dispatch('preorder_getStatuses')
 
 		if (payload) {
 			await dispatch('preorder_getOne', payload)
 		} else {
+			let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+
+			dispatch('salon_getList')
 			commit('preorder_initInfinite', new Infinite({
-				method: api.preorders.getLimited
+				method: api.preorders.getLimited,
+				filters: {
+					'salon.ID_SALONA': ID_SALONA
+				}
 			}))
+
+			commit('preorder_filtersSet', {
+				...state.filters,
+				'salon.ID_SALONA': ID_SALONA
+			})
 
 			state.infinite.on('cached', n => commit('preorder_cacheSet', n))
 			state.infinite.on('complete', n => commit('preorder_completeSet', n))
@@ -70,8 +81,8 @@ const actions = {
 		let res = await api.preorders.create({
 			main: getters.preorder_add,
 			nextTask: getters.task_add_next,
-			client: getters.client_selectCurrent,
-			clientType: getters.client_selectType
+			client: getters.client_select_current,
+			clientType: getters.client_select_type
 		})
 		if (!res.data || res.data.error) return
 
@@ -96,6 +107,7 @@ const mutations = {
 	preorder_currentSet: (state, payload) => state.cached.current = payload,
 	preorder_currentTaskUpdate: (state, payload) => api.core.assignItem(state.cached.current.tasks, payload),
 	preorder_currentContctAdd: (state, payload) => state.cached.current.contactFaces.push(payload),
+	preorder_currentClientUpdate: (state, payload) => state.cached.current.client ? state.cached.current.client.update(payload) : 0,
 	preorder_currentContctUpdate: (state, payload) => api.core.assignItem(state.cached.current.contactFaces, payload),
 	preorder_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	preorder_cachedStatusesSet: (state, payload) => state.cached.statuses = payload,
@@ -109,14 +121,14 @@ const mutations = {
 const getters = {
 	preorder_complete: state => state.complete,
 	preorder_filters: ({ filters }) => filters,
-	preorder_filtersPhone: ({ filters }) => filters.phone || "",
+	preorder_filtersPhone: state => state.filters['contactFaces.phone'] || "",
 	preorder_current: ({ cached }) => cached.current,
 	preorder_cached: ({ cached }) => cached.list,
 	preorder_statuses: ({ cached }) => cached.statuses,
 	preorder_loading: ({ loading }) => loading.list,
 	preorder_loadingBottom: ({ loading }) => loading.bottom,
 	preorder_loadingOne: ({ loading }) => loading.one,
-	preorder_acceptedAdd: state => state.filters && state.filters.phone && state.filters.phone.length && !state.loading.list,
+	preorder_acceptedAdd: state => state.filters && state.filters['contactFaces.phone'] && state.filters['contactFaces.phone'].length > 10 && !state.loading.list,
 	preorder_add: state => state.add,
 }
 

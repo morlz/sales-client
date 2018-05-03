@@ -29,7 +29,7 @@ const actions = {
 	handleFormErrors({ commit, dispatch }, payload) {
 		for (var prop in payload)
 			if (payload.hasOwnProperty(prop))
-				dispatch('notify', { title: "Ошибка", message: payload[prop][0] })
+				dispatch('alert', payload[prop][0])
 	},
 }
 

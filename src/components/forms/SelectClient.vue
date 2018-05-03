@@ -71,25 +71,14 @@ import SelectClientCreate from '@/components/forms/SelectClientCreate'
 import SelectClientExist from '@/components/forms/SelectClientExist'
 import SelectClientList from '@/components/forms/SelectClientList'
 
-import { QField, QInput, QOptionGroup, QCard, QCardTitle, QCardMain, QCheckbox, QToggle, QList, QItem, QItemMain, QItemSide, QItemTile, QBtn, QSlideTransition } from 'quasar'
+import { QOptionGroup, QCheckbox, QToggle, QSlideTransition } from 'quasar'
 
 export default {
 	mixins: [AuthMixin],
 	components: {
-		QField,
-		QInput,
 		QOptionGroup,
-		QCard,
-		QCardTitle,
-		QCardMain,
 		QCheckbox,
 		QToggle,
-		QList,
-		QItem,
-		QItemMain,
-		QItemSide,
-		QItemTile,
-		QBtn,
 		QSlideTransition,
 
 		SelectClientCreate,

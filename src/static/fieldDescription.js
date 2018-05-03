@@ -194,13 +194,15 @@ export let CRMClients = [
 
 export let CRMPreorders = [
 	//{field: "id", label: "№", type: "number" },
-	{ field: "contactFaces", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
+	{ field: "client.lastname", label: "Фамилия", width: 100 },
+	{ field: "client.name", label: "Имя", width: 100 },
+	{ field: "client.patronymic", label: "Отчество", width: 100 },
 	{ field: "created_at", label: "Дата создания", inline: true, width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 	}},
 	{ field: "status.title", label: "Статус", type: "string", width: 100 },
 	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 100 },
-	{ field: "salon.NAME", label: "Салон", type: "string", width: 120 },
+	{ field: "salon.NAME", label: "Салон", width: 120 },
 	{ field: "calc_summ", label: "Сумма расчета", type: "number", width: 100 },
 	{ field: "prepay_summ", label: "Сумма предзаказа", type: "number", width: 100 },
 ]
@@ -219,9 +221,19 @@ export let AdminPersonal = [
 export let InfoCardSofaHead = [
 	{ fields: ["model", "type"], label: "Наименование" },
 	{ field: "kat", label: "Категория" },
-	{ field: "price", label: "Цена" },
+	{ field: "instance.price", label: "Цена" },
 	{ field: "stegka", label: "Стёжка" },
 	{ field: "dekor", label: "Декор" },
+	{ field: 'instance', label: 'Доставка', format: {
+		get: row => `<div style="color: ${row.shipment_id ? 'green' : 'red'};">${row.shipment_id ? 'Назначена' : 'Не назначена'}</div>`
+	} }
+]
+
+export let InfoCardInvoices = [
+	{ field: 'N_DOC', label: 'Номер документа' },
+	{ field: 'DATE', label: 'Дата заказа' },
+	{ field: 'manager.fio', label: 'Менеджер' },
+	{ field: 'salon.name', label: 'Салон' }
 ]
 
 /*

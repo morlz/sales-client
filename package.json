@@ -39,7 +39,8 @@
     "less": "^3.0.1",
     "less-loader": "^4.1.0",
     "quasar-cli": "^0.15.14",
-    "stylus-loader": "^3.0.2"
+    "stylus-loader": "^3.0.2",
+    "xml-js": "^1.6.2"
   },
   "engines": {
     "node": ">= 8.9.0",

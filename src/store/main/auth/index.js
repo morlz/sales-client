@@ -154,6 +154,7 @@ const getters = {
 	auth_currentSalon: state => state.currentSalon,
 	auth_currentSalonVisible: state => state.visible.currentSalon,
 	auth_loadingForm: (state, getters) => getters.auchChecking || getters.logined,
+	auth_salon: (state, getters, rootState, rootGetters) => rootGetters.salon_list.find(el => el.ID_SALONA == getters.currentUserSalon) || {},
 	logined: state => !!state.user && !!state.permissions && state.permissions.length && !!state.currentSalon,
 	loginedAs: state => state.user,
 	auchChecking: state => Object.values(state.loading).every(el => el),

@@ -31,11 +31,7 @@ const actions = {
 	},
 	async personal_init ({ commit, dispatch }, payload) {
 		if (payload) {
-			return Promise.all([
-				dispatch('personal_getOne', payload),
-				dispatch('permissions_getRoles'),
-				dispatch('salonGroups/salonGroups_getGroups'),
-			])
+			return await dispatch('personal_getOne', payload)
 		} else {
 			commit('personal_initInfinite', new Infinite({
 				method: api.personals.getLimited
@@ -60,23 +56,22 @@ const actions = {
 	async personal_infinity({ commit, dispatch, state, getters }, payload){
 		await state.infinite.more(payload)
 	},
-	personal_getOne({ commit, dispatch }, payload){
+	async personal_getOne({ commit, dispatch }, payload){
 		commit('personal_loadingOneSet', true)
-		api.personals
-			.getOne(payload)
-			.then(({ data }) => {
-				commit('personal_currentSet', data)
-				commit('personal_loadingOneSet', false)
-			})
+		let res = await api.personals.getOne(payload)
+		commit('personal_loadingOneSet', false)
+		if (!res.data || res.data.error) return
 
-		commit('personal_loadingRolesSetupSet', true)
-		api.personals
-			.getOneRolesSetup(payload)
-			.then(({ data }) => {
-				commit('personal_currentRolesSetupSet', data)
-				commit('personal_loadingRolesSetupSet', false)
-			})
+		commit('personal_currentSet', res.data)
 	},
+	async personal_getRoleSetup ({ commit, dispatch }, payload) {
+		commit('personal_loadingRolesSetupSet', true)
+		let res  = await api.personals.getOneRolesSetup(payload)
+		commit('personal_loadingRolesSetupSet', false)
+		if (!res.data || res.data.error) return
+
+		commit('personal_currentRolesSetupSet', res.data)
+	}
 }
 
 const mutations = {

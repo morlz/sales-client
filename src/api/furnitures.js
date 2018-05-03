@@ -220,9 +220,16 @@ export default {
 		})
 	},
 	async moveToSalon(data) {
-		return core.invoke({
+		return await core.invoke({
 			method: "post",
 			type: "cart/sofa-move",
+			data
+		})
+	},
+	async updateTdDiscount (data) {
+		return await core.invoke({
+			method: 'put',
+			type: 'discount/update-td',
 			data
 		})
 	}

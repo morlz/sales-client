@@ -1,6 +1,6 @@
 <template>
 <div class="InfiniteTable">
-	<div class="InfiniteTable__head InfiniteTableHead" :style="{ transform: `translate(-${scroll.left}px, ${head ? '0' : '-100%'})` }">
+	<div class="InfiniteTable__head InfiniteTableHead" :style="{ transform: `translate(-${scrollReal.left}px, ${head ? '0' : '-100%'})` }">
 		<div class="InfiniteTableHead__searches">
 			<infinite-table-column
 				v-for="column, index in table.columns"
@@ -55,6 +55,7 @@ import throttle from 'lodash.throttle'
 import InfiniteTableColumn from '@/components/InfiniteTableColumn'
 import { VirtualScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import { tween } from 'popmotion'
 
 export default {
 	components: {
@@ -91,6 +92,9 @@ export default {
 			table: {},
 			head: true,
 			scroll: {
+				left: 0
+			},
+			scrollReal: {
 				left: 0
 			},
 			widths: [],
@@ -137,6 +141,10 @@ export default {
 		filterValues (n) {
 			this.first = true
 			this.filters = { ...JSON.parse(JSON.stringify(n)) }
+		},
+		'scroll.left' (to) {
+			tween({ from: this.scrollReal.left, to, duration: 100 })
+				.start(v => this.scrollReal.left = v)
 		}
 	},
 	computed: {
@@ -185,7 +193,7 @@ export default {
 		moreContent () {
 			this.$emit('infinite', {
 				loaded: a => this.infinite.send = false,
-				complete: a => console.log('complete fn')
+				complete: a => a
 			})
 		},
 		checkForMore () {
@@ -202,7 +210,7 @@ export default {
 	created () {
 		const getVal = field => this.filterValues && this.filterValues[field] ? this.filterValues[field] : ''
 
-		this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev), {})
+		this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev), { ...this.filterValues })
 		this.table = new InfiniteTable(this.columns, this.rows)
 	}
 }

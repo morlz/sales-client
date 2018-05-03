@@ -1,5 +1,5 @@
 <template>
-	<div class="clientExist">
+	<div class="SelectClientExist">
 		<q-field>
 			<q-toggle v-model="mainContact.disableSMS" disabled label="sms-рассылка запрещена"/>
 		</q-field>
@@ -9,7 +9,7 @@
 		</q-field>
 
 		<q-field label="Пол">
-			<el-switch v-model="mainContact.gender == 'Мужской'" active-text="Мужской" inactive-text="Женский" readonly/>
+			{{ mainContact.gender ? 'Мужской' : 'Женский' }}
 		</q-field>
 
 		<q-field helper="Описание пользователя">
@@ -62,8 +62,11 @@ export default {
 </script>
 
 
-<style lang="less">
-.clientExist {
-	overflow: hidden;
-}
+<style lang="stylus">
+.SelectClientExist
+	overflow hidden
+	display grid
+	grid-gap 10px
+	margin-bottom 10px
+
 </style>

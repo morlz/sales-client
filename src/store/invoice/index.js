@@ -122,7 +122,10 @@ const actions = {
 		dispatch('print_run', options)
 	},
 	async invoice_new_init ({ commit, dispatch }) {
-		await dispatch('invoice_new_getAdSources')
+		await Promise.all([
+			dispatch('invoice_new_getAdSources'),
+			dispatch('salon_getList')
+		])
 	},
 	async invoice_new_getAdSources ({ commit, dispatch }) {
 		commit('invoice_new_loadingSet', { type: 'adSources', data: true })
@@ -248,20 +251,8 @@ const mutations = {
 	invoice_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
 	invoice_currentSet: (state, payload) => state.cached.current = payload instanceof Invoice ? payload : new Invoice (payload),
 	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
-	invoice_currentTdUpdate: (state, payload) => payload.map(el => {
-		let index = state.cached.current.td.findIndex(td => td.ID == el.ID)
-		Vue.set(state.cached.current.td, index, {
-			...state.cached.current.td[index],
-			...el
-		})
-	}),
-	invoice_currentZakUpdate: (state, payload) => payload.map(el => {
-		let index = state.cached.current.zak.findIndex(zak => zak.ID == el.ID)
-		Vue.set(state.cached.current.zak, index, {
-			...state.cached.current.zak[index],
-			...el
-		})
-	}),
+	invoice_currentTdUpdate: (state, payload) => api.core.assignItems(state.cached.current.td, payload, 'ID'),
+	invoice_currentZakUpdate: (state, payload) => api.core.assignItems(state.cached.current.zak, payload, 'ID'),
 	invoice_currentTdRemove: (state, payload) =>
 		state.cached.current.td = state.cached.current.td.filter(
 			el => Array.isArray(payload) ?
@@ -280,14 +271,7 @@ const mutations = {
 		),
 	invoice_currentTdAppend: (state, payload) => state.cached.current.td = [...state.cached.current.td, ...payload],
 	invoice_currentZakAppend: (state, payload) => state.cached.current.zak = [...state.cached.current.zak, ...payload],
-	invoice_currentShipmentsUpdate: (state, payload) =>
-		payload.map(el => {
-			let index = state.cached.current.shipments.findIndex(ship => ship.ID_OTG == el.ID_OTG)
-			Vue.set(state.cached.current.shipments, index, {
-				...state.cached.current.shipments[index],
-				...el
-			})
-		}),
+	invoice_currentShipmentsUpdate: (state, payload) => api.core.assignItems(state.cached.current.shipments, payload, 'ID_OTG'),
 	invoice_currentShipmensAppend: (state, payload) => state.cached.current.shipments = [...state.cached.current.shipments, payload],
 	invoice_currentPaymentAppend: (state, payload) => state.cached.current.payments = [...state.cached.current.payments, ...payload],
 	invoice_currentPaymentRemove: (state, payload) => state.cached.current.payments = state.cached.current.payments.filter(el => el.ID_PL != payload.ID_PL),

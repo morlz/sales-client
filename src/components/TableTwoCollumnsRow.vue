@@ -18,7 +18,7 @@ export default {}
 .tableTwoCollumns {
 	&__row {
 		display: grid;
-		grid-template-columns: repeat(2, max-content);
+		grid-template-columns: max-content 1fr;
 		grid-gap: 5px;
 		justify-content: space-between;
 		padding: 10px;
@@ -33,6 +33,7 @@ export default {}
 	}
 	&__rowValue {
 		text-align: right;
+		justify-self: end;
 	}
 }
 </style>

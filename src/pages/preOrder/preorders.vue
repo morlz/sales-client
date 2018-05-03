@@ -16,19 +16,19 @@
 		</q-card>
 	</div>
 
-	<div class="manyRecordsWrapper" v-if="!isOne">
+	<div class="manyRecordsWrapper" v-if="!isOne && auth_can(1, 'Preorder')">
 		<div
 			class="manyRecordsWrapper__horGroup AppContent__headerTabs"
 			:class="{ 'manyRecordsWrapper__horGroup-mobile': app_view_mobile }">
 			<q-tabs v-model="currentTab">
 				<q-tab name="all" label="Все предзаказы" slot="title"/>
-				<q-tab name="new" label="Новый предзаказ" slot="title"/>
+				<q-tab name="new" label="Новый предзаказ" slot="title" v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')"/>
 			</q-tabs>
 
 			<q-input
 				v-if="currentTab == 'all'"
 				inverted
-				v-model="searchByPhone"
+				v-model.number="searchByPhone"
 				:value="preorder_filtersPhone"
 				placeholder="Поиск по номеру телефона"
 				class="manyRecordsWrapper__phone" />
@@ -49,9 +49,11 @@
 			/>-->
 
 			<infinite-table
-				:columns="CRMPreorders"
+				:columns="CRMPreordersFiltred"
 				:rows="preorder_cached"
 				:complete="preorder_complete"
+				:select-fields="local_preorders_selectFields"
+				:filter-values="preorder_filters"
 				@infinite="preorder_infinity"
 				@click="routerGoId"
 				@sort="local_record_sortChange"
@@ -118,12 +120,18 @@ export default {
 				this.preorder_getOne(this.oneId)
 		},
 		searchByPhone (n) {
-			if (this.seachTimeout) clearTimeout (this.seachTimeout)
+			if (this.seachTimeout)
+				clearTimeout (this.seachTimeout)
 
-			this.seachTimeout = setTimeout(() => { this.searchByPhoneQuery = n }, 500)
+			if (n && (n + '').length < 10) return
+
+			this.seachTimeout = setTimeout(() => { this.searchByPhoneQuery = n || '' }, 500)
 		},
 		additionalFilters (n) {
-			this.preorder_filtersChange (Object.assign({}, n, this.lastFilters))
+			this.preorder_filtersChange (Object.assign({}, this.lastFilters, n))
+		},
+		preorder_filters (n) {
+			this.lastFilters = { ...n }//89165749385
 		}
 	},
 	computed: {
@@ -136,13 +144,35 @@ export default {
 			'preorder_filters',
 			'preorder_filtersPhone',
 			'preorder_complete',
-			'app_view_mobile'
+			'app_view_mobile',
+			'salon_listWithAll',
+			'preorder_acceptedAdd'
 		]),
 		additionalFilters () {
 			return {
-				'contactFaces.phone': this.searchByPhoneQuery
+				'contactFaces.phone': this.searchByPhoneQuery + ''
 			}
 		},
+		local_preorders_selectFields () {
+			let rez = {}
+
+			if (this.salon_listWithAll)
+				rez['salon.NAME'] = {
+					data: this.salon_listWithAll,
+					field: "salon.NAME",
+					fields: { label: "NAME", value: "ID_SALONA", output: 'salon.ID_SALONA' }
+				}
+
+			return rez
+		},
+		CRMPreordersFiltred () {
+			let rez = this.CRMPreorders
+
+			if (!this.auth_can(4, 'PreorderSelectSalon'))
+				rez = rez.filter(el => el.field != 'salon.NAME')
+
+			return rez
+		}
 	},
 	methods: {
 		...mapActions([,
@@ -216,10 +246,10 @@ export default {
 .OnePreorderWrapper {
 	display: grid;
 	grid-gap: 10px;
-	grid-template-columns: 1fr 1fr;
-	.tasks, .files {
+	grid-template-columns: 1fr;
+	/*.tasks, .files {
 		grid-column: ~"1 / 3";
-	}
+	}*/
 
 	.info {
 		.el-steps {

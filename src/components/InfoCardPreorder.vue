@@ -5,34 +5,91 @@
 	</q-card-title>
 
 	<q-card-main>
-		<el-steps :active="+data.status_id" align-center finish-status="success">
-			<el-step :title="item.title" v-for="item, index in preorder_statuses" :key="index" />
-		</el-steps>
+		<q-stepper alternative-labels :value="+data.status_id" no-header-navigation>
+			<q-step v-for="item, index in preorder_statuses" :name="index" :title="item.title" :key="index" active-icon="fa-eye"/>
+		</q-stepper>
 
-		<div class="infoGrid">
-			<div>Салон</div>
-			<div>{{ data.salon ? data.salon.NAME : '...' }}</div>
-			<div>Менеджер</div>
-			<div>{{ data.manager ? data.manager.FIO : '...' }}</div>
-			<div>Дата создания</div>
-			<div>{{ data.created_at }}</div>
-			<div>Клиент</div>
-			<div>{{ data.contactFaces ? data.contactFaces.find(el => el.regard == "Основной").fio : '...' }}</div>
-			<div>Рекл. источник</div>
-			<div>{{ data.adsource ? data.adsource.NAME : '...' }}</div>
-			<div>Вероятность</div>
-			<div>
-				<el-rate :value="+data.chance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" disabled />
-			</div>
-			<div>Бюджет</div>
-			<div>{{ data.budget }}</div>
-			<div>Сумма предоплаты</div>
-			<div>{{ data.prepay_summ }}</div>
-			<div>Сумма расчёта</div>
-			<div>{{ data.calc_summ }}</div>
-			<div class="lc">Примечание</div>
-			<div class="lc">{{ data.description }}</div>
-		</div>
+		<q-list highlight no-border>
+			<q-item v-if="content.salon">
+				<q-item-side>Салон</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					<preview-salon :content="content.salon"/>
+				</q-item-side>
+			</q-item>
+
+			<q-item v-if="content.manager">
+				<q-item-side>Менеджер</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					<preview-manager :content="content.manager"/>
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Дата создания</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.created_at }}
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Клиент</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					<preview-client :content="content.client"/>
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Рекл. источник</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.adsource ? content.adsource.NAME : '...' }}
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Вероятность</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					<q-rating :value="+content.chance" readonly :max="5" />
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Бюджет</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.budget }}
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Сумма предоплаты</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.prepay_summ }} руб.
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Сумма расчёта</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.calc_summ }} руб.
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Примечание</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.description }}
+				</q-item-side>
+			</q-item>
+		</q-list>
 	</q-card-main>
 
 	<q-card-actions>
@@ -48,27 +105,41 @@ import {
 	mapMutations
 } from 'vuex'
 import { AuthMixin, RouteMixin } from '@/mixins'
-
-
-
+import { QStepper, QStep, QRating } from 'quasar'
+import PreviewSalon from '@/components/PreviewSalon'
+import PreviewManager from '@/components/PreviewManager'
+import PreviewClient from '@/components/PreviewClient'
 
 export default {
+	components: {
+		QStepper,
+		QStep,
+		PreviewSalon,
+		PreviewManager,
+		PreviewClient,
+		QRating
+	},
 	mixins: [AuthMixin, RouteMixin],
-	props: ['content'],
+	props: {
+		content: {
+			type: Object,
+			default: a => ({})
+		}
+	},
 	computed: {
 		...mapGetters([
 			'preorder_statuses'
 		]),
-		data() {
-			return this.content || {}
+		data () {
+			return this.content
 		}
 	}
 }
 </script>
 
 
-<style lang="less">
-.InfoCardPreorder {
-
-}
+<style lang="stylus">
+.InfoCardPreorder
+	.q-stepper-step
+		display none
 </style>

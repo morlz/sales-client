@@ -8,7 +8,7 @@
 			<template v-if="zak.length">
 				<h6>Заказные позиции</h6>
 				<table-collapsible :columns="InfoCardSofaHead" :rows="zak" accordion border-open>
-					<info-card-sofa-inner slot-scope="{ row }" :content="row"/>
+					<info-card-sofa-inner slot-scope="{ row }" :content="row" :shipments="content.shipments"/>
 
 					<div slot="end" slot-scope="{ row }" class="infoCardZak__buttons" v-if="!row.dax">
 						<q-btn flat @click.stop="invoice_editZak(row)">
@@ -25,19 +25,25 @@
 			<template v-if="td.length">
 				<h6>Позиции со склада</h6>
 				<table-collapsible :columns="InfoCardSofaHead" :rows="td" accordion border-open>
-					<info-card-sofa-inner slot-scope="{ row }" :content="row"/>
+					<info-card-sofa-inner slot-scope="{ row }" :content="row" :shipments="content.shipments"/>
 
 					<div slot="end" slot-scope="{ row }" v-if="!row.dax">
+						<q-btn flat @click.stop="(editTdFormOpen = true, editTd = row)">
+							<q-icon name="edit"/>
+						</q-btn>
+
 						<q-btn flat @click.stop="invoice_removeTd(row)">
 							<q-icon name="delete"/>
 						</q-btn>
 					</div>
 				</table-collapsible>
+
+				<invoice-edit-td-form :content="editTd" v-model="editTdFormOpen"/>
 			</template>
 		</q-card-main>
 
 		<q-card-actions v-if="!+data.IS_CLOSE">
-			<q-btn color="primary" @click="invoice_addFromCart">Добавить из корзины</q-btn>
+			<q-btn color="primary" @click="invoice_addFromCart" v-if="cart_cachedCount">Добавить из корзины</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
@@ -55,6 +61,7 @@ import reduceShipmentTd from '@/lib/reducers/invoice/shipmentTd'
 import reduceShipmentZak from '@/lib/reducers/invoice/shipmentZak'
 import InfoCardSofaInner from '@/components/InfoCardSofaInner'
 import { InfoCardSofaHead } from '@/static/fieldDescription'
+import InvoiceEditTdForm from '@/components/forms/InvoiceEditTd'
 
 export default {
 	mixins: [AuthMixin],
@@ -65,11 +72,14 @@ export default {
 		TableTwoCollumns,
 		TableTwoCollumnsRow,
 		PreviewCloth,
-		InfoCardSofaInner
+		InfoCardSofaInner,
+		InvoiceEditTdForm
 	},
 	data () {
 		return {
-			InfoCardSofaHead
+			InfoCardSofaHead,
+			editTdFormOpen: false,
+			editTd: {}
 		}
 	},
 	methods: {
@@ -82,7 +92,8 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'app_view_mobile'
+			'app_view_mobile',
+			'cart_cachedCount'
 		]),
 		data () {
 			return this.content || {}
@@ -93,7 +104,7 @@ export default {
 		zak () {
 			return (this.data.zak || []).map(el => reduceShipmentZak(el))
 		}
-	}
+	},
 }
 </script>
 

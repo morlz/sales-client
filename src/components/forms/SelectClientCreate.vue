@@ -1,5 +1,5 @@
 <template>
-	<div class="createClient">
+	<div class="SelectClientCreate">
 		<q-field>
 			<q-toggle v-model="disableSMS" label="sms-рассылка запрещена"/>
 		</q-field>
@@ -83,8 +83,10 @@ export default {
 </script>
 
 
-<style lang="less">
-.createClient {
-	overflow: hidden;
-}
+<style lang="stylus">
+.SelectClientCreate
+	overflow hidden
+	display grid
+	grid-gap 10px
+
 </style>

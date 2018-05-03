@@ -3,6 +3,7 @@ import reduceZak from '@/lib/reducers/zak'
 import { date } from 'quasar'
 
 export default invoice => {
+	console.log(invoice);
 	let paid = invoice.payments.reduce((prev, el) => prev + +el.SUM_OPL, 0)
 
 	return {
@@ -14,10 +15,10 @@ export default invoice => {
 			datetime: date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm:ss')
 		},
 		allSumm () {
-			return +this.SUMMA_ZAKAZA + this.shipmentSumm()
+			return invoice.price
 		},
 		leftToPay () {
-			return this.allSumm() - this.paid
+			return invoice.need
 		},
 		clientName () {
 			if (this.client) return `${this.client.lastname} ${this.client.name} ${this.client.patronymic}`
@@ -51,6 +52,9 @@ export default invoice => {
 		},
 		shipmentPhone2 () {
 			return this.shipment().TEL2
+		},
+		shipments () {
+			return invoice.shipments
 		},
 		shipmentEmail () {
 			if (this.client) return this.client.contactfaces.find(el => el.regard == 'Основной').email

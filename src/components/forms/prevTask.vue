@@ -1,25 +1,25 @@
 <template>
-	<el-card class="prev card">
-		<h2 slot="header">Предыдущая задача</h2>
+	<q-card>
+		<q-card-title>Предыдущая задача</q-card-title>
 
-		<el-form label-width="130px">
-			<el-form-item label="Дата завершения">
-				<el-date-picker type="date" :value="new Date()" :readonly="true" :id="null" />
-			</el-form-item>
+		<q-card-main>
+			<q-field>
+				<q-datetime :value="new Date()" readonly/>
+			</q-field>
 
-			<el-form-item label="Тип">
-				{{ data.type ? data.type.title : '...' }}
-			</el-form-item>
+			<q-field>
+				<q-input :value="data.type ? data.type.title : '...'" float-label="Тип"/>
+			</q-field>
 
-			<el-form-item label="Описание задачи">
-				{{ data.description }}
-			</el-form-item>
+			<q-field>
+				<q-input :value="data.description" float-label="Описание задачи" type="textarea" readonly/>
+			</q-field>
 
-			<el-form-item label="Результат">
-				<el-input type="textarea" v-model="form.result" />
-			</el-form-item>
-		</el-form>
-	</el-card>
+			<q-field>
+				<q-input v-model="form.result" type="textarea" float-label="Результат"/>
+			</q-field>
+		</q-card-main>
+	</q-card>
 </template>
 
 <script>
@@ -59,6 +59,6 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
+<style lang="stylus">
 
 </style>
