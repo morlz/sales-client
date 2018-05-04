@@ -38,13 +38,11 @@ export default {
 			data
 		})
 	},
-	async create (params) {
-		params = core.prepareArrays(params)
-		
+	async create (data) {
 		return await core.invoke({
-			method: "get",
-			type: "tasks/create",
-			params
+			method: "post",
+			type: "tasks",
+			data
 		})
 	},
 }

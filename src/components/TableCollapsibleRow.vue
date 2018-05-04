@@ -1,6 +1,7 @@
 <template>
 	<div
 		class="tableCollapsible__row"
+		@click="$emit('click', $event)"
 		:class="{
 			tableCollapsible__rowOpenBordered: open && borderOpen,
 			tableCollapsible__rowHover: !head,
@@ -20,7 +21,7 @@
 		</div>
 
 		<q-slide-transition>
-			<div class="tableCollapsible__rowCollapcible" v-if="open">
+			<div class="tableCollapsible__rowCollapcible" v-if="open" @click.stop>
 				<slot name="content" :row="row"/>
 			</div>
 		</q-slide-transition>

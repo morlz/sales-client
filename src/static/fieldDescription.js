@@ -1,21 +1,6 @@
 import moment from 'moment'
 
 let dataObj = {
-	tasksManyFieldDescription: [
-		//{ field: "id", label: "№", type: "string" },
-		{ field: "contacts", label: "Контакты", type: "array", fields: ['fio'], width: 200 },
-		{ field: "description", label: "Задача", type: "string", width: 200 },
-		{ field: "date", label: "Дата", type: "string", inline: true, width: 100, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
-		} },
-		{ field: "managerresponsible.FIO", label: "Ответственный", width: 150, type: "string" },
-		{ field: "type.title", label: "Тип", type: "string", width: 100 },
-		{ field: "end_date", label: "Выполнена", type: "string", width: 100, inline: true, format: {
-			get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
-		} },
-		{ field: "salon.NAME", label: "Салон", type: "string", width: 100 },
-	],
-
 	adSources: [
 		{ value: "1", label: "Реклама" },
 		{ value: "2", label: "Рассылка по почте" },
@@ -33,27 +18,6 @@ let dataObj = {
 		{ field: "email", label: "Email", type: "string" },
 		//{ field: "disableEMAIL", label: "Откл. письм.", type: "number" },
 		//{ field: "lost", label: "Потерян", type: "number" },
-	],
-
-	clientTasksFieldDescription: [
-		{ field: "id", label: "№", type: "string" },
-		{ field: "description", label: "Задача", type: "string" },
-		{ field: "date", label: "Дата", type: "string" },
-		{ field: "type", label: "Тип", type: "string" },
-		{ field: "end_date", label: "Выполнена", type: "string" },
-		{ field: "result", label: "Результат", type: "string" },
-		{ field: "salon", label: "Салон", type: "string" },
-	],
-
-	clientPreordersFieldDescription: [
-		{ field: "id", label: "№", type: "number" },
-		{ field: "created_at", label: "Дата создания", type: "string" },
-		{ field: "status", label: "Статус", type: "string" },
-		{ field: "manager", label: "Менеджер", type: "string", filterOptions: ['Вася', 'Петя'], filterDropdown: true },
-		{ field: "salon", label: "Салон", type: "string" },
-		{ field: "budget", label: "Бюждет", type: "number" },
-		{ field: "calc_summ", label: "Сумма расчета", type: "number" },
-		{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
 	],
 
 	lvls: [
@@ -98,10 +62,10 @@ export let FurnitureSalon = [
 	} },
 	{ field: "DEKOR", label: "Декор", width: 50 },
 	{ field: "Vid_stegki", label: "Стежка", width: 50 },
-	{ field: "td.DATE_VX", label: "Дни", width: 40, search: false, align: 'right', format: {
+	/*{ field: "td.DATE_VX", label: "Дни", width: 40, search: false, align: 'right', format: {
 		get: data => Math.round((Date.now() - new Date(data).valueOf()) / 0x5265C00), // ms => day
 		set: data => undefined
-	} },
+	} }, */
 	{ field: "UN", label: "Фаб.н.", width: 60 },
 ]
 
@@ -109,14 +73,14 @@ export let FurnitureSalon = [
 export let FurnitureStorage = [
 	{ field: "UN", label: "Фаб. №", width: 60 },
 	{ field: "MODEL", label: "Модель", width: 100 },
-	{ field: "td.mestoXR.NAME", label: "Место. хр.", width: 100 },
+	/*{ field: "td.mestoXR.NAME", label: "Место. хр.", width: 100 },*/
 	{ field: "td.TIP", label: "Тип", inline: true, width: 150 },
 	{ field: "cloth1.NAME", label: "Ткань 1", width: 150 },
 	{ field: "cloth2.NAME", label: "Ткань 2", width: 150 },
 	{ field: "cloth3.NAME", label: "Ткань 3", width: 150 },
 	{ field: "KAT", label: "Кат.", width: 60 },
 	{ field: "td.ModelPriceR", label: "Цена (р)", width: 60 },
-	{ field: "COMMENT", label: "Примечание", width: 350 },
+	/*{ field: "COMMENT", label: "Примечание", width: 350 },*/
 	{ field: "DEKOR", label: "Декор", width: 80 },
 	{ field: "Vid_stegki", label: "Стежка", width: 80 },
 	{ field: "NAKC", label: "Акция", width: 50 },
@@ -124,11 +88,11 @@ export let FurnitureStorage = [
 	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 	} },
-	{ field: "invoice.N_DOC", label: "Номер заказа", width: 50 },
+	/*{ field: "invoice.N_DOC", label: "Номер заказа", width: 50 },*/
 ]
 
 export let FurnitureDiscount = [
-	{ field: "td.mestoXR.NAME", label: "Склад", width: 100 },
+	//{ field: "td.mestoXR.NAME", label: "Склад", width: 100 },
 	{ field: "UN", label: "Фаб.н.", width: 60 },
 	{ field: "td.salon.NAME", label: "Салон", width: 100 },
 	{ field: "MODEL", label: "Модель", width: 100 },
@@ -137,7 +101,7 @@ export let FurnitureDiscount = [
 	{ field: "cloth2.NAME", label: "Ткань 2", width: 120 },
 	{ field: "cloth3.NAME", label: "Ткань 3", width: 120 },
 	{ field: "KAT", label: "Кат.", width: 50 },
-	//{ field: "COMMENT", label: "Примечание" },
+	{ field: "COMMENT", label: "Примечание" },
 	{ field: "DEKOR", label: "Декор", width: 80 },
 	{ field: "Vid_stegki", label: "Стежка", width: 80 },
 	{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", width: 100, format: {
@@ -207,6 +171,23 @@ export let CRMPreorders = [
 	{ field: "prepay_summ", label: "Сумма предзаказа", type: "number", width: 100 },
 ]
 
+export let CRMTasks = [
+	//{ field: "id", label: "№", type: "string" },
+	{ field: "client.lastname", label: "Фамилия", width: 100 },
+	{ field: "client.name", label: "Имя", width: 100 },
+	{ field: "client.patronymic", label: "Отчество", width: 100 },
+	{ field: "description", label: "Задача", type: "string", width: 200 },
+	{ field: "date", label: "Дата", type: "string", inline: true, width: 100, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	} },
+	{ field: "managerresponsible.FIO", label: "Ответственный", width: 150, type: "string" },
+	{ field: "type.title", label: "Тип", type: "string", width: 100 },
+	{ field: "end_date", label: "Выполнена", type: "string", width: 100, inline: true, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+	} },
+	{ field: "salon.NAME", label: "Салон", type: "string", width: 100 },
+]
+
 export let AdminPersonal = [
 	{ field: "LOGIN", label: "Логин", width: 80 },
 	{ field: "FIO", label: "Фамилия", width: 100 },
@@ -234,6 +215,25 @@ export let InfoCardInvoices = [
 	{ field: 'DATE', label: 'Дата заказа' },
 	{ field: 'manager.fio', label: 'Менеджер' },
 	{ field: 'salon.name', label: 'Салон' }
+]
+
+export let InfoCardPreorders = [
+	{ field: "created_at", label: "Дата создания", type: "string" },
+	{ field: "status.title", label: "Статус", type: "string" },
+	{ field: "manager.fio", label: "Менеджер", type: "string"},
+	{ field: "salon.NAME", label: "Салон", type: "string" },
+	{ field: "budget", label: "Бюждет", type: "number" },
+	{ field: "calc_summ", label: "Сумма расчета", type: "number" },
+	{ field: "prepay_summ", label: "Сумма предзаказа", type: "number" }
+]
+
+export let InfoCardTasks = [
+	{ field: "description", label: "Задача", type: "string" },
+	{ field: "result", label: "Результат", type: "string" },
+	{ field: "date", label: "Дата", type: "string" },
+	{ field: "type", label: "Тип", type: "string" },
+	{ field: "end_date", label: "Выполнена", type: "string" },
+	{ field: "salon", label: "Салон", type: "string" },
 ]
 
 /*

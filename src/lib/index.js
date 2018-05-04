@@ -12,6 +12,8 @@ import AdSource from '@/lib/AdSource'
 import ContactFace from '@/lib/ContactFace'
 import SalonGroup from '@/lib/SalonGroup'
 import Furniture from '@/lib/Furniture'
+import Preorder from '@/lib/Preorder'
+import PreorderStatus from '@/lib/PreorderStatus'
 
 export default BaseModel
 
@@ -29,5 +31,7 @@ export {
 	AdSource,
 	ContactFace,
 	SalonGroup,
-	Furniture
+	Furniture,
+	Preorder,
+	PreorderStatus
 }

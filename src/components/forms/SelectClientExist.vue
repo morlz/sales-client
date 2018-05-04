@@ -51,6 +51,8 @@ export default {
 			'client_select_current'
 		]),
 		mainContact () {
+			if (!this.client_select_current.contactfaces)
+				return {}
 			let contact = this.client_select_current.contactfaces.find(el => el.regard == 'Основной')
 			return { ...contact, disableEMAIL: !!contact.disableEMAIL, disableSMS: !!contact.disableSMS }
 		},

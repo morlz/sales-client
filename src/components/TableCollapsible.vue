@@ -10,7 +10,7 @@
 		</template>
 	</table-collapsible-head>
 
-	<table-collapsible-body :columns="columns" :rows="rows" :accordion="accordion" :borderOpen="borderOpen">
+	<table-collapsible-body :columns="columns" :rows="rows" :accordion="accordion" :borderOpen="borderOpen" @click="$emit('click', $event)">
 		<template slot="start" slot-scope="props" v-if="$scopedSlots.start">
 			<slot name="start" :row="props.row"/>
 		</template>
@@ -35,9 +35,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TableCollapsibleHead from '@/components/TableCollapsibleHead.vue'
-import TableCollapsibleBody from '@/components/TableCollapsibleBody.vue'
-import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
+import TableCollapsibleHead from '@/components/TableCollapsibleHead'
+import TableCollapsibleBody from '@/components/TableCollapsibleBody'
+import TableCollapsibleRow from '@/components/TableCollapsibleRow'
 
 export default {
 	props: {

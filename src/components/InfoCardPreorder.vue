@@ -5,11 +5,37 @@
 	</q-card-title>
 
 	<q-card-main>
-		<q-stepper alternative-labels :value="+data.status_id" no-header-navigation>
+		<q-stepper alternative-labels :value="+data.status_id - 1" no-header-navigation>
 			<q-step v-for="item, index in preorder_statuses" :name="index" :title="item.title" :key="index" active-icon="fa-eye"/>
 		</q-stepper>
 
-		<q-list highlight no-border>
+		<div class="InfoCardPreorder__edit" v-if="edit">
+			<q-field helper="Рекламный источник">
+				<q-select v-model="editFields.ad_source_id" :options="adSource_listSelect" float-label="Рекламный источник" filter/>
+			</q-field>
+
+			<q-field helper="Вероятность">
+				<q-rating v-model.number="editFields.rating" :max="5" size="30px"/>
+			</q-field>
+
+			<q-field>
+				<q-input v-model.number="editFields.budget" type="number" float-label="Бюджет"/>
+			</q-field>
+
+			<q-field>
+				<q-input v-model.number="editFields.prepay_summ" type="number" float-label="Сумма предоплаты"/>
+			</q-field>
+
+			<q-field>
+				<q-input v-model.number="editFields.calc_summ" type="number" float-label="Сумма расчёта"/>
+			</q-field>
+
+			<q-field helper="Примечание">
+				<q-input v-model="editFields.description" type="textarea" float-label="Примечание"/>
+			</q-field>
+		</div>
+
+		<q-list highlight no-border v-else>
 			<q-item v-if="content.salon">
 				<q-item-side>Салон</q-item-side>
 				<q-item-main/>
@@ -93,7 +119,14 @@
 	</q-card-main>
 
 	<q-card-actions>
-		<q-btn color="primary" icon="edit">Редактировать</q-btn>
+		<template v-if="edit">
+			<q-btn color="primary" @click="save">Сохранить</q-btn>
+			<q-btn color="secondary" @click="edit = false" flat wait-for-ripple>Отмена</q-btn>
+		</template>
+
+		<template v-else>
+			<q-btn color="primary" v-if="data.canEdit" @click="edit = true" wait-for-ripple>Редактировать</q-btn>
+		</template>
 	</q-card-actions>
 </q-card>
 </template>
@@ -109,6 +142,7 @@ import { QStepper, QStep, QRating } from 'quasar'
 import PreviewSalon from '@/components/PreviewSalon'
 import PreviewManager from '@/components/PreviewManager'
 import PreviewClient from '@/components/PreviewClient'
+import { Preorder } from '@/lib'
 
 export default {
 	components: {
@@ -126,13 +160,36 @@ export default {
 			default: a => ({})
 		}
 	},
+	data () {
+		return {
+			edit: false,
+			editFields: {}
+		}
+	},
 	computed: {
 		...mapGetters([
-			'preorder_statuses'
+			'preorder_statuses',
+			'adSource_listSelect'
 		]),
 		data () {
-			return this.content
+			let data = this.content instanceof Preorder ? this.content : new Preorder(this.content)
+			this.editFields = data.clone()
+			return data
 		}
+	},
+	methods: {
+		...mapActions([
+			'adSource_getList',
+			'preorder_update'
+		]),
+		async save () {
+			let { id, ad_source_id, description, chance, budget, prepay_summ, calc_summ } = this.editFields
+			await this.preorder_update({ id, ad_source_id, description, chance, budget, prepay_summ, calc_summ })
+			this.edit = false
+		}
+	},
+	created () {
+		this.adSource_getList()
 	}
 }
 </script>
@@ -142,4 +199,9 @@ export default {
 .InfoCardPreorder
 	.q-stepper-step
 		display none
+
+	&__edit
+		margin 10px 0
+		display grid
+		grid-gap 10px
 </style>

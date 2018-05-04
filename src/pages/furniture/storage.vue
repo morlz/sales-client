@@ -56,6 +56,8 @@
 					:columns="FurnitureStorageFiltred"
 					:rows="storage_cached"
 					:complete="storage_complete"
+					:select-fields="local_storage_selectFields"
+					:filter-values="storage_filters"
 					@infinite="storage_infinity"
 					@click="rowClickHandler"
 					@sort="local_storage_sortChange"
@@ -124,15 +126,20 @@ export default {
 			return { type: this.currentTab }
 		},
 		local_storage_selectFields () {
-			let rez = []
+			let rez = {}
 			if (this.storage_models)
-				rez.push({ data: this.storage_models, field: "MODEL", fields: { label: "MODEL" }, filterable: true })
+				rez['MODEL'] = {
+					data: this.storage_models,
+					field: "MODEL",
+					fields: { label: "MODEL", value: 'value' }
+				}
 
 			return rez
 		},
 		FurnitureStorageFiltred () {
-			if (this.main_auth_settings.showModels)
+			if (this.main_auth_settings.showModels && this.storage_filters.MODEL)
 				return this.FurnitureStorage.filter(el => el.field != 'MODEL')
+
 			return this.FurnitureStorage
 		},
 		tabs () {
@@ -162,16 +169,21 @@ export default {
 			'storage_destroy'
 		]),
 		async local_storage_filterChange (n) {
+			if (n['MODEL'] == 'Все модели')
+				delete n['MODEL']
+
 			this.lastStorageFilters = n
 			await this.storage_filtersChange (Object.assign({}, this.additionalFIlters, n))
 		},
 		async local_storage_sortChange (n) {
 			await this.storage_sortChange (n)
 		},
-		local_storage_filtersModelSet (MODEL) {
-			if (MODEL == 'Все модели') MODEL = ""
-			let filters = { ...this.storage_filters, MODEL, type: this.storage_type }
-			this.local_storage_filterChange(filters)
+		local_storage_filtersModelSet (model) {
+			this.local_storage_filterChange({
+				...this.storage_filters,
+				MODEL: model == 'Все модели' ? undefined : model,
+				type: this.storage_type
+			})
 		},
 		local_storage_handleFieldSelect (data) {
 			if (data.field != 'td.salon.NAME') return

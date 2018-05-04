@@ -1,16 +1,16 @@
 <template>
-	<q-card v-if="auth_can(3, 'Task')">
+	<q-card v-if="auth_can(3, 'Task')" class="NextTask">
 		<q-card-title>Следующая задача</q-card-title>
 
-		<q-card-main>
-			<q-field helper="Тип">
-				<q-select v-model="form.type" :options="currentScenario"/>
+		<q-card-main class="NextTask__inner">
+			<q-field helper="Тип новой задачи">
+				<q-select v-model="form.type" :options="currentScenario" float-label="Тип"/>
 			</q-field>
 
 			<q-slide-transition>
 				<div v-if="form.type == '1'">
 					<q-field>
-						<q-input v-model="form.description" float-label="Описание"/>
+						<q-input v-model="form.description" float-label="Причина"/>
 					</q-field>
 				</div>
 			</q-slide-transition>
@@ -24,7 +24,6 @@
 					<q-field>
 						<q-input v-model="form.description" type="textarea" float-label="Описание"/>
 					</q-field>
-
 				</div>
 			</q-slide-transition>
 
@@ -41,7 +40,6 @@
 					<q-field>
 						<q-input v-model="form.comment" type="textarea" float-label="Комментарий" :disable="form.podium"/>
 					</q-field>
-
 				</div>
 			</q-slide-transition>
 		</q-card-main>
@@ -137,35 +135,12 @@ export default {
 </script>
 
 
-<style lang="less">
-.nextTask {
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity 0.6s;
-    }
-
-    .fade-leave,
-    .fade-leave-active {
-        position: absolute;
-        top: 141px;
-    }
-
-    .fade-enter,
-    .fade-leave-to {
-        opacity: 0;
-    }
-
-	.nextFormTransitionWrapper {
-		position: relative;
-		.nextFormTransition {
-
-		}
-	}
-
-	.buttons {
-		display: grid;
-		grid-auto-flow: column;
-		justify-content: flex-start;
-	}
-}
+<style lang="stylus">
+.NextTask
+	&__inner
+		display grid
+		grid-gap 10px
+		> div
+			display grid
+			grid-gap 10px
 </style>

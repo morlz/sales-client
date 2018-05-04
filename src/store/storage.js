@@ -101,10 +101,10 @@ const getters = {
 	storage_current: state => state.cached.current,
 	storage_cached: state => state.cached.list,
 	storage_models: ({ cached }) => [
-			{ MODEL: "Все модели", value: "", count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
+			{ MODEL: "Все модели", value: '', count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
 			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
 		]
-		.sort(api.core.sortFnFactory(model => model.value == "" ? "АААААА": model.MODEL, true)),
+		.sort(api.core.sortFnFactory(model => model.value == '' ? "_": model.MODEL, true)),
 	storage_type: state => state.filters.type,
 	storage_loading: state => state.loading.list,
 	storage_loadingBottom: state => state.loading.bottom,

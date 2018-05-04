@@ -1,18 +1,18 @@
 <template>
-	<q-card>
+	<q-card class="PrevTask">
 		<q-card-title>Предыдущая задача</q-card-title>
 
-		<q-card-main>
+		<q-card-main class="PrevTask__inner">
 			<q-field>
-				<q-datetime :value="new Date()" readonly/>
+				<q-datetime :value="new Date()" disable/>
 			</q-field>
 
 			<q-field>
-				<q-input :value="data.type ? data.type.title : '...'" float-label="Тип"/>
+				<q-input :value="data.type ? data.type.title : '...'" float-label="Тип" disable/>
 			</q-field>
 
 			<q-field>
-				<q-input :value="data.description" float-label="Описание задачи" type="textarea" readonly/>
+				<q-input :value="data.description" float-label="Описание задачи" type="textarea" disable/>
 			</q-field>
 
 			<q-field>
@@ -60,5 +60,9 @@ export default {
 
 
 <style lang="stylus">
+.PrevTask
+	&__inner
+		display grid
+		grid-gap 10px
 
 </style>

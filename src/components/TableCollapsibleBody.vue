@@ -1,6 +1,6 @@
 <template>
 <div class="tableCollapsible__body">
-	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows" :border-open="borderOpen">
+	<table-collapsible-row v-for="row, index in rows" :key="index" :row="row" @open="openHandler(index)" ref="rows" :border-open="borderOpen" @click="$emit('click', row)">
 		<div class="tableCollapsible__rowColumnStart" v-if="$scopedSlots.start({ row: {} })">
 			<slot name="start" :row="row"/>
 		</div>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
+import TableCollapsibleRow from '@/components/TableCollapsibleRow'
 
 export default {
 	props: {

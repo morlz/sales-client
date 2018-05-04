@@ -2,11 +2,12 @@
 <div class="InfiniteTable">
 	<div class="InfiniteTable__head InfiniteTableHead" :style="{ transform: `translate(-${scrollReal.left}px, ${head ? '0' : '-100%'})` }">
 		<div class="InfiniteTableHead__searches">
+			<div :style="{ width: `${widths[0]}px` }" v-if="$scopedSlots.buttons"/>
 			<infinite-table-column
 				v-for="column, index in table.columns"
 				:key="index"
 				:column="column"
-				:width="widths[index]"
+				:width="widths[index + (+!!$scopedSlots.buttons)]"
 				:sort="sort"
 				:select="selectFields[ column.field ]"
 				:filters="filters"
@@ -25,15 +26,15 @@
 		@update="chunkRenderHandler"
 		@scroll.native="throttledScrollHandler">
 		<tr slot-scope="props" ref="trs" @click="rowClickHandler($event, props.item, props.itemIndex)">
-			<td v-for="column, cIndex in table.columns" :title="column.getValue(props.item)" :key="cIndex">
-				<div :style="column.style">
-					<div v-html="column.getValue(props.item)"/>
-				</div>
-			</td>
-
 			<td>
 				<div class="InfiniteTable__buttons">
 					<slot name="buttons" :row="props.item"/>
+				</div>
+			</td>
+
+			<td v-for="column, cIndex in table.columns" :title="column.getValue(props.item)" :key="cIndex">
+				<div :style="column.style">
+					<div v-html="column.getValue(props.item)"/>
 				</div>
 			</td>
 		</tr>
@@ -140,7 +141,7 @@ export default {
 		},
 		filterValues (n) {
 			this.first = true
-			this.filters = { ...JSON.parse(JSON.stringify(n)) }
+			this.setFilters({ ...JSON.parse(JSON.stringify(n)) })
 		},
 		'scroll.left' (to) {
 			tween({ from: this.scrollReal.left, to, duration: 100 })
@@ -202,15 +203,17 @@ export default {
 
 			if (this.rows.length - this.indexes.end < this.scrollFire)
 				this.moreContent()
+		},
+		setFilters (n) {
+			const getVal = field => n && n[field] ? n[field] : ''
+			this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev), { ...n })
 		}
 	},
 	mounted () {
 		this.$nextTick(this.updateViewport)
 	},
 	created () {
-		const getVal = field => this.filterValues && this.filterValues[field] ? this.filterValues[field] : ''
-
-		this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev), { ...this.filterValues })
+		this.setFilters(this.filterValues)
 		this.table = new InfiniteTable(this.columns, this.rows)
 	}
 }
@@ -294,6 +297,7 @@ $header-height = 50px
 		height 50px
 		display grid
 		grid-auto-flow column
-		align-items center
+		align-items end
+		padding 0 0 5px 0
 
 </style>

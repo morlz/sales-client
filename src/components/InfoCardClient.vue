@@ -44,10 +44,10 @@
 					</q-item-side>
 				</q-item>
 			</q-list>
-
+			
 			<h6 class="InfoCardClient__contacts">Контакные лица</h6>
 
-			<q-list no-border>
+			<q-list highlight>
 				<info-card-client-contact v-for="contact, index in data.contactfaces" :key="index" :content="contact" :can-edit="data.canEdit"/>
 			</q-list>
 		</q-card-main>

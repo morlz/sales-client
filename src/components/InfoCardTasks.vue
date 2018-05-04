@@ -5,25 +5,25 @@
 		</q-card-title>
 
 		<q-card-main>
-			<table-collapsible :columns="clientTasksFieldDescription" :rows="data"/>
+			<table-collapsible :columns="InfoCardTasks" :rows="data" v-if="data.length"/>
+
+			<div class="" v-else>
+				Задач нет
+			</div>
 		</q-card-main>
 
 		<q-card-actions>
-			<q-btn v-if="auth_can(3, 'Task') && (taskToEnd.id || !data.length)" @click="clickEndHandle" color="primary" icon="add">Добавить задачу (Завершить)</q-btn>
+			<q-btn v-if="auth_can(3, 'Task') && (taskToEnd.id && data.length)" @click="clickEndHandle" color="primary" icon="add">Добавить задачу (Завершить текущую)</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import fieldDescription from '@/static/fieldDescription'
+import { InfoCardTasks } from '@/static/fieldDescription'
 import editTaskForm from '@/components/forms/editTask'
 import { AuthMixin } from '@/mixins'
 import TableCollapsible from '@/components/TableCollapsible'
-
-let {
-	clientTasksFieldDescription
-} = fieldDescription
 
 export default {
 	props: ['content'],
@@ -34,7 +34,7 @@ export default {
 	},
 	data () {
 		return {
-			clientTasksFieldDescription
+			InfoCardTasks
 		}
 	},
 	watch: {

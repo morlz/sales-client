@@ -1,12 +1,6 @@
 <template>
 <q-page class="AppContent" v-if="auth_can(1, 'Task')">
-	<div class="oneTaskWrapper" v-if="isOne">
-		<ul class="breadcrumb">
-			<li><router-link :to="{ path: '/' }">Главная</router-link></li>
-			<li><router-link :to="{ path: `/preorder/tasks` }">Список задач</router-link></li>
-			<li><router-link :to="{ path: `/preorder/tasks` }">{{ task_current.id ? `Завершение задачи № ${task_current.id}` : `Добавление новой задачи` }}</router-link></li>
-		</ul>
-
+	<div class="OneTaskWrapper" v-if="isOne">
 		<end-task-form v-loading="task_loadingOne" v-if="auth_can(3, 'Task')" />
 	</div>
 
@@ -18,7 +12,7 @@
 				key="tasks"
 				:data="task_cached"
 				:complete="task_complete"
-				:field-description="tasksManyFieldDescription"
+				:field-description="CRMTasks"
 				:filters="task_filters"
 				ref="table"
 				@filter="local_task_filtersChange"
@@ -28,11 +22,11 @@
 			/>-->
 
 			<infinite-table
-				:columns="tasksManyFieldDescription"
+				:columns="CRMTasks"
 				:rows="task_cached"
 				:complete="task_complete"
 				@infinite="task_infinity"
-				@click="routerGoId"
+				@click="clickHandler"
 				@sort="local_task_sortChange"
 				@filter="local_task_filtersChange"
 			/>
@@ -44,10 +38,9 @@
 
 <script>
 import fieldDescription from '@/static/fieldDescription'
+import { CRMTasks } from '@/static/fieldDescription'
 
 let {
-	tasksManyFieldDescription,
-	adSources,
 	clientContactsFieldDescription,
 	clientTasksFieldDescription
 } = fieldDescription
@@ -71,8 +64,7 @@ export default {
 	mixins: [AuthMixin, RouteMixin],
 	data() {
 		return {
-			tasksManyFieldDescription,
-			adSources,
+			CRMTasks,
 			clientContactsFieldDescription,
 			clientTasksFieldDescription,
 		}
@@ -114,6 +106,9 @@ export default {
 		},
 		async local_task_sortChange(n) {
 			await this.task_sortChange(n)
+		},
+		clickHandler (e, row) {
+			this.routerGoIdPath('/preorder/preorders')(e, row.preorder_id)
 		}
 	},
 	async created () {
@@ -128,8 +123,8 @@ export default {
 
 
 <style lang="less">
-.oneTaskWrapper {
-
+.OneTaskWrapper {
+	padding: 10px;
 }
 
 .manyTasksWrapper {

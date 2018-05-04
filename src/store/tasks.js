@@ -80,21 +80,21 @@ const actions = {
 		commit('preorder_currentTaskUpdate', res.data)
 	},
 	async task_create({ commit, dispatch, state, getters }){
-		let payload = Object.assign({}, state.add),
+		let payload = { ...state.add },
 			preorder_id = state.cached.current.preorder_id || getters.preorder_current ? getters.preorder_current.id : null
 
-		payload.next = Object.assign({}, payload.next, { preorder_id })
+		payload.next = { ...payload.next, preorder_id }
 
 		commit('task_loadingAddSet', true)
 		let res = await api.tasks.create(payload)
 		commit('task_loadingAddSet', false)
 		if (!res.data || res.data.error) return
 
-		if (data.errors)
-			return dispatch('handleFormErrors', data.errors)
+		if (res.data.errors)
+			return dispatch('handleFormErrors', res.data.errors)
 
-		dispatch('notify', { title: "Успешно", message: "Задача создана" })
-		router.push({ path: `/preorder/preorders/${preorder_id}` })
+		dispatch('notify', 'Задача успешно создана')
+		router.push({ path: `/preorder/preorders/${res.data.next.preorder_id}` })
 	},
 }
 

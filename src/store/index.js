@@ -21,6 +21,7 @@ import personal from '@/store/personal'
 import cart from '@/store/cart'
 import print from '@/store/print'
 import i18n from '@/store/i18n'
+import adSources from '@/store/adSources'
 
 import tests from '@/store/tests'
 
@@ -44,6 +45,7 @@ export default new Vuex.Store({
 		cart,
 		print,
 		i18n,
+		adSources,
 
 		tests,
 	}

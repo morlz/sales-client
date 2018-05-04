@@ -571,10 +571,10 @@ const getters = {
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,
 	furniture_models: ({ cached }) => [
-			{ MODEL: "Все модели", value: undefined, count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
+			{ MODEL: "Все модели", value: '', count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
 			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
 		]
-		.sort(api.core.sortFnFactory(model => model.value == undefined ? "_": model.MODEL, true)),
+		.sort(api.core.sortFnFactory(model => model.value == '' ? "_": model.MODEL, true)),
 	furniture_loading: ({ loading }) => loading.list,
 	furniture_loadingBottom: ({ loading }) => loading.bottom,
 	furniture_loadingOne: ({ loading }) => loading.one,

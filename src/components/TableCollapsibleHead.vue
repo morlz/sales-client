@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import TableCollapsibleRow from '@/components/TableCollapsibleRow.vue'
+import TableCollapsibleRow from '@/components/TableCollapsibleRow'
 
 export default {
 	props: {

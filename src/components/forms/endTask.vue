@@ -1,14 +1,16 @@
 <template>
 <div class="endTaskFormWrapper" v-if="auth_can(3, 'Task')">
-	<div class="cards" v-loading="task_loadingAdd">
+	<div class="cards">
 		<prev-task-form v-if="+oneId" />
 
 		<next-task-form scenario="END_TASK">
 			<div class="buttons" slot="buttons">
-				<el-button type="primary" @click="task_create">Создать</el-button>
-				<el-button @click="goToPreorder('', preorder_current.id || task_current.preorder_id)">К предзаказу</el-button>
+				<q-btn color="primary" @click="task_create">Создать</q-btn>
+				<q-btn @click="goToPreorder(preorder_current.id || task_current.preorder_id)" flat color="secondary">К предзаказу</q-btn>
 			</div>
 		</next-task-form>
+
+		<loading :value="task_loadingAdd"/>
 	</div>
 </div>
 </template>
@@ -16,14 +18,16 @@
 <script>
 import nextTaskForm from '@/components/forms/nextTask.vue'
 import prevTaskForm from '@/components/forms/prevTask.vue'
-import mixins from '@/mixins'
+import { AuthMixin, RouteMixin } from '@/mixins'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import Loading from '@/components/Loading'
 
 export default {
-	mixins: [mixins],
+	mixins: [AuthMixin, RouteMixin],
 	components: {
 		nextTaskForm,
-		prevTaskForm
+		prevTaskForm,
+		Loading
 	},
 	computed: {
 		...mapGetters([
@@ -38,7 +42,10 @@ export default {
 		]),
 		...mapMutations([
 			'task_add_prevSet'
-		])
+		]),
+		goToPreorder (id) {
+			this.$router.push(`/preorder/preorders/${id}`)
+		}
 	},
 	mounted () {
 		if (!this.preorder_current.id && !this.task_current.preorder_id)
@@ -56,6 +63,7 @@ export default {
         display: grid;
         grid-gap: 20px;
         grid-template-columns: 1fr 1fr;
+		position: relative;
 		.card {
 			position: relative;
 		}

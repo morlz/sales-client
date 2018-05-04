@@ -37,5 +37,18 @@ export default {
 			type: 'preorders',
 			data
 		})
+	},
+	async getAdSources () {
+		return await core.invoke({
+			method: 'get',
+			type: 'preorder/ad-sources'
+		})
+	},
+	async update (data) {
+		return await core.invoke({
+			method: 'put',
+			type: 'preorder',
+			data
+		})
 	}
 }

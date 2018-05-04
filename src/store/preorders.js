@@ -1,5 +1,6 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
+import Preorder from '@/lib'
 
 const state = {
 	complete: false,
@@ -89,8 +90,15 @@ const actions = {
 		if (res.data.errors)
 			return dispatch('handleFormErrors', res.data.errors)
 
-		dispatch('notify', { message: 'Предзаказ создан' })
+		dispatch('notify', 'Предзаказ успешно создан')
 		router.push({ path: `/preorder/preorders/${res.data.preorder.id}` })
+	},
+	async preorder_update ({ commit, dispatch }, payload) {
+		let res = await api.preorders.update(payload)
+		if (!res.data || res.data.error) return
+
+		commit('preorder_currentUpdate', res.data)
+		dispatch('notify', 'Предзаказ успешно обновлён')
 	}
 }
 
@@ -104,7 +112,8 @@ const mutations = {
 	preorder_sortSet: (state, payload) => state.sort = payload,
 	preorder_lastOffsetSet: (state, payload) => state.offset.last = payload,
 	preorder_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
-	preorder_currentSet: (state, payload) => state.cached.current = payload,
+	preorder_currentSet: (state, payload) => state.cached.current = payload instanceof Preorder ? payload : new Preorder(payload),
+	preorder_currentUpdate: (state, payload) => state.cached.current.update(payload),
 	preorder_currentTaskUpdate: (state, payload) => api.core.assignItem(state.cached.current.tasks, payload),
 	preorder_currentContctAdd: (state, payload) => state.cached.current.contactFaces.push(payload),
 	preorder_currentClientUpdate: (state, payload) => state.cached.current.client ? state.cached.current.client.update(payload) : 0,

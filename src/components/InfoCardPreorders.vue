@@ -5,55 +5,44 @@
 		</q-card-title>
 
 		<q-card-main>
-			<q-tabs inverted>
-				<q-tab slot="title" label="Предстоящие" name="next" default/>
-				<q-tab slot="title" label="Выполеные" name="end"/>
-
-				<q-tab-pane name="next">
-					<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
-				</q-tab-pane>
-
-				<q-tab-pane name="end">
-					<tabless :data="data" :fieldDescription="clientPreordersFieldDescription" :onClick="routerGoIdPath('/preorder/preorders')" :minify="true" />
-				</q-tab-pane>
+			<q-tabs inverted v-if="hasTabs" v-model="currentTab">
+				<q-tab slot="title" label="Предстоящие" name="next" :default="hasNext" v-if="hasNext"/>
+				<q-tab slot="title" label="Выполеные" name="end" :default="!hasNext" v-if="hasPrev"/>
 			</q-tabs>
+
+			<table-collapsible :columns="InfoCardPreorders" :rows="dataFiltred" @click="routerGoIdPath('/preorder/preorders')(null, $event)"/>
+
+			<div v-if="!hasTabs">
+				Предзаказов нет
+			</div>
 		</q-card-main>
 	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import fieldDescription from '@/static/fieldDescription'
+import { InfoCardPreorders } from '@/static/fieldDescription'
 import { AuthMixin, RouteMixin } from '@/mixins'
-import tabless from '@/components/tableSS'
+import TableCollapsible from '@/components/TableCollapsible'
+import { Preorder } from '@/lib'
 
-import { QTabs, QTab, QTabPane } from 'quasar'
-
-let {
-	clientPreordersFieldDescription
-} = fieldDescription
 
 export default {
 	props: {
 		content: {
-			required: true
+			type: Array,
+			default: a => []
 		}
 	},
 	mixins: [AuthMixin, RouteMixin],
 	components: {
-		tabless,
-		QTabPane
+		TableCollapsible
 	},
 	data () {
 		return {
-			clientPreordersFieldDescription
+			InfoCardPreorders,
+			currentTab: 'next'
 		}
-	},
-	watch: {
-
-	},
-	methods: {
-		...mapMutations([])
 	},
 	computed: {
 		...mapGetters([
@@ -62,15 +51,28 @@ export default {
 			'preorder_statuses'
 		]),
 		data () {
-			return this.content ? this.content.map(preorder => {
-				preorder.status = this.preorder_statuses[preorder.status_id] ? this.preorder_statuses[preorder.status_id].title : '...'
-				let manager = this.cachedManagers.find(el => preorder.manager_id == el.ID_M),
-					salon = this.salon_list.find(el => preorder.salon_id == el.ID_SALONA)
-				preorder.manager = manager ? manager.FIO : '...'
-				preorder.salon =  salon ? salon.NAME : '...'
-				return preorder
-			}) : []
+			return this.content.map(el => el instanceof Preorder ? el : new Preorder(el))
 		},
+		hasPrev () {
+			return !!this.data.filter(el => el.end_at !== null).length
+		},
+		hasNext () {
+			return !!this.data.filter(el => el.end_at === null).length
+		},
+		hasTabs () {
+			return this.hasPrev || this.hasNext
+		},
+		dataFiltred () {
+			switch (this.currentTab) {
+				case 'prev':
+					return this.data.filter(el => el.end_at !== null && this.$moment(el.end_at) < this.$moment())
+					break;
+
+				case 'next':
+					return this.data.filter(el => el.end_at === null || this.$moment(el.end_at) > this.$moment())
+					break;
+			}
+		}
 	}
 }
 </script>

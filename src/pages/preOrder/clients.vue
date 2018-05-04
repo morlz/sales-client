@@ -3,7 +3,7 @@
 		<div class="oneClientWrapper" v-if="isOne">
 			<div class="cards AppContent__inner" v-loading="client_loadingOne">
 				<info-card-client :content="client_current" v-if="auth_can(1, 'Client')"/>
-				<info-card-contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/>
+				<!-- <info-card-contact-faces :content="client_current.contactfaces" v-if="auth_can(1, 'ContactFace')"/> -->
 				<info-card-tasks :content="client_current.tasks" v-if="auth_can(1, 'Task')"/>
 				<info-card-preorders :content="client_current.preorders" v-if="auth_can(1, 'Preorder')"/>
 				<info-card-invoices :content="client_current.invoices" v-if="auth_can(1, 'Invoice')" />

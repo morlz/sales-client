@@ -5,7 +5,7 @@ export default {
 		},
 		oneId() {
 			return this.$route.params.id
-		},
+		}
 	},
 	methods: {
 		routerGoId(e, id, a, to = this.$route.fullPath) {

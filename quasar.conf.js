@@ -3,14 +3,16 @@ const path = require('path')
 
 const config = {
 	dev: {
+		distDir: path.resolve(__dirname, 'dist'),
 		filesPath: path.resolve(__dirname, 'dist'),
 		indexPath: path.resolve(__dirname, 'dist'),
 		publicPath: '/'
 	},
 	prod: {
-		filesPath: path.resolve(__dirname, '..', 'sales-server', 'web'),
+		distDir: path.resolve(__dirname, '..', 'sales-server-test', 'web'),
+		filesPath: path.resolve(__dirname, '..', 'sales-server', 'web', 'assets'),
 		indexPath: path.resolve(__dirname, '..', 'sales-server', 'web'),
-		publicPath: path.join('/nsl', '/web/')
+		publicPath: path.join('web', 'assets')
 	}
 }
 
@@ -47,15 +49,18 @@ module.exports = function(ctx) {
 		build: {
 			scopeHoisting: true,
 			vueRouterMode: 'hash',
-			// gzip: true,
+			publicPath: options.publicPath,
+			minify: true,
+			gzip: true,
 			// analyze: true,
 			// extractCSS: false,
 			// useNotifier: false,
 			extendWebpack(cfg) {
+				/*
 				cfg.output = {
 					...cfg.output,
 					path: options.filesPath,
-					publicPath: options.publicPath
+					publicPath: options.publicPath,
 				}
 
 				for (var prop in cfg.plugins)
@@ -63,6 +68,7 @@ module.exports = function(ctx) {
 						if (cfg.plugins[prop].constructor.name === 'HtmlWebpackPlugin')
 							cfg.plugins[prop].options.filename = path.join(options.indexPath, 'index.html')
 
+				*/
 				cfg.resolve.alias['@'] = path.resolve('src')
 			}
 		},
