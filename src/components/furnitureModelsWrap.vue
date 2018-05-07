@@ -82,7 +82,7 @@ export default {
 	grid-template-columns 180px calc(100% - (180px + 10px))
 	grid-gap 10px
 	&__noModels
-		grid-template-columns 1fr
+		grid-template-columns 100%
 
 	&__modelSelected
 		background-color #eee

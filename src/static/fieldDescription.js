@@ -131,7 +131,7 @@ export let DocsShipments = [
 ]
 
 export let DocsInvoices = [
-	{ field: "N_DOC", label: "Номер документа", width: 80 },
+	{ field: "N_DOC", label: "Номер документа", width: 85 },
 	{ field: "DATE", label: "Дата оформления", inline: true, width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 	} },

@@ -49,20 +49,24 @@ content.invoice = parsed.invoice
 delete parsed
 
 let managerMap = {},
-	invoiceCount = content.invoice.length
+	invoicesCount = content.invoice.length
 
 console.log('[client] create client managers map...')
 content.invoice.forEach((invoice, index) => {
 	if (!(index % 10000))
-		console.log(`[client] map created for ${(index / invoiceCount * 100).toFixed()}%, ${index} items of ${invoiceCount}`)
+		console.log(`[client] map created for ${(index / invoicesCount * 100).toFixed()}%, ${index} items of ${invoicesCount}`)
 
 	managerMap[+invoice.IDK] = +invoice.ID_M
 })
 
 delete content.invoice
 
-let clients = [],
-	contactFaces = [],
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
+const formatFIO = str => capitalize(str.replace(/[^A-Za-zА-Яа-я]/g, '').toLowerCase())
+
+let clients = {},
+	contactFaces = {},
+	fios = [],
 	clientCount = content.client.elements.length
 
 console.log('[client] formatting...')
@@ -76,34 +80,62 @@ content.client.elements.forEach((clientOld, index) => {
 	}, {})
 
 	let fio = {
-		lastName: client.FIO.trim().split(' ')[0].replace(/\b\w/g, l => l.toUpperCase()),
-		name: client.IMY.replace(/\b\w/g, l => l.toUpperCase()),
-		patronymic: client.OTCH.replace(/\b\w/g, l => l.toUpperCase()),
+		lastName: formatFIO(client.FIO.trim().split(' ')[0]),
+		name: formatFIO(client.IMY),
+		patronymic: formatFIO(client.OTCH),
 	}
 
 	let phone = (client.TEL1 || client.TEL2 || '').replace(/\D/g, ''),
-		gender = +((fio.patronymic || fio.name).substr(-1, 1).toLowerCase() != 'а')
+		gender
 
-	clients.push({
-		id: client.IDK,
-		...fio,
-		salon_id: client.ID_SALONA,
-		manager_id: managerMap[client.IDK + ''] || 1,
-		created_at: client.DATE1,
-		signs: client.COMMENT || ''
-	})
+	switch (fio.lastName.substr(-1, 1).toLowerCase()) {
+		case 'а':
+			gender = 0
+			break;
+		case 'о':
+			gender = +fio.lastName.substr(-1, 1).toLowerCase() != 'а'
+			break;
+		default:
+			gender = 1
+	}
 
-	contactFaces.push({
-		client_id: client.IDK,
+
+	if (!clients[phone])
+		clients[phone] = {
+			id: client.IDK,
+			...fio,
+			salon_id: client.ID_SALONA,
+			manager_id: managerMap[client.IDK + ''] || 1,
+			created_at: client.DATE1,
+			signs: client.COMMENT || ''
+		}
+
+	contactFaces[phone] = {
+		client_id: clients[phone] ? clients[phone].id : client.IDK,
 		regard: 'Основной',
 		fio: Object.values(fio).join(' ').trim(),
 		phone,
 		email: client.EMAIL.trim(),
 		gender
-	})
+	}
+
+	fios.push(Object.values(fio).join(' ').trim())
 })
 
 delete content
+
+/*
+console.log(`[client] getting unique fios...`)
+let maxFioLength = 0
+let uniq = fios.filter((el, index, self) => (maxFioLength = maxFioLength < el.length ? el.length : maxFioLength, self.indexOf(el) === index))
+console.log(`[client] fio count: ${fios.length}, unique: ${uniq.length} (${uniq.length - fios.length}), max length: ${maxFioLength}`)
+console.log(`[client] save fios...`);
+fs.writeFile('output/fios.json', JSON.stringify(uniq), { encoing: 'utf8' }, err => {
+	if (!err) console.log(`[client] fios saved in fios.json`)
+})
+*/
+
+console.log(`[client] formated ${clientCount} items, ${Object.keys(clients).length} (${Object.keys(clients).length - clientCount}) clients, ${Object.keys(contactFaces).length} contact faces`)
 
 const getClientSQLValue = client => `(${client.id}, '${client.signs}', '${client.lastName}', '${client.name}', '${client.patronymic}', '${client.manager_id}', '${client.salon_id}', '${client.created_at}', null)`
 const getContactFaceSQLValue = face => `(null, ${face.client_id}, null, '${face.fio}', ${face.gender}, '${face.regard}', '${face.phone}', 0, '${face.email}', 0, 0)`
@@ -113,8 +145,8 @@ let sql = {
 	contactFaces: 'INSERT INTO `nsl_contact_faces`(`id`, `client_id`, `preorder_id`, `fio`, `gender`, `regard`, `phone`, `disableSMS`, `email`, `disableEMAIL`, `lost`) VALUES '
 }
 
-console.log('[client] formated, creating clients SQL...')
-sql.clients = clients.reduce((prev, el, index) => prev + (index ? ', ' : '') + getClientSQLValue(el), sql.clients)
+console.log('[client] creating clients SQL...')
+sql.clients = Object.values(clients).reduce((prev, el, index) => prev + (index ? ', ' : '') + getClientSQLValue(el), sql.clients)
 delete clients
 
 console.log('[client] SQL ready, write clients sql file...')
@@ -122,7 +154,7 @@ fs.writeFileSync('output/clients.sql', sql.clients, { encoding: 'utf-8' })
 delete sql.clients
 
 console.log('[client] created, creating contact faces SQL...')
-sql.contactFaces = contactFaces.reduce((prev, el, index) => prev + (index ? ', ' : '') + getContactFaceSQLValue(el), sql.contactFaces)
+sql.contactFaces = Object.values(contactFaces).reduce((prev, el, index) => prev + (index ? ', ' : '') + getContactFaceSQLValue(el), sql.contactFaces)
 delete contactFaces
 
 console.log('[client] writed, write contact faces sql file...')

@@ -1,50 +1,42 @@
 <template>
-<div class="discountTileViewWrapper">
-	<div class="modelWrapper" v-for="model, index in discount_cachedByModel">
-		<div class="modelName">{{ model.model }}</div>
+<div class="FurnitureDiscountTiles">
+	<div class="FurnitureDiscountTiles__model" v-for="model, index in discount_cachedByModel">
+		<div class="FurnitureDiscountTiles__modelName">{{ model.model }}</div>
 
-		<div class="childs">
-			<div class="discountTileViewItem" v-for="item, itemIndex in model.data" :key="itemIndex" @click="clickHandler(item)">
-				<div class="title gr" slot="header">
-					<div class="name">
-						{{ item.MODEL }}
+		<div class="FurnitureDiscountTiles__cards">
+			<q-card v-for="item, itemIndex in model.data" :key="itemIndex" @click="clickHandler(item)">
+				<q-card-media>
+					<img src="https://u.askona.ru/goods/1557_1.jpg"/>
+				</q-card-media>
+
+				<q-card-title class="relative-position">
+					{{ item.MODEL }} {{ item.td.TIP }}
+
+					<q-btn
+						round
+						color="primary"
+						icon="shopping_cart"
+						class="absolute"
+						style="top: 0; right: 16px; transform: translateY(-50%);"
+						@click="discount_addToCart({ UN: item.UN })" />
+
+					<div slot="right">{{ item.td && item.td.mestoXR ? item.td.mestoXR.NAME : '' }}</div>
+
+					<div slot="subtitle">
+						<q-icon name="fa-ruble-sign" /> {{ item.td.CENA_ZAL || 0 }}
+						<div>Категория: {{ item.KAT }}</div>
+						<div v-if="item.ISP">Исполнение: {{ item.ISP }}</div>
 					</div>
+				</q-card-title>
 
-					<div class="mXR">
-						{{ item && item.td && item.td.mestoXR ? item.td.mestoXR.NAME : '' }}
-					</div>
-				</div>
-
-				<div class="body">
-					<div class="gr">
-						<div class="tip">
-							{{ item.td.TIP }}
-						</div>
-
-						<div class="">
-							Кат. {{ item.KAT }}
-						</div>
-					</div>
-
-					<div class="gr">
-						<div class="">
-							Цена
-						</div>
-						<div class="price">
-							{{ item.td.CENA_ZAL }}
-						</div>
-					</div>
-
-					<div class="commentWrapper">
-						<div class="comment">
-							{{ item.COMMENT }}
-						</div>
-					</div>
-				</div>
-			</div>
+				<q-card-main v-if="item.COMMENT">
+					{{ item.COMMENT }}
+				</q-card-main>
+			</q-card>
 		</div>
 	</div>
 
+	<slot/>
 </div>
 </template>
 
@@ -59,8 +51,11 @@ export default {
 
 	},
 	methods: {
+		...mapActions([
+			'discount_addToCart'
+		]),
 		clickHandler (item) {
-			router.push({ path: `/furniture/discount/${item.UN}` })
+			this.$router.push({ path: `/furniture/salon/${item.ID}` })
 		}
 	},
 	computed: {
@@ -72,81 +67,21 @@ export default {
 </script>
 
 
-<style lang="less">
-.discountTileViewWrapper {
-	.modelWrapper {
-		display: grid;
-		grid-auto-flow: row;
-		.childs {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(250px, auto));
-			grid-gap: 20px;
-			padding: 10px 15px;
-			.discountTileViewItem {
-				cursor: pointer;
-				padding: 10px;
-				border: 1px solid #e6ebf5;
-				border-radius: 2px;
-    			box-shadow: 0 1px 5px rgba(0,0,0,0.2),
-							0 2px 2px rgba(0,0,0,0.14),
-							0 3px 1px -2px rgba(0,0,0,0.12);
+<style lang="stylus">
+.FurnitureDiscountTiles
+	height 100%
+	overflow auto
 
-				> div {
-					padding: 10px;
-				}
+	&__model
+		display grid
+		grid-auto-flow row
 
-				.title {
-					border-bottom: 1px solid #e6ebf5;
-				}
-
-				.body {
-					> div:not(.commentWrapper) {
-						margin-top: 10px;
-					}
-				}
+	&__cards
+		display grid
+		grid-template-columns repeat(auto-fill, minmax(250px, auto))
+		grid-gap 10px
+		padding 10px 15px
 
 
-				.gr {
-					display: grid;
-					grid-auto-flow: column;
-					justify-content: space-between;
-				}
-				.name, .tip {
-					&::first-letter {
-						text-transform: uppercase;
-					}
-				}
 
-				.commentWrapper {
-					position: relative;
-					padding: 0;
-					.comment {
-						position: absolute;
-						width: ~"calc(100% + 60px)";
-						top: -40px;
-						left: -30px;
-						opacity: 0;
-						transition: all 0.3s ease-in-out;
-						pointer-events: none;
-						padding: 10px;
-						box-shadow: 0 1px 5px rgba(0,0,0,0.2),
-									0 2px 2px rgba(0,0,0,0.14),
-									0 3px 1px -2px rgba(0,0,0,0.12);
-						transform: scale(0.8);
-					}
-				}
-
-				&:hover {
-					.comment {
-						opacity: 1;
-						pointer-events: all;
-						background: #fff;
-						top: -30px;
-						transform: scale(1);
-					}
-				}
-			}
-		}
-	}
-}
 </style>

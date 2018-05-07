@@ -12,11 +12,13 @@ const actions = {
 }
 
 const mutations = {
-	main_auth_settings_set: (state, payload) => state[payload.type] = payload.data
+	main_auth_settings_set: (state, payload) => state[payload.type] = payload.data,
+	main_auth_settings_showModelsToggle: state => state.showModels = !state.showModels
 }
 
 const getters = {
 	main_auth_settings: state => state,
+	main_auth_settings_showModelsToggleText: state => (state.showModels ? 'Скрыть' : 'Показать' ) + ' модели'
 }
 
 const modules = {

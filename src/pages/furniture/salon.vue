@@ -1,6 +1,6 @@
 <template>
 <q-page class="AppContent">
-	<div class="FurnitureSofa AppContent__inner" v-if="isOne && auth_can(1, 'Furniture')">
+	<div class="FurnitureSofa AppContent__inner" v-show="isOne && auth_can(1, 'Furniture')">
 		<q-card>
 			<q-card-title>
 				Основная информация
@@ -43,10 +43,15 @@
 	</div>
 
 
-	<div class="FurnitureSalon" v-if="!isOne">
-		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
-			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
-		</q-tabs>
+	<div class="FurnitureSalon" v-show="!isOne">
+		<div class="FurnitureSalon__tabs">
+			<q-tabs v-model="currentTab" class="AppContent__headerTabs">
+				<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
+			</q-tabs>
+
+			<q-btn color="white" flat @click="selectPlaceModal = !selectPlaceModal" v-if="currentTab == 'new'">Отметить прибывшие</q-btn>
+			<q-btn color="white" flat @click="main_auth_settings_showModelsToggle">{{ main_auth_settings_showModelsToggleText }}</q-btn>
+		</div>
 
 		<furniture-models-wrap
 			class="AppContent__inner"
@@ -54,9 +59,6 @@
 			:loading="furniture_loadingModels"
 			:models="furniture_models"
 			@select="local_furniture_filtersModelSet">
-
-			<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
-			<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
 
 			<q-card class="FurnitureSalon__items">
 				<infinite-table
@@ -66,57 +68,26 @@
 					:select-fields="local_furniture_selectFields"
 					:filter-values="furniture_filters"
 					@infinite="furniture_infinity"
-					@click="routerGoId"
+					@click="clickHandler"
 					@sort="local_furniture_sortChange"
 					@filter="local_furniture_filterChange"
 					>
 
-					<template slot="buttons" slot-scope="props">
-						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="furniture_addToCart({ UN: props.row.UN })">shopping_cart</i>
-						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(4, 'MovingSofaBetweenSalons')" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(props.row))">local_shipping</i>
+					<template slot="buttonAll" v-if="currentTab == 'new'">
+						<q-checkbox v-model="infiniteSelect_all" class="InfiniteSelect__all"/>
+					</template>
 
-
-						<!--
-
-						<template slot="cloth1" slot-scope="props">
-							<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-							<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-						</template>
-
-						<template slot="cloth2" slot-scope="props">
-							<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-							<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-						</template>
-
-						<template slot="cloth3" slot-scope="props">
-							<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-							<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-						</template>
-					-->
+					<template slot="buttons" slot-scope="{ row, index }">
+						<q-checkbox :value="infiniteSelect_isSelected(row.td.ID)" @input="infiniteSelect_onSelect($event, row.td.ID)" v-if="currentTab == 'new'" class="InfiniteSelect__item"/>
+						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="furniture_addToCart({ UN: row.UN })">shopping_cart</i>
+						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(1, 'MovingSofaBetweenSalons')" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(row))">local_shipping</i>
 					</template>
 				</infinite-table>
-
-
-
-				<!--<tabless
-					key="salon"
-					:data="furniture_cached"
-					:complete="furniture_complete"
-					:field-description="furnitureSalonFieldDescriptionFiltred"
-					:filters="furniture_filters"
-					:select-fields="local_furniture_selectFields"
-					:selectable="currentTab == 'new'"
-					ref="table"
-					@filter="local_furniture_filterChange"
-					@sort="local_furniture_sortChange"
-					@click="routerGoId"
-					@select="local_furniture_handleFieldSelect"
-					@infinite="furniture_infinity"
-					@selected="transfer_selectedSet"
-				>
-				</tabless>-->
 			</q-card>
 		</furniture-models-wrap>
+
+		<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
+		<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
 	</div>
 </q-page>
 </template>
@@ -125,7 +96,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import { AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin } from '@/mixins'
+import { AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin, InfiniteSelectMixin } from '@/mixins'
 import tabless from '@/components/tableSSNew'
 import InfiniteTable from '@/components/InfiniteTable'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
@@ -150,7 +121,7 @@ export default {
 		SelectSalonForm,
 		Loading
 	},
-	mixins: [AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin],
+	mixins: [AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin, InfiniteSelectMixin],
 	data() {
 		return {
 			FurnitureSalon,
@@ -169,12 +140,12 @@ export default {
 					info: {
 						items: [
 							{ label: 'Фабричный номер', source: 'furniture_current.UN' },
-							{ label: 'Модель', source: 'furniture_current.MODEL' },
-							{ label: 'Тип', source: 'furniture_current.TIP' },
-							{ label: 'Исполнение', source: 'furniture_current.ISP' },
-							{ label: 'Категория', source: 'furniture_current.KAT' },
-							{ label: 'Декор', source: 'furniture_current.DEKOR' },
-							{ label: 'Стежка', source: 'furniture_current.Vid_stegki' },
+							{ label: 'Модель', source: 'furniture_current.furniture.MODEL' },
+							{ label: 'Тип', source: 'furniture_current.furniture.TIP' },
+							{ label: 'Исполнение', source: 'furniture_current.furniture.ISP' },
+							{ label: 'Категория', source: 'furniture_current.furniture.KAT' },
+							{ label: 'Декор', source: 'furniture_current.furniture.DEKOR' },
+							{ label: 'Стежка', source: 'furniture_current.furniture.Vid_stegki' },
 						]
 					},
 					storage: {
@@ -183,9 +154,9 @@ export default {
 							{
 								label: 'Местоположение',
 								component: PreviewSalon,
-								props: () => ({ content: this.getContentByPath('furniture_current.td.salon') || {} })
+								props: () => ({ content: this.getContentByPath('furniture_current.salon') || {} })
 							},
-							{ label: 'Место хранения', source: 'furniture_current.mXR.NAME' },
+							{ label: 'Место хранения', source: 'furniture_current.mestoXR.NAME' },
 							{
 								label: 'Прибытие на слкад',
 								source: 'furniture_current.DATE_VX',
@@ -196,15 +167,15 @@ export default {
 					cloth: {
 						label: 'Ткани',
 						items: [
-							{ label: 'Ткань 1', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.cloth1') || {} }) },
-							{ label: 'Ткань 2', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.cloth2') || {} }) },
-							{ label: 'Ткань 3', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.cloth3') || {} }) },
+							{ label: 'Ткань 1', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.furniture.cloth1') || {} }) },
+							{ label: 'Ткань 2', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.furniture.cloth2') || {} }) },
+							{ label: 'Ткань 3', component: PreviewCloth, props: () => ({ content: this.getContentByPath('furniture_current.furniture.cloth3') || {} }) },
 						]
 					},
 					sost: {
 						label: 'Состояние',
 						items: [
-							{ label: 'Примечание', source: 'furniture_current.COMMENT' },
+							{ label: 'Примечание', source: 'furniture_current.furniture.COMMENT' },
 							{ label: 'Состояние', source: 'furniture_current.Sostoynie' },
 						]
 					},
@@ -233,6 +204,9 @@ export default {
 		},
 		furniture_type (n) {
 			this.furniture_getModels({ filters: { 'td.salon.ID_SALONA': this.lastFurnituresFilters['td.salon.ID_SALONA'] }, type: n })
+		},
+		furniture_cached (n) {
+			this.infiniteSelect_items = n.map(el => +el.td.ID)
 		}
 	},
 	computed: {
@@ -250,7 +224,8 @@ export default {
 			'furniture_models',
 			'furniture_type',
 			'main_auth_settings',
-			'furniture_complete'
+			'furniture_complete',
+			'main_auth_settings_showModelsToggleText'
 		]),
 		...mapGetters('transfer', [
 			'transfer_selected'
@@ -267,8 +242,9 @@ export default {
 				rez['td.salon.NAME'] = {
 					data: this.salon_list_furniture,
 					field: "td.salon.NAME",
-					fields: { label: "NAME", value: "ID_SALONA", output: 'td.salon.ID_SALONA' }
+					fields: { label: "NAME", value: "ID_SALONA", output: `td.salon.ID_SALONA` }
 				}
+
 
 			if (this.furniture_models)
 				rez['MODEL'] = {
@@ -313,7 +289,8 @@ export default {
 		]),
 		...mapMutations([
 			'furniture_destroy',
-			'app_layout_headerShadowSet'
+			'app_layout_headerShadowSet',
+			'main_auth_settings_showModelsToggle'
 		]),
 		local_furniture_filterChange (n) {
 			if (n['MODEL'] == 'Все модели')
@@ -335,6 +312,12 @@ export default {
 				type: this.furniture_type
 			})
 		},
+		clickHandler (e, row) {
+			this.routerGoId(e, row.td.ID)
+		}
+	},
+	created () {
+		this.$on('infiniteSelect_selected', e => this.transfer_selectedSet(e))
 	},
 	async mounted () {
 		this.app_layout_headerShadowSet(!!this.oneId)
@@ -352,6 +335,11 @@ export default {
 
 <style lang="stylus">
 .FurnitureSalon
+	&__tabs
+		display grid
+		grid-template-columns 1fr max-content max-content
+		background #027be3
+
 	&__items
 		width 100%
 		height calc(100vh - 120px)

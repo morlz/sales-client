@@ -1,9 +1,25 @@
 <template>
-<div class="BasePhone" :class="{ 'hiddenNumber': !focus }">
-	<div class="BasePhone__inner">
-		{{ value | phone }}
-	</div>
-	<input type="text" class="BasePhone__input" :value="value | phone" readonly @focus="focus = true" @blur="focus = false" @cut.stop.prevent="copy" @copy.stop.prevent="copy" />
+<div class="BasePhone">
+	<input
+		v-if="show"
+		type="text"
+		class="BasePhone__input"
+		:value="value | phone"
+		readonly
+		@cut.stop.prevent="copy"
+		@copy.stop.prevent="copy" />
+
+	<q-btn
+		v-else
+		color="primary"
+		class="BasePhone__button"
+		flat
+		wait-for-ripple
+		@click="show = true">
+		Показать номер
+	</q-btn>
+
+	<div class="BasePhone__fill"/>
 </div>
 </template>
 
@@ -15,14 +31,19 @@ import {
 	mapState
 } from 'vuex'
 
+import { QSlideTransition } from 'quasar'
+
 export default {
+	components: {
+		QSlideTransition
+	},
 	props: {
 		value: [Number, String],
 		place: Object
 	},
 	data() {
 		return {
-			focus: false
+			show: false
 		}
 	},
 	methods: {
@@ -58,19 +79,9 @@ export default {
 
 <style lang="stylus">
 .BasePhone
-	position relative
-	transition all .3s ease-in-out
 	&__input
-		margin-left 3px
-		position absolute
-		top 0
-		left 0
-		width 100%
-		height 100%
 		border 0
 		background transparent
-		color transparent
-
-	&__inner
-		user-select none
+		width 156px
+		height 36px
 </style>

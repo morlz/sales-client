@@ -104,6 +104,11 @@ const actions = {
 		await state.infinite.start()
 	},
 	async furniture_filtersChange({ commit, dispatch, state }, payload){
+		if (payload.type == 'selled') {
+			payload['td.cart.salon.ID_SALONA'] = payload['td.salon.ID_SALONA']
+			delete payload['td.salon.ID_SALONA']
+		}
+
 		commit('furniture_filtersSet', payload)
 		state.infinite.filters = { ...payload, type: undefined }
 		state.infinite.additional = { type: payload.type }
@@ -120,6 +125,11 @@ const actions = {
 		commit('furniture_currentSet', res.data)
 	},
 	async furniture_getModels({ commit, dispatch }, payload){
+		if (payload.type == 'selled') {
+			payload.filters['td.cart.salon.ID_SALONA'] = payload.filters['td.salon.ID_SALONA']
+			delete payload.filters['td.salon.ID_SALONA']
+		}
+
 		commit('furniture_loadingModelsSet', true)
 		let res = await api.furnitures.getModels(payload)
 		if (res.data.error) return
@@ -566,7 +576,16 @@ const mutations = {
 const getters = {
 	furniture_infinite: state => state.infinite,
 	furniture_complete: state => state.complete,
-	furniture_filters: (state, getters) => ({ ...state.filters, type: undefined }),
+	furniture_filters: (state, getters) => {
+		let filters = { ...state.filters }
+		if (filters.type == 'selled') {
+			filters['td.salon.ID_SALONA'] = filters['td.cart.salon.ID_SALONA']
+			delete filters['td.cart.salon.ID_SALONA']
+		}
+
+		filters.type = undefined
+		return filters
+	},
 	furniture_type: ({ filters }) => filters.type,
 	furniture_current: ({ cached }) => cached.current,
 	furniture_cached: ({ cached }) => cached.list,

@@ -76,6 +76,9 @@ export default {
 		},
 		nav_open (n) {
 			this.menuLeftOpen = !this.menuLeftOpen
+		},
+		logined (n) {
+			this.menuLeftOpen = n
 		}
 	},
 	computed: {

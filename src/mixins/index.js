@@ -79,10 +79,12 @@ import AuthMixin from './Auth'
 import RouteMixin from './Route'
 import CartMixin from './Cart'
 import SingleItemPageMixin from './SingleItemPage'
+import InfiniteSelectMixin from './InfiniteSelect'
 
 export {
 	AuthMixin,
 	RouteMixin,
 	CartMixin,
-	SingleItemPageMixin
+	SingleItemPageMixin,
+	InfiniteSelectMixin
 }

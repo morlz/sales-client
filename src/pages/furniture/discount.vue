@@ -1,10 +1,14 @@
 <template>
 <q-page class="AppContent">
 	<div class="FurnitureDiscount">
-		<q-tabs v-model="currentTab" class="AppContent__headerTabs">
-			<q-tab name="table" label="Таблица" slot="title"/>
-			<q-tab name="tile" label="Плитки" slot="title"/>
-		</q-tabs>
+		<div class="FurnitureDiscount__tabs">
+			<q-tabs v-model="currentTab" class="AppContent__headerTabs">
+				<q-tab name="table" label="Таблица" slot="title"/>
+				<q-tab name="tile" label="Плитки" slot="title"/>
+			</q-tabs>
+
+			<q-btn color="white" flat @click="main_auth_settings_showModelsToggle">{{ main_auth_settings_showModelsToggleText }}</q-btn>
+		</div>
 
 		<furniture-models-wrap
 			class="AppContent__inner"
@@ -14,43 +18,6 @@
 			@select="local_discount_filtersModelSet">
 
 			<q-card v-if="currentTab == 'table'" class="FurnitureDiscount__items">
-				<!--<tabless
-					key="discount"
-					:data="discount_cached"
-					:complete="discount_complete"
-					:field-description="FurnitureDiscountFilred"
-					:filters="discount_filters"
-					:select-fields="local_discount_selectFields"
-					ref="table"
-					@filter="local_discount_filterChange"
-					@sort="local_discount_sortChange"
-					@click="rowClickHandler"
-					@select="local_discount_handleFieldSelect"
-					@infinite="discount_infinity"
-				>
-					<template slot="cloth1" slot-scope="props">
-						<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-						<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-					</template>
-
-					<template slot="cloth2" slot-scope="props">
-						<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-						<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-					</template>
-
-					<template slot="cloth3" slot-scope="props">
-						<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-						<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-					</template>
-
-					<template slot="buttons" slot-scope="props">
-						<q-btn color="primary" flat @click.stop="discount_addToCart({ UN: props.row.UN })">
-							<q-icon name="shopping_cart"/>
-						</q-btn>
-					</template>
-				</tabless>-->
-
-
 				<infinite-table
 					:columns="FurnitureDiscountFilred"
 					:rows="discount_cached"
@@ -69,14 +36,16 @@
 				</infinite-table>
 			</q-card>
 
-			<div v-if="currentTab == 'tile'">
-				<discount-tile-view v-loading="discount_loading" />
+			<div v-if="currentTab == 'tile'" class="FurnitureDiscount__items relative-position">
+				<discount-tile-view>
+					<infinite-loading :distance="800" @infinite="discount_infinity" ref="infiniteLoading">
+						<div class="end" slot="no-results" />
+						<div class="end" slot="no-more" />
+						<div class="spinner" slot="spinner" v-loading="discount_loadingBottom" />
+					</infinite-loading>
+				</discount-tile-view>
 
-				<infinite-loading :distance="800" @infinite="discount_infinity" ref="infiniteLoading" v-if="false">
-					<div class="end" slot="no-results" />
-					<div class="end" slot="no-more" />
-					<div class="spinner" slot="spinner" v-loading="discount_loadingBottom" />
-				</infinite-loading>
+				<!-- <loading :value="discount_loading"/> -->
 			</div>
 		</furniture-models-wrap>
 	</div>
@@ -89,6 +58,8 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { AuthMixin } from '@/mixins'
 import InfiniteTable from '@/components/InfiniteTable'
+import InfiniteLoading from 'vue-infinite-loading'
+import Loading from '@/components/Loading'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
@@ -102,6 +73,8 @@ export default {
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
 		PreviewCloth,
+		InfiniteLoading,
+		Loading
 	},
 	mixins: [AuthMixin],
 	data() {
@@ -119,10 +92,6 @@ export default {
 		async additionalSort (n) {
 			await this.discount_sortChange (Object.assign({}, n, this.lastDiscountSort))
 		},
-		oneId (n) {
-			if (n != undefined)
-				this.discount_getOne(n)
-		},
 	},
 	computed: {
 		...mapGetters([
@@ -138,7 +107,8 @@ export default {
 			'main_auth_settings',
 			'salon_list_discount',
 			'discount_loadingModels',
-			'discount_complete'
+			'discount_complete',
+			'main_auth_settings_showModelsToggleText'
 		]),
 		additionalFilters () {
 			return {}
@@ -190,7 +160,8 @@ export default {
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'discount_destroy'
+			'discount_destroy',
+			'main_auth_settings_showModelsToggle'
 		]),
 		async local_discount_filterChange (n) {
 			if (n['MODEL'] == 'Все модели')
@@ -220,9 +191,10 @@ export default {
 			this.$router.push(`/furniture/salon/${item.UN}`)
 		}
 	},
-	mounted () {
+	async mounted () {
 		this.app_layout_headerShadowSet(false)
-		this.discount_init()
+		await this.discount_init()
+		this.lastDiscountFilters = this.discount_filters
 	},
 	beforeDestrou () {
 		this.app_layout_headerShadowSet(true)
@@ -235,6 +207,11 @@ export default {
 
 <style lang="stylus">
 .FurnitureDiscount
+	&__tabs
+		display grid
+		grid-template-columns 1fr max-content max-content
+		background #027be3
+
 	&__items
 		width 100%
 		height calc(100vh - 120px)

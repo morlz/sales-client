@@ -1,9 +1,13 @@
 <template>
 <q-page class="AppContent">
 	<div class="FurnitureStorage">
-		<q-tabs v-model="currentTab" class="AppContent__headerTabs" v-if="tabs.length > 1">
-			<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
-		</q-tabs>
+		<div class="FurnitureStorage__tabs">
+			<q-tabs v-model="currentTab" class="AppContent__headerTabs" v-if="tabs.length > 1">
+				<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
+			</q-tabs>
+
+			<q-btn color="white" flat @click="main_auth_settings_showModelsToggle">{{ main_auth_settings_showModelsToggleText }}</q-btn>
+		</div>
 
 		<furniture-models-wrap
 			class="AppContent__inner"
@@ -13,45 +17,6 @@
 			@select="local_storage_filtersModelSet" >
 
 			<q-card class="FurnitureStorage__items">
-				<!--
-				<tabless
-					key="storage"
-					:data="storage_cached"
-					:complete="storage_complete"
-					:field-description="FurnitureStorageFiltred"
-					:filters="storage_filters"
-					:select-fields="local_storage_selectFields"
-					ref="table"
-					@filter="local_storage_filterChange"
-					@sort="local_storage_sortChange"
-					@click="rowClickHandler"
-					@select="local_storage_handleFieldSelect"
-					@infinite="storage_infinity"
-				>
-					<template slot="cloth1" slot-scope="props">
-						<preview-cloth :content="props.row.cloth1" v-if="props.row.cloth1" inline width="120px"/>
-						<template v-if="!props.row.cloth1">{{ props.row.TKAN }}</template>
-					</template>
-
-					<template slot="cloth2" slot-scope="props">
-						<preview-cloth :content="props.row.cloth2" v-if="props.row.cloth2" inline width="120px"/>
-						<template v-if="!props.row.cloth2">{{ props.row.KOMP }}</template>
-					</template>
-
-					<template slot="cloth3" slot-scope="props">
-						<preview-cloth :content="props.row.cloth3" v-if="props.row.cloth3" inline width="120px"/>
-						<template v-if="!props.row.cloth3">{{ props.row.KOMP1 }}</template>
-					</template>
-
-					<template slot="buttons" slot-scope="props">
-						<q-btn color="primary" flat @click.stop="storage_addToCart({ UN: props.row.UN })">
-							<q-icon name="shopping_cart"/>
-						</q-btn>
-					</template>
-				</tabless>
-			-->
-
-
 				<infinite-table
 					:columns="FurnitureStorageFiltred"
 					:rows="storage_cached"
@@ -120,7 +85,8 @@ export default {
 			'storage_models',
 			'storage_type',
 			'storage_complete',
-			'main_auth_settings'
+			'main_auth_settings',
+			'main_auth_settings_showModelsToggleText'
 		]),
 		additionalFilters () {
 			return { type: this.currentTab }
@@ -166,7 +132,8 @@ export default {
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'storage_destroy'
+			'storage_destroy',
+			'main_auth_settings_showModelsToggle'
 		]),
 		async local_storage_filterChange (n) {
 			if (n['MODEL'] == 'Все модели')
@@ -208,6 +175,11 @@ export default {
 
 <style lang="stylus">
 .FurnitureStorage
+	&__tabs
+		display grid
+		grid-template-columns 1fr max-content max-content
+		background #027be3
+
 	&__items
 		width 100%
 		height calc(100vh - 120px)

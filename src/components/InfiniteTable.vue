@@ -2,7 +2,9 @@
 <div class="InfiniteTable">
 	<div class="InfiniteTable__head InfiniteTableHead" :style="{ transform: `translate(-${scrollReal.left}px, ${head ? '0' : '-100%'})` }">
 		<div class="InfiniteTableHead__searches">
-			<div :style="{ width: `${widths[0]}px` }" v-if="$scopedSlots.buttons"/>
+			<div :style="{ width: `${widths[0]}px` }" v-if="$scopedSlots.buttons">
+				<slot name="buttonAll"/>
+			</div>
 			<infinite-table-column
 				v-for="column, index in table.columns"
 				:key="index"
@@ -24,11 +26,12 @@
 		ref="scroll"
 		emit-update
 		@update="chunkRenderHandler"
-		@scroll.native="throttledScrollHandler">
+		@scroll.native="throttledScrollHandler"
+		@resize="updateViewport">
 		<tr slot-scope="props" ref="trs" @click="rowClickHandler($event, props.item, props.itemIndex)">
-			<td>
+			<td v-if="$scopedSlots.buttons">
 				<div class="InfiniteTable__buttons">
-					<slot name="buttons" :row="props.item"/>
+					<slot name="buttons" :row="props.item" :index="props.itemIndex"/>
 				</div>
 			</td>
 
@@ -265,6 +268,7 @@ $header-height = 50px
 			cursor pointer
 			transition background .2s ease-in-out
 			td
+				padding 0
 				border-bottom 1px solid #e0e0e0
 
 				&:first-child

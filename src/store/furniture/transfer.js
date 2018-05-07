@@ -43,7 +43,7 @@ const mutations = {
 
 const getters = {
 	transfer_selected: state => state.selected.transfer,
-	transfer_selectedIDs: state => state.selected.transfer.map(el => el.td.ID),
+	transfer_selectedIDs: state => state.selected.transfer,
 }
 
 export default {

@@ -11,7 +11,7 @@
 	</q-field>
 
 	<q-btn color="primary" @click="save">Сохранить</q-btn>
-	<q-btn color="secondary" flat @click="$refs.selectPlaceModal.close()">Отменить</q-btn>
+	<q-btn color="secondary" flat v-close-overlay>Отменить</q-btn>
 </q-modal>
 </template>
 
