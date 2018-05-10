@@ -5,7 +5,7 @@ export default {
 			if (!splited.length)
 				return from
 
-			return splited.reduce((prev, el) => prev[el] !== undefined ? prev[el] : '', from)
+			return splited.reduce((prev, el) => prev[el] !== undefined && prev[el] !== null ? prev[el] : '', from)
 		}
 	}
 }

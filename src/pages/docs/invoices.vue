@@ -87,14 +87,14 @@ export default {
 	data () {
 		return {
 			DocsInvoices,
-			currentTab: '',
+			currentTab: 'inWork',
 			lastInvoicesFilters: {},
 			tabs: [
-				{ name: "Счета", type: '' }, // all
 				//{ name: "Оплаченые", type: 'paid' },
 				{ name: "В работе", type: 'inWork' },
 				{ name: "Отгружено", type: 'shipped' },
 				{ name: "Отказ", type: 'deny' },
+				{ name: "Все счета", type: '' }, // all
 			]
 		}
 	},
@@ -177,7 +177,7 @@ export default {
 	async created () {
 		await this.invoice_init(this.oneId || { page: this.type })
 	},
-	beforeDestrou () {
+	beforeDestroy () {
 		this.app_layout_headerShadowSet(true)
 		this.invoice_destroy()
 	}

@@ -24,7 +24,7 @@
 					:select-fields="local_storage_selectFields"
 					:filter-values="storage_filters"
 					@infinite="storage_infinity"
-					@click="rowClickHandler"
+					@click="clickHandler"
 					@sort="local_storage_sortChange"
 					@filter="local_storage_filterChange"
 					>
@@ -35,6 +35,8 @@
 				</infinite-table>
 			</q-card>
 		</furniture-models-wrap>
+
+		<modal-sofa v-model="modalSofa" :id="modalSofaId" type="storage"/>
 	</div>
 </q-page>
 </template>
@@ -49,6 +51,7 @@ import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import PreviewCloth from '@/components/PreviewCloth'
 import { FurnitureStorage } from '@/static/fieldDescription'
+import ModalSofa from '@/components/ModalSofa'
 
 export default {
 	components: {
@@ -56,13 +59,16 @@ export default {
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
 		PreviewCloth,
+		ModalSofa
 	},
 	mixins: [AuthMixin],
 	data() {
 		return {
 			FurnitureStorage,
 			lastStorageFilters: {},
-			currentTab: 'sgp'
+			currentTab: 'sgp',
+			modalSofa: false,
+			modalSofaId: 0,
 		}
 	},
 	watch: {
@@ -156,8 +162,10 @@ export default {
 			if (data.field != 'td.salon.NAME') return
 			this.storage_getModels({ filters: { 'td.salon.ID_SALONA': data.value }, type: this.storage_type })
 		},
-		rowClickHandler (e, item) {
-			this.$router.push(`/furniture/salon/${item.UN}`)
+		clickHandler (e, row) {
+			this.modalSofaId = +row.td.ID
+			this.modalSofa = !this.modalSofa
+			//this.$router.push(`/furniture/salon/${item.UN}`)
 		}
 	},
 	async mounted () {

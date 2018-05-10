@@ -8,12 +8,6 @@
 				</q-field>
 
 				<q-slide-transition>
-					<div v-if="form.podium">
-						В разработке
-					</div>
-				</q-slide-transition>
-
-				<q-slide-transition>
 					<div v-if="!form.podium" class="createInvoiceForm__slide">
 						<q-field>
 							<q-toggle v-model="form.internet" label="Интернет магазин"/>
@@ -36,7 +30,7 @@
 				</q-slide-transition>
 
 				<q-stepper-navigation>
-					<q-btn color="primary" @click="nextFromPay" :disabled="!form.adSource || form.podium">Продолжить</q-btn>
+					<q-btn color="primary" @click="nextFromPay" :disabled="!form.adSource && !form.podium">Продолжить</q-btn>
 				</q-stepper-navigation>
 			</q-step>
 
@@ -71,6 +65,13 @@
 
 						<q-field>
 							<q-input v-model="form.shipment.comment" float-label="Комментарий к доставке"/>
+						</q-field>
+					</template>
+
+					<template v-else>
+						<q-field helper="Выбирете адрес доставки">
+							<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
+							<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
 						</q-field>
 					</template>
 				</div>

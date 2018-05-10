@@ -1,5 +1,5 @@
 <template>
-<q-modal class="InvoiceEditTd" v-model="modal" :content-css="{ minHeight: '330px', minWidth: '400px' }">
+<q-modal class="InvoiceEditTd" v-model="modal" :content-css="{ minHeight: '270px', minWidth: '400px' }" minimized>
 	<q-modal-layout>
 		<q-toolbar slot="header">
 			<q-btn flat round dense v-close-overlay icon="keyboard_arrow_left" />
@@ -102,6 +102,8 @@ export default {
 	&__form
 		display grid
 		grid-gap 10px
+		padding 20px
+
 	&__buttons
 		margin 15px 0
 </style>

@@ -66,8 +66,8 @@
 		</q-card-main>
 
 		<q-card-actions class="infoCardInvoice__actions">
-			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">Выгрузить в AX</q-btn>
-			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">Выгрузить в 1С</q-btn>
+			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">в DAX</q-btn>
+			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">в 1С</q-btn>
 			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
 			<q-btn color="negative" @click="invoice_remove(data.ID)" v-if="auth_can(4, 'Invoice')" :disable="!data.canRemove">Удалить</q-btn>
 		</q-card-actions>
@@ -126,8 +126,8 @@ export default {
 <style lang="stylus">
 .infoCardInvoice
 	display grid
-	grid-auto-flow row
 	grid-template-rows min-content 1fr max-content
+	grid-template-columns 100%
 
 	&__actions
 		display grid

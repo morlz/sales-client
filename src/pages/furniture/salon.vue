@@ -88,6 +88,7 @@
 
 		<select-place-form v-model="selectPlaceModal" @select="transfer_take"/>
 		<select-salon-form v-model="selectSalonModal" @select="transfer_moveToSalon"/>
+		<modal-sofa v-model="modalSofa" :id="modalSofaId" type="salon"/>
 	</div>
 </q-page>
 </template>
@@ -97,7 +98,6 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin, InfiniteSelectMixin } from '@/mixins'
-import tabless from '@/components/tableSSNew'
 import InfiniteTable from '@/components/InfiniteTable'
 import furnitureModelsSwitch from '@/components/furnitureModelsSwitch'
 import furnitureModelsWrap from '@/components/furnitureModelsWrap'
@@ -108,18 +108,19 @@ import SelectSalonForm from '@/components/forms/SelectSalon'
 import PreviewSalon from '@/components/PreviewSalon'
 import money from '@/filters/Money'
 import Loading from '@/components/Loading'
+import ModalSofa from '@/components/ModalSofa'
 
 
 export default {
 	components: {
 		InfiniteTable,
-		tabless,
 		furnitureModelsSwitch,
 		furnitureModelsWrap,
 		PreviewCloth,
 		SelectPlaceForm,
 		SelectSalonForm,
-		Loading
+		Loading,
+		ModalSofa
 	},
 	mixins: [AuthMixin, RouteMixin, SingleItemPageMixin, CartMixin, InfiniteSelectMixin],
 	data() {
@@ -134,6 +135,8 @@ export default {
 			],
 			selectPlaceModal: false,
 			selectSalonModal: false,
+			modalSofa: false,
+			modalSofaId: 0,
 			selected: {},
 			one: {
 				lists: {
@@ -313,7 +316,9 @@ export default {
 			})
 		},
 		clickHandler (e, row) {
-			this.routerGoId(e, row.td.ID)
+			this.modalSofaId = +row.td.ID
+			this.modalSofa = !this.modalSofa
+			//this.routerGoId(e, row.td.ID)
 		}
 	},
 	created () {

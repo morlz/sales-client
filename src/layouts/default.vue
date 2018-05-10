@@ -36,6 +36,7 @@
 </template>
 
 <script>
+
 import {
 	mapActions,
 	mapGetters,
@@ -118,6 +119,7 @@ export default {
 <style lang="stylus">
 .AppContent
 	background #eee
+	width 100%
 	&__inner
 		margin 10px
 		box-sizing border-box

@@ -9,9 +9,9 @@ const config = {
 		publicPath: '/'
 	},
 	prod: {
-		distDir: path.resolve(__dirname, '..', 'sales-server-test', 'web'),
+		distDir: path.join('..', 'sales-server-test', 'web'),
 		filesPath: path.resolve(__dirname, '..', 'sales-server', 'web', 'assets'),
-		indexPath: path.resolve(__dirname, '..', 'sales-server', 'web'),
+		indexPath: path.resolve(__dirname, '..', 'sales-server', ''),
 		publicPath: path.join('web', 'assets')
 	}
 }
@@ -49,7 +49,8 @@ module.exports = function(ctx) {
 		build: {
 			scopeHoisting: true,
 			vueRouterMode: 'hash',
-			publicPath: options.publicPath,
+			//publicPath: options.publicPath,
+			//distDir: options.distDir,
 			minify: true,
 			gzip: true,
 			// analyze: true,
@@ -67,6 +68,9 @@ module.exports = function(ctx) {
 					if (cfg.plugins.hasOwnProperty(prop))
 						if (cfg.plugins[prop].constructor.name === 'HtmlWebpackPlugin')
 							cfg.plugins[prop].options.filename = path.join(options.indexPath, 'index.html')
+
+
+				console.log(cfg.output, cfg)
 
 				*/
 				cfg.resolve.alias['@'] = path.resolve('src')

@@ -6,10 +6,8 @@ import routes from './routes'
 
 Vue.use(VueRouter)
 
-const scrollBehavior = t => {
-	document.title = formatTitle(t.meta.name)
-	return { y: 0 }
-}
+const scrollBehavior = a => ({ y: 0 })
+const handleTitle = (fro, to, next) => (document.title = formatTitle(to.meta.name), next())
 
 global.router = new VueRouter({
   /*
@@ -26,5 +24,7 @@ global.router = new VueRouter({
   scrollBehavior,
   routes
 })
+
+router.beforeEach(handleTitle)
 
 export default router

@@ -38,7 +38,7 @@
 
 			<h6 class="PreviewClient__contacts">Контакные лица</h6>
 
-			<q-list no-border v-if="content.contactfaces">
+			<q-list no-border v-if="content.contactfaces" class="PreviewClientContactFacesList">
 				<q-item v-for="contact, index in content.contactfaces" :key="index">
 					<q-item-side>{{ contact.regard }}</q-item-side>
 
@@ -103,4 +103,9 @@ export default {
 			margin-top 15px
 			font-size 18px
 			font-weight normal
+
+	.PreviewClientContactFacesList
+		.q-item
+			displat grid
+			grid-auto-flow column
 </style>

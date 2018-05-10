@@ -15,7 +15,7 @@
 				</q-tabs>
 
 				<template v-if="!edit">
-					<q-list highlight no-border>
+					<q-list highlight no-border class="InfoCardShipments__list">
 						<q-item>
 							<q-item-side>Вид</q-item-side>
 							<q-item-main/>
@@ -262,6 +262,10 @@ export default {
 		display grid
 		grid-gap 10px
 		justify-content start
+		grid-auto-flow column
+
+	&__list .q-item
+		display grid
 		grid-auto-flow column
 
 .InfoCardShipmentsEdit

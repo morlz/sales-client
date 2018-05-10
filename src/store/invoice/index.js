@@ -297,9 +297,11 @@ const getters = {
 		if (!el.client)
 			tmp.client = el.clientOld
 
-		tmp.client.fio = el.client ?
-							`${tmp.client.lastName} ${tmp.client.name} ${tmp.client.patronymic}`
-						:	`${tmp.client.FIO} ${tmp.client.IMY} ${tmp.client.OTCH}`
+		if (tmp.client) {
+			tmp.client.fio = el.client ?
+								`${tmp.client.lastName} ${tmp.client.name} ${tmp.client.patronymic}`
+							:	`${tmp.client.FIO} ${tmp.client.IMY} ${tmp.client.OTCH}`
+		}
 
 		tmp.manager = tmp.manager ?
 				  { ...tmp.manager, fio: tmp.manager.FIO ? `${tmp.manager.FIO} ${tmp.manager.IMY} ${tmp.manager.OTCH}` : '' }

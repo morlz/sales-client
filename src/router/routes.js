@@ -37,6 +37,7 @@ export default [
 
 			{ path: '/reports/sales/', 				component: () => import ('pages/reports/sales'), 				meta: { name: "Отчёт по продажам" } },
 			{ path: '/reports/salesTwo/', 			component: () => import ('pages/reports/salesTwo'), 			meta: { name: "Отчёт 2" } },
+			{ path: '/reports/inventory/', 			component: () => import ('pages/reports/inventory'), 			meta: { name: "Список инвентаризации" } },
 			{ path: '/reports/resume/', 			component: () => import ('pages/reports/resume/index'), 		meta: { name: "Итоги" },
 				children: [
 					{ path: '', 					component: () => import ('pages/reports/resume/all'), 			meta: { name: "Итоги всех салонов" } },

@@ -25,7 +25,7 @@
 					:select-fields="local_discount_selectFields"
 					:filter-values="discount_filters"
 					@infinite="discount_infinity"
-					@click="rowClickHandler"
+					@click="clickHandler"
 					@sort="local_discount_sortChange"
 					@filter="local_discount_filterChange"
 					>
@@ -48,6 +48,8 @@
 				<!-- <loading :value="discount_loading"/> -->
 			</div>
 		</furniture-models-wrap>
+
+		<modal-sofa v-model="modalSofa" :id="modalSofaId" type="storage"/>
 	</div>
 </q-page>
 </template>
@@ -65,6 +67,7 @@ import furnitureModelsWrap from '@/components/furnitureModelsWrap'
 import discountTileView from '@/components/discountTileView'
 import { FurnitureDiscount } from '@/static/fieldDescription'
 import PreviewCloth from '@/components/PreviewCloth'
+import ModalSofa from '@/components/ModalSofa'
 
 export default {
 	components: {
@@ -74,7 +77,8 @@ export default {
 		furnitureModelsWrap,
 		PreviewCloth,
 		InfiniteLoading,
-		Loading
+		Loading,
+		ModalSofa
 	},
 	mixins: [AuthMixin],
 	data() {
@@ -82,7 +86,9 @@ export default {
 			FurnitureDiscount,
 			lastDiscountFilters: {},
 			lastDiscountSort: {},
-			currentTab: 'table'
+			currentTab: 'table',
+			modalSofa: false,
+			modalSofaId: 0,
 		}
 	},
 	watch: {
@@ -187,8 +193,10 @@ export default {
 				MODEL: model == 'Все модели' ? undefined : model
 			})
 		},
-		rowClickHandler (e, item) {
-			this.$router.push(`/furniture/salon/${item.UN}`)
+		clickHandler (e, row) {
+			this.modalSofaId = +row.td.ID
+			this.modalSofa = !this.modalSofa
+			//this.$router.push(`/furniture/salon/${item.UN}`)
 		}
 	},
 	async mounted () {
