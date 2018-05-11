@@ -1,6 +1,6 @@
 <template>
 <q-page class="AppContent">
-	<q-tabs v-model="currentTab" class="AppContent__headerTabs">
+	<q-tabs v-model="currentTab" class="AppContent__headerTabs AppContent__tabs">
 		<q-route-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title" :to="tab.to"/>
 	</q-tabs>
 

@@ -12,7 +12,7 @@
 
 		<div class="manyClientsWrapper" v-if="!isOne">
 			<div
-				class="manyClientsWrapper__horGroup AppContent__headerTabs"
+				class="manyClientsWrapper__horGroup AppContent__headerTabs AppContent__tabs"
 				:class="{ 'manyClientsWrapper__horGroup-mobile': app_view_mobile }">
 
 				<q-field class="manyClientsWrapper__phone">

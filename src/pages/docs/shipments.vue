@@ -40,7 +40,7 @@
 
 	<div class="manyShipmntsWrapper" v-if="!isOne">
 		<div
-			class="manyShipmntsWrapper__horGroup AppContent__headerTabs"
+			class="manyShipmntsWrapper__horGroup AppContent__headerTabs AppContent__tabs"
 			:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 			<q-field class="manyShipmntsWrapper__salon">
 				<q-select v-model="local_currentSalon" :options="local_salon_list" filter inverted/>

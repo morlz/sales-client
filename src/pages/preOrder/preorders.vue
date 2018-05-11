@@ -18,7 +18,7 @@
 
 	<div class="manyRecordsWrapper" v-if="!isOne && auth_can(1, 'Preorder')">
 		<div
-			class="manyRecordsWrapper__horGroup AppContent__headerTabs"
+			class="manyRecordsWrapper__horGroup AppContent__headerTabs AppContent__tabs"
 			:class="{ 'manyRecordsWrapper__horGroup-mobile': app_view_mobile }">
 			<q-tabs v-model="currentTab">
 				<q-tab name="all" label="Все предзаказы" slot="title"/>

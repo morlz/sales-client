@@ -123,6 +123,12 @@ const state = {
 					icon: "fa-braille",
 					can: { lvl: 1, action: "ReportResume" },
 				},
+				{
+					name: "Инвентаризация",
+					path: "/reports/inventory",
+					icon: "fa-bed",
+					can: { lvl: 1, action: "ReportInventoryList" },
+				},
 			]
 		},
 		{

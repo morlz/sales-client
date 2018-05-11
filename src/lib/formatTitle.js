@@ -1,1 +1,1 @@
-export default name => `QApp | ${name}`
+export default name => `QApp${name ? ' | ' + name : ''}`

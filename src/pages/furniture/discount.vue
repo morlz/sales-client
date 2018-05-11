@@ -1,7 +1,7 @@
 <template>
 <q-page class="AppContent">
 	<div class="FurnitureDiscount">
-		<div class="FurnitureDiscount__tabs">
+		<div class="FurnitureDiscount__tabs AppContent__tabs">
 			<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 				<q-tab name="table" label="Таблица" slot="title"/>
 				<q-tab name="tile" label="Плитки" slot="title"/>

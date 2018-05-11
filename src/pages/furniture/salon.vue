@@ -44,7 +44,7 @@
 
 
 	<div class="FurnitureSalon" v-show="!isOne">
-		<div class="FurnitureSalon__tabs">
+		<div class="FurnitureSalon__tabs AppContent__tabs">
 			<q-tabs v-model="currentTab" class="AppContent__headerTabs">
 				<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 			</q-tabs>

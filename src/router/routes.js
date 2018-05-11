@@ -13,7 +13,7 @@ export default [
 		children: [
 			{ path: '', 							component: () => import ('pages/index'),						meta: { name: "Главная" } },
 
-			{ path: '/admin/personal/:id?', 		component: () => import ('pages/admin/Personal'), 				meta: { name: "Перонал" } },
+			{ path: '/admin/personal/:id?', 		component: () => import ('pages/admin/Personal'), 				meta: { name: "Персонал" } },
 			{ path: '/admin/permissions/', 			component: () => import ('pages/admin/Permissions'), 			meta: { name: "Настройка прав" } },
 			{ path: '/admin/tests/', 				component: () => import ('pages/admin/tests'), 					meta: { name: "Тест" } },
 

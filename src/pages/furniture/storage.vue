@@ -1,7 +1,7 @@
 <template>
 <q-page class="AppContent">
 	<div class="FurnitureStorage">
-		<div class="FurnitureStorage__tabs">
+		<div class="FurnitureStorage__tabs AppContent__tabs">
 			<q-tabs v-model="currentTab" class="AppContent__headerTabs" v-if="tabs.length > 1">
 				<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 			</q-tabs>
