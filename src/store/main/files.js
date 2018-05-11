@@ -5,7 +5,7 @@ const state = {
 }
 
 const actions = {
-	file_downoad ({ commit, dispatch }, { filename, content }) {
+	file_download ({ commit, dispatch }, { filename, content }) {
 		let blob = new Blob([content], { type: 'text/plain' })
 
 		if ('msSaveBlob' in navigator)
@@ -22,7 +22,11 @@ const actions = {
 		window.URL.revokeObjectURL(url)
 		document.body.removeChild(el)
 
-		dispatch('notify', `Начата загрузка файла ${filename}`)
+		dispatch('notify', `Начата загрузка файла ${filename}`, { root: true })
+	},
+	file_downloadExcel ({ dispatch }, payload) {
+		payload.content = 'data:application/vnd.ms-excel, ' + payload.content.replace(/ /g, '%20')
+		dispatch('file_download', payload)
 	}
 }
 

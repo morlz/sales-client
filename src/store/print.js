@@ -38,13 +38,13 @@ const actions = {
 
 		try {
 			let rawHtml = Mustache.render(tpl.html, data)
-			dispatch('print_crateWindow', rawHtml)
+			dispatch('print_createWindow', rawHtml)
 		} catch (err) {
 			console.log(err);
 			dispatch('alert', err)
 		}
 	},
-	print_crateWindow ({ commit, dispatch }, payload) {
+	print_createWindow ({ commit, dispatch }, payload) {
 		let printPage = window.open()
 		if (!printPage)
 			return dispatch('alert', 'Ошибка при создании окна! Возможно запрещены всплвающие окна!')

@@ -52,7 +52,7 @@ const actions = {
 		await dispatch('reports_salesTwo_getData')
 	},
 	reports_salesTwo_exportToExcel ({ commit, dispatch }, content) {
-		dispatch('files/file_downoad', {
+		dispatch('files/file_download', {
 			filename: 'ExcelFile.xls',
 			content
 		}, { root: true })

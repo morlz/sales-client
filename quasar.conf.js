@@ -139,7 +139,8 @@ module.exports = function(ctx) {
 			plugins: [
 				'Notify',
 				'LocalStorage',
-				'Dialog'
+				'Dialog',
+				'Loading'
 			],
 			i18n: 'ru'
 		},

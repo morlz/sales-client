@@ -48,7 +48,7 @@ const actions = {
 		await dispatch('reports_sales_getData')
 	},
 	reports_sales_exportToExcel ({ commit, dispatch }, content) {
-		dispatch('files/file_downoad', {
+		dispatch('files/file_download', {
 			filename: 'ExcelFile.xls',
 			content
 		}, { root: true })

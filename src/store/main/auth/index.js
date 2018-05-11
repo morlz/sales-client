@@ -1,6 +1,6 @@
 import api from '@/api'
 import settings from '@/store/main/auth/settings'
-
+import { Manager } from '@/lib'
 
 const state = {
 	user: false,
@@ -135,7 +135,7 @@ const actions = {
 }
 
 const mutations = {
-	updateUserAuth: (state, payload) => state.user = payload,
+	updateUserAuth: (state, payload) => state.user = payload instanceof Manager ? payload : new Manager(payload),
 	updateToken (state, payload) {
 		state.token = payload
 		payload ? api.auth.setToken(payload) : api.auth.unsetToken()
@@ -155,6 +155,7 @@ const getters = {
 	auth_currentSalonVisible: state => state.visible.currentSalon,
 	auth_loadingForm: (state, getters) => getters.auchChecking || getters.logined,
 	auth_salon: (state, getters, rootState, rootGetters) => rootGetters.salon_list.find(el => el.ID_SALONA == getters.currentUserSalon) || {},
+	auth_user: state => state.user,
 	logined: state => !!state.user && !!state.permissions && state.permissions.length && !!state.currentSalon,
 	loginedAs: state => state.user,
 	auchChecking: state => Object.values(state.loading).every(el => el),
