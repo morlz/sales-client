@@ -3,6 +3,7 @@ import Infinite from '@/lib/Infinite'
 import merge from 'lodash.merge'
 
 import transfer from './transfer'
+import selectCloth from './selectCloth'
 
 const state = {
 	infinite: false,
@@ -503,7 +504,7 @@ const actions = {
 }
 
 const mutations = {
-	furniture_destroy: state => state.cached.list = [],
+	furniture_destroy: state => state.cached.models = state.cached.list = [],
 	furniture_initInfinite: (state, payload) => state.infinite = payload,
 	furniture_cacheSet: (state, payload) => state.cached.list = payload,
 	furniture_completeSet: (state, payload) => state.complete = payload,
@@ -681,7 +682,8 @@ const getters = {
 }
 
 const modules = {
-	transfer
+	transfer,
+	selectCloth
 }
 
 export default {

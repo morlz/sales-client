@@ -116,7 +116,8 @@ export default {
 		...mapActions('reports/inventory', [
 			'reports_inventory_init',
 			'reports_inventory_exportToExcel',
-			'reports_inventory_print'
+			'reports_inventory_print',
+			'reports_inventory_destroy'
 		]),
 		clickHandler (row) {
 			this.modalSofaId = +row.ID
@@ -136,6 +137,9 @@ export default {
 	},
 	async created () {
 		await this.reports_inventory_init()
+	},
+	beforeDestroy () {
+		this.reports_inventory_destroy()
 	}
 }
 </script>

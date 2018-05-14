@@ -14,6 +14,7 @@ import SalonGroup from '@/lib/SalonGroup'
 import Furniture from '@/lib/Furniture'
 import Preorder from '@/lib/Preorder'
 import PreorderStatus from '@/lib/PreorderStatus'
+import Cloth from '@/lib/Cloth'
 
 export default BaseModel
 
@@ -33,5 +34,6 @@ export {
 	SalonGroup,
 	Furniture,
 	Preorder,
-	PreorderStatus
+	PreorderStatus,
+	Cloth
 }

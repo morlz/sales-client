@@ -129,11 +129,13 @@ module.exports = function(ctx) {
 				'QModalLayout',
 				'QCheckbox',
 				'QToggle',
-				'QDatetime'
+				'QDatetime',
+				'QScrollArea'
 			],
 			directives: [
 				'Ripple',
-				'CloseOverlay'
+				'CloseOverlay',
+				'Scroll'
 			],
 			// Quasar plugins
 			plugins: [

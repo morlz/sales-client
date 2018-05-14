@@ -50,9 +50,9 @@
 
 					<q-timeline-entry title="Ткани">
 						<div class="cloth">
-							<cloth-select-form v-model="cloth0" :index="0" :disabled="furniture_new_active.cloth[0]" />
-							<cloth-select-form v-model="cloth1" :index="1" :disabled="furniture_new_active.cloth[1]" />
-							<cloth-select-form v-model="cloth2" :index="2" :disabled="furniture_new_active.cloth[2]" />
+							<form-select-cloth v-model="cloth0" :index="0" :disable="furniture_new_active.cloth[0]" />
+							<form-select-cloth v-model="cloth1" :index="1" :disable="furniture_new_active.cloth[1]" />
+							<form-select-cloth v-model="cloth2" :index="2" :disable="furniture_new_active.cloth[2]" />
 						</div>
 					</q-timeline-entry>
 
@@ -117,14 +117,14 @@ import {
 } from 'vuex'
 
 import { AuthMixin } from '@/mixins'
-import clothSelectForm from '@/components/forms/clothSelect.vue'
+import FormSelectCloth from '@/components/forms/SelectCloth'
 import ModuleSofaCreate from '@/components/forms/ModuleSofaCreate'
 import gallery from '@/components/gallery.vue'
 import { QCard, QCardTitle, QCardMain, QCardActions, QBtn, QTimeline, QTimelineEntry } from 'quasar'
 
 export default {
 	components: {
-		clothSelectForm,
+		FormSelectCloth,
 		ModuleSofaCreate,
 		gallery,
 		QCard,
@@ -265,7 +265,7 @@ export default {
 			justify-content: flex-start;
 			flex-flow: row wrap;
 			> div {
-				margin: 30px 10px;
+				margin: 30px 5px;
 			}
 			margin-bottom: 40px;
 		}

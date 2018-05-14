@@ -8,7 +8,7 @@ class Infinite extends EventEmitter {
 		super()
 
 		if (typeof options.method != 'function')
-			console.error('Load more method was required')
+			throw new Error('Load more method was required')
 
 		this._loadingAll = 0
 		this._loadingMore = 0
@@ -178,6 +178,7 @@ class Infinite extends EventEmitter {
 	set complete (n) {
 		this._complete = n
 		this.emit('complete', n)
+		console.log('complete', n);
 	}
 
 	get cached () {

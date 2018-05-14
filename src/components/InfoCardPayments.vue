@@ -23,7 +23,7 @@
 							<preview-salon :content="payment.salon"/>
 						</q-item-tile>
 
-						<q-item-tile>
+						<q-item-tile v-if="payment.TEXT">
 							Комментарий: {{ payment.TEXT }}
 						</q-item-tile>
 					</q-item-main>
@@ -83,22 +83,11 @@ export default {
 			addPaymentForm: false
 		}
 	},
-	watch: {
-
-	},
-	computed: {
-
-	},
 	methods: {
 		...mapActions([
 			'invoice_removePayment'
 		])
 	},
-	mounted () {
-
-
-
-	}
 }
 </script>
 
@@ -112,8 +101,8 @@ export default {
 		justify-content start
 		align-items center
 		grid-gap 10px
+
 	&__amount
 		color red
 		font-size 26px
-
 </style>

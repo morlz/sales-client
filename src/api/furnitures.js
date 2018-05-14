@@ -1,4 +1,5 @@
 import core from '@/api/core'
+import { Cloth } from '@/lib'
 
 export default {
 	async getLimited (params) {
@@ -65,11 +66,16 @@ export default {
 		})
 	},
 	async getNewCloth (params) {
-		return await core.invoke({
+		let res = await core.invoke({
 			method: "get",
 			type: "furniture/new-cloth",
 			params
 		})
+
+		if (Array.isArray(res.data))
+			res.data = res.data.map(el => el instanceof Cloth ? el : new Cloth(el))
+
+		return res
 	},
 	async getNewClothById(params) {
 		return await core.invoke({

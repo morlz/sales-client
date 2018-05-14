@@ -101,7 +101,7 @@ export default {
 							},
 							{ label: 'Место хранения', source: 'furniture_current.mestoXR.NAME' },
 							{
-								label: 'Прибытие на слкад',
+								label: 'Прибытие на склад',
 								source: 'furniture_current.DATE_VX',
 								filter: el => this.$moment(el).fromNow() + ` (${this.$moment().diff(this.$moment(el), 'days')} дн.)`
 							},

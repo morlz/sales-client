@@ -35,18 +35,42 @@ export default class BaseModel {
 	define (props, args = false) {
 		for (var prop in props)
 			if (props.hasOwnProperty(prop)) {
-				let array = Array.isArray(props[prop])
-				this.definePropery(prop, array ? props[prop][0] : props[prop], array)
+				if (typeof props[prop] == 'string') {
+					this.translateProperty(prop, props[prop])
+				} else {
+					let array = Array.isArray(props[prop])
+					this.definePropery(prop, array ? props[prop][0] : props[prop], array)
+				}
 			}
 
 		if (args)
 			this._init(args)
 	}
 
+	translateProperty (prop, path) {
+		Object.defineProperty(this, prop, {
+			get () {
+				return this._getProperty(path)
+			},
+			set (value) {
+				this._setProperty(path, value)
+			}
+		})
+	}
+
 	_init (args) {
 		for (var prop in args)
 			if (args.hasOwnProperty(prop))
 				this[prop] = args[prop]
+	}
+
+	_getProperty (path) {
+		return path.split('.').reduce((prev, el) => prev[el] ? prev[el] : '', this)
+	}
+
+	_setProperty (path, value) {
+		let splited = path.split('.')
+		splited.reduce((prev, el, index) => prev[el] ? prev[el] : prev[el] = (index + 1 == splited.length ? value : {}), this)
 	}
 
 	get instance () {

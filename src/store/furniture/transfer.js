@@ -9,7 +9,7 @@ const state = {
 }
 
 const actions = {
-	async transfer_take ({ commit, dispatch, getters }, { salon, place }) {
+	async transfer_take ({ commit, dispatch, getters, rootGetters }, { salon, place }) {
 		if (!getters.transfer_selectedIDs) return
 
 		let res = await api.furnitures.transferTake({
@@ -22,6 +22,7 @@ const actions = {
 
 		commit('furniture_removeManyFromCache', res.data, { root: true })
 		dispatch('notify', `Успешно принято ${res.data.length} шт.`, { root: true })
+		dispatch('furniture_getModels', { filters: rootGetters.furniture_filters, type: 'new' }, { root: true })
 	},
 	async transfer_moveToSalon ({ commit, dispatch, state }, salon_id) {
 		let res = await api.furnitures.moveToSalon({

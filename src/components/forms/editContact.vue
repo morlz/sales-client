@@ -3,7 +3,7 @@
 	<el-dialog  :visible.sync="formOpen" :lock-scroll="false">
 		<h2 slot="title">Изменить контакт</h2>
 
-		<el-form :model="editContactForm" label-width="100px" :rules="rules" ref="editContactForm">
+		<el-form :model="editContactForm" label-width="100px"  ref="editContactForm">
 			<el-form-item label="ФИО" prop="fio">
 				<el-input v-model="editContactForm.fio" placeholder="ФИО" />
 			</el-form-item>
@@ -41,12 +41,8 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import rules from '@/static/formRules'
 import { AuthMixin } from '@/mixins'
 
-let {
-	contacts
-} = rules
 
 export default {
 	mixins: [AuthMixin],
@@ -63,7 +59,6 @@ export default {
 				disableEMAIL: false,
 				lost: false
 			},
-			rules: contacts,
 			bool: ['disableSMS', 'disableEMAIL', 'lost']
 		}
 	},

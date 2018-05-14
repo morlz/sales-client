@@ -9,17 +9,17 @@
 		</q-card-main>
 
 		<q-card-actions>
-			<q-btn color="primary" @click="client_visible_addContactFormSet(true)" v-if="allowCreate && auth_can(2, 'ContactFace')" icon="add">Добавить контакт</q-btn>
+			<q-btn color="primary" @click="add" v-if="allowCreate && auth_can(2, 'ContactFace')" icon="add">Добавить контакт</q-btn>
 		</q-card-actions>
 
-		<add-contact-form v-if="allowCreate && auth_can(2, 'ContactFace')"/>
+		<form-contact-face-add v-if="allowCreate && auth_can(2, 'ContactFace')" v-model="addContactFaceForm"/>
 		<edit-contact-form v-if="auth_can(2, 'ContactFace')"/>
 	</q-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import addContactForm from '@/components/forms/addContact'
+import FormContactFaceAdd from '@/components/forms/ContactFaceAdd'
 import editContactForm from '@/components/forms/editContact'
 import fieldDescription from '@/static/fieldDescription'
 import { AuthMixin } from '@/mixins'
@@ -42,18 +42,19 @@ export default {
 	mixins: [AuthMixin],
 	components: {
 		editContactForm,
-		addContactForm,
+		FormContactFaceAdd,
 		TableCollapsible
 	},
 	data () {
 		return {
-			clientContactsFieldDescription
+			clientContactsFieldDescription,
+			addContactFaceForm: false
 		}
 	},
 	methods: {
-		...mapMutations([
-			'client_visible_addContactFormSet'
-		])
+		add () {
+			this.addContactFaceForm = true
+		}
 	},
 	computed: {
 		data () {

@@ -82,7 +82,7 @@ import {
 import { CRMPreorders } from '@/static/fieldDescription'
 import { AuthMixin, RouteMixin } from '@/mixins'
 import InfiniteTable from '@/components/InfiniteTable'
-import addContactForm from '@/components/forms/addContact'
+import FormContactFaceAdd from '@/components/forms/ContactFaceAdd'
 import editContactForm from '@/components/forms/editContact'
 import editTaskForm from '@/components/forms/editTask'
 import newPreorderForm from '@/components/forms/newPreorder'
@@ -105,7 +105,7 @@ export default {
 	mixins: [AuthMixin, RouteMixin],
 	components: {
 		InfiniteTable,
-		addContactForm,
+		FormContactFaceAdd,
 		editContactForm,
 		editTaskForm,
 		InfoCardPreorder,

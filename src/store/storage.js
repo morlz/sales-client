@@ -78,7 +78,7 @@ const actions = {
 }
 
 const mutations = {
-	storage_destroy: state => state.cached.list = [],
+	storage_destroy: state => state.cached.models = state.cached.list = [],
 	storage_cacheSet: (state, payload) => state.cached.list = payload,
 	storage_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	storage_filtersSet: (state, payload) => state.filters = payload,

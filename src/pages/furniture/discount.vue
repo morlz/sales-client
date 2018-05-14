@@ -204,7 +204,7 @@ export default {
 		await this.discount_init()
 		this.lastDiscountFilters = this.discount_filters
 	},
-	beforeDestrou () {
+	beforeDestroy () {
 		this.app_layout_headerShadowSet(true)
 		this.discount_destroy()
 	}

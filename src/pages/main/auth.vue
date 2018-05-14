@@ -32,7 +32,6 @@
 <script>
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import formRules from '@/static/formRules'
 import SelectCurrentSalonForm from '@/components/forms/SelectCurrentSalon'
 import Loading from '@/components/Loading'
 
