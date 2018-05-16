@@ -13,7 +13,6 @@
 							filter
 							v-loading="furniture_new_loading.models"
 							:options="models"
-							float-label="Модель"
 						/>
 					</q-timeline-entry>
 
@@ -25,7 +24,6 @@
 							filter
 							v-loading="furniture_new_loading.type"
 							:options="types"
-							float-label="Тип"
 						/>
 
 						<module-sofa-create
@@ -43,16 +41,15 @@
 							filter
 							v-loading="furniture_new_loading.dekor"
 							:options="dekors"
-							float-label="Декор"
 						/>
 					</q-timeline-entry>
 
 
 					<q-timeline-entry title="Ткани">
 						<div class="cloth">
-							<form-select-cloth v-model="cloth0" :index="0" :disable="furniture_new_active.cloth[0]" />
-							<form-select-cloth v-model="cloth1" :index="1" :disable="furniture_new_active.cloth[1]" />
-							<form-select-cloth v-model="cloth2" :index="2" :disable="furniture_new_active.cloth[2]" />
+							<form-select-cloth v-model="cloth0" :index="0" :disable="furniture_new_active.cloth[0]" v-if="!furniture_new_active.cloth[0]" />
+							<form-select-cloth v-model="cloth1" :index="1" :disable="furniture_new_active.cloth[1]" v-if="!furniture_new_active.cloth[1]" />
+							<form-select-cloth v-model="cloth2" :index="2" :disable="furniture_new_active.cloth[2]" v-if="!furniture_new_active.cloth[2]" />
 						</div>
 					</q-timeline-entry>
 
@@ -231,7 +228,7 @@ export default {
 <style lang="less">
 .newFurnitureFormWrapper {
 	display: grid;
-	grid-template-columns: minmax(0, 500px) 1fr;
+	grid-template-columns: minmax(0, 600px) 1fr;
 	grid-gap: 10px;
 	color: #5a5e66;
 
@@ -243,6 +240,9 @@ export default {
 				}
 				&-content {
 					width: 100%;
+					.q-select .q-input-target {
+						font-size: 24px;
+					}
 				}
 			}
 		}
@@ -270,7 +270,7 @@ export default {
 			margin-bottom: 40px;
 		}
 		.mainForm {
-			max-width: 450px;
+			max-width: 550px;
 		}
 	}
 	.additioal {

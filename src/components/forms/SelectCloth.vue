@@ -40,15 +40,29 @@
 			<div class="ClothSelectModal">
 				<q-input class="ClothSelectModal__search" float-label="Поиск" v-model="local_search"/>
 
+				<q-select class="ClothSelectModal__kat" v-model="kat" :options="kats"/>
+
 				<q-scroll-area class="ClothSelectModal__list scroll overflow-hidden" ref="scroll">
 					<q-scroll-observable @scroll="scroll" />
 
-					<base-cloth
-						v-for="cloth, clothIndex in furniture_selectCloth_cached[index]"
-						:value="cloth"
-						:key="clothIndex"
-						:selected="cloth.id == current.id"
-						@click.native="select(cloth)"/>
+					<div
+						class="ClothCollection"
+						v-for="collection, collectionIndex in furniture_selectCloth_cached[index]"
+						:key="collectionIndex"
+						:class="{ 'ClothCollection__big' : collection.length !== 1 }">
+						<div class="ClothCollection__name">
+							{{ collectionIndex }}
+						</div>
+
+						<div class="ClothCollection__items">
+							<base-cloth
+								v-for="cloth, clothIndex in collection"
+								:value="cloth"
+								:key="collectionIndex + '-' + clothIndex"
+								:selected="cloth.id == current.id"
+								@click.native="select(cloth)"/>
+						</div>
+					</div>
 				</q-scroll-area>
 
 				<div class="ClothSelectModal__preview">
@@ -128,16 +142,33 @@ export default {
 		]),
 		...mapGetters('selectCloth', [
 			'furniture_selectCloth_cached',
-			'furniture_selectCloth_complete'
+			'furniture_selectCloth_complete',
+			'furniture_selectCloth_kats'
 		]),
 		current () {
 			if (!this.furniture_selectCloth_cached[this.index])
 				return {}
 
 			if (!this.selected)
-				return this.furniture_selectCloth_cached[this.index][0] || {}
+				return (this.furniture_selectCloth_cached[this.index][Object.keys(this.furniture_selectCloth_cached[this.index])[0]] || [])[0] || {}
 
 			return this.selected
+		},
+		kat: {
+			get () {
+				return this.furniture_selectCloth_kats[this.index]
+			},
+			set (n) {
+				if (this.$refs.inf)
+					this.$refs.inf.$emit('$InfiniteLoading:reset')
+
+				this.$store.commit('selectCloth/furniture_selectCloth_katSet', { [this.index]: n })
+				this.$store.dispatch('selectCloth/furniture_selectCloth_start', this.index)
+			}
+		},
+		kats () {
+			let res = Array.apply(null, { length: 10 }).map((el, index) => ({ label: 'K' + (index + 1), value: 'K' + (index + 1) }))
+			return [{ label: 'Все', value: null }, ...res]
 		}
 	},
 	methods: {
@@ -191,30 +222,53 @@ export default {
 <style lang="stylus">
 .ClothSelectModal
 	display grid
-	grid-template 's p' 50px 'l p' calc(100% - 50px) / 325px 1fr
+	grid-template 's k p' 50px 'l l p' calc(100% - 50px) / 250px 75px 1fr
 	height 100%
 
 	&__search
 		margin 5px
+		grid-area s
+
+	&__kat
+		margin 5px
+		grid-area k
 
 	&__list
+		grid-area l
 		.absolute
 			display grid
-			grid-template-columns repeat(auto-fit, minmax(150px, 1fr))
+			grid-template-columns 1fr 1fr
 			align-content start
 			grid-gap 5px
 			padding 5px
-
 		height 100%
 		//overflow-y auto
 
 	&__preview
 		grid-area p
 		align-self center
+		justify-self center
 		margin 10px
 		img
-			width 100%
+			max-width 100%
+			max-height 100%
 			box-shadow 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12)
+
+
+.ClothCollection
+	width 150px
+	&__name
+		margin 5px 10px
+
+	&__items
+		display grid
+		grid-template-columns repeat(auto-fit, minmax(150px, 1fr))
+		align-content start
+		grid-gap 5px
+
+	&__big
+		width 305px
+		grid-column 1 / 3
 
 .ClothSelectEmpty
 	width 150px

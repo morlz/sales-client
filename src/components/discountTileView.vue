@@ -4,7 +4,12 @@
 		<div class="FurnitureDiscountTiles__modelName">{{ model.model }}</div>
 
 		<div class="FurnitureDiscountTiles__cards">
-			<q-card v-for="item, itemIndex in model.data" :key="itemIndex" @click="clickHandler(item)">
+			<q-card
+				v-for="item, itemIndex in model.data"
+				:key="itemIndex"
+				@click.native="clickHandler(item)"
+				v-ripple
+				class="relative-position">
 				<q-card-media>
 					<img src="https://u.askona.ru/goods/1557_1.jpg"/>
 				</q-card-media>
@@ -18,7 +23,7 @@
 						icon="shopping_cart"
 						class="absolute"
 						style="top: 0; right: 16px; transform: translateY(-50%);"
-						@click="discount_addToCart({ UN: item.UN })" />
+						@click.stop="discount_addToCart({ UN: item.UN })" />
 
 					<div slot="right">{{ item.td && item.td.mestoXR ? item.td.mestoXR.NAME : '' }}</div>
 
@@ -37,15 +42,24 @@
 	</div>
 
 	<slot/>
+
+	<modal-sofa v-model="modalSofa" :id="modalSofaId" type="discount"/>
 </div>
 </template>
 
 <script>
+import ModalSofa from '@/components/ModalSofa'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
+	components: {
+		ModalSofa
+	},
 	data () {
-		return {}
+		return {
+			modalSofa: false,
+			modalSofaId: 0,
+		}
 	},
 	watch: {
 
@@ -55,7 +69,8 @@ export default {
 			'discount_addToCart'
 		]),
 		clickHandler (item) {
-			this.$router.push({ path: `/furniture/salon/${item.ID}` })
+			this.modalSofaId = +item.td.ID
+			this.modalSofa = !this.modalSofa
 		}
 	},
 	computed: {
@@ -81,6 +96,8 @@ export default {
 		grid-template-columns repeat(auto-fill, minmax(250px, auto))
 		grid-gap 10px
 		padding 10px 15px
+		> div
+			cursor pointer
 
 
 

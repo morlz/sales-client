@@ -126,7 +126,7 @@ export default {
 						label: 'Цены',
 						items: [
 							{ label: 'Цена', source: 'furniture_current.CENA', filter: el => money(el) + ' руб.' },
-							{ label: 'Цена модели опт', source: 'furniture_current.ModelPriceOpt', filter: el => money(el) + ' руб.', hide: a => this.auth_can(1, 'SeeOptPrice') },
+							{ label: 'Цена модели опт', source: 'furniture_current.ModelPriceOpt', filter: el => money(el) + ' руб.', hide: a => !this.auth_can(1, 'SeeOptPrice') },
 							{ label: 'Цена модели розн', source: 'furniture_current.ModelPriceR', filter: el => money(el) + ' руб.' },
 							{ label: 'Цена зал', source: 'furniture_current.CENA_ZAL', filter: el => money(el) + ' руб.' },
 						]

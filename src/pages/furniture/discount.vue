@@ -223,4 +223,11 @@ export default {
 	&__items
 		width 100%
 		height calc(100vh - 120px)
+
+	&__discount
+		color red
+		font-weight 600
+		s
+			font-size 12px
+			color #999
 </style>

@@ -7,7 +7,10 @@
   "author": "morlz <morlz@mail.ru>",
   "private": true,
   "scripts": {
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "deploy:emptyDist": "node deploy/emptyDist",
+    "deploy:start": "node deploy/start",
+    "build": "npm run deploy:emptyDist && quasar build && npm run deploy:start"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -15,6 +18,7 @@
     "browser-event-emitter": "^1.0.2",
     "chart.js": "^2.7.2",
     "element-ui": "^2.3.3",
+    "fs-extra": "^6.0.1",
     "in-viewport": "^3.6.0",
     "js-cookie": "^2.2.0",
     "lodash.groupby": "^4.6.0",
@@ -39,6 +43,7 @@
     "less": "^3.0.1",
     "less-loader": "^4.1.0",
     "quasar-cli": "^0.15.14",
+    "sftp-sync-deploy": "^0.7.1",
     "stylus-loader": "^3.0.2",
     "xml-js": "^1.6.2"
   },

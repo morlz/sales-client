@@ -101,12 +101,12 @@ export let FurnitureDiscount = [
 	{ field: "cloth2.NAME", label: "Ткань 2", width: 120 },
 	{ field: "cloth3.NAME", label: "Ткань 3", width: 120 },
 	{ field: "KAT", label: "Кат.", width: 50 },
-	{ field: "COMMENT", label: "Примечание" },
+	{ field: "COMMENT", label: "Примечание", width: 200 },
 	{ field: "DEKOR", label: "Декор", width: 80 },
 	{ field: "Vid_stegki", label: "Стежка", width: 80 },
 	{ field: "td.CENA_ZAL", label: "Цена руб.", type: "html", width: 100, format: {
 		get: (data, row) => row.td.ModelPriceR > row.td.CENA_ZAL ?
-				`<div class="oneFurnitureWrapper__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
+				`<div class="FurnitureDiscount__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
 			:	data
 	} },
 	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
