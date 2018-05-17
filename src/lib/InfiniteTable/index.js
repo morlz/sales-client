@@ -17,7 +17,7 @@ export default class InfiniteTable {
 	set rows (val) {
 		if (!Array.isArray(val)) return
 
-		this._rows = val//.map(el => el instanceof InfiniteTableRow ? el : new InfiniteTableRow(el))
+		this._rows = val //.map(el => el instanceof InfiniteTableRow ? el : new InfiniteTableRow(el))
 	}
 
 	get columns () {

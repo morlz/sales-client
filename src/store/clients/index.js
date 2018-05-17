@@ -2,19 +2,17 @@ import api from '@/api'
 import Infinite from '@/lib/Infinite'
 import { Client } from '@/lib'
 import select from '@/store/clients/select'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
+import merge from 'lodash.merge'
 
-const state = {
-	complete: false,
-	infinite: false,
-	filters: [],
-	sort: [],
+let infinite = new TwoSideInfinite({ method: api.clients.getLimited, namespace: 'client', returns: Client })
+
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
 		current: {},
 		byPhone: []
 	},
 	loading: {
-		list: true,
 		one: true,
 		byPhone: false,
 		bottom: false
@@ -26,22 +24,15 @@ const state = {
 		addContactForm: false,
 		editContactForm: false
 	}
-}
+})
 
-const actions = {
+const actions = merge(infinite.getActions(true), {
 	async client_init ({ commit, dispatch, state }, payload) {
-		if (payload) {
-			dispatch('client_getOne', payload)
-		} else {
-			commit('client_initInfinite', new Infinite({
-				method: api.clients.getLimited
-			}))
+		if (payload)
+			return await dispatch('client_getOne', payload)
 
-			state.infinite.on('cached', n => commit('client_cacheSet', n))
-			state.infinite.on('complete', n => commit('client_completeSet', n))
-
-			await state.infinite.start()
-		}
+		dispatch('client_initInfinite')
+		await state.infinite.start(api.scrollPosition.current.offset)
 	},
 	async client_sortChange({ commit, dispatch, state }, payload){
 		commit("client_sortSet", payload)
@@ -95,13 +86,10 @@ const actions = {
 		commit('preorder_currentContctUpdate', res.data)
 		dispatch('notify', 'Контакное лицо успешно обновлено')
 	}
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	client_destroy: state => state.cached.list = [],
-	client_initInfinite: (state, payload) => state.infinite = payload,
-	client_completeSet: (state, payload) => state.complete = payload,
-	client_cacheSet: (state, payload) => state.cached.list = payload,
 	client_byPhoneSet: (state, payload) => state.cached.byPhone = payload,
 	client_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	client_filtersSet: (state, payload) => state.filters = payload,
@@ -112,22 +100,21 @@ const mutations = {
 	client_currentUpdate: (state, payload) => state.cached.current ? state.cached.current.update(payload) : 0,
 	client_currentContctUpdate: (state, payload) => api.core.assignItem(state.cached.current.contactfaces, payload),
 	client_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
-	client_loadingSet: (state, payload) => state.loading.list = payload,
 	client_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	client_loadingOneSet: (state, payload) => state.loading.one = payload,
 	client_loadingByPhoneSet: (state, payload) => state.loading.byPhone = payload,
 	client_visible_addContactFormSet: (state, payload) => state.visible.addContactForm = payload,
 	client_visible_editContactFormSet: (state, payload) => state.visible.editContactForm = payload,
 	client_edit_contactSet: (state, payload) => state.edit.contact = payload,
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	client_complete: state => state.complete,
-	client_filters: ({ filters }) => filters,
-	client_filtersPhone: ({ filters }) => filters.phone || "",
+	client_filters: stete => state.filters,
+	client_filtersPhone: state => state.filters.phone || "",
 	client_current: ({ cached }) => cached.current,
 	client_currentFIO: ({ cached }) => `${cached.current.lastname} ${cached.current.name}  ${cached.current.patronymic}`,
-	client_cached: ({ cached }) => cached.list,
+	client_cached: state => state.cached.list,
 	client_byPhone: ({ cached }) => cached.byPhone,
 	client_loading: ({ loading }) => loading.list,
 	client_loadingBottom: ({ loading }) => loading.bottom,
@@ -136,7 +123,7 @@ const getters = {
 	client_edit_currentContact: ({ edit }) => edit.contact,
 	client_visible_addContactForm: ({ visible }) => visible.addContactForm,
 	client_visible_editContactForm: ({ visible }) => visible.editContactForm,
-}
+})
 
 
 

@@ -1,6 +1,6 @@
 <template>
 <q-page class="AppContent">
-	<div class="FurnitureSofa AppContent__inner" v-show="isOne && auth_can(1, 'Furniture')">
+	<div class="FurnitureSofa AppContent__inner" v-if="isOne && auth_can(1, 'Furniture')">
 		<q-card>
 			<q-card-title>
 				Основная информация
@@ -43,13 +43,13 @@
 	</div>
 
 
-	<div class="FurnitureSalon" v-show="!isOne">
+	<div class="FurnitureSalon" v-if="!isOne">
 		<div class="FurnitureSalon__tabs AppContent__tabs">
-			<q-tabs v-model="currentTab" class="AppContent__headerTabs">
+			<q-tabs v-model="tab" class="AppContent__headerTabs">
 				<q-tab v-for="tab, index in tabs" :name="tab.type" :label="tab.name" :key="index" slot="title"/>
 			</q-tabs>
 
-			<q-btn color="white" flat @click="selectPlaceModal = !selectPlaceModal" v-if="currentTab == 'new'">Отметить прибывшие</q-btn>
+			<q-btn color="white" flat @click="selectPlaceModal = !selectPlaceModal" v-if="tab == 'new'">Отметить прибывшие</q-btn>
 			<q-btn color="white" flat @click="main_auth_settings_showModelsToggle">{{ main_auth_settings_showModelsToggleText }}</q-btn>
 		</div>
 
@@ -62,6 +62,7 @@
 
 			<q-card class="FurnitureSalon__items">
 				<infinite-table
+					:key="tab"
 					:columns="FurnitureSalonFiltred"
 					:rows="furniture_cached"
 					:complete="furniture_complete"
@@ -73,12 +74,12 @@
 					@filter="local_furniture_filterChange"
 					>
 
-					<template slot="buttonAll" v-if="currentTab == 'new'">
+					<template slot="buttonAll" v-if="tab == 'new'">
 						<q-checkbox v-model="infiniteSelect_all" class="InfiniteSelect__all"/>
 					</template>
 
 					<template slot="buttons" slot-scope="{ row, index }">
-						<q-checkbox :value="infiniteSelect_isSelected(row.td.ID)" @input="infiniteSelect_onSelect($event, row.td.ID)" v-if="currentTab == 'new'" class="InfiniteSelect__item"/>
+						<q-checkbox :value="infiniteSelect_isSelected(row.td.ID)" @input="infiniteSelect_onSelect($event, row.td.ID)" v-if="tab == 'new'" class="InfiniteSelect__item"/>
 						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="furniture_addToCart({ UN: row.UN })">shopping_cart</i>
 						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(1, 'MovingSofaBetweenSalons')" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(row))">local_shipping</i>
 					</template>
@@ -126,10 +127,10 @@ export default {
 	data() {
 		return {
 			FurnitureSalon,
-			currentTab: 'storage',
+			currentTab: '',
 			lastFurnituresFilters: {},
 			tabs: [
-				{ name: "Склад", type: "storage" },
+				{ name: "Склад", type: "" },
 				{ name: "Все новые", type: "new" },
 				{ name: "Продажи из других салонов", type: "selled" },
 			],
@@ -233,6 +234,14 @@ export default {
 		...mapGetters('transfer', [
 			'transfer_selected'
 		]),
+		tab: {
+			get () {
+				return this.furniture_type
+			},
+			set (n) {
+				this.currentTab = n
+			}
+		},
 		data () {
 			return this.cachedFurnitures
 		},
@@ -321,12 +330,13 @@ export default {
 			//this.routerGoId(e, row.td.ID)
 		}
 	},
-	created () {
+	async created () {
 		this.$on('infiniteSelect_selected', e => this.transfer_selectedSet(e))
-	},
-	async mounted () {
-		this.app_layout_headerShadowSet(!!this.oneId)
+		//this.currentTab = this.furniture_type
 		await this.furniture_init(this.oneId)
+	},
+	mounted () {
+		this.app_layout_headerShadowSet(!!this.oneId)
 		this.lastFurnituresFilters = this.furniture_filters
 	},
 	beforeDestroy() {

@@ -25,23 +25,11 @@
 			</div>
 
 			<q-card class="manyClientsWrapper__card AppContent__inner">
-				<!--<tabless
-					key="clientsinf"
-					:data="client_cached"
-					:complete="client_complete"
-					:field-description="CRMClients"
-					:filters="client_filters"
-					ref="table"
-					@filter="local_client_filtersChange"
-					@sort="local_client_sortChange"
-					@click="routerGoId"
-					@infinite="client_infinity"
-				/>-->
-
 				<infinite-table
 					:columns="CRMClients"
 					:rows="client_cached"
 					:complete="client_complete"
+					:filter-values="client_filters"
 					@infinite="client_infinity"
 					@click="routerGoId"
 					@sort="local_client_sortChange"
@@ -142,10 +130,12 @@ export default {
 			await this.client_sortChange (n)
 		}
 	},
-	async mounted(){
+	mounted(){
 		this.app_layout_headerShadowSet(false)
-		await this.client_init(this.oneId)
 		this.searchByPhone = this.client_filtersPhone
+	},
+	async created () {
+		await this.client_init(this.oneId)
 	},
 	beforeDestroy () {
 		this.app_layout_headerShadowSet(true)

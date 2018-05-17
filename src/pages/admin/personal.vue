@@ -11,23 +11,11 @@
 
 	<div class="manyPersoalWrapper" v-if="!isOne">
 		<q-card class="manyPersoalWrapper__card AppContent__inner">
-			<!--<tabless
-				key="personal"
-				:data="personal_cached"
-				:complete="personal_complete"
-				:field-description="AdminPersonal"
-				:filters="personal_filters"
-				ref="table"
-				@filter="local_personal_filtersChange"
-				@sort="local_personal_sortChange"
-				@click="routerGoId"
-				@infinite="personal_infinity"
-			/>-->
-
 			<infinite-table
 				:columns="AdminPersonal"
 				:rows="personal_cached"
 				:complete="personal_complete"
+				:filter-values="personal_filters"
 				@infinite="personal_infinity"
 				@click="routerGoId"
 				@sort="local_personal_sortChange"

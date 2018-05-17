@@ -1,18 +1,17 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
+import merge from 'lodash.merge'
+import { Task } from '@/lib'
 
-const state = {
-	complete: false,
-	infinite: false,
-	filters: [],
-	sort: [],
+let infinite = new TwoSideInfinite({ method: api.tasks.getLimited, namespace: 'task', returns: Task })
+
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
 		current: {},
 		types: []
 	},
 	loading: {
-		list: true,
 		one: false,
 		types: true,
 		bottom: false,
@@ -26,22 +25,15 @@ const state = {
 		prev: {},
 		next: {}
 	}
-}
+})
 
-const actions = {
+const actions = merge(infinite.getActions(true), {
 	async task_init ({ commit, dispatch, state }, payload) {
-		if (+payload) {
-			await dispatch('task_getOne', payload)
-		} else {
-			commit('task_initInfinite', new Infinite({
-				method: api.tasks.getLimited
-			}))
+		if (+payload)
+			return await dispatch('task_getOne', payload)
 
-			state.infinite.on('cached', n => commit('task_cacheSet', n))
-			state.infinite.on('complete', n => commit('task_completeSet', n))
-
-			await state.infinite.start()
-		}
+		dispatch('task_initInfinite')
+		await state.infinite.start(api.scrollPosition.current.offset)
 	},
 	async task_sortChange({ commit, dispatch }, payload){
 		commit("task_sortSet", payload)
@@ -96,13 +88,10 @@ const actions = {
 		dispatch('notify', 'Задача успешно создана')
 		router.push({ path: `/preorder/preorders/${res.data.next.preorder_id}` })
 	},
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	task_destroy: state => state.cached.list = [],
-	task_initInfinite: (state, payload) => state.infinite = payload,
-	task_completeSet: (state, payload) => state.complete = payload,
-	task_cacheSet: (state, payload) => state.cached.list = payload,
 	task_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	task_cacheUpdate: (state, payload) => {
 		let task = state.cached.list.find(el => el.id == payload.id)
@@ -116,7 +105,6 @@ const mutations = {
 	task_currentSet: (state, payload) => state.cached.current = payload,
 	task_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	task_cachedTypesSet: (state, payload) => state.cached.types = payload,
-	task_loadingSet: (state, payload) => state.loading.list = payload,
 	task_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	task_loadingOneSet: (state, payload) => state.loading.one = payload,
 	task_loadingTypesSet: (state, payload) => state.loading.models = payload,
@@ -125,9 +113,9 @@ const mutations = {
 	task_edit_visibleSet: (state, payload) => state.edit.visible = payload,
 	task_add_prevSet: (state, payload) => state.add.prev = payload,
 	task_add_nextSet: (state, payload) => state.add.next = payload,
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	task_complete: state => state.complete,
 	task_filters: ({ filters }) => filters,
 	task_current: ({ cached }) => cached.current,
@@ -141,7 +129,7 @@ const getters = {
 	task_edit_visible: ({ edit }) => edit.visible,
 	task_edit_current: ({ edit }) => edit.current,
 	task_add_next: state => state.add.next
-}
+})
 
 export default {
 	state,

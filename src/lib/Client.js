@@ -11,6 +11,46 @@ export default class Client extends BaseModel {
 		}, arg)
 	}
 
+	get old () {
+		return this.IDK !== undefined
+	}
+
+	get lastname () {
+		return (this.old ? this.FIO : this._lastname || '').trim()
+	}
+
+	set lastname (val) {
+		if (this.old) {
+			this.FIO = val
+		} else {
+			this._lastname = val
+		}
+	}
+
+	get name () {
+		return (this.old ? this.IMY : this._name || '').trim()
+	}
+
+	set name (val) {
+		if (this.old) {
+			this.IMY = val
+		} else {
+			this._name = val
+		}
+	}
+
+	get patronymic () {
+		return (this.old ? this.OTCH : this._patronymic || '').trim()
+	}
+
+	set patronymic (val) {
+		if (this.old) {
+			this.OTCH = val
+		} else {
+			this._patronymic = val
+		}
+	}
+
 	get fio () {
 		return `${this.lastname} ${this.name} ${this.patronymic}`.trim()
 	}

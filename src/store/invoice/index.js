@@ -2,8 +2,12 @@ import api from '@/api'
 import reduceInvoice from '@/lib/reducers/invoice'
 import reduceMovement from '@/lib/reducers/movement'
 import Infinite from '@/lib/Infinite'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
 import { Invoice } from '@/lib'
 import Vue from 'vue'
+import merge from 'lodash.merge'
+
+let infinite = new TwoSideInfinite({ method: api.invoices.getLimited, namespace: 'invoice', returns: Invoice })
 
 const namesOf1cFles = {
 	blank: 'zagolovki',
@@ -12,17 +16,11 @@ const namesOf1cFles = {
 	payments: 'oplati'
 }
 
-const state = {
-	filters: [],
-	sort: [],
-	complete: false,
-	infinite: false,
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
 		current: {},
 	},
 	loading: {
-		list: true,
 		one: true,
 		bottom: false
 	},
@@ -51,47 +49,37 @@ const state = {
 			{ label: "Салон", value: "3" },
 		]
 	}
-}
+})
 
-const actions = {
+const actions = merge(infinite.getActions(true), {
 	async invoice_init ({ commit, dispatch, getters, state }, payload) {
-		let ID_SALONA = state.filters['storage.ID_SALONA'] !== undefined ?
-									state.filters['storage.ID_SALONA']
-								:	getters.auth_currentSalon.ID_SALONA + ""
+		if (typeof payload != 'object')
+			return dispatch('invoice_getOne', payload)
 
-		let filters = {
-			'storage.ID_SALONA' : ID_SALONA
-		}
-
-		let additional = {
+		dispatch('invoice_defaultSalonSet')
+		dispatch('invoice_initInfinite')
+		state.infinite.additional = {
 			type: getters.invoice_type,
 			page: payload.page ?
 					[payload.page, payload = undefined][0]
 				:	getters.invoice_page
 		}
-
-
 		dispatch('salon_getList', getters.currentUserSalon)
-		if (payload) {
-			await dispatch('invoice_getOne', payload)
-		} else {
-			commit('invoice_initInfinite', new Infinite({
-				method: api.invoices.getLimited,
-				filters,
-				additional
-			}))
+		await state.infinite.start(api.scrollPosition.current.offset)
+	},
+	invoice_defaultSalonSet({ commit, state, getters }) {
+		if (state.infinite) return
 
-			state.infinite.on('cached', n => commit('invoice_cacheSet', n))
-			state.infinite.on('complete', n => commit('invoice_completeSet', n))
+		let ID_SALONA = state.filters['storage.ID_SALONA'] !== undefined ?
+									state.filters['storage.ID_SALONA']
+								:	getters.auth_currentSalon.ID_SALONA + ""
 
-			commit('invoice_filtersSet', {
-				...state.filters,
-				...filters,
-				...additional
-			})
 
-			await state.infinite.start()
-		}
+		commit('invoice_filtersSet', {
+			type: 'inWork',
+			...state.filters,
+			'storage.ID_SALONA' : ID_SALONA,
+		})
 	},
 	async invoice_sortChange({ commit, dispatch, state, getters }, payload){
 		commit("invoice_sortSet", payload)
@@ -239,11 +227,10 @@ const actions = {
 		commit('invoice_currentPaymentRemove', res.data)
 		dispatch('notify', 'Оплата успешно удалена.')
 	}
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	invoice_destroy: state => state.cached.list = [],
-	invoice_cacheSet: (state, payload) => state.cached.list = payload,
 	invoice_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	invoice_filtersSet: (state, payload) => state.filters = payload,
 	invoice_sortSet: (state, payload) => state.sort = payload,
@@ -275,39 +262,21 @@ const mutations = {
 	invoice_currentShipmensAppend: (state, payload) => state.cached.current.shipments = [...state.cached.current.shipments, payload],
 	invoice_currentPaymentAppend: (state, payload) => state.cached.current.payments = [...state.cached.current.payments, ...payload],
 	invoice_currentPaymentRemove: (state, payload) => state.cached.current.payments = state.cached.current.payments.filter(el => el.ID_PL != payload.ID_PL),
-	invoice_loadingSet: (state, payload) => state.loading.list = payload,
 	invoice_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	invoice_loadingOneSet: (state, payload) => state.loading.one = payload,
-	invoice_initInfinite: (state, payload) => state.infinite = payload,
-	invoice_completeSet: (state, payload) => state.complete = payload,
 
 	invoice_new_selectedSet: (state, payload) => state.new.selected = payload,
 	invoice_new_loadingSet: (state, payload) => state.new.loading[payload.type] = payload.data,
 	invoice_new_cachedSet: (state, payload) => state.new.cached[payload.type] = payload.data,
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	invoice_filters: state => ({ ...state.filters, type: undefined, page: undefined }),
-	invoice_type: state => state.filters.type,
+	invoice_type: state => state.filters.type || '',
 	invoice_page: state => state.filters.page,
 	invoice_current: state => state.cached.current,
 	invoice_complete: state => state.complete,
-	invoice_cached: state => state.cached.list.map(el => {
-		let tmp = { ...el }
-		if (!el.client)
-			tmp.client = el.clientOld
-
-		if (tmp.client) {
-			tmp.client.fio = el.client ?
-								`${tmp.client.lastName} ${tmp.client.name} ${tmp.client.patronymic}`
-							:	`${tmp.client.FIO} ${tmp.client.IMY} ${tmp.client.OTCH}`
-		}
-
-		tmp.manager = tmp.manager ?
-				  { ...tmp.manager, fio: tmp.manager.FIO ? `${tmp.manager.FIO} ${tmp.manager.IMY} ${tmp.manager.OTCH}` : '' }
-			:	null
-		return tmp
-	}),
+	invoice_cached: state => state.cached.list,
 	invoice_loading: ({ loading }) => loading.list,
 	invoice_loadingBottom: ({ loading }) => loading.bottom,
 	invoice_loadingOne: ({ loading }) => loading.one,
@@ -317,7 +286,7 @@ const getters = {
 	invoice_new_cached: state => state.new.cached,
 	invoice_new_loading: state => state.new.loading,
 	invoice_new_adSources: state => state.new.cached.adSources.map(el => ({ label: el.NAME , value: el.ID }))
-}
+})
 
 const modules = {
 

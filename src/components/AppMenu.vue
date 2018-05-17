@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import AppMenuItem from '@/components/AppMenuItem.vue'
+import AppMenuItem from '@/components/AppMenuItem'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { AuthMixin } from '@/mixins'

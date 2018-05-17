@@ -1,53 +1,45 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
-import Preorder from '@/lib'
+import { Preorder } from '@/lib'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
+import merge from 'lodash.merge'
 
-const state = {
-	complete: false,
-	infinite: false,
-	filters: {},
-	sort: {},
+let infinite = new TwoSideInfinite({ method: api.preorders.getLimited, namespace: 'preorder', returns: Preorder })
+
+
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
 		current: {},
 		statuses: []
 	},
 	loading: {
-		list: false,
 		one: true,
 		statuses: true,
 		bottom: false
 	},
 	add: {}
-}
+})
 
-const actions = {
+const actions = merge(infinite.getActions(true), {
 	async preorder_init ({ commit, dispatch, state, getters }, payload) {
 		dispatch('preorder_getStatuses')
+		if (payload)
+			return await dispatch('preorder_getOne', payload)
 
-		if (payload) {
-			await dispatch('preorder_getOne', payload)
-		} else {
-			let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+		dispatch('salon_getList')
+		dispatch('preorder_defaultSalonSet')
+		dispatch('preorder_initInfinite')
+		await state.infinite.start(api.scrollPosition.current.offset)
+	},
+	preorder_defaultSalonSet({ commit, dispatch, state, getters }) {
+		if (state.infinite) return
 
-			dispatch('salon_getList')
-			commit('preorder_initInfinite', new Infinite({
-				method: api.preorders.getLimited,
-				filters: {
-					'salon.ID_SALONA': ID_SALONA
-				}
-			}))
+		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
 
-			commit('preorder_filtersSet', {
-				...state.filters,
-				'salon.ID_SALONA': ID_SALONA
-			})
-
-			state.infinite.on('cached', n => commit('preorder_cacheSet', n))
-			state.infinite.on('complete', n => commit('preorder_completeSet', n))
-
-			await state.infinite.start()
-		}
+		commit('preorder_filtersSet', {
+			...state.filters,
+			'salon.ID_SALONA': ID_SALONA
+		})
 	},
 	async preorder_sortChange({ commit, dispatch }, payload){
 		commit("preorder_sortSet", payload)
@@ -100,13 +92,10 @@ const actions = {
 		commit('preorder_currentUpdate', res.data)
 		dispatch('notify', 'Предзаказ успешно обновлён')
 	}
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	preorder_destroy: state => state.cached.list = [],
-	preorder_initInfinite: (state, payload) => state.infinite = payload,
-	preorder_completeSet: (state, payload) => state.complete = payload,
-	preorder_cacheSet: (state, payload) => state.cached.list = payload,
 	preorder_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	preorder_filtersSet: (state, payload) => state.filters = payload,
 	preorder_sortSet: (state, payload) => state.sort = payload,
@@ -120,14 +109,13 @@ const mutations = {
 	preorder_currentContctUpdate: (state, payload) => api.core.assignItem(state.cached.current.contactFaces, payload),
 	preorder_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	preorder_cachedStatusesSet: (state, payload) => state.cached.statuses = payload,
-	preorder_loadingSet: (state, payload) => state.loading.list = payload,
 	preorder_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	preorder_loadingOneSet: (state, payload) => state.loading.one = payload,
 	preorder_loadingStatusesSet: (state, payload) => state.loading.statuses = payload,
 	preorder_add_set: (state, payload) => state.add = payload,
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	preorder_complete: state => state.complete,
 	preorder_filters: ({ filters }) => filters,
 	preorder_filtersPhone: state => state.filters['contactFaces.phone'] || "",
@@ -139,7 +127,7 @@ const getters = {
 	preorder_loadingOne: ({ loading }) => loading.one,
 	preorder_acceptedAdd: state => state.filters && state.filters['contactFaces.phone'] && state.filters['contactFaces.phone'].length > 10 && !state.loading.list,
 	preorder_add: state => state.add,
-}
+})
 
 export default {
 	state,

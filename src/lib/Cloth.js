@@ -6,8 +6,6 @@ export default class Cloth extends BaseModel {
 		this.define({
 			id: 'ITEMID'
 		}, arg)
-
-		this.rnm = Math.random()
 	}
 
 	get image () {

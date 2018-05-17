@@ -4,7 +4,9 @@
 	:is="isLink"
 	:to="content.path || ''"
 	:class="{ currentRouteItem }"
-	@click.stop="clickHandler">
+	@click.stop="clickHandler"
+	@click.stop.native="clickHandler"
+	>
 	<div class="menuItem__icon" :style="iconStyle" :class="{ 'menuItem__icon-initial' : initial }" v-ripple="iconRipple"
 		@mouseover.stop="mouseEnter"
 		@mouseout.stop="mouseLeave">
@@ -42,6 +44,7 @@ import { mapGetters } from 'vuex'
 import { tween, timeline, easing } from 'popmotion'
 import throttle from 'lodash.throttle'
 import { QSlideTransition, Ripple, QIcon, QItem } from 'quasar'
+import api from '@/api'
 
 export default {
 	name: 'AppMenuItem',
@@ -165,9 +168,10 @@ export default {
 			if (this.initial)
 				return this.applyBottom(!this.open)
 
-			if (this.content.path)
+			if (this.content.path) {
+				api.scrollPosition.unset()
 				router.push(this.content.path)
-
+			}
 		},
 		_open () {
 			this.open = true

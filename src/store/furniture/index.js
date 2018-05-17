@@ -1,18 +1,15 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
 import merge from 'lodash.merge'
-
 import transfer from './transfer'
 import selectCloth from './selectCloth'
+import { Furniture } from '@/lib'
 
-const state = {
-	infinite: false,
-	filters: [],
-	sort: [],
-	complete: false,
+let infinite = new TwoSideInfinite({ method: api.furnitures.getLimited, namespace: 'furniture', returns: Furniture })
+
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
-		preload: false,
 		current: {},
 		models: []
 	},
@@ -71,33 +68,28 @@ const state = {
 			clothInfo: false
 		}
 	}
-}
+})
 
-const actions = {
+
+const actions = merge(infinite.getActions(true), {
 	async furniture_init ({ commit, dispatch, getters, state }, payload) {
-		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+		if (payload)
+			return dispatch('furniture_getOne', payload)
 
-		commit('furniture_initInfinite', new Infinite({
-			method: api.furnitures.getLimited,
-			filters: {
-				'td.salon.ID_SALONA' : ID_SALONA
-			}
-		}))
+		dispatch('furniture_defaultSalonSet')
+		dispatch('furniture_initInfinite')
+		dispatch('furniture_getModels', { type: getters.furniture_type, filters: { 'td.salon.ID_SALONA' : state.filters['td.salon.ID_SALONA'] || state.filters['td.cart.salon.ID_SALONA'] } })
+		dispatch('salon_getList')
+		await state.infinite.start(api.scrollPosition.current.offset) //api.scrollPosition.current.offset
+	},
+	furniture_defaultSalonSet ({ commit, state, getters }) {
+		if (state.infinite) return
 
-		state.infinite.on('cached', n => commit('furniture_cacheSet', n))
-		state.infinite.on('complete', n => commit('furniture_completeSet', n))
 		commit('furniture_filtersSet', {
 			...state.filters,
 			type: undefined,
-			'td.salon.ID_SALONA' : ID_SALONA
+			'td.salon.ID_SALONA' : getters.auth_currentSalon.ID_SALONA + ""
 		})
-		dispatch('furniture_getModels', { type: undefined, filters: { 'td.salon.ID_SALONA' : ID_SALONA } })
-		dispatch('salon_getList')
-		if (payload) {
-			dispatch('furniture_getOne', payload)
-		} else {
-			await state.infinite.start()
-		}
 	},
 	async furniture_sortChange({ commit, dispatch, state }, payload){
 		commit('furniture_sortSet', payload)
@@ -501,15 +493,14 @@ const actions = {
 		commit('invoice_currentTdUpdate', [res.data])
 		dispatch('notify', 'Скидка успешно изменена')
 	}
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	furniture_destroy: state => state.cached.models = state.cached.list = [],
 	furniture_initInfinite: (state, payload) => state.infinite = payload,
-	furniture_cacheSet: (state, payload) => state.cached.list = payload,
+	//furniture_cacheSet: (state, payload) => state.cached.list = payload,
 	furniture_completeSet: (state, payload) => state.complete = payload,
 	furniture_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
-	furniture_preloadSet: (state, payload) => state.cached.preload = payload,
 	furniture_filtersSet: (state, payload) => state.filters = payload,
 	furniture_sortSet: (state, payload) => state.sort = payload,
 	furniture_lastOffsetSet: (state, payload) => state.offset.last = payload,
@@ -525,7 +516,6 @@ const mutations = {
 	furniture_cachedModelsSet: (state, payload) => state.cached.models = payload,
 
 	furniture_loadingSet: (state, payload) => state.loading.list = payload,
-	furniture_loadingPreloadSet: (state, payload) => state.loading.preload = payload,
 	furniture_loadingBottomSet: (state, payload) => state.loading.bottom = payload,
 	furniture_loadingOneSet: (state, payload) => state.loading.one = payload,
 	furniture_loadingModelsSet: (state, payload) => state.loading.models = payload,
@@ -572,9 +562,9 @@ const mutations = {
 			state.new.cached.opt = opt
 		}
 	},
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	furniture_infinite: state => state.infinite,
 	furniture_complete: state => state.complete,
 	furniture_filters: (state, getters) => {
@@ -587,9 +577,9 @@ const getters = {
 		filters.type = undefined
 		return filters
 	},
-	furniture_type: ({ filters }) => filters.type,
+	furniture_type: state => state.filters.type || '',
 	furniture_current: ({ cached }) => cached.current,
-	furniture_cached: ({ cached }) => cached.list,
+	furniture_cached: state => state.cached.list,
 	furniture_models: ({ cached }) => [
 			{ MODEL: "Все модели", value: '', count: cached.models.reduce((prev, el) => prev += (+el.count), 0) },
 			...cached.models.map(model => ({ MODEL: model.MODEL, value: model.MODEL, count: model.count }))
@@ -679,7 +669,7 @@ const getters = {
 	furniture_new_cachedImages: state => state.new.cached.images.map(imageId => api.images.getUrl(imageId.VALUERECID)),
 	furniture_clothSelectForm: state => state.clothSelectForm,
 	furniture_clothSelectForm_loading: state => state.clothSelectForm.loading.list,
-}
+})
 
 const modules = {
 	transfer,

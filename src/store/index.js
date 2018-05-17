@@ -25,7 +25,6 @@ import adSources from '@/store/adSources'
 
 import tests from '@/store/tests'
 
-
 export default new Vuex.Store({
 	modules: {
 		main,

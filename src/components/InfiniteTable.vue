@@ -20,7 +20,7 @@
 
 	<virtual-scroller
 		class="InfiniteTable__scroll"
-		:items="table.rows"
+		:items="rows"
 		item-height="51"
 		content-tag="table"
 		ref="scroll"
@@ -60,6 +60,7 @@ import InfiniteTableColumn from '@/components/InfiniteTableColumn'
 import { VirtualScroller } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import { tween } from 'popmotion'
+import api from '@/api'
 
 export default {
 	components: {
@@ -79,11 +80,11 @@ export default {
 			type: Array,
 			default: a => []
 		},
-		complete: Boolean,
+		complete: Object,
 		selectable: Boolean,
 		scrollFire: {
 			type: Number,
-			default: a => 100
+			default: a => 1
 		},
 		selectFields: {
 			type: Object,
@@ -96,7 +97,8 @@ export default {
 			table: {},
 			head: true,
 			scroll: {
-				left: 0
+				left: 0,
+				top: 0
 			},
 			scrollReal: {
 				left: 0
@@ -108,7 +110,13 @@ export default {
 			},
 			filters: {},
 			infinite: {
-				send: false
+				send: {
+					prev: false,
+					next: false
+				},
+				waitForScroll: {
+					prev: false
+				}
 			},
 			filterTimeout: false,
 			first: true,
@@ -123,9 +131,11 @@ export default {
 			this.table.columns = n
 		},
 		rows (n) {
-			this.table.rows = n
 			this.$nextTick(this.updateViewport)
 			this.$nextTick(this.checkForMore)
+
+			//if (!this.$refs.scroll) return
+			//this.$nextTick(a => this.$refs.scroll.itemContainerStyle = { height: 51 * n.length + 'px' })
 		},
 		sort (n) {
 			this.$emit('sort', {
@@ -165,7 +175,9 @@ export default {
 	methods: {
 		scrollHandler (e) {
 			if (!this.$refs.scroll) return
-			this.scroll.left = 	this.$refs.scroll.$el.scrollLeft
+			this.scroll.left = this.$refs.scroll.$el.scrollLeft
+			this.scroll.top = this.$refs.scroll.$el.scrollTop
+			api.scrollPosition.setScroll(document.location.hash, this.$refs.scroll.$el.scrollTop)
 		},
 		chunkRenderHandler (start, end) {
 			this.updateViewport()
@@ -192,20 +204,34 @@ export default {
 			}
 		},
 		rowClickHandler (e, row, index) {
-			this.$emit('click', e, this.table.rows[index], index)
+			this.$emit('click', e, this.rows[index], index)
 		},
-		moreContent () {
+		moreContent (type) {
+			if (type === 'prev')
+				this.infinite.waitForScroll.prev = true
+
+			this.infinite.send[type] = true
+
 			this.$emit('infinite', {
-				loaded: a => this.infinite.send = false,
-				complete: a => a
+				type,
+				loaded: a => this.infinite.send[type] = false
 			})
 		},
 		checkForMore () {
-			if (this.infinite.send || this.complete)
-				return
+			this.checkForMorePrev()
+			this.checkForMoreNext()
+		},
+		checkForMorePrev () {
+			if (this.infinite.send.prev || this.complete.prev || this.infinite.waitForScroll.prev) return
+
+			if (this.indexes.start < this.scrollFire)
+				this.moreContent('prev')
+		},
+		checkForMoreNext () {
+			if (this.infinite.send.next || this.complete.next) return
 
 			if (this.rows.length - this.indexes.end < this.scrollFire)
-				this.moreContent()
+				this.moreContent('next')
 		},
 		setFilters (n) {
 			const getVal = field => n && n[field] ? n[field] : ''
@@ -214,10 +240,27 @@ export default {
 	},
 	mounted () {
 		this.$nextTick(this.updateViewport)
+		//console.log(api.scrollPosition.current.scroll);
+		//this.$refs.scroll.$el.scrollTop = api.scrollPosition.current.scroll
+
+		let scrollInner = this.$refs.scroll.$el.querySelector('.item-container')
+
+		const recursiveCheck = (i = 0, callback) => {
+			if (!scrollInner.offsetHeight && scrollInner.offsetHeight < api.scrollPosition.current.scroll && i < 50)
+				return setTimeout(a => recursiveCheck(++i, callback), 30)
+
+			setTimeout(() => {
+				this.$refs.scroll.$el.scrollTop = api.scrollPosition.current.scroll
+				this.infinite.waitForScroll.prev = false
+				if (typeof callback == 'function') callback()
+			}, 30)
+		}
+
+		api.scrollPosition.current.convertHandler = (scroll, callback) => this.$nextTick(a => recursiveCheck(0, callback))
 	},
 	created () {
 		this.setFilters(this.filterValues)
-		this.table = new InfiniteTable(this.columns, this.rows)
+		this.table = new InfiniteTable(this.columns, [])
 	}
 }
 </script>

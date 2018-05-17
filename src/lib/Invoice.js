@@ -14,6 +14,7 @@ export default class Invoice extends BaseModel {
 			storage: Salon,
 			marker: Marker,
 			client: Client,
+			clientOld: Client,
 			adSource: AdSource
 		}, arg)
 	}

@@ -173,8 +173,8 @@ export default {
 			if (n['MODEL'] == 'Все модели')
 				delete n['MODEL']
 
-				if (this.lastDiscountFilters['td.salon.ID_SALONA'] != n['td.salon.ID_SALONA'])
-					this.discount_getModels({ filters: { 'td.salon.ID_SALONA': n['td.salon.ID_SALONA'] } })
+			if (this.lastDiscountFilters['td.salon.ID_SALONA'] != n['td.salon.ID_SALONA'])
+				this.discount_getModels({ filters: { 'td.salon.ID_SALONA': n['td.salon.ID_SALONA'] } })
 
 			this.lastDiscountFilters = n
 			await this.discount_filtersChange (Object.assign({}, this.additionalFilters, n))
@@ -199,8 +199,10 @@ export default {
 			//this.$router.push(`/furniture/salon/${item.UN}`)
 		}
 	},
-	async mounted () {
+	mounted () {
 		this.app_layout_headerShadowSet(false)
+	},
+	async created () {
 		await this.discount_init()
 		this.lastDiscountFilters = this.discount_filters
 	},

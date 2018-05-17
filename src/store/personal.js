@@ -1,25 +1,24 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
+import merge from 'lodash.merge'
+import { Manager } from '@/lib'
 
-const state = {
-	complete: false,
-	infinite: false,
-	filters: [],
-	sort: [],
+let infinite = new TwoSideInfinite({ method: api.personals.getLimited, namespace: 'personal', returns: Manager })
+
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
 		current: {},
 		currentRolesSetup: [],
 	},
 	loading: {
-		list: true,
 		one: true,
 		bottom: false,
 		currentRolesSetup: true
 	}
-}
+})
 
-const actions = {
+const actions = merge(infinite.getActions(true), {
 	async personal_saveRoleSetupState ({ commit, dispatch, state }) {
 		let res = await api.personals.saveRoleSetupState({
 			id: +state.cached.current.ID_M,
@@ -30,18 +29,11 @@ const actions = {
 		dispatch("notify", { title: "Успешно", message: "Роли сохранены" })
 	},
 	async personal_init ({ commit, dispatch }, payload) {
-		if (payload) {
+		if (payload)
 			return await dispatch('personal_getOne', payload)
-		} else {
-			commit('personal_initInfinite', new Infinite({
-				method: api.personals.getLimited
-			}))
 
-			state.infinite.on('cached', n => commit('personal_cacheSet', n))
-			state.infinite.on('complete', n => commit('personal_completeSet', n))
-
-			await state.infinite.start()
-		}
+		dispatch('personal_initInfinite')
+		await state.infinite.start(api.scrollPosition.current.offset)
 	},
 	async personal_sortChange({ commit, dispatch, state }, payload){
 		commit("personal_sortSet", payload)
@@ -72,13 +64,10 @@ const actions = {
 
 		commit('personal_currentRolesSetupSet', res.data)
 	}
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	personal_destroy: state => state.cached.list = [],
-	personal_initInfinite: (state, payload) => state.infinite = payload,
-	personal_completeSet: (state, payload) => state.complete = payload,
-	personal_cacheSet: (state, payload) => state.cached.list = payload,
 	personal_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	personal_filtersSet: (store, payload) => store.filters = payload,
 	personal_sortSet: (store, payload) => store.sort = payload,
@@ -87,13 +76,12 @@ const mutations = {
 	personal_currentSet: (store, payload) => store.cached.current = payload,
 	personal_currentOffsetSet: (store, payload) => store.offset.current = payload !== undefined ? payload : store.cached.list.length,
 	personal_currentRolesSetupSet: (store, payload) => store.cached.currentRolesSetup = payload,
-	personal_loadingSet: (store, payload) => store.loading.list = payload,
 	personal_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
 	personal_loadingOneSet: (store, payload) => store.loading.one = payload,
 	personal_loadingRolesSetupSet: (store, payload) => store.loading.currentRolesSetup = payload,
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	personal_complete: state => state.complete,
 	personal_filters: ({ filters }) => filters,
 	personal_cached: ({ cached }) => cached.list,
@@ -102,7 +90,7 @@ const getters = {
 	personal_loading: ({ loading }) => loading.list,
 	personal_loadingBottom: ({ loading }) => loading.bottom,
 	personal_loadingOne: ({ loading }) => loading.one,
-}
+})
 
 export default {
 	state,

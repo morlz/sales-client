@@ -15,6 +15,7 @@ import Furniture from '@/lib/Furniture'
 import Preorder from '@/lib/Preorder'
 import PreorderStatus from '@/lib/PreorderStatus'
 import Cloth from '@/lib/Cloth'
+import Task from '@/lib/Task'
 
 export default BaseModel
 
@@ -35,5 +36,6 @@ export {
 	Furniture,
 	Preorder,
 	PreorderStatus,
-	Cloth
+	Cloth,
+	Task
 }

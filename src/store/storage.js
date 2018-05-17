@@ -1,45 +1,32 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
+import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
+import merge from 'lodash.merge'
+import { Furniture } from '@/lib'
 
-const state = {
-	complete: false,
-	infinite: false,
-	filters: [],
-	sort: [],
+let infinite = new TwoSideInfinite({ method: api.storages.getLimited, namespace: 'storage', returns: Furniture })
+
+const state = merge(infinite.getState(), {
 	cached: {
-		list: [],
 		current: {},
 		models: []
 	},
 	loading: {
-		list: true,
 		one: true,
 		models: true,
 		bottom: false
 	}
-}
+})
 
-const actions = {
+const actions = merge(infinite.getActions(true), {
 	async storage_init ({ commit, dispatch, getters, state }, payload) {
-		let ID_SALONA = getters.auth_currentSalon.ID_SALONA + ""
+		if (payload)
+			return dispatch('storage_getOne', payload)
 
-		commit('storage_initInfinite', new Infinite({
-			method: api.storages.getLimited,
-			additional: {
-				type: "sgp"
-			}
-		}))
-
-		state.infinite.on('cached', n => commit('storage_cacheSet', n))
-		state.infinite.on('complete', n => commit('storage_completeSet', n))
-
+		dispatch('storage_initInfinite')
+		state.infinite.additional = { type: "sgp" }
 		dispatch('storage_getModels', { type: "sgp" })
-
-		if (payload) {
-			dispatch('storage_getOne', payload)
-		} else {
-			await state.infinite.start()
-		}
+		await state.infinite.start(api.scrollPosition.current.offset)
 	},
 	async storage_sortChange({ commit, dispatch, state }, payload){
 		commit("storage_sortSet", payload)
@@ -75,11 +62,10 @@ const actions = {
 		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
 		commit('storage_removeOneFromCache', payload)
 	},
-}
+})
 
-const mutations = {
+const mutations = merge(infinite.getMutations(true), {
 	storage_destroy: state => state.cached.models = state.cached.list = [],
-	storage_cacheSet: (state, payload) => state.cached.list = payload,
 	storage_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	storage_filtersSet: (state, payload) => state.filters = payload,
 	storage_sortSet: (state, payload) => state.sort = payload,
@@ -93,10 +79,9 @@ const mutations = {
 	storage_loadingOneSet: (state, payload) => state.loading.one = payload,
 	storage_loadingModelsSet: (state, payload) => state.loading.models = payload,
 	storage_initInfinite: (state, payload) => state.infinite = payload,
-	storage_completeSet: (state, payload) => state.complete = payload
-}
+})
 
-const getters = {
+const getters = merge(infinite.getGetters(true), {
 	storage_filters: state => ({ ...state.filters, type: undefined }),
 	storage_current: state => state.cached.current,
 	storage_cached: state => state.cached.list,
@@ -111,7 +96,7 @@ const getters = {
 	storage_loadingOne: state => state.loading.one,
 	storage_loadingModels: state => state.loading.models,
 	storage_complete: state => state.complete
-}
+})
 
 export default {
 	state,

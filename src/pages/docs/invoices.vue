@@ -16,7 +16,7 @@
 				class="manyInvoicesWrapper__horGroup AppContent__headerTabs AppContent__tabs"
 				:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 
-				<q-tabs v-model="currentTab">
+				<q-tabs v-model="tab">
 					<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
 				</q-tabs>
 
@@ -29,20 +29,8 @@
 			</div>
 
 			<q-card class="manyInvoicesWrapper__card AppContent__inner">
-				<!--<tabless
-					key="invoices"
-					:data="invoice_cached"
-					:complete="invoice_complete"
-					:field-description="DocsInvoicesFiltred"
-					:filters="invoice_filters"
-					ref="table"
-					@filter="local_invoice_filtersChange"
-					@sort="local_invoice_sortChange"
-					@click="routerGoId"
-					@infinite="invoice_infinity"
-				/>-->
-
 				<infinite-table
+					:key="tab"
 					:columns="DocsInvoicesFiltred"
 					:rows="invoice_cached"
 					:complete="invoice_complete"
@@ -87,7 +75,7 @@ export default {
 	data () {
 		return {
 			DocsInvoices,
-			currentTab: 'inWork',
+			currentTab: this.invoice_type,
 			lastInvoicesFilters: {},
 			tabs: [
 				//{ name: "Оплаченые", type: 'paid' },
@@ -119,8 +107,17 @@ export default {
 			'salon_listWithAll',
 			'currentUserSalon',
 			'app_view_mobile',
-			'invoice_complete'
+			'invoice_complete',
+			'invoice_type'
 		]),
+		tab: {
+			get () {
+				return this.invoice_type
+			},
+			set (n) {
+				this.currentTab = n
+			}
+		},
 		data () {
 			return this.cachedInvoices
 		},
@@ -173,6 +170,7 @@ export default {
 	},
 	mounted () {
 		this.app_layout_headerShadowSet(!!this.oneId)
+		this.lastInvoicesFilters = this.invoice_filters
 	},
 	async created () {
 		await this.invoice_init(this.oneId || { page: this.type })

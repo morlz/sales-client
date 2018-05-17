@@ -26,7 +26,7 @@ export default class BaseModel {
 
 					this[prefix + prop] = val.map(el => el instanceof Class ? el : new Class(el))
 				} else {
-					this[prefix + prop] = val instanceof Class ? val : new Class(val)
+					this[prefix + prop] = !val || val instanceof Class ? val : new Class(val)
 				}
 			}
 		})
