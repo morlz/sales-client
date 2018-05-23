@@ -86,6 +86,6 @@ export default class BaseModel {
 	}
 
 	clone () {
-		return Object.assign( Object.create( Object.getPrototypeOf(this)), this)
+		return new this.constructor(Object.getOwnPropertyNames(this).reduce((prev, el) => ({ ...prev, [el]: this[el]}), {}))
 	}
 }

@@ -109,6 +109,15 @@ const actions = merge(infinite.getActions(true), {
 
 		dispatch('print_run', options)
 	},
+	invoice_printOpt({ commit, dispatch }, { data, type }) {
+		let options = type == 'movements' ?
+			{ template: 'deliveryNote', data: reduceMovement(data) }
+		:	{ template: 'invoiceOpt', data }
+
+		console.log(options);
+
+		dispatch('print_run', options)
+	},
 	async invoice_new_init ({ commit, dispatch }) {
 		await Promise.all([
 			dispatch('invoice_new_getAdSources'),

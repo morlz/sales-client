@@ -9,4 +9,12 @@ export default class Payment extends BaseModel {
 	get canDelete () {
 		return moment(this.DATE_OPL).add(1, 'day').valueOf() > moment().valueOf()
 	}
+
+	get date () {
+		return moment(this.DATE_PL).format('DD MMMM YYYY HH:mm:ss')
+	}
+
+	get price () {
+		return +this.SUM_OPL
+	}
 }

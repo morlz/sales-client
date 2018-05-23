@@ -1,15 +1,10 @@
 import reduceTd from '@/lib/reducers/td'
 import reduceZak from '@/lib/reducers/zak'
 import { date } from 'quasar'
+import moment from 'moment'
 
-export default invoice => {
-	console.log(invoice);
-	let paid = invoice.payments.reduce((prev, el) => prev + +el.SUM_OPL, 0)
-
-	return {
-		...invoice,
+export default invoice => invoice.clone().update({
 		products: [...invoice.zak.map(reduceZak), ...invoice.td.map(reduceTd)],
-		paid,
 		now: {
 			date: new Date().toLocaleString('ru', { year: 'numeric', month: 'long', day: 'numeric' }),
 			datetime: date.formatDate(Date.now(), 'YYYY-MM-DD HH:mm:ss')
@@ -42,7 +37,7 @@ export default invoice => {
 			return (this.shipments || [])[0] || {}
 		},
 		productReadyDate () {
-			return this.shipment().PL_OTGR
+			return moment(this.shipment().PL_OTGR).format('DD MMMM YYYY')
 		},
 		shipmentAddr () {
 			return this.shipment().KUDA
@@ -64,5 +59,4 @@ export default invoice => {
 		hasPayment () {
 			return this.payments && this.payments.length
 		}
-	}
-}
+	})

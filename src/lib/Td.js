@@ -1,11 +1,14 @@
 import BaseModel from '@/lib/BaseModel'
 import { Furniture } from '@/lib'
 
+const vat = 13.5
+
 export default class Td extends BaseModel {
 	constructor (arg) {
 		super()
 		this.define({
-			furniture: Furniture
+			furniture: Furniture,
+			count: 'KOL'
 		}, arg)
 	}
 
@@ -35,5 +38,29 @@ export default class Td extends BaseModel {
 
 	get shipment_id () {
 		return this.NZVR ? +this.NZVR : null
+	}
+
+	get vat () {
+		return vat
+	}
+
+	get vatString () {
+		return this.vat + '%'
+	}
+
+	get vatSumm () {
+		return this.price * this.vat / 100
+	}
+
+	get vatSummString () {
+		return this.vatSumm.toFixed(2)
+	}
+
+	get priceWithVat () {
+		return this.price + this.vatSumm
+	}
+
+	get priceWithVatString () {
+		return this.priceWithVat.toFixed(2)
 	}
 }
