@@ -105,7 +105,7 @@ export default {
 			'invoice_remove'
 		]),
 		date (d) {
-			return moment(d).isValid() ? moment(d).format("DD-MM-YYYY") : d
+			return moment(d).isValid() ? moment(d).format("DD MMMM YYYY") : d
 		}
 	},
 	computed: {

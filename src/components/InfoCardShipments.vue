@@ -40,11 +40,11 @@
 							</q-item-side>
 						</q-item>
 
-						<q-item>
+						<q-item v-if="shipment.PL_OTGR">
 							<q-item-side>Плановая дата</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
-								{{ shipment.PL_OTGR }} ({{ shipment.timeFormNow }})
+								{{ $moment(shipment.PL_OTGR).format('DD MMMM YYYY') }} ({{ shipment.timeFormNow }})
 							</q-item-side>
 						</q-item>
 
@@ -52,7 +52,7 @@
 							<q-item-side>Дата ввода</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
-								{{ shipment.DATEV }}
+								{{ $moment(shipment.DATEV).format('DD MMMM YYYY') }}
 							</q-item-side>
 						</q-item>
 

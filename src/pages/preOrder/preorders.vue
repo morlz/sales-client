@@ -16,10 +16,10 @@
 		</q-card>
 	</div>
 
-	<div class="manyRecordsWrapper" v-if="!isOne && auth_can(1, 'Preorder')">
+	<div class="CRMPreorders" v-if="!isOne && auth_can(1, 'Preorder')">
 		<div
-			class="manyRecordsWrapper__horGroup AppContent__headerTabs AppContent__tabs"
-			:class="{ 'manyRecordsWrapper__horGroup-mobile': app_view_mobile }">
+			class="CRMPreorders__horGroup AppContent__headerTabs AppContent__tabs"
+			:class="{ 'CRMPreorders__horGroup-mobile': app_view_mobile }">
 			<q-tabs v-model="currentTab">
 				<q-tab name="all" label="Все предзаказы" slot="title"/>
 				<q-tab name="new" label="Новый предзаказ" slot="title" v-if="preorder_acceptedAdd && auth_can(2, 'Preorder')"/>
@@ -31,23 +31,10 @@
 				v-model.number="searchByPhone"
 				:value="preorder_filtersPhone"
 				placeholder="Поиск по номеру телефона"
-				class="manyRecordsWrapper__phone" />
+				class="CRMPreorders__phone" />
 		</div>
 
-		<q-card v-if="currentTab == 'all'" class="manyRecordsWrapper__card AppContent__inner">
-			<!--<tabless
-				key="preorders"
-				:data="preorder_cached"
-				:complete="preorder_complete"
-				:field-description="CRMPreorders"
-				:filters="preorder_filters"
-				ref="table"
-				@filter="local_record_filtersChange"
-				@sort="local_record_sortChange"
-				@click="routerGoId"
-				@infinite="preorder_infinity"
-			/>-->
-
+		<q-card v-if="currentTab == 'all'" class="CRMPreorders__card AppContent__inner">
 			<infinite-table
 				:columns="CRMPreordersFiltred"
 				:rows="preorder_cached"
@@ -210,67 +197,38 @@ export default {
 
 
 
-<style lang="less" scoped>
-.addForm {
-	display: grid;
-	grid-gap: 20px;
-	grid-template-columns: repeat(auto-fit, minmax(450px, auto));
-    h2 {
-        margin-left: 20px;
-    }
-	padding-bottom: 10px;
-}
+<style lang="stylus">
+.CRMPreorders
+	width 100%
+	height 100%
 
-.manyRecordsWrapper {
-	width: 100%;
-	height: 100%;
+	&__phone
+		margin 0 10px
+		width 300px
 
-	&__phone {
-		margin: 0 10px;
-		width: 300px;
-	}
+	&__card
+		height calc(100vh - 115px)
 
-	&__card {
-		height: ~"calc(100vh - 115px)";
-	}
+	&__horGroup
+		display grid
+		grid-auto-flow column
+		justify-content space-between
+		align-items center
+		background #027be3
 
-	&__horGroup {
-		display: grid;
-		grid-auto-flow: column;
-		justify-content: space-between;
-		align-items: center;
-		background: #027be3;
-	}
-}
+.OnePreorderWrapper
+	display grid
+	grid-gap 10px
+	grid-template-columns 1fr
+	/*.tasks, .files
+		grid-column 1 / 3*/
 
-.OnePreorderWrapper {
-	display: grid;
-	grid-gap: 10px;
-	grid-template-columns: 1fr;
-	/*.tasks, .files {
-		grid-column: ~"1 / 3";
-	}*/
+	.info
+		.el-steps
+			margin-bottom 10px
 
-	.info {
-		.el-steps {
-			margin-bottom: 10px;
-		}
-	}
-
-	.contacts {
-		.buttons {
-			margin-top: 10px;
-		}
-	}
-}
-
-@media screen and (max-width: 1250px) {
-	.OnePreorderWrapper {
-		grid-template-columns: 1fr;
-		.tasks, .files {
-			grid-column: ~"1 / 2";
-		}
-	}
-}
+	.contacts
+		.buttons
+			margin-top 10px
 
 </style>

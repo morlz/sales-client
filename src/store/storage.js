@@ -66,11 +66,11 @@ const actions = merge(infinite.getActions(true), {
 
 const mutations = merge(infinite.getMutations(true), {
 	storage_destroy: state => state.cached.models = state.cached.list = [],
-	storage_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	storage_cacheAppend: (state, payload) => state.infinite.cached = { view: [...state.infinite.cached, ...payload] },
 	storage_filtersSet: (state, payload) => state.filters = payload,
 	storage_sortSet: (state, payload) => state.sort = payload,
 	storage_lastOffsetSet: (state, payload) => state.offset.last = payload,
-	storage_removeOneFromCache: (state, payload) => state.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
+	storage_removeOneFromCache: (state, payload) => state.infinite.cached = { view: state.infinite.cached.filter(el => el.UN != (payload.UN || payload)) },
 	storage_currentSet: (state, payload) => state.cached.current = payload,
 	storage_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	storage_cachedModelsSet: (state, payload) => state.cached.models = payload,

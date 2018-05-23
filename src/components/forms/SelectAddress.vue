@@ -75,7 +75,7 @@
 
 
 			<div class="seectAddress__buttons" v-if="!app_view_mobile">
-				<q-btn color="primary" @click="save">Сохранить</q-btn>
+				<q-btn color="primary" @click="save" :disable="saveButtonDisabled">Сохранить</q-btn>
 				<q-btn color="secondary" flat @click="modal = false">Отменить</q-btn>
 			</div>
 		</div>
@@ -208,6 +208,9 @@ export default {
 		...mapGetters([
 			'app_view_mobile'
 		]),
+		saveButtonDisabled () {
+			return this.addrCountry.toLowerCase().indexOf('россия') === -1
+		},
 		modal: {
 			get() {
 				return this.value

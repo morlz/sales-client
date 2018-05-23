@@ -382,6 +382,7 @@ export default {
 	cursor: pointer;
 	user-select: none;
 	padding: 0;
+	z-index: 5000;
 
 	&:hover {
 		> .menuItem {
@@ -424,7 +425,7 @@ export default {
 		//border: 1px solid red;
 		box-sizing: border-box;
 		background: @menuItem-background;
-		z-index: 2000;
+		z-index: 5000;
 		pointer-events: all;
 		transition: box-shadow 0.1s ease-in-out,
 					background-color 0.1s ease-in-out;

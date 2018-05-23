@@ -134,9 +134,9 @@ export default {
 					info: {
 						label: '',
 						items: [
-							{ label: 'Номер документа', source: 'shipment_current.N_DOC' },
-							{ label: 'Дата ввода', source: 'shipment_current.DATEV' },
-							{ label: 'Оплата доставки', source: 'shipment_current.PL_OTGR' },
+							{ label: 'Номер документа', source: 'shipment_current.invoice.N_DOC' },
+							{ label: 'Дата ввода', source: 'shipment_current.inputDate' },
+							{ label: 'Оплата доставки', source: 'shipment_current.date' },
 							{ label: 'Вид', source: 'shipment_current.VIDDOST' },
 							{ label: 'В работе', source: 'shipment_current.DATEWORK' },
 							{ label: 'Склад', source: 'shipment_current.NAME' },

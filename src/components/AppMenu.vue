@@ -1,6 +1,13 @@
 <template>
-<div class="menu" :style="menuStyles">
-	<app-menu-item :content="onlyAllowedItems" initial/>
+<div class="menu" :style="menuStyles" @mouseover.native="hovered = false">
+	<app-menu-item
+		:content="onlyAllowedItems"
+		initial
+		@mouseout.native="hovered = true"
+		@mouseover.native="hovered = false"
+		@mouseenter.native="hovered = true"
+		@mouseleave.native="hovered = false"
+		/>
 </div>
 </template>
 
@@ -14,6 +21,11 @@ export default {
 	mixins: [AuthMixin],
 	components: {
 		AppMenuItem
+	},
+	data () {
+		return {
+			hovered: false
+		}
 	},
 	methods: {
 		...mapMutations([
@@ -51,7 +63,9 @@ export default {
 		},
 		menuStyles () {
 			return {
-				'pointer-events': !this.app_view_desktop && this.nav_open ? 'all': 'none'
+				//'pointer-events': !this.app_view_desktop && this.nav_open ? 'all': 'none'
+				//pointerEvents: !this.app_view_desktop || !this.nav_open ? 'none' : 'all'
+				pointerEvents: this.hovered ? 'all' : 'none'
 			}
 		}
 	},
@@ -59,16 +73,15 @@ export default {
 </script>
 
 
-<style lang="less">
-.menu {
-	width: 310px;
-	position: relative;
-	z-index: 3000;
-	height: 100%;
-	overflow-y: scroll;
-	&::-webkit-scrollbar {
-		width: 0;
-		height: 0;
-	}
-}
+<style lang="stylus">
+.menu
+	width 310px
+	position relative
+	z-index 3000
+	height 100%
+	overflow-y scroll
+	z-index 5000
+	&::-webkit-scrollbar
+		width 0
+		height 0
 </style>

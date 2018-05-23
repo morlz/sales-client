@@ -6,7 +6,7 @@ export default class BaseModel {
 			this._init(args)
 	}
 
-	definePropery(prop, Class, array = false) {
+	defineProperty(prop, Class, array = false) {
 		if (array) this[prefix + prop] = []
 
 		Object.defineProperty(this, prop, {
@@ -39,7 +39,7 @@ export default class BaseModel {
 					this.translateProperty(prop, props[prop])
 				} else {
 					let array = Array.isArray(props[prop])
-					this.definePropery(prop, array ? props[prop][0] : props[prop], array)
+					this.defineProperty(prop, array ? props[prop][0] : props[prop], array)
 				}
 			}
 

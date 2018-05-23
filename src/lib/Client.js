@@ -76,4 +76,11 @@ export default class Client extends BaseModel {
 	set notactive (val) {
 		this._notactive = val
 	}
+
+	get notactiveDate () {
+		if (!this.notactive)
+			return ''
+			
+		return moment(this._notactive).format('DD MMM YYYY')
+	}
 }

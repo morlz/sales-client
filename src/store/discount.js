@@ -93,11 +93,11 @@ const actions = merge(infinite.getActions(true), {
 
 const mutations = merge(infinite.getMutations(true), {
 	discount_destroy: state => state.cached.models = state.cached.list = [],
-	discount_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	discount_cacheAppend: (state, payload) => state.infinite.cached = { view: [...state.infinite.cached, ...payload] },
 	discount_filtersSet: (state, payload) => state.filters = payload,
 	discount_sortSet: (state, payload) => state.sort = payload,
 	discount_lastOffsetSet: (state, payload) => state.offset.last = payload,
-	discount_removeOneFromCache: (state, payload) => state.cached.list = state.cached.list.filter(el => el.UN != (payload.UN || payload)),
+	discount_removeOneFromCache: (state, payload) => state.infinite.cached = { view: state.infinite.cached.filter(el => el.UN != (payload.UN || payload)) },
 	discount_currentSet: (state, payload) => state.cached.current = payload,
 	discount_currentOffsetSet: (state, payload) => state.offset.current = payload || state.cached.list.length,
 	discount_cachedModelsSet: (state, payload) => state.cached.models = payload,

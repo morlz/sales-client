@@ -280,7 +280,7 @@ $header-height = 50px
 		top 0
 		left 0
 		height $header-height
-		z-index 1000
+		z-index 999
 
 	&__scroll
 		height calc(100% - 50px)

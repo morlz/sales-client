@@ -35,4 +35,8 @@ export default class Shipment extends BaseModel {
 	get count () {
 		return this.rows.length || 1
 	}
+
+	get inputDate () {
+		return moment(this.DATEV).format('DD MMMM YYYY')
+	}
 }

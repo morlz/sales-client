@@ -2,7 +2,7 @@
 	<div class="items scroll">
 		<template v-if="cart_exist.length">
 			<div class="title">Мебель из салона (склада)</div>
-			<table-collapsible :rows="cart_exist" :columns="cartPopupExistFieldDescription">
+			<table-collapsible :rows="cart_exist" :columns="CartPopupExist">
 				<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
 					<q-btn
 						v-for="button, index in local_cart_cachedExistButtons"
@@ -17,7 +17,7 @@
 
 		<template v-if="cart_new.length">
 			<div class="title">Заказные позиции</div>
-			<table-collapsible :rows="cart_new" :columns="cartPopupNewFieldDescription">
+			<table-collapsible :rows="cart_new" :columns="CartPopupNew">
 				<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
 					<q-btn
 						v-for="button, index in local_cart_cachedNewButtons"
@@ -45,14 +45,10 @@ import {
 
 import tabless from '@/components/tableSS.vue'
 import TableCollapsible from '@/components/TableCollapsible.vue'
-import fieldDescription from '@/static/fieldDescription'
+import { CartPopupExist, CartPopupNew } from '@/static/fieldDescription'
 
 import { AuthMixin } from '@/mixins'
 
-let {
-	cartPopupExistFieldDescription,
-	cartPopupNewFieldDescription
-} = fieldDescription
 
 export default {
 	components: {
@@ -62,8 +58,8 @@ export default {
 	mixins: [AuthMixin],
 	data() {
 		return {
-			cartPopupExistFieldDescription,
-			cartPopupNewFieldDescription
+			CartPopupExist,
+			CartPopupNew
 		}
 	},
 	computed: {

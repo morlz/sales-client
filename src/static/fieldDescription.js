@@ -27,20 +27,6 @@ let dataObj = {
 		"Обновление",
 		"Удаление"
 	],
-
-	cartPopupExistFieldDescription: [
-		{ field: "UN", label: "Уч №" },
-		{ field: "td.MODEL", label: "Модель" },
-		{ field: "td.TIP", label: "Тип" },
-		{ field: "td.CENA_ZAL", label: "Цена" },
-	],
-
-	cartPopupNewFieldDescription: [
-		{ field: "id_zak", label: "Ид заказа" },
-		{ field: "zak.NEWNAME", label: "Модель" },
-		{ field: "zak.TIP", label: "Тип" },
-		{ field: "zak.CENA", label: "Цена" },
-	]
 }
 
 
@@ -86,7 +72,7 @@ export let FurnitureStorage = [
 	{ field: "NAKC", label: "Акция", width: 50 },
 	{ field: "td.Sostoynie", label: "Сост.", width: 100 },
 	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		get: data => moment(data).isValid() ? moment(data).format("DD MMMM YYYY") : data
 	} },
 	/*{ field: "invoice.N_DOC", label: "Номер заказа", width: 50 },*/
 ]
@@ -110,36 +96,36 @@ export let FurnitureDiscount = [
 			:	data
 	} },
 	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+		get: data => moment(data).isValid() ? moment(data).format("DD MMMM YYYY") : data
 	} },
 ]
 
 export let DocsShipments = [
 	{ field: "invoice.N_DOC", label: "№ Док", width: 80 },
-	{ field: "DATEV", label: "Дата ввода", inline: true, width: 120, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	{ field: "DATEV", label: "Дата ввода", inline: true, width: 130, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "PL_OTGR", label: "Оплата доставки", inline: true, width: 120, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	{ field: "PL_OTGR", label: "Оплата доставки", inline: true, width: 130, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
 	{ field: "VIDDOST", label: "Вид", width: 100 },
 	{ field: "", label: "Примечание", width: 200 },
-	{ field: "DATEWORK", label: "В работе", inline: true, width: 120, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	{ field: "DATEWORK", label: "В работе", inline: true, width: 130, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
 	{ field: "salon.NAME", label: "Склад", width: 150 },
 ]
 
 export let DocsInvoices = [
 	{ field: "N_DOC", label: "Номер документа", width: 85 },
-	{ field: "DATE", label: "Дата оформления", inline: true, width: 100, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
+	{ field: "DATE", label: "Дата оформления", inline: true, width: 130, format: {
+		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "shipments.0.PL_OTGR", width: 100, type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
-		get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD-MM-YYYY") : data
+	{ field: "shipments.0.PL_OTGR", width: 130, type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+		get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "manager.fio", label: "Менеджер", width: 150, search: false },
-	{ field: "client.fio", label: "Клиент", width: 150, search: false },
+	{ field: "manager.fio", label: "Менеджер", width: 200, search: false },
+	{ field: "client.fio", label: "Клиент", width: 200, search: false },
 	{ field: "adSource.NAME", label: "Р. Ист.", width: 100 },
 	{ field: "storage.NAME", label: "Салон", width: 150 },
 ]
@@ -151,9 +137,9 @@ export let CRMClients = [
 	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
 	{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
 	{ field: "created_at", label: "Создан", inline: true, width: 120, format: {
-		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
+		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY HH:mm:ss") : data
 	} },
-	{ field: "notactive", label: "Неактивен", type: "string", width: 100 },
+	{ field: "notactiveDate", label: "Неактивен", type: "string", width: 100 },
 ]
 
 export let CRMPreorders = [
@@ -234,6 +220,20 @@ export let InfoCardTasks = [
 	{ field: "type", label: "Тип", type: "string" },
 	{ field: "end_date", label: "Выполнена", type: "string" },
 	{ field: "salon", label: "Салон", type: "string" },
+]
+
+export let CartPopupExist = [
+	{ field: "ID", label: "Фаб.н." },
+	{ field: "td.MODEL", label: "Модель" },
+	{ field: "td.TIP", label: "Тип" },
+	{ field: "td.CENA_ZAL", label: "Цена" },
+]
+
+export let CartPopupNew = [
+	{ field: "id_zak", label: "Ид строки" },
+	{ field: "zak.NEWNAME", label: "Модель" },
+	{ field: "zak.TIP", label: "Тип" },
+	{ field: "zak.CENA", label: "Цена" },
 ]
 
 /*

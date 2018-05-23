@@ -125,7 +125,7 @@ const getters = merge(infinite.getGetters(true), {
 	preorder_loading: ({ loading }) => loading.list,
 	preorder_loadingBottom: ({ loading }) => loading.bottom,
 	preorder_loadingOne: ({ loading }) => loading.one,
-	preorder_acceptedAdd: state => state.filters && state.filters['contactFaces.phone'] && state.filters['contactFaces.phone'].length > 10 && !state.loading.list,
+	preorder_acceptedAdd: state => state.filters && state.filters['contactFaces.phone'] && state.filters['contactFaces.phone'].length > 10 && !state.loading.list.next,
 	preorder_add: state => state.add,
 })
 

@@ -1,4 +1,5 @@
 import core from '@/api/core'
+import { Shipment } from '@/lib'
 
 export default {
 	async getLimited (params) {
@@ -11,13 +12,18 @@ export default {
 		})
 	},
 	async getOne (id) {
-		return await core.invoke({
+		let res = await core.invoke({
 			method: "get",
 			type: "shipment",
 			data: {
 				id
 			}
 		})
+
+		if (res.data && !res.data.error)
+			res.data = res.data instanceof Shipment ? res.data : new Shipment(res.data)
+
+		return res
 	},
 	async create (data) {
 		return core.invoke({

@@ -189,6 +189,7 @@ const actions = merge(infinite.getActions(true), {
 		let res = await api.invoices.exportToAx(payload)
 		if (!res.data || res.data.error) return
 
+		commit('invoice_exportToAX')
 		dispatch('notify', 'Заказ успешно выгружен в AX')
 	},
 	async invoice_exportTo1c ({ commit, dispatch }, payload) {
@@ -230,6 +231,7 @@ const actions = merge(infinite.getActions(true), {
 })
 
 const mutations = merge(infinite.getMutations(true), {
+	invoice_exportToAX: state => state.cached.current.setAxState(true),
 	invoice_destroy: state => state.cached.list = [],
 	invoice_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	invoice_filtersSet: (state, payload) => state.filters = payload,

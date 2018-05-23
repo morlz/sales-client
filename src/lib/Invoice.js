@@ -39,4 +39,10 @@ export default class Invoice extends BaseModel {
 	get need () {
 		return this.price - this.paid
 	}
+
+	setAxState (value = true) {
+		this.VDAX = value
+		this.td.map(el => el.VDAX = value)
+		this.zak.map(el => el.V_DAX = value)
+	}
 }
