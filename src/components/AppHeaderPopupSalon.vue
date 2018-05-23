@@ -4,7 +4,7 @@
 		<select-current-salon-form v-model="modal"/>
 
 		<q-btn class="salonPopoverToggleButton" flat wait-for-ripple @click="modal = !modal">
-			<q-icon name="fa-building" v-if="app_view_mobile"/>
+			<q-icon name="fas fa-building" v-if="app_view_mobile"/>
 			<template v-if="!app_view_mobile">
 				{{ auth_currentSalon ? auth_currentSalon.NAME : '...' }}
 			</template>

@@ -35,17 +35,19 @@ module.exports = function(ctx) {
 			'icons.less'
 		],
 		extras: [
-			ctx.theme.mat ? 'roboto-font' : null,
+			//ctx.theme.mat ? 'roboto-font' : null,
 			'material-icons',
 			// 'ionicons',
 			// 'mdi',
 			'fontawesome'
 		],
 		supportIE: true,
+		/*
 		vendor: {
 			add: [],
 			remove: []
 		},
+		*/
 		build: {
 			scopeHoisting: true,
 			vueRouterMode: 'hash',

@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import { AuthMixin } from '@/mixins'
 import {
 	mapActions,

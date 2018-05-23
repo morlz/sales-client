@@ -55,7 +55,7 @@ export default {
 			return this.onlyCan({
 				childs: this.nav_items,
 				name: "Меню",
-				icon: this.nav_open || this.app_view_desktop ? 'fa-bars' : 'fa-arrow-left',
+				icon: this.nav_open || this.app_view_desktop ? 'fas fa-bars' : 'fas fa-arrow-left',
 				click: this.app_view_mobile ?
 					e => !this.nav_openLeftSet(false)
 				:	e => this.nav_namesShowSet(!this.nav_namesShow)

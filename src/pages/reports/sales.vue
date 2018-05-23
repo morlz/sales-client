@@ -20,7 +20,7 @@
 					{{ !app_view_mobile ? 'Открыть в новом окне' : ''}}
 				</q-btn>
 				<q-btn @click="exportToExcel">
-					<q-icon name="fa-download"/>
+					<q-icon name="fas fa-download"/>
 					{{ !app_view_mobile ? 'Экспорт в Excel' : ''}}
 				</q-btn>
 			</q-field>

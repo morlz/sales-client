@@ -14,7 +14,7 @@ const state = {
 		{
 			name: 'Помощь',
 			path: "/help",
-			icon: "fa-info"
+			icon: "fas fa-info"
 		},
 		{
 			name: "Мебель",
@@ -114,19 +114,19 @@ const state = {
 				{
 					name: "Отчёт 2",
 					path: "/reports/salesTwo",
-					icon: "fa-list-alt",
+					icon: "fas fa-list-alt",
 					can: { lvl: 1, action: "ReportSalesTwo" },
 				},
 				{
 					name: "Итоги продаж",
 					path: "/reports/resume",
-					icon: "fa-braille",
+					icon: "fas fa-braille",
 					can: { lvl: 1, action: "ReportResume" },
 				},
 				{
 					name: "Инвентаризация",
 					path: "/reports/inventory",
-					icon: "fa-bed",
+					icon: "fas fa-bed",
 					can: { lvl: 1, action: "ReportInventoryList" },
 				},
 			]
@@ -151,7 +151,7 @@ const state = {
 				{
 					name: "Тестирование",
 					path: "/admin/tests",
-					icon: "fa-bug",
+					icon: "fas fa-bug",
 					can: { lvl: 1, action: "Tests" }
 				},
 			]

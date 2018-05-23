@@ -12,8 +12,7 @@ const config = Object.assign({
 let options = {
 	dryRun: false, // Enable dry-run mode. Default to false
 	exclude: [ // exclude patterns (glob)
-		'node_modules',
-		'src/**/*.spec.ts'
+		'node_modules'
 	],
 	excludeMode: 'remove', // Behavior for excluded files ('remove' or 'ignore'), Default to 'remove'.
 	forceUpload: false // Force uploading all files, Default to false(upload only newer files).

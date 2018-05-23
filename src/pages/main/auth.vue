@@ -7,11 +7,11 @@
 			<q-card-title>Авторизация</q-card-title>
 
 			<q-card-main>
-				<q-field icon="fa-user">
+				<q-field icon="fas fa-user">
 					<q-input v-model="login" float-label="Имя пользователя (Логин)" @keyup.enter.native="authHandler"/>
 				</q-field>
 
-				<q-field icon="fa-key">
+				<q-field icon="fas fa-key">
 					<q-input type="password" v-model="pass" float-label="Пароль" @keyup.enter.native="authHandler"/>
 				</q-field>
 			</q-card-main>

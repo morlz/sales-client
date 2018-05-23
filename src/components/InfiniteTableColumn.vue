@@ -60,7 +60,7 @@ export default {
 			}
 		},
 		sortIcon () {
-			return this.sort.direction ? 'fa-sort-amount-up' : 'fa-sort-amount-down'
+			return this.sort.direction ? 'fas fa-sort-amount-up' : 'fas fa-sort-amount-down'
 		},
 		style () {
 			return { width: `${this.width}px` }

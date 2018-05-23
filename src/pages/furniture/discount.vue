@@ -49,7 +49,7 @@
 			</div>
 		</furniture-models-wrap>
 
-		<modal-sofa v-model="modalSofa" :id="modalSofaId" type="storage"/>
+		<modal-sofa v-model="modalSofa" :id="modalSofaId" type="discount"/>
 	</div>
 </q-page>
 </template>

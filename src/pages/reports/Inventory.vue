@@ -3,7 +3,7 @@
 	<div class="AppContent__inner ReportInventory">
 		<q-card class="ReportInventory__actions">
 			<q-btn @click="local_reports_inventory_exportToExcel">
-				<q-icon name="fa-download"/>
+				<q-icon name="fas fa-download"/>
 				{{ !app_view_mobile ? 'Экспорт в Excel' : ''}}
 			</q-btn>
 

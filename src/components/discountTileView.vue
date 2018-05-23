@@ -28,7 +28,7 @@
 					<div slot="right">{{ item.td && item.td.mestoXR ? item.td.mestoXR.NAME : '' }}</div>
 
 					<div slot="subtitle">
-						<q-icon name="fa-ruble-sign" /> {{ item.td.CENA_ZAL || 0 }}
+						<q-icon name="fas fa-ruble-sign" /> {{ item.td.CENA_ZAL || 0 }}
 						<div>Категория: {{ item.KAT }}</div>
 						<div v-if="item.ISP">Исполнение: {{ item.ISP }}</div>
 					</div>

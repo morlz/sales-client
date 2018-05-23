@@ -6,7 +6,7 @@
 
 	<q-card-main>
 		<q-stepper alternative-labels :value="+data.status_id - 1" no-header-navigation>
-			<q-step v-for="item, index in preorder_statuses" :name="index" :title="item.title" :key="index" active-icon="fa-eye"/>
+			<q-step v-for="item, index in preorder_statuses" :name="index" :title="item.title" :key="index" active-icon="fas fa-eye"/>
 		</q-stepper>
 
 		<div class="InfoCardPreorder__edit" v-if="edit">
