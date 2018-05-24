@@ -84,7 +84,7 @@ export default {
 			CRMPreorders,
 			searchByPhone: "",
 			searchByPhoneQuery: "",
-			seachTimeout: false,
+			searchTimeout: false,
 			currentTab: "all",
 			lastFilters: {}
 		}
@@ -107,18 +107,22 @@ export default {
 				this.preorder_getOne(this.oneId)
 		},
 		searchByPhone (n) {
-			if (this.seachTimeout)
-				clearTimeout (this.seachTimeout)
+			if (this.searchTimeout)
+				clearTimeout (this.searchTimeout)
 
 			if (n && (n + '').length < 10) return
 
-			this.seachTimeout = setTimeout(() => { this.searchByPhoneQuery = n || '' }, 500)
+			this.searchTimeout = setTimeout(() => this.searchByPhoneQuery = n || '', 500)
 		},
 		additionalFilters (n) {
 			this.preorder_filtersChange (Object.assign({}, this.lastFilters, n))
 		},
 		preorder_filters (n) {
 			this.lastFilters = { ...n }//89165749385
+		},
+		currentTab (n) {
+			if (n === 'new')
+				this.client_select_searchByPhone(this.searchByPhone + '')
 		}
 	},
 	computed: {
@@ -167,7 +171,8 @@ export default {
 			'preorder_filtersChange',
 			'preorder_sortChange',
 			'preorder_init',
-			'preorder_getOne'
+			'preorder_getOne',
+			'client_select_searchByPhone'
 		]),
 		...mapMutations([
 			'preorder_destroy',

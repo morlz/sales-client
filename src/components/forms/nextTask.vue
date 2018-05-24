@@ -30,16 +30,40 @@
 			<q-slide-transition>
 				<div v-if="form.type == '3'">
 					<q-field>
-						<q-datetime v-model="form.date" float-label="Плановая дата"/>
+						<q-toggle v-model="form.shipment.podium" label="Заказ на подиум"/>
 					</q-field>
 
-					<q-field>
-						<q-toggle v-model="form.podium" label="Заказ на подиум"/>
+					<q-field helper="Выберите дату доставки">
+						<q-datetime v-model="form.shipment.date" float-label="Дата доставки" :min="options.dateMin"/>
 					</q-field>
 
-					<q-field>
-						<q-input v-model="form.comment" type="textarea" float-label="Комментарий" :disable="form.podium"/>
-					</q-field>
+					<q-slide-transition>
+						<div v-if="!form.shipment.podium" class="NextTask__shipment">
+							<q-btn-toggle v-model="form.shipment.type" :options="options.type" class="NextTask__shipmentType"/>
+
+							<q-field helper="Выбирете адрес доставки">
+								<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
+								<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
+							</q-field>
+
+							<q-field>
+								<q-input v-model.number="form.shipment.price" type="number" float-label="Цена доставки"/>
+							</q-field>
+
+							<q-field>
+								<q-input v-model="form.shipment.comment" float-label="Комментарий к доставке"/>
+							</q-field>
+						</div>
+					</q-slide-transition>
+
+					<q-slide-transition>
+						<template v-if="form.shipment.podium">
+							<q-field helper="Выбирете адрес доставки">
+								<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
+								<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
+							</q-field>
+						</template>
+					</q-slide-transition>
 				</div>
 			</q-slide-transition>
 		</q-card-main>
@@ -57,12 +81,15 @@ import {
 	mapMutations
 } from 'vuex'
 import fieldDescription from '@/static/fieldDescription'
+import FormSelectAddress from '@/components/forms/SelectAddress'
 import { AuthMixin } from '@/mixins'
-import { QSlideTransition } from 'quasar'
+import { QSlideTransition, QBtnToggle } from 'quasar'
 
 export default {
 	components: {
-		QSlideTransition
+		QSlideTransition,
+		QBtnToggle,
+		FormSelectAddress
 	},
 	props: {
 		scenario: {
@@ -83,14 +110,35 @@ export default {
 
 				//only oformleniye
 				payment_type: "",
-				podium: false,
 				region: "",
 				address: "",
-				comment: ""
+				comment: "",
+
+				shipment: {
+					type: false,
+					date: this.$moment().toDate(),
+					podium: false,
+					price: 0,
+					to: {
+						address: '',
+						lat: 0,
+						lng: 0
+					},
+					comment: ''
+				}
 			},
 			scenarios: {
 				END_TASK: [1, 2, 3],
 				CREATE_PREORDER: [2, 3, 4]
+			},
+			options: {
+				type: [
+					{ label: 'Доставка', value: false },
+					{ label: 'Самовывоз', value: true },
+				],
+				dateMin: this.$moment().add(1, 'day').toDate(),
+				to: false,
+				tmpTo: {},
 			}
 		}
 	},
@@ -106,13 +154,25 @@ export default {
 			} else {
 				this.form.address = ""
 			}
-		}
+		},
+		'form.shipment.type' (n) {
+			if (n) {
+				this.options.tmpTo = this.form.shipment.to
+				this.form.shipment.to = {
+					...this.form.shipment.to,
+					address: `Самовывоз из салона ${this.auth_salon.NAME} (${this.auth_salon.ID_SALONA})`
+				}
+			} else {
+				this.form.shipment.to = this.options.tmpTo
+			}
+		},
 	},
 	computed: {
 		...mapGetters([
 			'task_current',
 			'task_types',
-			'loginedAs'
+			'loginedAs',
+			'auth_salon'
 		]),
 		currentScenario() {
 			return this.scenarios[this.scenario]
@@ -143,4 +203,11 @@ export default {
 		> div
 			display grid
 			grid-gap 10px
+
+	&__shipmentType
+		justify-self start
+
+	&__shipment
+		display grid
+		grid-gap 10px
 </style>

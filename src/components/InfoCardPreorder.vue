@@ -56,7 +56,7 @@
 				<q-item-side>Дата создания</q-item-side>
 				<q-item-main/>
 				<q-item-side right>
-					{{ content.created_at }}
+					{{ $moment(content.created_at).format('DD MMMM YYYY HH:mm:ss') }}
 				</q-item-side>
 			</q-item>
 
