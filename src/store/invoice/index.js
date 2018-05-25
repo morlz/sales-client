@@ -236,6 +236,12 @@ const actions = merge(infinite.getActions(true), {
 
 		commit('invoice_currentPaymentRemove', res.data)
 		dispatch('notify', 'Оплата успешно удалена.')
+	},
+	async invoice_destroy ({ commit, dispatch, state }) {
+		if (state.cached.current instanceof Invoice)
+			await state.cached.current.updateSumm()
+
+		commit('invoice_destroy')
 	}
 })
 

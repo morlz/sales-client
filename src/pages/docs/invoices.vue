@@ -155,11 +155,11 @@ export default {
 			'invoice_filtersChange',
 			'invoice_sortChange',
 			'invoice_getOne',
-			'salon_getList'
+			'salon_getList',
+			'invoice_destroy'
 		]),
 		...mapMutations([
-			'app_layout_headerShadowSet',
-			'invoice_destroy'
+			'app_layout_headerShadowSet'
 		]),
 		async local_invoice_filtersChange (n) {
 			this.lastInvoicesFilters = n

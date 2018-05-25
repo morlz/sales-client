@@ -6,7 +6,8 @@ export default class Zak extends BaseModel {
 	constructor (arg) {
 		super()
 		this.define({
-			count: 'KOLL'
+			count: 'KOLL',
+			dax: 'V_DAX'
 		}, arg)
 	}
 

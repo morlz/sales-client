@@ -17,4 +17,8 @@ export default class Payment extends BaseModel {
 	get price () {
 		return +this.SUM_OPL
 	}
+
+	get amount () {
+		return +this.SUM_OPL
+	}
 }

@@ -1,5 +1,7 @@
 import BaseModel from '@/lib/BaseModel'
 import { Shipment, Payment, Manager, Salon, Zak, Td, Marker, Client, AdSource } from '@/lib'
+import api from '@/api'
+
 
 export default class Invoice extends BaseModel {
 	constructor (arg) {
@@ -15,7 +17,8 @@ export default class Invoice extends BaseModel {
 			marker: Marker,
 			client: Client,
 			clientOld: Client,
-			adSource: AdSource
+			adSource: AdSource,
+			dax: 'VDAX'
 		}, arg)
 	}
 
@@ -27,7 +30,7 @@ export default class Invoice extends BaseModel {
 	}
 
 	get paid () {
-		return (this.payments || []).reduce((summ, payment) => summ + +payment.SUM_OPL, 0)
+		return (this.payments || []).reduce((summ, payment) => summ + payment.amount, 0)
 	}
 
 	get price () {
@@ -44,5 +47,16 @@ export default class Invoice extends BaseModel {
 		this.VDAX = value
 		this.td.map(el => el.VDAX = value)
 		this.zak.map(el => el.V_DAX = value)
+		return this
+	}
+
+	async updateSumm () {
+		if (!Number.isInteger(this.price))
+			return console.warn('Invoice price is NaN')
+
+		let res = await api.invoices.updateSumm({ id: this.ID, value: this.price })
+		if (!res.data || res.data.error) return
+
+		return this.update(res.data)
 	}
 }

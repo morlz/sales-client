@@ -92,5 +92,12 @@ export default {
 				id
 			}
 		})
+	},
+	async updateSumm (data) {
+		return await core.invoke({
+			method: 'put',
+			type: 'invoice/sum',
+			data
+		})
 	}
 }

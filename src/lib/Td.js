@@ -8,7 +8,8 @@ export default class Td extends BaseModel {
 		super()
 		this.define({
 			furniture: Furniture,
-			count: 'KOL'
+			count: 'KOL',
+			dax: 'VDAX'
 		}, arg)
 	}
 
