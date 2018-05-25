@@ -78,11 +78,16 @@ export default {
 		return res
 	},
 	async getNewClothById(params) {
-		return await core.invoke({
+		let res = await core.invoke({
 			method: "get",
 			type: "furniture/new-cloth-by-id",
 			params
 		})
+
+		if (res.data && !res.data.error)
+			res.data = res.data instanceof Cloth ? res.data : new Cloth(res.data)
+
+		return res
 	},
 	async getNewPrice (params, debug = false) {
 

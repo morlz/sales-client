@@ -398,19 +398,8 @@ const actions = merge(infinite.getActions(true), {
 			payload.complete()
 	},
 	async furniture_new_setEdit({ commit, dispatch, state }, payload){
-		const getCloth = (payload, index) => {
-			switch (index) {
-				case 0:
-					return payload.cloth1 ? payload.cloth1.TKAN : ""
-					break;
-				case 1:
-					return payload.cloth2 ? payload.cloth2.TKAN : ""
-					break;
-				case 2:
-					return payload.cloth3 ? payload.cloth3.TKAN : ""
-					break;
-			}
-		}
+		const getClothId = cloth => cloth.TKAN || cloth
+		const getCloth = (payload, index) => getClothId(payload['cloth' + (index + 1)] || '')
 
 		let models = await dispatch('furniture_new_waitModels')
 
