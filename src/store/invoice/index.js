@@ -288,9 +288,9 @@ const getters = merge(infinite.getGetters(true), {
 	invoice_current: state => state.cached.current,
 	invoice_complete: state => state.complete,
 	invoice_cached: state => state.cached.list,
-	invoice_loading: ({ loading }) => loading.list,
-	invoice_loadingBottom: ({ loading }) => loading.bottom,
-	invoice_loadingOne: ({ loading }) => loading.one,
+	invoice_loading: state => state.loading.list,
+	invoice_loadingBottom: state => state.loading.bottom,
+	invoice_loadingOne: state => state.loading.one,
 
 	invoice_new_invoiceSource: state => state.new.invoiceSource,
 	invoice_new_selected: state => state.new.selected,

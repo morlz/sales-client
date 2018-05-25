@@ -65,9 +65,22 @@
 					</div>
 				</q-scroll-area>
 
-				<div class="ClothSelectModal__preview">
-					<img :src="current.image" />
-				</div>
+				<q-tabs inverted no-pane-border class="ClothSelectModal__tabs" v-if="modal">
+					<q-tab slot="title" name="cloth" label="Ткань" default/>
+					<q-tab slot="title" name="model" label="Модель"/>
+
+					<q-tab-pane name="cloth">
+						<div class="ClothSelectModal__preview">
+							<img :src="current.image" />
+						</div>
+					</q-tab-pane>
+
+					<q-tab-pane name="model">
+						<div class="ClothSelectModal__model">
+							<sofa-3-d-view :value="current.image"/>
+						</div>
+					</q-tab-pane>
+				</q-tabs>
 			</div>
 		</q-modal-layout>
 	</q-modal>
@@ -83,6 +96,7 @@ import {
 } from 'vuex'
 
 import BaseCloth from '@/components/BaseCloth'
+import Sofa3DView from '@/components/Sofa3DView'
 
 import { QScrollObservable } from 'quasar'
 import { AuthMixin } from '@/mixins'
@@ -90,7 +104,8 @@ import { AuthMixin } from '@/mixins'
 export default {
 	components: {
 		BaseCloth,
-		QScrollObservable
+		QScrollObservable,
+		Sofa3DView
 	},
 	mixins: [AuthMixin],
 	props: {
@@ -245,14 +260,39 @@ export default {
 		//overflow-y auto
 
 	&__preview
-		grid-area p
-		align-self center
-		justify-self center
-		margin 10px
+		width 100%
+		height 100%
+		display grid
+		align-items center
+		justify-items center
+
 		img
 			max-width 100%
 			max-height 100%
 			box-shadow 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12)
+
+
+	&__model
+		width 100%
+		height 100%
+
+		.Sofa3DView
+			width 100%
+			height 100%
+			padding 0
+			margin 0
+			overflow hidden
+
+	&__tabs
+		grid-area p
+		display grid
+		grid-template-rows 50px 1fr
+		.q-tabs-panes
+		.q-tab-pane
+			width 100%
+			height 100%
+			padding 0
+			margin 0
 
 
 .ClothCollection

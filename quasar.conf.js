@@ -1,5 +1,7 @@
 // Configuration for your app
 const path = require('path')
+const util = require('util')
+const webpack = require('webpack')
 
 const config = {
 	dev: {
@@ -29,6 +31,7 @@ module.exports = function(ctx) {
 			'FastGridArea',
 			'VueGoogleMaps',
 			'moment',
+			'three'
 		],
 		css: [
 			'app.styl',
@@ -76,6 +79,12 @@ module.exports = function(ctx) {
 
 				*/
 				cfg.resolve.alias['@'] = path.resolve('src')
+				cfg.resolve.alias['three.examples'] = path.join(__dirname, 'node_modules/three/examples/js')
+
+				cfg.plugins.push(new webpack.ProvidePlugin({ 'THREE': 'three' }))
+
+				//cfg.resolve.alias
+				//console.log(util.inspect(cfg, { depth: null }));
 			}
 		},
 		devServer: {
@@ -87,6 +96,10 @@ module.exports = function(ctx) {
 				'/web': {
 					target: 'http://sales-test.ladyagroup.ru/nsl',
 					//target: 'http://127.0.0.1/sales-server/',
+					changeOrigin: true
+				},
+				'/tiss': {
+					target: 'http://localhost/',
 					changeOrigin: true
 				}
 			}

@@ -34,6 +34,7 @@
 					:columns="DocsInvoicesFiltred"
 					:rows="invoice_cached"
 					:complete="invoice_complete"
+					:filter-values="invoice_filters"
 					@infinite="invoice_infinity"
 					@click="routerGoId"
 					@sort="local_invoice_sortChange"
@@ -75,7 +76,7 @@ export default {
 	data () {
 		return {
 			DocsInvoices,
-			currentTab: this.invoice_type,
+			currentTab: 'inWork',
 			lastInvoicesFilters: {},
 			tabs: [
 				//{ name: "Оплаченые", type: 'paid' },

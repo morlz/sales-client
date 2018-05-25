@@ -9,7 +9,8 @@ export default class Cloth extends BaseModel {
 	}
 
 	get image () {
-		return `http://${document.location.hostname}/tiss/${this.file_name}.${this.file_type}`
+		//return `http://${document.location.hostname}/tiss/${this.file_name}.${this.file_type}`
+		return `http://${document.location.host}/tiss/${this.file_name}.${this.file_type}`
 	}
 
 	/*
