@@ -2,7 +2,7 @@ import core from '@/api/core'
 import ReportResumeChartYeare from '@/lib/reports/ReportResumeChartYeare'
 import groupBy from 'lodash.groupby'
 
-import { Td } from '@/lib'
+import { Td, Invoice } from '@/lib'
 
 export default {
 	async getSales (params) {
@@ -58,6 +58,20 @@ export default {
 			return res
 
 		res.data = res.data.map(el => el instanceof Td ? el : new Td(el))
+
+		return res
+	},
+	async getAdList (params) {
+		let res = await core.invoke({
+			method: 'get',
+			type: 'report/ad',
+			params
+		})
+
+		if (!Array.isArray(res.data))
+			return res
+
+		res.data = res.data.map(el => el instanceof Invoice ? el : new Invoice(el))
 
 		return res
 	}

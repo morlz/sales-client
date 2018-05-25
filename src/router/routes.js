@@ -45,7 +45,8 @@ export default [
 					{ path: 'day/:date',			component: () => import ('pages/reports/resume/day'), 			meta: { name: "Итоги дня" } },
 					{ path: 'best/:date', 			component: () => import ('pages/reports/resume/best'), 			meta: { name: "Лучшие салоны" } },
 				]
-			}
+			},
+			{ path: '/reports/ad/', 				component: () => import ('pages/reports/ad'), 					meta: { name: "Отчёт по рекламе" } },
 		]
 	},
 	{ // Always leave this as last one

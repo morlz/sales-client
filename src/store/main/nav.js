@@ -129,6 +129,12 @@ const state = {
 					icon: "fas fa-bed",
 					can: { lvl: 1, action: "ReportInventoryList" },
 				},
+				{
+					name: "Реклама",
+					path: "/reports/ad",
+					icon: "mood_bad",
+					can: { lvl: 1, action: "ReportAd" },
+				},
 			]
 		},
 		{
