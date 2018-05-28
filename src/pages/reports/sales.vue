@@ -47,32 +47,32 @@
 				</thead>
 
 				<tbody>
-					<tr v-for="item, index in reports_sales_cached">
-						<td>{{ index }}</td>
-						<td>{{ item.countAll }}</td>
-						<td>{{ item.priceAll | price }}</td>
-						<td>{{ item.count.podium }}</td>
-						<td>{{ item.price.podium | price }}</td>
-						<td>{{ item.count.storage }}</td>
-						<td>{{ item.price.storage | price }}</td>
-						<td>{{ item.count.order }}</td>
-						<td>{{ item.price.order | price }}</td>
-						<td>{{ item.akc.count }}</td>
-						<td>{{ item.akc.price | price }}</td>
+					<tr v-for="item, name in reports_sales_cached">
+						<td>{{ name }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.countAll) }">{{ item.countAll }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.priceAll) }">{{ item.priceAll | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.count.podium) }">{{ item.count.podium }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.price.podium) }">{{ item.price.podium | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.count.storage) }">{{ item.count.storage }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.price.storage) }">{{ item.price.storage | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.count.order) }">{{ item.count.order }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.price.order) }">{{ item.price.order | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.akc.count) }">{{ item.akc.count }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(item.akc.price) }">{{ item.akc.price | price }}</td>
 					</tr>
 
 					<tr>
 						<td>ИТОГО:</td>
-						<td>{{ reports_sales_summ.count.all }}</td>
-						<td>{{ reports_sales_summ.price.all | price }}</td>
-						<td>{{ reports_sales_summ.count.podium }}</td>
-						<td>{{ reports_sales_summ.price.podium | price }}</td>
-						<td>{{ reports_sales_summ.count.storage }}</td>
-						<td>{{ reports_sales_summ.price.storage | price }}</td>
-						<td>{{ reports_sales_summ.count.order }}</td>
-						<td>{{ reports_sales_summ.price.order | price }}</td>
-						<td>{{ reports_sales_summ.count.akc }}</td>
-						<td>{{ reports_sales_summ.price.akc | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.count.all) }">{{ reports_sales_summ.count.all }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.price.all) }">{{ reports_sales_summ.price.all | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.count.podium) }">{{ reports_sales_summ.count.podium }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.price.podium) }">{{ reports_sales_summ.price.podium | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.count.storage) }">{{ reports_sales_summ.count.storage }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.price.storage) }">{{ reports_sales_summ.price.storage | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.count.order) }">{{ reports_sales_summ.count.order }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.price.order) }">{{ reports_sales_summ.price.order | price }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.count.akc) }">{{ reports_sales_summ.count.akc }}</td>
+						<td :class="{ 'reportSales__secondary' : isZero(reports_sales_summ.price.akc) }">{{ reports_sales_summ.price.akc | price }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -163,6 +163,9 @@ export default {
 		exportToExcel () {
 			this.$store.dispatch('notify', 'Создание файла')
 			this.reports_sales_exportToExcel(this.$refs.tableWrapper.innerHTML)
+		},
+		isZero (val) {
+			return +val === 0
 		}
 	},
 	filters: {
@@ -187,6 +190,8 @@ export default {
 .reportSales {
 	display: grid;
 	grid-gap: 10px;
+
+
 	&__actions {
 		display: grid;
 		grid-gap: 15px;
@@ -200,12 +205,13 @@ export default {
 	}
 
 	&__content {
-		padding: 10px;
-		overflow-x: auto;
+		//padding: 10px;
+		overflow: auto;
 	}
 
 	&__table {
 		width: 100%;
+		font-size: 12px;
 		border: 0;
 		border-collapse: collapse;
 		thead {
@@ -233,10 +239,14 @@ export default {
 		}
 
 		td {
-			border: 1px solid #000;
+			border: 1px solid #ccc;
 			padding: 4px;
 			white-space: nowrap;
 		}
+	}
+
+	&__secondary {
+		opacity: .3;
 	}
 }
 

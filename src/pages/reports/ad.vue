@@ -189,7 +189,7 @@ export default {
 	&__content
 		height 100%
 		width 100%
-		overflow scroll
+		overflow auto
 
 	&__table
 		border 0

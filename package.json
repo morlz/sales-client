@@ -10,7 +10,8 @@
     "test": "echo \"No test specified\" && exit 0",
     "deploy:emptyDist": "node deploy/emptyDist",
     "deploy:start": "node deploy/start",
-    "build": "npm run deploy:emptyDist && quasar build && npm run deploy:start"
+    "build": "npm run deploy:emptyDist && quasar build && npm run deploy:start",
+	"dev":  "quasar dev"
   },
   "dependencies": {
     "axios": "^0.18.0",
