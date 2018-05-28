@@ -18,7 +18,8 @@ export default class Invoice extends BaseModel {
 			client: Client,
 			clientOld: Client,
 			adSource: AdSource,
-			dax: 'VDAX'
+			dax: 'VDAX',
+			cachedPrice: 'SUMMA_ZAKAZA'
 		}, arg)
 	}
 
@@ -34,9 +35,16 @@ export default class Invoice extends BaseModel {
 	}
 
 	get price () {
+		return 	this.priceWOShipments + this.shipmentsPrice
+	}
+
+	get priceWOShipments () {
 		return 	this.td.reduce((summ, td) => summ + td.price, 0) +
-				this.zak.reduce((summ, zak) => summ + +zak.price, 0) +
-				this.shipments.reduce((summ, ship) => summ + +ship.price, 0)
+				this.zak.reduce((summ, zak) => summ + +zak.price, 0)
+	}
+
+	get shipmentsPrice () {
+		return this.shipments.reduce((summ, ship) => summ + +ship.price, 0)
 	}
 
 	get need () {
@@ -54,7 +62,7 @@ export default class Invoice extends BaseModel {
 		if (!Number.isInteger(this.price))
 			return console.warn('Invoice price is NaN')
 
-		let res = await api.invoices.updateSumm({ id: this.ID, value: this.price })
+		let res = await api.invoices.updateSumm({ id: this.ID, value: this.priceWOShipments })
 		if (!res.data || res.data.error) return
 
 		return this.update(res.data)
