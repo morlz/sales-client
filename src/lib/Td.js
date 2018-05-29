@@ -1,7 +1,7 @@
 import BaseModel from '@/lib/BaseModel'
 import { Furniture } from '@/lib'
 
-const vat = 13.5
+const vat = 18
 
 export default class Td extends BaseModel {
 	constructor (arg) {
@@ -18,7 +18,11 @@ export default class Td extends BaseModel {
 	}
 
 	get price () {
-		return Math.ceil(this.discountType ? this.originalPrice - this.discount : this.originalPrice * ((100 - this.discount) / 100))
+		return Math.ceil(
+			this.discountType ?
+				this.originalPrice - this.discount
+			:	this.originalPrice * ((100 - this.discount) / 100)
+		)
 	}
 
 	get discount () {
@@ -57,11 +61,43 @@ export default class Td extends BaseModel {
 		return this.vatSumm.toFixed(2)
 	}
 
-	get priceWithVat () {
-		return this.price + this.vatSumm
+	get priceWOVat () {
+		return this.price - this.vatSumm
 	}
 
-	get priceWithVatString () {
-		return this.priceWithVat.toFixed(2)
+	get priceWOVatString () {
+		return this.priceWOVat.toFixed(2)
+	}
+
+	get originalPriceWOVat () {
+		return this.originalPrice - this.vatSumm
+	}
+
+	get originalPriceWOVatString () {
+		return this.originalPriceWOVat.toFixed(2)
+	}
+
+	get originalPriceXCount () {
+		return this.originalPrice * +this.count
+	}
+
+	get priceXCount () {
+		return this.price * +this.count
+	}
+
+	get vatSummXCount () {
+		return this.vatSumm * this.count
+	}
+
+	get vatSummXCountString () {
+		return this.vatSummXCount.toFixed(2)
+	}
+
+	get discountXCount () {
+		return this.discountType ? this.discount * this.count : this.discount
+	}
+
+	get discountXCountString () {
+		return this.discountXCount + ' ' + this.discountTypeString
 	}
 }

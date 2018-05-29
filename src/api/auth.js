@@ -1,5 +1,6 @@
 import core from '@/api/core'
 import { LocalStorage } from 'quasar'
+import { Salon } from '@/lib'
 
 export default {
 	async signIn (id) {
@@ -31,13 +32,18 @@ export default {
 		})
 	},
 	async setSalon (id) {
-		return await core.invoke({
+		let res = await core.invoke({
 			method: "post",
 			type: "auth/set-salon",
 			data: {
 				id
 			}
 		})
+
+		if (res.data && res.data.ID_SALONA !== undefined)
+			res.data = new Salon(res.data)
+
+		return res
 	},
 	getToken () {
 		return LocalStorage.get.item('token')

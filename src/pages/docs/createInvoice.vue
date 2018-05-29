@@ -35,11 +35,22 @@
 			</q-step>
 
 			<q-slide-transition>
-				<q-step title="Оформление клиента" name="client" v-if="!form.podium" class="createInvoiceForm__clientStep">
+				<q-step title="Оформление клиента" name="client" class="createInvoiceForm__clientStep" v-if="!form.podium">
 					<form-select-client/>
 
 					<q-stepper-navigation>
 						<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!client_select_selected">Продолжить</q-btn>
+						<q-btn color="secondary" flat @click="$refs.stepper.previous()">Назад</q-btn>
+					</q-stepper-navigation>
+				</q-step>
+			</q-slide-transition>
+
+			<q-slide-transition>
+				<q-step title="Выбор салона" name="client" class="createInvoiceForm__salonStep" v-if="form.podium">
+					<field-select-salon v-model="form.salon"/>
+
+					<q-stepper-navigation>
+						<q-btn color="primary" @click="$refs.stepper.next()" :disabled="!form.salon">Продолжить</q-btn>
 						<q-btn color="secondary" flat @click="$refs.stepper.previous()">Назад</q-btn>
 					</q-stepper-navigation>
 				</q-step>
@@ -67,13 +78,6 @@
 							<q-input v-model="form.shipment.comment" float-label="Комментарий к доставке"/>
 						</q-field>
 					</template>
-
-					<template v-else>
-						<q-field helper="Выбирете адрес доставки">
-							<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
-							<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
-						</q-field>
-					</template>
 				</div>
 
 				<q-stepper-navigation>
@@ -95,11 +99,26 @@ import {
 } from 'vuex'
 
 import FormSelectClient from '@/components/forms/SelectClient'
+import FieldSelectSalon from '@/components/FieldSelectSalon'
 import FormSelectAddress from '@/components/forms/SelectAddress'
 
 import { QStepper, QStep, QToggle, QSelect, QStepperNavigation, QDatetime, QOptionGroup, QSlideTransition, extend, QBtnToggle } from 'quasar'
 
 export default {
+	components: {
+		QStepper,
+		QStep,
+		QToggle,
+		QSelect,
+		QStepperNavigation,
+		QDatetime,
+		QOptionGroup,
+		QSlideTransition,
+		QBtnToggle,
+		FormSelectClient,
+		FormSelectAddress,
+		FieldSelectSalon
+	},
 	data() {
 		return {
 			step: "pay",
@@ -110,9 +129,10 @@ export default {
 				internet: false,
 				adSource: "",
 				invoiceSource: "1",
+				salon: this.auth_currentSalon ? this.auth_currentSalon.id : 0,
 				shipment: {
 					type: false,
-					date: this.$moment().toDate(),
+					date: this.$moment().add(1, 'day').toDate(),
 					price: 0,
 					to: {
 						address: '',
@@ -133,20 +153,10 @@ export default {
 			}
 		}
 	},
-	components: {
-		QStepper,
-		QStep,
-		QToggle,
-		QSelect,
-		QStepperNavigation,
-		QDatetime,
-		QOptionGroup,
-		QSlideTransition,
-		QBtnToggle,
-		FormSelectClient,
-		FormSelectAddress
-	},
 	watch: {
+		auth_currentSalon (n) {
+			this.form.salon = n
+		},
 		formData (n) {
 			this.invoice_new_selectedSet(n)
 		},
@@ -172,7 +182,8 @@ export default {
 			'client_select_selected',
 			'i18n_months',
 			'i18n_days',
-			'auth_salon'
+			'auth_salon',
+			'auth_currentSalon'
 		]),
 		formData () {
 			return extend(true, {}, this.form)
@@ -187,8 +198,9 @@ export default {
 			'invoice_new_create'
 		]),
 		nextFromPay () {
-			if (this.form.podium) //skip client
-				return this.step = "shipment"
+			//if (this.form.podium) //skip client
+				//return this.step = "shipment"
+
 			this.$refs.stepper.next()
 		},
 		backFromShipment () {
@@ -199,6 +211,7 @@ export default {
 	},
 	mounted () {
 		this.invoice_new_init()
+		this.form.salon = this.auth_currentSalon.id
 	}
 }
 </script>
@@ -241,6 +254,8 @@ export default {
 			padding: 0 0 24px 20px;
 		}
 	}
+
+	//&__salonStep {}
 
 	&__shipmentStep {
 		display: grid;

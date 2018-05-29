@@ -1,6 +1,6 @@
 import api from '@/api'
 import settings from '@/store/main/auth/settings'
-import { Manager } from '@/lib'
+import { Manager, Salon } from '@/lib'
 
 const state = {
 	user: false,
@@ -143,7 +143,7 @@ const mutations = {
 	auth_permissionsSet: (state, payload) => state.permissions = payload || [],
 	auth_salonsSet: (state, payload) => state.salons = payload || [],
 	auth_formSet: (state, payload) => state.form[payload.type] = payload.data,
-	auth_currentSalonSet: (state, payload) => state.currentSalon = payload,
+	auth_currentSalonSet: (state, payload) => state.currentSalon = payload instanceof Salon ? payload : new Salon(payload),
 	auth_currentSalonVisibleSet: (state, payload) => state.visible.currentSalon = payload,
 	auth_loadingSet: (state, payload) => state.loading = { ...state.loading, ...payload }
 }
