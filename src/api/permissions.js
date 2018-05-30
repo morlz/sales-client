@@ -1,4 +1,5 @@
 import core from '@/api/core'
+import { SalonGroup, SalonGroupSetup } from '@/lib'
 
 export default {
 	async getManagers (params = {}) {
@@ -126,10 +127,18 @@ export default {
 		})
 	},
 	async getGroups () {
-		return await core.invoke({
-			method: "get",
-			type: "role/groups"
-		})
+		let res = await core.get('salon-groups')
+		if (Array.isArray(res))
+			return res.map(el => new SalonGroup(el))
+
+		return res
+	},
+	async getGroupsSetup (id) {
+		let res = await core.get('salon-group', { id })
+		if (Array.isArray(res))
+			return res.map(el => new SalonGroupSetup(el))
+
+		return res
 	},
 	async getGroupSetup (id) {
 		return await core.invoke({
@@ -174,5 +183,8 @@ export default {
 				groups
 			}
 		})
+	},
+	async setUserGroups (data) {
+		return await core.put('salon-group/set-for-manager', data)
 	}
 }

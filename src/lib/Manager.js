@@ -1,11 +1,13 @@
 import BaseModel from '@/lib/BaseModel'
-import { Salon } from '@/lib'
+import { Salon, SalonGroup, SalonGroupSetup } from '@/lib'
 
 export default class Manager extends BaseModel {
 	constructor (arg) {
 		super()
 		this.define({
-			salon: Salon
+			salon: Salon,
+			groups: [SalonGroup],
+			groupsSetup: [SalonGroupSetup]
 		}, arg)
 	}
 

@@ -16,6 +16,7 @@ import Preorder from '@/lib/Preorder'
 import PreorderStatus from '@/lib/PreorderStatus'
 import Cloth from '@/lib/Cloth'
 import Task from '@/lib/Task'
+import SalonGroupSetup from '@/lib/SalonGroupSetup'
 
 export default BaseModel
 
@@ -37,5 +38,6 @@ export {
 	Preorder,
 	PreorderStatus,
 	Cloth,
-	Task
+	Task,
+	SalonGroupSetup
 }

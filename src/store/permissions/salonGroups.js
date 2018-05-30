@@ -1,4 +1,5 @@
 import api from '@/api'
+import { SalonGroupSetup } from '@/lib'
 
 const state = {
 	cached: {
@@ -15,18 +16,46 @@ const state = {
 }
 
 const actions = {
-	async salonGroups_init({ commit, dispatch }) {
+	async salonGroups_init({ commit, dispatch }, user_id) {
 		return Promise.all([
 			dispatch('salonGroups_getGroups'),
+			dispatch('salonGroups_getGroupsSetup', user_id),
 			dispatch('salon_getList', null, { root: true })
 		])
 	},
 	async salonGroups_getGroups ({ commit, dispatch }) {
-		let res = await api.permissions.getGroups()
-		if (!res.data || res.data.error) return
+		let groups = await api.permissions.getGroups()
+		if (!groups) return
 
-		commit('salonGroups_cacheSet', { groups: res.data })
+		console.log(groups);
+
+		commit('salonGroups_cacheSet', { groups })
 	},
+	async salonGroups_getGroupsSetup ({ commit, dispatch }, user_id) {
+		let groupsSetup = await api.permissions.getGroupsSetup(user_id)
+		if (!groupsSetup) return
+
+		console.log(groupsSetup);
+
+		commit('salonGroups_cacheSet', { groupsSetup })
+	},
+	salonGroups_groupsSetupSet({ commit, dispatch }, { value, group_id, manager_id }) {
+		value ?
+			commit('salonGroups_check', { group_id, manager_id })
+		:	commit('salonGroups_uncheck', group_id)
+	},
+	async salonGroups_saveState ({ commit, dispatch, state }, id) {
+		let res = await api.permissions.setUserGroups({
+			id,
+			groups: state.cached.groupsSetup.map(el => el.group_id)
+		})
+		if (!res) return
+
+		dispatch('notify', 'Успешно сохранено!', { root: true })
+	},
+
+
+
 	async salonGroups_createGroup ({ commit, dispatch, state }) {
 		if (!state.add.group)
 			return dispatch('alert', 'Имя новой группы не может быть пустым')
@@ -51,12 +80,6 @@ const actions = {
 		commit('salonGroups_cacheUpdateItem', res.data)
 		dispatch('notify', 'Успешно изменено', { root: true })
 	},
-	async salonGroups_saveState ({ commit, dispatch, state }) {
-		let res = await api.permissions.saveGroupsState(state.cached.groups)
-		if (!res.data || res.data.error) return
-
-		dispatch('notify', 'Успешно сохранено!', { root: true })
-	},
 	salonGroups_checkedGroupChange ({ commit, rootGetters, state }, { checked, item }) {
 		commit('salonGroups_removeSalonFromGroups', { salon_id: state.selected.id })
 		let salon = rootGetters.salon_list.find(f => f.ID_SALONA == state.selected.id)
@@ -79,10 +102,13 @@ const actions = {
 				group_id: state.selected.id
 			})
 		}
-	}
+	},
 }
 
 const mutations = {
+	salonGroups_uncheck: (state, payload) => state.cached.groupsSetup = state.cached.groupsSetup.filter(el => el.group_id != payload),
+	salonGroups_check: (state, payload) => state.cached.groupsSetup.push(new SalonGroupSetup(payload)),
+
 	salonGroups_cacheSet: (state, payload) => state.cached = { ...state.cached, ...payload },
 	salonGroups_cacheAppend: (state, payload) => state.cached.groups.push(payload),
 	salonGroups_cacheUpdateItem: (state, payload) => state.cached.groups = [...state.cached.groups.filter(el => el.id != payload.id), payload],
@@ -119,6 +145,10 @@ const getters = {
 	}),
 	salonGroups_groupCheckboxHide: state => state.selected.type != 'salons',
 	salonGroups_salonCheckboxHide: state => state.selected.type != 'groups',
+
+
+	salonGroups_list: state => state.cached.groups,
+	salonGroups_checked: state => state.cached.groupsSetup.map(el => el.group_id)
 }
 
 export default {

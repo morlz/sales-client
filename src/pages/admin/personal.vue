@@ -5,7 +5,7 @@
 			<manager-profile-card :content="personal_current"/>
 
 			<manager-roles-card v-if="auth_can(1, 'RoleSetup')" />
-			<manager-groups-card v-if="auth_can(1, 'RoleSetup')" />
+			<manager-groups-card v-if="auth_can(1, 'RoleSetup')" :manager-id="$route.params.id"/>
 		</div>
 	</div>
 

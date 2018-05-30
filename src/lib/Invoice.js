@@ -18,7 +18,7 @@ export default class Invoice extends BaseModel {
 			client: Client,
 			clientOld: Client,
 			adSource: AdSource,
-			dax: 'VDAX',
+			realDax: 'VDAX',
 			cachedPrice: 'SUMMA_ZAKAZA'
 		}, arg)
 	}
@@ -66,5 +66,9 @@ export default class Invoice extends BaseModel {
 		if (!res.data || res.data.error) return
 
 		return this.update(res.data)
+	}
+
+	get dax () {
+		return !(this.td || []).every(el => !el.dax) || (this.zak || []).every(el => !el.dax)
 	}
 }

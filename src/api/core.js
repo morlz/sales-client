@@ -9,9 +9,11 @@ import Vue from 'vue'
 
 let _wait = (timeMax = 2e3, timeMin = 2e2) => new Promise(resolve => setTimeout(resolve, Math.random() * (timeMax - timeMin) + timeMin))
 
-class Core extends EventEmitter {
-	constructor () {
+class ApiCore extends EventEmitter {
+	constructor (options = {}) {
 		super(arguments)
+		this.protocol = options.protocol || 'http'
+
 		if (process.env.NODE_ENV == 'development') console.log("[api] [core] init")
 	}
 	async invoke (params = {}) {
@@ -110,9 +112,79 @@ class Core extends EventEmitter {
 	get apiPath () {
 		return process.env.NODE_ENV == 'development' ? `web` : `nsl/web`
 	}
+
+
+	async call (to, options = {}, method = 'get', i = 0) {
+		const req = { [method === 'get' ? 'params' : 'data']: options }
+		let args = [...Array.from(arguments)]
+		//await this._wait(1000)
+
+		let url = path.join(this.apiPath, to)
+
+		req.params = { ...req.params, token: auth.getToken() }
+
+		if (options.id !== undefined) {
+			url = path.join(url, '/' + options.id)
+			delete options.id
+		}
+
+		let res = {}
+		//url = this.protocol + '://' + url
+
+		try {
+			res = await axios({ ...req, method, url })
+		} catch (err) {
+			console.log('err', { ...err })
+
+			if (err.response && err.response.status === 500 && i < 5) {
+				console.log('err 500', i);
+				await this._wait(5e2)
+
+				console.log('err args', args)
+				args[3] = ++i
+				return await this.invoke(...args)
+			}
+
+			return {}
+		}
+
+		if (!res.data || res.data.error)
+			return this.handleError(res)
+
+		return res.data
+	}
+
+	async get (...args) {
+		return await this.call(...args)
+	}
+
+	async post (...args) {
+		return await this.call(...args, 'post')
+	}
+
+	async delete (...args) {
+		return await this.call(...args, 'delete')
+	}
+
+	async put (...args) {
+		return await this.call(...args, 'put')
+	}
+
+	handleError ({ data, status }) {
+		this.emit('error', data.error || data)
+
+		if (data.error)
+			return this.emit('handledError', data.error)
+
+		return this.emit('unhadledError', data)
+	}
+
+	_wait (time = 300) {
+		return new Promise(resolve => setTimeout(resolve, time))
+	}
 }
 
-const core = new Core()
+const core = new ApiCore()
 const { sortFnFactory, sortFnFactorySpecial } = core
 
 export default core
