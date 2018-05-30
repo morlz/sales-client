@@ -52,9 +52,9 @@ const actions = merge(infinite.getActions(true), {
 		commit('personal_loadingOneSet', true)
 		let res = await api.personals.getOne(payload)
 		commit('personal_loadingOneSet', false)
-		if (!res.data || res.data.error) return
+		if (!res || res.error) return
 
-		commit('personal_currentSet', res.data)
+		commit('personal_currentSet', res)
 	},
 	async personal_getRoleSetup ({ commit, dispatch }, payload) {
 		commit('personal_loadingRolesSetupSet', true)

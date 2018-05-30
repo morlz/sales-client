@@ -186,5 +186,11 @@ export default {
 	},
 	async setUserGroups (data) {
 		return await core.put('salon-group/set-for-manager', data)
+	},
+	async getManagerSalonsSetup (id) {
+		return await core.get('manager/salons', { id })
+	},
+	async setManagerSalonsSetup (data) {
+		return await core.put('manager/set-salons', data)
 	}
 }

@@ -1,6 +1,7 @@
 import api from '@/api'
 
 import salonGroups from './salonGroups'
+import managerSalons from './managerSalons'
 
 const types = [
 	"roles",
@@ -258,7 +259,8 @@ const getters = {
 }
 
 const modules = {
-	salonGroups
+	salonGroups,
+	managerSalons
 }
 
 export default {

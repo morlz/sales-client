@@ -1,4 +1,5 @@
 import core from '@/api/core'
+import { Manager } from '@/lib'
 
 export default {
 	async getLimited (params) {
@@ -11,13 +12,10 @@ export default {
 		})
 	},
 	async getOne (id) {
-		return await core.invoke({
-			method: "get",
-			type: "manager",
-			data: {
-				id
-			}
-		})
+		let res = await core.get('manager', { id })
+		if (!res) return
+
+		return new Manager(res)
 	},
 	async getOneRolesSetup (id) {
 		return await core.invoke({

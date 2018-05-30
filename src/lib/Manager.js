@@ -7,7 +7,8 @@ export default class Manager extends BaseModel {
 		this.define({
 			salon: Salon,
 			groups: [SalonGroup],
-			groupsSetup: [SalonGroupSetup]
+			groupsSetup: [SalonGroupSetup],
+			id: 'ID_M'
 		}, arg)
 	}
 

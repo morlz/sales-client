@@ -6,6 +6,10 @@
 
 			<manager-roles-card v-if="auth_can(1, 'RoleSetup')" />
 			<manager-groups-card v-if="auth_can(1, 'RoleSetup')" :manager-id="$route.params.id"/>
+			<manager-salons-card v-if="auth_can({
+				'Salon': 1,
+				'SalonsSetup': 1
+			})"/>
 		</div>
 	</div>
 
@@ -39,6 +43,7 @@ import { AdminPersonal } from '@/static/fieldDescription'
 import ManagerProfileCard from '@/components/ManagerProfileCard'
 import ManagerRolesCard from '@/components/ManagerRolesCard'
 import ManagerGroupsCard from '@/components/ManagerGroupsCard'
+import ManagerSalonsCard from '@/components/ManagerSalonsCard'
 
 export default {
 	mixins: [AuthMixin, RouteMixin],
@@ -46,7 +51,8 @@ export default {
 		InfiniteTable,
 		ManagerProfileCard,
 		ManagerRolesCard,
-		ManagerGroupsCard
+		ManagerGroupsCard,
+		ManagerSalonsCard
 	},
 	data() {
 		return {

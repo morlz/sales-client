@@ -27,15 +27,11 @@ const actions = {
 		let groups = await api.permissions.getGroups()
 		if (!groups) return
 
-		console.log(groups);
-
 		commit('salonGroups_cacheSet', { groups })
 	},
 	async salonGroups_getGroupsSetup ({ commit, dispatch }, user_id) {
 		let groupsSetup = await api.permissions.getGroupsSetup(user_id)
 		if (!groupsSetup) return
-
-		console.log(groupsSetup);
 
 		commit('salonGroups_cacheSet', { groupsSetup })
 	},
