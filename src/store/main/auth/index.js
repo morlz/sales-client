@@ -27,7 +27,7 @@ const actions = {
 	async auth_init ({ commit, dispatch }) {
 		let token = api.auth.getToken()
 
-		commit("updateToken", token ? token : "")
+		commit("auth_updateToken", token ? token : "")
 		if (!token) return
 
 		commit("auth_loadingSet", { auth: true })
@@ -36,13 +36,13 @@ const actions = {
 
 		if (res.data && res.data.error) {
 			if (res.data.error.status == 403)
-				commit ('updateToken')
+				commit ('auth_updateToken')
 			return
 		}
 
 		if (res && res.data && res.data.token) {
-			commit("updateUserAuth", res.data)
-			commit("updateToken", res.data.token)
+			commit("auth_userSet", res.data)
+			commit("auth_updateToken", res.data.token)
 			await dispatch("auth_getPermissions")
 		}
 	},
@@ -50,8 +50,8 @@ const actions = {
 		let res = await api.auth.signIn(btoa(JSON.stringify(state.form)))
 		if (!res.data || res.data.error) return
 		if (res && res.data && res.data.token) {
-			commit("updateUserAuth", res.data)
-			commit("updateToken", res.data.token)
+			commit("auth_userSet", res.data)
+			commit("auth_updateToken", res.data.token)
 			await dispatch("auth_getPermissions")
 		}
 	},
@@ -60,9 +60,10 @@ const actions = {
 	},
 	async logOut ({ commit, dispatch }) {
 		await api.auth.logOut()
-		commit("updateUserAuth", false)
+		commit("auth_logout", false)
 		commit("auth_permissionsSet", [])
-		commit("updateToken")
+		commit("auth_updateToken")
+		commit('salon_listEmpty')
 	},
 	async auth_getPermissions ({ commit, dispatch }) {
 		let info = {
@@ -135,8 +136,8 @@ const actions = {
 }
 
 const mutations = {
-	updateUserAuth: (state, payload) => state.user = payload instanceof Manager ? payload : new Manager(payload),
-	updateToken (state, payload) {
+	auth_userSet: (state, payload) => state.user = payload instanceof Manager ? payload : new Manager(payload),
+	auth_updateToken: (state, payload) => {
 		state.token = payload
 		payload ? api.auth.setToken(payload) : api.auth.unsetToken()
 	},
@@ -145,7 +146,8 @@ const mutations = {
 	auth_formSet: (state, payload) => state.form[payload.type] = payload.data,
 	auth_currentSalonSet: (state, payload) => state.currentSalon = payload instanceof Salon ? payload : new Salon(payload),
 	auth_currentSalonVisibleSet: (state, payload) => state.visible.currentSalon = payload,
-	auth_loadingSet: (state, payload) => state.loading = { ...state.loading, ...payload }
+	auth_loadingSet: (state, payload) => state.loading = { ...state.loading, ...payload },
+	auth_logout: state => state.user = false
 }
 
 const getters = {

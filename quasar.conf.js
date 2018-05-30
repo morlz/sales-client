@@ -94,8 +94,8 @@ module.exports = function(ctx) {
 			open: true, // opens browser window automatically
 			proxy: {
 				'/web': {
-					//target: 'http://sales-test.ladyagroup.ru/nsl',
-					target: 'http://127.0.0.1/sales-server/',
+					target: 'http://sales-test.ladyagroup.ru/nsl',
+					//target: 'http://127.0.0.1/sales-server/',
 					changeOrigin: true
 				},
 				'/tiss': {
@@ -145,7 +145,8 @@ module.exports = function(ctx) {
 				'QCheckbox',
 				'QToggle',
 				'QDatetime',
-				'QScrollArea'
+				'QScrollArea',
+				'QOptionGroup'
 			],
 			directives: [
 				'Ripple',

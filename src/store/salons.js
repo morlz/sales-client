@@ -51,6 +51,7 @@ const actions = {
 
 const mutations = {
 	salon_listSet: (state, payload) => (state.cached.list = payload, state.all = true),
+	salon_listEmpty: state => (state.cached.list = [], state.all = false),
 	salon_placesSet: (state, payload) => state.cached.places = payload,
 	salon_listUpdate: (state, payload) => state.cached.list = [
 		...state.cached.list.filter(

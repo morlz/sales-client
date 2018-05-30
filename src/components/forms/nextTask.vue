@@ -30,40 +30,39 @@
 			<q-slide-transition>
 				<div v-if="form.type == '3'">
 					<q-field>
-						<q-toggle v-model="form.shipment.podium" label="Заказ на подиум"/>
+						<q-toggle v-model="form.nonCache" label="Безналичная оплата"/>
 					</q-field>
+
+					<q-field>
+						<q-toggle v-model="form.internet" label="Интернет магазин"/>
+					</q-field>
+
+					<q-slide-transition>
+						<q-field label="Источник заказа" v-if="form.internet" class="NextTask__invoiceSources">
+							<q-option-group v-model="form.invoiceSource" :options="invoice_new_invoiceSource"/>
+						</q-field>
+					</q-slide-transition>
 
 					<q-field helper="Выберите дату доставки">
 						<q-datetime v-model="form.shipment.date" float-label="Дата доставки" :min="options.dateMin"/>
 					</q-field>
 
-					<q-slide-transition>
-						<div v-if="!form.shipment.podium" class="NextTask__shipment">
-							<q-btn-toggle v-model="form.shipment.type" :options="options.type" class="NextTask__shipmentType"/>
+					<div class="NextTask__shipment">
+						<q-btn-toggle v-model="form.shipment.type" :options="options.type" class="NextTask__shipmentType"/>
 
-							<q-field helper="Выбирете адрес доставки">
-								<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
-								<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
-							</q-field>
+						<q-field helper="Выбирете адрес доставки">
+							<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
+							<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
+						</q-field>
 
-							<q-field>
-								<q-input v-model.number="form.shipment.price" type="number" float-label="Цена доставки"/>
-							</q-field>
+						<q-field>
+							<q-input v-model.number="form.shipment.price" type="number" float-label="Цена доставки"/>
+						</q-field>
 
-							<q-field>
-								<q-input v-model="form.shipment.comment" float-label="Комментарий к доставке"/>
-							</q-field>
-						</div>
-					</q-slide-transition>
-
-					<q-slide-transition>
-						<template v-if="form.shipment.podium">
-							<q-field helper="Выбирете адрес доставки">
-								<q-input type="textarea" v-model="form.shipment.to.address" float-label="Куда" @click.native="options.to = !form.shipment.type"/>
-								<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
-							</q-field>
-						</template>
-					</q-slide-transition>
+						<q-field>
+							<q-input v-model="form.shipment.comment" float-label="Комментарий к доставке"/>
+						</q-field>
+					</div>
 				</div>
 			</q-slide-transition>
 		</q-card-main>
@@ -109,10 +108,9 @@ export default {
 				description: "",
 
 				//only oformleniye
-				payment_type: "",
-				region: "",
-				address: "",
-				comment: "",
+				nonCache: false,
+				internet: false,
+				invoiceSource: '1',
 
 				shipment: {
 					type: false,
@@ -172,7 +170,8 @@ export default {
 			'task_current',
 			'task_types',
 			'loginedAs',
-			'auth_salon'
+			'auth_salon',
+			'invoice_new_invoiceSource'
 		]),
 		currentScenario() {
 			return this.scenarios[this.scenario]
@@ -189,7 +188,13 @@ export default {
 	methods: {
 		...mapMutations([
 			'task_add_nextSet'
+		]),
+		...mapActions([
+			'invoice_new_getAdSources'
 		])
+	},
+	mounted () {
+		this.invoice_new_getAdSources()
 	}
 }
 </script>
