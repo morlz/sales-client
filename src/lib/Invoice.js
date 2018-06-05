@@ -19,7 +19,8 @@ export default class Invoice extends BaseModel {
 			clientOld: Client,
 			adSource: AdSource,
 			realDax: 'VDAX',
-			cachedPrice: 'SUMMA_ZAKAZA'
+			cachedPrice: 'SUMMA_ZAKAZA',
+			id: 'ID'
 		}, arg)
 	}
 

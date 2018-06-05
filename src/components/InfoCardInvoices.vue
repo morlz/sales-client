@@ -6,9 +6,7 @@
 
 		<q-card-main>
 			<table-collapsible :columns="InfoCardInvoices" :rows="data" accordion border-open>
-				<div slot-scope="{ row }">
-					{{ row }}
-				</div>
+				<info-card-invoices-inner slot-scope="{ row }" :content="row"/>
 			</table-collapsible>
 		</q-card-main>
 	</q-card>
@@ -24,11 +22,14 @@ import TableTwoCollumnsRow from '@/components/TableTwoCollumnsRow.vue'
 import { InfoCardInvoices } from '@/static/fieldDescription'
 import { Invoice } from '@/lib'
 
+import InfoCardInvoicesInner from '@/components/InfoCardInvoicesInner'
+
 export default {
 	components: {
 		TableCollapsible,
 		TableTwoCollumns,
 		TableTwoCollumnsRow,
+		InfoCardInvoicesInner
 	},
 	mixins: [AuthMixin],
 	props: {
@@ -44,6 +45,7 @@ export default {
 	},
 	computed: {
 		data () {
+			console.log(this.content);
 			return this.content.map(el => el instanceof Invoice ? el : new Invoice(el))
 		}
 	},
