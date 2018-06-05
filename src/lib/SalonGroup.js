@@ -10,4 +10,23 @@ export default class SalonGroup extends BaseModel {
 			managers: [Manager]
 		}, arg)
 	}
+
+	static get fields () {
+		return ['id', 'groupName']
+	}
+
+	static get options () {
+		return {
+			isActive: 'isActive',
+			isMebelTransport: 'isMebelTransport',
+			isReserveToAx: 'isReserveToAx',
+			isExportToAx: 'isExportToAx',
+			isInvoicePrintOpt: 'Оптовая печать заказа'
+		}
+	}
+
+	pure () {
+		return (Object.keys(SalonGroup.options).concat(SalonGroup.fields))
+			.reduce((prev, option) => ( prev[option] = this[option], prev ), {})
+	}
 }

@@ -1,5 +1,5 @@
 <template>
-	<q-item class="permissionsGroup" :class="{ 'permissionsGroup-selected' : item.selected }">
+	<q-item class="permissionsGroup" :class="{ 'permissionsGroup-selected' : selected }">
 		<q-item-side>
 			<div v-if="salonGroups_groupCheckboxHide">
 				{{ item.id }}
@@ -15,8 +15,9 @@
 			</q-slide-transition>
 
 			<q-slide-transition>
-				<q-item-tile v-if="edit" class="permissionsGroup__edit">
-					<q-input v-model="editFields.name" float-label="Имя роли"/>
+				<q-item-tile v-if="edit && editFields.id" class="permissionsGroup__edit">
+					<q-input v-model="editFields.groupName" float-label="Имя роли"/>
+					<q-checkbox v-for="label, checkbox in checkboxes" :key="checkbox" v-model="editFields[checkbox]" :label="label" @change="$nextTick($forceUpdate)"/>
 				</q-item-tile>
 			</q-slide-transition>
 		</q-item-main>
@@ -37,7 +38,7 @@
 					<q-icon name="edit"/>
 				</q-btn>
 
-				<q-btn flat color="red" @click="salonGroups_deleteGroup(item.id)" :disabled="(item.salons == undefined || !item.salons || !!item.salons.length)">
+				<q-btn flat color="red" @click="salonGroups_deleteGroup(item.id)" :disable="!!(salonGroups_checked[content.id] || []).length">
 					<q-icon name="delete"/>
 				</q-btn>
 			</q-item-tile>
@@ -51,50 +52,60 @@ import {
 	mapGetters,
 	mapMutations
 } from 'vuex'
-
-import { QItem, QItemMain, QItemTile, QItemSide, QToggle, QBtn, QInput, QIcon, QSlideTransition, QField } from 'quasar'
-
+import { SalonGroup } from '@/lib'
 
 export default {
+	components: {},
 	props: {
 		content: {
 			type: Object,
 			required: true
 		}
 	},
-	components: {
-		QItem, QItemMain, QItemTile, QItemSide, QToggle, QBtn, QInput, QIcon, QSlideTransition, QField
-	},
 	data() {
 		return {
 			edit: false,
-			editFields: {}
+			editFields: {},
+			checkboxes: SalonGroup.options
+		}
+	},
+	watch: {
+		edit(n){
+			this.$emit('edit', n)
 		}
 	},
 	computed: {
 		...mapGetters('salonGroups', [
-			'salonGroups_groupCheckboxHide'
+			'salonGroups_groupCheckboxHide',
+			'salonGroups_checked',
+			'salonGroups_selected'
 		]),
 		item () {
-			let data = Object.assign({ salons: false }, this.content)
-			this.editFields = data
-			return data
+			this.editFields = Object.keys(this.checkboxes)
+				.reduce(
+					(prev, checkbox) => prev.update({ [checkbox]: !!prev[checkbox] }),
+					this.content.clone()
+				)
+
+			return this.content
 		},
 		checked: {
 			get () {
-				return this.content.checked
+				return this.salonGroups_checked[this.content.id].includes(+this.salonGroups_selected.id)
 			},
-			set (n) {
-				if (!n) return
-				this.salonGroups_checkedGroupChange({ checked: true, item: this.item })
+			set (checked) {
+				this.salonGroups_groupCheck({ checked, group: this.content })
 			}
+		},
+		selected () {
+			return this.salonGroups_selected.type == 'groups' && this.content.id == this.salonGroups_selected.id
 		}
 	},
 	methods: {
 		...mapActions('salonGroups', [
 			'salonGroups_deleteGroup',
 			'salonGroups_updateGroup',
-			'salonGroups_checkedGroupChange'
+			'salonGroups_groupCheck'
 		]),
 		...mapMutations('salonGroups', [
 			'salonGroups_selectItem',
@@ -132,6 +143,11 @@ export default {
 	&__edit {
 		padding: 1px 0;
 		box-sizing: border-box;
+	}
+
+	.q-radial-ripple {
+		transform: none;
+		margin: -50% -50%;
 	}
 }
 </style>

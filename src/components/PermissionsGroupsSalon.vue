@@ -1,15 +1,21 @@
 <template>
-	<q-item class="permissionsSalon" :class="{ 'permissionsSalon-selected' : item.selected }">
+	<q-item class="permissionsSalon" :class="{ 'permissionsSalon-selected' : selected }">
 		<q-item-side>
-				<div v-if="salonGroups_salonCheckboxHide">
-					{{ item.ID_SALONA }}
+			<div v-if="salonGroups_salonCheckboxHide" class="permissionsSalon__ids">
+				<div class="">
+					{{ item.id }}
 				</div>
+
+				<div class="">
+					{{ group_id }}
+				</div>
+			</div>
 
 			<q-toggle v-model="checked" class="permissionsSalon__checkbox" v-if="!salonGroups_salonCheckboxHide"/>
 		</q-item-side>
 
 		<q-item-main>
-			<q-item-tile @click.native="salonGroups_selectItem({ type: 'salons', id: item.ID_SALONA})" class="permissionsSalon__name">
+			<q-item-tile @click.native="salonGroups_selectItem({ type: 'salons', id: item.id})" class="permissionsSalon__name">
 				{{ item.NAME }}
 			</q-item-tile>
 		</q-item-main>
@@ -23,43 +29,45 @@ import {
 	mapMutations
 } from 'vuex'
 
-import { QItem, QItemMain, QItemTile, QItemSide, QToggle, QBtn, QInput, QIcon, QSlideTransition, QField } from 'quasar'
-
-
 export default {
+	components: {},
 	props: {
 		content: {
 			type: Object,
 			required: true
 		}
 	},
-	components: {
-		QItem, QItemMain, QItemTile, QItemSide, QToggle, QBtn, QInput, QIcon, QSlideTransition, QField
-	},
-	data() {
-		return {
-			checked: false,
-		}
-	},
-	watch: {
-		checked (checked) {
-			if (this.checked == this.content.checked) return
-			this.salonGroups_checkedSalonChange({ checked, item: this.item })
-		}
-	},
 	computed: {
 		...mapGetters('salonGroups', [
-			'salonGroups_salonCheckboxHide'
+			'salonGroups_salonCheckboxHide',
+			'salonGroups_checked',
+			'salonGroups_selected',
+			'salonGroups_changed'
 		]),
 		item () {
-			let data = Object.assign({}, this.content)
-			this.checked = this.content.checked
-			return data
+			return this.content
+		},
+		checked: {
+			get () {
+				return this.salonGroups_checked[this.salonGroups_selected.id].includes(this.content.id)
+			},
+			set (checked) {
+				this.salonGroups_salonCheck({ checked, salon: this.content })
+			}
+		},
+		selected () {
+			return this.salonGroups_selected.type == 'salons' && this.content.id == this.salonGroups_selected.id
+		},
+		group_id () {
+			if (this.salonGroups_changed[this.content.id] !== undefined)
+				return this.salonGroups_changed[this.content.id]
+
+			return this.content.group_id
 		}
 	},
 	methods: {
 		...mapActions('salonGroups', [
-			'salonGroups_checkedSalonChange'
+			'salonGroups_salonCheck'
 		]),
 		...mapMutations('salonGroups', [
 			'salonGroups_selectItem'
@@ -81,6 +89,13 @@ export default {
 
 	&__checkbox {
 
+	}
+
+	&__ids {
+		display: grid;
+		width: 70px;
+		grid-template-columns: 1fr 1fr;
+		justify-items: center;
 	}
 
 

@@ -149,40 +149,32 @@ export default {
 			}
 		})
 	},
-	async createGroup (name) {
-		return await core.invoke({
-			method: "post",
-			type: "role/create-group",
-			data: {
-				name,
-				type: 'group'
-			}
-		})
+	async createGroup (groupName) {
+		let res = await core.post('salon-group', { groupName })
+
+		if (res && res.id)
+			return new SalonGroup(res)
+
+		return res
 	},
 	async deleteGroup (id) {
-		return await core.invoke({
-			method: "delete",
-			type: "role/delete-group",
-			data: {
-				id
-			}
-		})
+		let res = await core.delete('salon-group', { id })
+		if (res && res.id)
+			return new SalonGroup(res)
+
+		return res
 	},
 	async updateGroup (data) {
-		return core.invoke({
-			method: "put",
-			type: "role/update-group",
-			data
-		})
+		console.log(data);
+		let res = await core.put('salon-group', data)
+
+		if (res && res.id)
+			return new SalonGroup(res)
+
+		return res
 	},
-	async saveGroupsState (groups) {
-		return core.invoke({
-			method: "put",
-			type: "role/save-groups-state",
-			data: {
-				groups
-			}
-		})
+	async saveGroupsState (data) {
+		return await core.put('salon-group/set-groups-setup', data)
 	},
 	async setUserGroups (data) {
 		return await core.put('salon-group/set-for-manager', data)

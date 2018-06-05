@@ -3,6 +3,8 @@ import Infinite from '@/lib/Infinite'
 import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
 import merge from 'lodash.merge'
 import { Manager } from '@/lib'
+import managerGroups from './managerGroups'
+import managerSalons from './managerSalons'
 
 let infinite = new TwoSideInfinite({ method: api.personals.getLimited, namespace: 'personal', returns: Manager })
 
@@ -92,9 +94,15 @@ const getters = merge(infinite.getGetters(true), {
 	personal_loadingOne: ({ loading }) => loading.one,
 })
 
+const modules = {
+	managerGroups,
+	managerSalons
+}
+
 export default {
 	state,
 	actions,
 	mutations,
-	getters
+	getters,
+	modules
 }

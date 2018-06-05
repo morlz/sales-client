@@ -1,4 +1,5 @@
 const prefix = '_'
+import Vue from 'vue'
 
 export default class BaseModel {
 	constructor(args = false) {
@@ -70,7 +71,7 @@ export default class BaseModel {
 
 	_setProperty (path, value) {
 		let splited = path.split('.')
-		splited.reduce((prev, el, index) => prev[el] ? prev[el] : prev[el] = (index + 1 == splited.length ? value : {}), this)
+		splited.reduce((prev, el, index) => prev[el] ? prev[el] : Vue.set(prev, el, index + 1 == splited.length ? value : {}), this)
 	}
 
 	get instance () {
@@ -86,6 +87,6 @@ export default class BaseModel {
 	}
 
 	clone () {
-		return new this.constructor(Object.getOwnPropertyNames(this).reduce((prev, el) => ({ ...prev, [el]: this[el]}), {}))
+		return new this.constructor(Object.getOwnPropertyNames(this).reduce((prev, el) => (prev[el] = this[el], prev), {}))
 	}
 }

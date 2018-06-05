@@ -146,7 +146,9 @@ module.exports = function(ctx) {
 				'QToggle',
 				'QDatetime',
 				'QScrollArea',
-				'QOptionGroup'
+				'QOptionGroup',
+				'QSlideTransition',
+				'QScrollObservable'
 			],
 			directives: [
 				'Ripple',

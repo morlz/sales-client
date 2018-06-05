@@ -6,19 +6,19 @@
 
 		<q-card-main>
 			<q-list>
-				<q-item v-for="group, index in salonGroups_list" :key="index">
+				<q-item v-for="group, index in managerGroups_list" :key="index">
 					<q-item-main>
 						<q-checkbox
-							:value="salonGroups_checked.includes(group.id)"
+							:value="managerGroups_checked.includes(group.id)"
 							:label="group.name"
-							@input="salonGroups_groupsSetupSet({ value: $event, group_id: group.id, manager_id: managerId })"/>
+							@input="managerGroups_groupsSetupSet({ value: $event, group_id: group.id, manager_id: managerId })"/>
 					</q-item-main>
 				</q-item>
 			</q-list>
 		</q-card-main>
 
 		<q-card-actions>
-			<q-btn color="primary"@click="salonGroups_saveState(managerId)" v-if="auth_can(4, 'SalonGroupSetup')">Сохранить выбраные группы</q-btn>
+			<q-btn color="primary"@click="managerGroups_saveState(managerId)" v-if="auth_can(4, 'SalonGroupSetup')">Сохранить выбраные группы</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
@@ -34,24 +34,24 @@ export default {
 	},
 	watch: {
 		managerId () {
-			this.salonGroups_init(this.managerId)
+			this.managerGroups_init(this.managerId)
 		}
 	},
 	computed: {
-		...mapGetters ('salonGroups', [
-			'salonGroups_list',
-			'salonGroups_checked'
+		...mapGetters ('managerGroups', [
+			'managerGroups_list',
+			'managerGroups_checked'
 		])
 	},
 	methods: {
-		...mapActions('salonGroups', [
-			'salonGroups_groupsSetupSet',
-			'salonGroups_init',
-			'salonGroups_saveState'
+		...mapActions('managerGroups', [
+			'managerGroups_groupsSetupSet',
+			'managerGroups_init',
+			'managerGroups_saveState'
 		]),
 	},
 	created () {
-		this.salonGroups_init(this.managerId)
+		this.managerGroups_init(this.managerId)
 	}
 }
 </script>

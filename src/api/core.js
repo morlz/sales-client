@@ -134,7 +134,7 @@ class ApiCore extends EventEmitter {
 		try {
 			res = await axios({ ...req, method, url })
 		} catch (err) {
-			console.log('err', { ...err })
+			console.log('err', { ...err }, err)
 
 			if (err.response && err.response.status === 500 && i < 5) {
 				console.log('err 500', i);
