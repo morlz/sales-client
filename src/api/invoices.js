@@ -99,5 +99,8 @@ export default {
 			type: 'invoice/sum',
 			data
 		})
+	},
+	async ship (id) {
+		return core.post('invoice/ship', { id })
 	}
 }

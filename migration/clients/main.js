@@ -66,11 +66,12 @@ const formatFIO = str => capitalize(str.replace(/[^A-Za-zА-Яа-я]/g, '').toLo
 
 let clients = {},
 	contactFaces = {},
+	clientsMap = {},
 	fios = [],
 	clientCount = content.client.elements.length
 
 console.log('[client] formatting...')
-content.client.elements.forEach((clientOld, index) => {
+content.client.elements.reverse().forEach((clientOld, index) => {
 	if (!(index % 10000))
 		console.log(`[client] formated ${(index / clientCount * 100).toFixed()}%, ${index} items of ${clientCount}`)
 
@@ -100,6 +101,8 @@ content.client.elements.forEach((clientOld, index) => {
 	}
 
 
+
+
 	if (!clients[phone])
 		clients[phone] = {
 			id: client.IDK,
@@ -109,6 +112,8 @@ content.client.elements.forEach((clientOld, index) => {
 			created_at: client.DATE1,
 			signs: client.COMMENT || ''
 		}
+
+	clientsMap[client.IDK] = clients[phone].id
 
 	contactFaces[phone] = {
 		client_id: clients[phone] ? clients[phone].id : client.IDK,
@@ -137,12 +142,44 @@ fs.writeFile('output/fios.json', JSON.stringify(uniq), { encoing: 'utf8' }, err 
 
 console.log(`[client] formated ${clientCount} items, ${Object.keys(clients).length} (${Object.keys(clients).length - clientCount}) clients, ${Object.keys(contactFaces).length} contact faces`)
 
-const getClientSQLValue = client => `(${client.id}, '${client.signs}', '${client.lastName}', '${client.name}', '${client.patronymic}', '${client.manager_id}', '${client.salon_id}', '${client.created_at}', null)`
-const getContactFaceSQLValue = face => `(null, ${face.client_id}, null, '${face.fio}', ${face.gender}, '${face.regard}', '${face.phone}', 0, '${face.email}', 0, 0)`
+const getClientSQLValue = client => `(
+	${client.id},
+	'${client.signs}',
+	'${client.lastName}',
+	'${client.name}',
+	'${client.patronymic}',
+	'${client.manager_id}',
+	'${client.salon_id}',
+	'${client.created_at}',
+	NULL
+)`
+
+const getContactFaceSQLValue = face => `(
+	null,
+	${face.client_id},
+	null,
+	'${face.fio}',
+	${face.gender},
+	'${face.regard}',
+	'${face.phone}',
+	0,
+	'${face.email}',
+	0,
+	0
+)`
+
+const getInvoiceSQLValue = (o, n) => `
+	UPDATE invoice
+	SET
+		customer_id = ${n}
+	WHERE
+		IDK = ${o};
+`
 
 let sql = {
 	clients: 'INSERT INTO `nsl_customers`(`id`, `signs`, `lastname`, `name`, `patronymic`, `manager_id`, `salon_id`, `created_at`, `notactive`) VALUES ',
-	contactFaces: 'INSERT INTO `nsl_contact_faces`(`id`, `client_id`, `preorder_id`, `fio`, `gender`, `regard`, `phone`, `disableSMS`, `email`, `disableEMAIL`, `lost`) VALUES '
+	contactFaces: 'INSERT INTO `nsl_contact_faces`(`id`, `client_id`, `preorder_id`, `fio`, `gender`, `regard`, `phone`, `disableSMS`, `email`, `disableEMAIL`, `lost`) VALUES ',
+	invoices: ''
 }
 
 console.log('[client] creating clients SQL...')
@@ -151,7 +188,6 @@ delete clients
 
 console.log('[client] SQL ready, write clients sql file...')
 fs.writeFileSync('output/clients.sql', sql.clients, { encoding: 'utf-8' })
-delete sql.clients
 
 console.log('[client] created, creating contact faces SQL...')
 sql.contactFaces = Object.values(contactFaces).reduce((prev, el, index) => prev + (index ? ', ' : '') + getContactFaceSQLValue(el), sql.contactFaces)
@@ -159,7 +195,17 @@ delete contactFaces
 
 console.log('[client] writed, write contact faces sql file...')
 fs.writeFileSync('output/contactFaces.sql', sql.contactFaces, { encoding: 'utf-8' })
-delete sql
+
+console.log('[client] writed, creating invoices SQL...')
+sql.invoices = Object.keys(clientsMap).reduce((prev, key, index) => prev + getInvoiceSQLValue(key, clientsMap[key]), sql.invoices)
+delete clientsMap
+
+console.log('[client] created, write invoices sql file...')
+fs.writeFileSync('output/invoices.sql', sql.invoices, { encoding: 'utf-8' })
+
+console.log('[client] writed, creating all SQL...')
+fs.writeFileSync('output/all.sql', Object.values(sql).join('; '), { encoding: 'utf-8' })
+console.log('[client] all SQL created')
 
 let t = Date.now() - time
 console.log(`[client] writed, process end in ${t} ms (${(t/1000).toFixed(1)}s)`)

@@ -242,6 +242,14 @@ const actions = merge(infinite.getActions(true), {
 			await state.cached.current.updateSumm()
 
 		commit('invoice_destroy')
+	},
+	async invoice_ship ({ commit, dispatch }, id) {
+		let res = await api.invoices.ship(id)
+		if (!res || !res.ID) return
+
+		commit('invoice_currentUpdate', res)
+		commit('invoice_currentSetDax', true)
+		dispatch('notify', 'Успешно выгружено и отгружено.', { root: true })
 	}
 })
 
@@ -254,6 +262,8 @@ const mutations = merge(infinite.getMutations(true), {
 	invoice_lastOffsetSet: (state, payload) => state.offset.last = payload,
 	invoice_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
 	invoice_currentSet: (state, payload) => state.cached.current = payload instanceof Invoice ? payload : new Invoice (payload),
+	invoice_currentUpdate: (state, payload) => state.cached.current.update(payload),
+	invoice_currentSetDax: (state, payload) => state.cached.current.setAxState(payload),
 	invoice_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
 	invoice_currentTdUpdate: (state, payload) => api.core.assignItems(state.cached.current.td, payload, 'ID'),
 	invoice_currentZakUpdate: (state, payload) => api.core.assignItems(state.cached.current.zak, payload, 'ID'),

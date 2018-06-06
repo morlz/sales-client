@@ -66,6 +66,7 @@
 		</q-card-main>
 
 		<q-card-actions class="infoCardInvoice__actions">
+			<q-btn color="primary" @click="invoice_ship(data.ID)" v-if="+data.VID_OPLATI == 3 && !+data.IS_CLOSE">Отгрузить</q-btn>
 			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">в DAX</q-btn>
 			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">в 1С</q-btn>
 			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
@@ -109,6 +110,7 @@ export default {
 			'invoice_printOpt',
 			'invoice_exportToAx',
 			'invoice_exportTo1c',
+			'invoice_ship',
 			'invoice_remove'
 		]),
 		date (d) {
