@@ -22,7 +22,7 @@
 					{{ contact }}
 				</q-item-tile>
 			</q-item-main>
-			<q-item-side class="clientList__salon">
+			<q-item-side class="clientList__salon" v-if="client.salon">
 				{{ client.salon.NAME }}
 			</q-item-side>
 		</q-item>

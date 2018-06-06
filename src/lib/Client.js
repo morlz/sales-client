@@ -1,13 +1,14 @@
 import BaseModel from '@/lib/BaseModel'
-import { ContactFace, Invoice } from '@/lib'
+import { ContactFace, Invoice, Salon } from '@/lib'
 import moment from 'moment'
 
 export default class Client extends BaseModel {
 	constructor (arg) {
 		super()
 		this.define({
-			cotactfaces: [ContactFace],
-			invoices: [Invoice]
+			contactfaces: [ContactFace],
+			invoices: [Invoice],
+			salon: Salon
 		}, arg)
 	}
 
@@ -80,7 +81,7 @@ export default class Client extends BaseModel {
 	get notactiveDate () {
 		if (!this.notactive)
 			return ''
-			
+
 		return moment(this._notactive).format('DD MMM YYYY')
 	}
 }
