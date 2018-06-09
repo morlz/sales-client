@@ -107,7 +107,8 @@ export default {
 			this.client_updateContact({
 				...this.editFields,
 				disableEMAIL,
-				disableSMS
+				disableSMS,
+				__ob__: undefined
 			})
 			this.edit = false
 		}
