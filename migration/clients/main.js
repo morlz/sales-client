@@ -86,7 +86,7 @@ content.client.elements.reverse().forEach((clientOld, index) => {
 		patronymic: formatFIO(client.OTCH),
 	}
 
-	let phone = (client.TEL1 || client.TEL2 || '').replace(/\D/g, ''),
+	let phone = (client.TEL1 || client.TEL2 || ''), //.replace(/\D/g, ''),
 		gender
 
 	switch (fio.lastName.substr(-1, 1).toLowerCase()) {
@@ -176,32 +176,47 @@ const getInvoiceSQLValue = (o, n) => `
 		IDK = ${o};
 `
 
+const getKomuSqlValue = (o, n) => `
+	UPDATE Komu
+	SET
+		customer_id = ${n}
+	WHERE
+		IDK = ${o};
+`
+
 let sql = {
 	clients: 'INSERT INTO `nsl_customers`(`id`, `signs`, `lastname`, `name`, `patronymic`, `manager_id`, `salon_id`, `created_at`, `notactive`) VALUES ',
 	contactFaces: 'INSERT INTO `nsl_contact_faces`(`id`, `client_id`, `preorder_id`, `fio`, `gender`, `regard`, `phone`, `disableSMS`, `email`, `disableEMAIL`, `lost`) VALUES ',
-	invoices: ''
+	invoices: '',
+	komu: ''
 }
 
 console.log('[client] creating clients SQL...')
 sql.clients = Object.values(clients).reduce((prev, el, index) => prev + (index ? ', ' : '') + getClientSQLValue(el), sql.clients)
-delete clients
+//delete clients
 
 console.log('[client] SQL ready, write clients sql file...')
 fs.writeFileSync('output/clients.sql', sql.clients, { encoding: 'utf-8' })
 
 console.log('[client] created, creating contact faces SQL...')
 sql.contactFaces = Object.values(contactFaces).reduce((prev, el, index) => prev + (index ? ', ' : '') + getContactFaceSQLValue(el), sql.contactFaces)
-delete contactFaces
+//delete contactFaces
 
 console.log('[client] writed, write contact faces sql file...')
 fs.writeFileSync('output/contactFaces.sql', sql.contactFaces, { encoding: 'utf-8' })
 
 console.log('[client] writed, creating invoices SQL...')
 sql.invoices = Object.keys(clientsMap).reduce((prev, key, index) => prev + getInvoiceSQLValue(key, clientsMap[key]), sql.invoices)
-delete clientsMap
 
 console.log('[client] created, write invoices sql file...')
 fs.writeFileSync('output/invoices.sql', sql.invoices, { encoding: 'utf-8' })
+
+console.log('[client] writed, creating komu SQL...')
+sql.komu = Object.keys(clientsMap).reduce((prev, key, index) => prev + getKomuSqlValue(key, clientsMap[key]), sql.komu)
+//delete clientsMap
+
+console.log('[client] created, write komu sql file...')
+fs.writeFileSync('output/komu.sql', sql.komu, { encoding: 'utf-8' })
 
 console.log('[client] writed, creating all SQL...')
 fs.writeFileSync('output/all.sql', Object.values(sql).join('; '), { encoding: 'utf-8' })
@@ -209,3 +224,7 @@ console.log('[client] all SQL created')
 
 let t = Date.now() - time
 console.log(`[client] writed, process end in ${t} ms (${(t/1000).toFixed(1)}s)`)
+
+console.log(clients, contactFaces, clientsMap)
+
+setInterval(() => console.log('Still work'), 6e4)
