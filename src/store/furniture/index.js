@@ -157,6 +157,24 @@ const actions = merge(infinite.getActions(true), {
 		commit('furniture_new_loadingModelsSet', false)
 		if (res && res.data && res.data.error) return
 		commit('furniture_new_cachedModelsSet', res.data)
+
+		/*
+		let asd = await Promise.all(
+			res.data.map(async model => {
+				let res = await api.furnitures.getNewTypes(model.ITEMID, !!+model.CRFREETRIM)
+				if (!res.data)
+					return console.log('err')
+
+				return {
+					name: model.ITEMNAME,
+					imagesIds: res.data.images.map(el => el.VALUERECID),
+					imagesUrls: res.data.images.map(el => `http://sales-test.ladyagroup.ru/nsl/web/img/${el.VALUERECID}`)
+				}
+			})
+		)
+
+		console.log(JSON.stringify(asd), asd);
+		*/
 	},
 	//получение всех типов и акции выбраной модели
 	async furniture_new_getTypes ({ commit, dispatch, state, getters }) {
