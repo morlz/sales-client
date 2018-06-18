@@ -1,5 +1,11 @@
 const fs = require('fs')
 const XMLParser = require('xml-js')
+const _ = require('lodash')
+
+String.prototype.numbers = function () {
+	return this.replace(/\D/g, '')
+}
+
 
 let input = {},
 	time = Date.now()
@@ -63,11 +69,62 @@ delete content.invoice
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)
 const formatFIO = str => capitalize(str.replace(/[^A-Za-zА-Яа-я]/g, '').toLowerCase())
+const formatPhone = phone => {
+	let match = phone.match(/(\+7|8)\(?\d{3,5}\)?\D{0,2}(\d{3}|\d{1}\D?\d{1}\D?\d{1})\D{0,2}\d{2}\D?\d{2}/),
+		match223 = phone.match(/(\+7|8)\(?\d{3,5}\)?\D{0,2}\d{2}\D?\d{2}\D?\d{3}/),
+		matchNoCode = phone.match(/\(?\d{3,5}\)?\D{0,2}(\d{3}|\d{1}\D?\d{1}\D?\d{1})\D{0,2}\d{2}\D?\d{2}/),
+		matchRegionalDM = phone.match(/\d{1}-\d{2}-\d{2}/),
+		matchRegionalSPB = phone.match(/576-\d{2}-\d{2}/)
+
+
+	if (Array.isArray(match))
+		return '' + match[0]
+
+	if (Array.isArray(matchNoCode))
+		return '8' + matchNoCode[0]
+
+	if (Array.isArray(matchRegionalDM))
+		return '849522' + matchRegionalDM[0]
+
+	if (Array.isArray(matchRegionalSPB))
+		return '8812' + matchRegionalSPB[0]
+
+	return phone || ''
+
+
+		/*
+		if (phone.length > 13 && phone.length < 16) {
+			if (phone.match(/\(\d{3,4}\)/g)) {
+				phone = phone.replace(/\D/g, '').substr(0, 11)
+			}
+		}
+
+		if (phone.length > 11 && phone.length < 14) {
+			if (phone.match(/\(\d{3,4}\)/g)) {
+				phone = '8' + phone.replace(/\D/g, '').substr(0, 11)
+			}
+		}
+
+		*/
+
+}
+const formatPhoneCode = phone => {
+	if (!phone.indexOf('+7'))
+		return '8' + phone.substr(2, phone.length)
+
+	if (!phone.indexOf('7')) {
+		return '8' + phone.substr(2, phone.length)
+	}
+
+	return phone
+}
+
 
 let clients = {},
 	contactFaces = {},
 	clientsMap = {},
 	fios = [],
+	numbers = [],
 	clientCount = content.client.elements.length
 
 console.log('[client] formatting...')
@@ -86,8 +143,12 @@ content.client.elements.reverse().forEach((clientOld, index) => {
 		patronymic: formatFIO(client.OTCH),
 	}
 
-	let phone = (client.TEL1 || client.TEL2 || ''), //.replace(/\D/g, ''),
-		gender
+	let formatedPhone = formatPhone((client.TEL1 || client.TEL2 || '').trim())
+		phone = formatPhoneCode(formatedPhone.numbers()).substr(0, 11),
+		gender = 1
+
+	numbers.push(phone)
+
 
 	switch (fio.lastName.substr(-1, 1).toLowerCase()) {
 		case 'а':
@@ -128,6 +189,23 @@ content.client.elements.reverse().forEach((clientOld, index) => {
 })
 
 delete content
+
+/*
+let count = numbers.length
+numbers = numbers.filter((v, i, a) => {
+	if (!(i % 1000))
+		console.log(`[client] filtred ${(i / count * 100).toFixed()}%, ${i} items of ${count}`)
+
+	return a.indexOf(v) === i
+})
+*/
+
+//numbers = _.uniq(numbers.filter(number => !(!!+number.numbers2() && number.numbers2().length == 11)))
+numbers = _.uniq(numbers)
+numbers.sort()
+console.log(numbers)
+
+
 
 /*
 console.log(`[client] getting unique fios...`)
@@ -225,6 +303,8 @@ console.log('[client] all SQL created')
 let t = Date.now() - time
 console.log(`[client] writed, process end in ${t} ms (${(t/1000).toFixed(1)}s)`)
 
-console.log(clients, contactFaces, clientsMap)
+
+
+//console.log(clients, contactFaces, clientsMap)
 
 setInterval(() => console.log('Still work'), 6e4)

@@ -11,7 +11,7 @@
     "deploy:emptyDist": "node deploy/emptyDist",
     "deploy:start": "node deploy/start",
     "build": "npm run deploy:emptyDist && quasar build && npm run deploy:start",
-    "dev": "quasar dev"
+    "dev": "NODE_OPTIONS=\"--max-old-space-size=4096\" && quasar dev"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -22,6 +22,7 @@
     "fs-extra": "^6.0.1",
     "in-viewport": "^3.6.0",
     "js-cookie": "^2.2.0",
+    "lodash": "^4.17.10",
     "lodash.groupby": "^4.6.0",
     "lodash.invertby": "^4.7.0",
     "lodash.isequal": "^4.5.0",
