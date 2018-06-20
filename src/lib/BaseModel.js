@@ -89,4 +89,12 @@ export default class BaseModel {
 	clone () {
 		return new this.constructor(Object.getOwnPropertyNames(this).reduce((prev, el) => (prev[el] = this[el], prev), {}))
 	}
+
+	get href () {
+		return this.constructor.format(this.baseUrl, { id: this.id })
+	}
+
+	static format (template, data) {
+		return template.replace(/{(\w+)}/g, (m, p) => data[p])
+	}
 }

@@ -126,6 +126,7 @@
 
 		<template v-else>
 			<q-btn color="primary" v-if="data.canEdit" @click="edit = true" wait-for-ripple>Редактировать</q-btn>
+			<q-btn color="primary" v-if="data.invoice" :to="data.invoice.href">Перейти к заказу</q-btn>
 		</template>
 	</q-card-actions>
 </q-card>

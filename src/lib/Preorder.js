@@ -1,6 +1,6 @@
 import BaseModel from '@/lib/BaseModel'
 import moment from 'moment'
-import { Manager, Salon, PreorderStatus } from '@/lib'
+import { Manager, Salon, PreorderStatus, Invoice } from '@/lib'
 
 export default class Preorder extends BaseModel {
 	constructor (arg) {
@@ -8,7 +8,8 @@ export default class Preorder extends BaseModel {
 		this.define({
 			manager: Manager,
 			salon: Salon,
-			status: PreorderStatus
+			status: PreorderStatus,
+			invoice: Invoice
 		}, arg)
 	}
 }

@@ -4,6 +4,8 @@ import api from '@/api'
 
 
 export default class Invoice extends BaseModel {
+	baseUrl = '/docs/invoices/{id}'
+
 	constructor (arg) {
 		super()
 		this.define({
