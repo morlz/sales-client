@@ -5,7 +5,9 @@ export default class Salon extends BaseModel {
 	constructor (arg) {
 		super()
 		this.define({
-			group: SalonGroup
+			group: SalonGroup,
+			inn: 'INN',
+			address: 'ADRES'
 		}, arg)
 	}
 

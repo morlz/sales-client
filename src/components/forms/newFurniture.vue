@@ -11,6 +11,7 @@
 							v-model="model"
 							:disable="furniture_new_active.model"
 							filter
+							autofocus-filter
 							v-loading="furniture_new_loading.models"
 							:options="models"
 						/>
@@ -22,6 +23,7 @@
 							v-model="type"
 							:disable="furniture_new_active.type"
 							filter
+							autofocus-filter
 							v-loading="furniture_new_loading.type"
 							:options="types"
 						/>
@@ -39,6 +41,7 @@
 							v-model="dekor"
 							:disable="furniture_new_active.dekor"
 							filter
+							autofocus-filter
 							v-loading="furniture_new_loading.dekor"
 							:options="dekors"
 						/>

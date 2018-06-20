@@ -191,7 +191,9 @@ export default {
 
 		if (debug) return dataCorrect
 		//is not correct use old
-		return dataCorrect ? formatedNew : formated
+		return formatedNew
+		// tactical use
+		//return dataCorrect ? formatedNew : formated
 	},
 	async getNewClothInfo (cloth) {
 		cloth = cloth.ITEMID || cloth

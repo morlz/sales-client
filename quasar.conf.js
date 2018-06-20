@@ -99,7 +99,7 @@ module.exports = function(ctx) {
 					changeOrigin: true
 				},
 				'/tiss': {
-					target: 'http://localhost/',
+					target: 'http://sales-test.ladyagroup.ru/',
 					changeOrigin: true
 				}
 			}

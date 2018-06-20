@@ -187,7 +187,6 @@ const actions = merge(infinite.getActions(true), {
 		commit('furniture_new_cachedTypesSet', types)
 		commit('furniture_new_cachedSet', { type: "images", data: images })
 
-
 		//пропуск шага при отсутствии типов
 		if (!types.length)
 			dispatch('furniture_new_typeSelect', '')
@@ -269,6 +268,7 @@ const actions = merge(infinite.getActions(true), {
 		commit('furniture_new_cachedClothSet', { index, data })
 		await dispatch('furniture_new_getClothInfo', index)
 		await dispatch('furniture_new_getDiscountPrice', index)
+		dispatch('furniture_new_updateComment')
 	},
 	//получение дисконд цены для ткани
 	//index == номер ткани
@@ -302,6 +302,25 @@ const actions = merge(infinite.getActions(true), {
 		console.log(res, cat, price, priceOpt)
 		//commit('furniture_new_priceSet', { r: state.new.cached.cloth[index].price, opt: state.new.cached.cloth[index].priceOpt })
 	},
+	furniture_new_clothCacheEmpty ({ commit, dispatch }) {
+		commit('furniture_new_cachedClothSet', { index: 0, data: {} })
+		commit('furniture_new_cachedClothSet', { index: 1, data: {} })
+		commit('furniture_new_cachedClothSet', { index: 2, data: {} })
+		commit('furniture_new_clothSelect', { index: 0, data: '' })
+		commit('furniture_new_clothSelect', { index: 1, data: '' })
+		commit('furniture_new_clothSelect', { index: 2, data: '' })
+	},
+	furniture_new_updateComment ({ commit, dispatch, getters, state }) {
+		let mark = `[K${state.new.cached.cloth[0].code || 0}]`
+
+		if (!getters.furniture_new_modelCunning)
+			return commit('furniture_new_signReplace', '')
+
+		if (state.new.selected.sign.match(/\[K\d{1,2}\]/g))
+			return commit('furniture_new_signReplace', mark)
+
+		return commit('furniture_new_signAppend', mark)
+	},
 
 	//user action handlers
 
@@ -311,14 +330,17 @@ const actions = merge(infinite.getActions(true), {
 		// empty form
 		commit('furniture_new_dekorSelect', '')
 		commit('furniture_new_typeSelect', '')
-		commit('furniture_new_priceSet', { r: '', opt: '' })
+		commit('furniture_new_priceSet', { r: 0, opt: 0 })
+		dispatch('furniture_new_clothCacheEmpty')
 		// actions
 		await dispatch('furniture_new_getTypes')
 	},
 	//on type select
 	async furniture_new_typeSelect ({ commit, dispatch, getters }, payload) {
 		commit('furniture_new_typeSelect', payload)
+		dispatch('furniture_new_clothCacheEmpty')
 		await dispatch('furniture_new_getDekor')
+		commit('furniture_new_priceSet', { r: 0, opt: 0 })
 		if (getters.furniture_new_freeTrim) return
 		// empty form
 		commit('furniture_new_dekorSelect', '')
@@ -326,9 +348,8 @@ const actions = merge(infinite.getActions(true), {
 	//on dekor select
 	async furniture_new_dekorSelect ({ commit, dispatch }, payload) {
 		commit('furniture_new_dekorSelect', payload)
-		commit('furniture_new_clothSelect', { index: 0, data: '' })
-		commit('furniture_new_clothSelect', { index: 1, data: '' })
-		commit('furniture_new_clothSelect', { index: 2, data: '' })
+		commit('furniture_new_priceSet', { r: 0, opt: 0 })
+		dispatch('furniture_new_clothCacheEmpty')
 	},
 	//on cloth select
 	async furniture_new_clothSelect ({ commit, dispatch }, payload) {
@@ -511,7 +532,10 @@ const mutations = merge(infinite.getMutations(true), {
 	furniture_filtersSet: (state, payload) => state.filters = payload,
 	furniture_sortSet: (state, payload) => state.sort = payload,
 	furniture_lastOffsetSet: (state, payload) => state.offset.last = payload,
-	furniture_removeOneFromCache: (state, payload) => state.infinite.cached = { view: state.infinite.cached.filter(el => el.UN != (payload.UN || payload)) },
+	furniture_removeOneFromCache: (state, payload) =>
+		state.infinite.cached = {
+			view: state.infinite.cached.filter(el => el.UN != (payload.UN || payload))
+		},
 	furniture_removeManyFromCache: (state, payload) =>
 		state.infinite.cached = { view: state.infinite.cached.filter(
 			el => !payload.find(
@@ -519,7 +543,10 @@ const mutations = merge(infinite.getMutations(true), {
 			)
 		) },
 	furniture_currentSet: (state, payload) => state.cached.current = payload,
-	furniture_currentOffsetSet: (state, payload) => state.offset.current = payload !== undefined ? payload : state.cached.list.length,
+	furniture_currentOffsetSet: (state, payload) =>
+		state.offset.current = payload !== undefined ?
+			payload
+		:	state.cached.list.length,
 	furniture_cachedModelsSet: (state, payload) => state.cached.models = payload,
 
 	furniture_loadingSet: (state, payload) => state.loading.list = payload,
@@ -530,7 +557,8 @@ const mutations = merge(infinite.getMutations(true), {
 	furniture_new_clothSearch: (state, payload) => state.new.clothSearch[payload.index] = payload.data,
 	furniture_clothSelectForm_querySet: (state, payload) => state.clothSelectForm.query = payload,
 	furniture_clothSelectForm_cachedSet: (state, payload) => state.clothSelectForm.cached = payload,
-	furniture_clothSelectForm_cachedAppend: (state, payload) => state.clothSelectForm.cached = [...state.clothSelectForm.cached, ...payload],
+	furniture_clothSelectForm_cachedAppend: (state, payload) =>
+		state.clothSelectForm.cached = [...state.clothSelectForm.cached, ...payload],
 	furniture_clothSelectForm_offsetSet: (state, payload) => state.clothSelectForm.offset = payload,
 	furniture_clothSelectForm_loadingListSet: (state, payload) => state.clothSelectForm.loading.list = payload,
 	furniture_clothSelectForm_loadingBottomSet: (state, payload) => state.clothSelectForm.loading.bottom = payload,
@@ -542,7 +570,8 @@ const mutations = merge(infinite.getMutations(true), {
 	furniture_new_cachedDekorSet: (state, payload) => state.new.cached.dekor = payload,
 	furniture_new_cachedClothCountSet: (state, payload) => state.new.cached.clothCount = payload,
 	furniture_new_cachedClothSet: (state, payload) => state.new.cached.cloth[payload.index] = payload.data,
-	furniture_new_cachedClothUpdate: (state, payload) => state.new.cached.cloth[payload.index] = { ...state.new.cached.cloth[payload.index], ...payload.data },
+	furniture_new_cachedClothUpdate: (state, payload) =>
+		state.new.cached.cloth[payload.index] = { ...state.new.cached.cloth[payload.index], ...payload.data },
 
 	furniture_new_loadingSet: (state, payload) => state.new.loading[payload.type] = payload.data,
 	furniture_new_loadingModelsSet: (state, payload) => state.new.loading.models = payload,
@@ -560,15 +589,19 @@ const mutations = merge(infinite.getMutations(true), {
 	furniture_new_countSet: (state, payload) => state.new.selected.count = payload,
 	furniture_new_editSet: (state, payload) => state.new.selected.edit = payload,
 	furniture_new_priceSet: (state, { r, opt }) => {
-		if (r) {
+		if (r !== undefined) {
 			state.new.selected.price = r
 			state.new.cached.price = r
 		}
-		if (opt) {
+		if (r !== undefined) {
 			state.new.selected.opt = opt
 			state.new.cached.opt = opt
 		}
 	},
+	furniture_new_signReplace: (state, payload) =>
+		state.new.selected.sign = state.new.selected.sign.replace(/\[K\d{1,2}\]/gi, payload),
+	furniture_new_signAppend: (state, payload) =>
+		state.new.selected.sign = (state.new.selected.sign + ' ' + payload).trim()
 })
 
 const getters = merge(infinite.getGetters(true), {
@@ -646,23 +679,44 @@ const getters = merge(infinite.getGetters(true), {
 			button: currentStep < 5
 		}
 	},
-	furniture_new_freeTrim: state => state.new.selected.model ? !!+state.new.cached.models.find(el => el.ITEMID == state.new.selected.model).CRFREETRIM : false,
+	furniture_new_freeTrim: state => state.new.selected.model ?
+			!!+state.new.cached.models.find(el => el.ITEMID == state.new.selected.model).CRFREETRIM
+		:	false,
+
 	furniture_new_modelCunning: state => {
+		//if (state.new.cached.cloth[0].price2 === 0)
+			//return false
+
 		for (var index in state.new.cached.cloth)
-			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].r && state.new.cached.cloth[0].code > state.new.cached.cloth[index].code)
-				return true
+			if (
+				state.new.cached.cloth.hasOwnProperty(index) &&
+				state.new.cached.cloth[index].r &&
+				state.new.cached.cloth[0].code > state.new.cached.cloth[index].code
+			) return true
 
 		return false
 	},
-	furniture_new_cunningCatSofa: state => Math.max(state.new.cached.cloth[1].code || 0, state.new.cached.cloth[2].code || 0),
-	furniture_new_cunningPrice: state => {
-		let maxIndex = (state.new.cached.cloth[1].code || 0) > (state.new.cached.cloth[2].code || 0) ? 1 : 2
-		return state.new.cached.cloth[maxIndex].price - state.new.cached.cloth[maxIndex].price2 + state.new.cached.cloth[0].price2
-	},
-	furniture_new_cunningPriceOpt: state => {
-		let maxIndex = (state.new.cached.cloth[1].code || 0) > (state.new.cached.cloth[2].code || 0) ? 1 : 2
-		return state.new.cached.cloth[maxIndex].priceOpt - state.new.cached.cloth[maxIndex].priceOpt2 + state.new.cached.cloth[0].priceOpt2
-	},
+	furniture_new_cunningCatSofa: state =>
+		Math.max(
+			state.new.cached.cloth[1].code || 0,
+			state.new.cached.cloth[2].code || 0
+		),
+
+	fruniture_new_maxIndex: state =>
+		(state.new.cached.cloth[1].code || 0) >
+		(state.new.cached.cloth[2].code || 0) ?
+			1
+		:	2,
+
+	furniture_new_cunningPrice: (state, getters) =>
+		state.new.cached.cloth[getters.fruniture_new_maxIndex].price -
+		state.new.cached.cloth[getters.fruniture_new_maxIndex].price2 +
+		state.new.cached.cloth[0].price2,
+
+	furniture_new_cunningPriceOpt: (state, getters) =>
+		state.new.cached.cloth[getters.fruniture_new_maxIndex].priceOpt -
+		state.new.cached.cloth[getters.fruniture_new_maxIndex].priceOpt2 +
+		state.new.cached.cloth[0].priceOpt2,
 
 	furniture_new_normalMaxIndex: state => {
 		let max = { index: 0, price: 0 }
@@ -673,7 +727,11 @@ const getters = merge(infinite.getGetters(true), {
 			}
 		return max.index
 	},
-	furniture_new_cachedImages: state => state.new.cached.images.map(imageId => api.images.getUrl(imageId.VALUERECID)),
+
+	furniture_new_cachedImages: state =>
+		state.new.cached.images
+		.map(imageId => api.images.getUrl(imageId.VALUERECID)),
+
 	furniture_clothSelectForm: state => state.clothSelectForm,
 	furniture_clothSelectForm_loading: state => state.clothSelectForm.loading.list,
 })

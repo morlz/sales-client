@@ -90,23 +90,6 @@ const formatPhone = phone => {
 		return '8812' + matchRegionalSPB[0]
 
 	return phone || ''
-
-
-		/*
-		if (phone.length > 13 && phone.length < 16) {
-			if (phone.match(/\(\d{3,4}\)/g)) {
-				phone = phone.replace(/\D/g, '').substr(0, 11)
-			}
-		}
-
-		if (phone.length > 11 && phone.length < 14) {
-			if (phone.match(/\(\d{3,4}\)/g)) {
-				phone = '8' + phone.replace(/\D/g, '').substr(0, 11)
-			}
-		}
-
-		*/
-
 }
 const formatPhoneCode = phone => {
 	if (!phone.indexOf('+7'))
