@@ -101,7 +101,7 @@ export default {
 		return {
 			form: {
 				//all
-				type: "",
+				type: "2", // контакт
 				date: "",
 
 				//not oformleniye
