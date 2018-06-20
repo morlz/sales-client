@@ -40,9 +40,10 @@ const actions = merge(infinite.getActions(true), {
 		state.infinite.sort = payload
 		await state.infinite.start()
 	},
-	async task_filtersChange({ commit, dispatch }, payload){
+	async task_filtersChange({ commit, dispatch, getters }, payload){
 		commit("task_filtersSet", payload)
-		state.infinite.filters = { ...payload }
+		state.infinite.filters = { ...payload, type: undefined }
+		state.infinite.additional = { type: getters.task_type }
 		await state.infinite.start()
 	},
 	async task_infinity({ commit, dispatch, state, getters }, payload){
@@ -128,7 +129,8 @@ const getters = merge(infinite.getGetters(true), {
 	task_loadingAdd: ({ loading }) => loading.add,
 	task_edit_visible: ({ edit }) => edit.visible,
 	task_edit_current: ({ edit }) => edit.current,
-	task_add_next: state => state.add.next
+	task_add_next: state => state.add.next,
+	task_type: state => state.filters.type
 })
 
 export default {

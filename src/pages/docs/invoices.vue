@@ -126,7 +126,9 @@ export default {
 			return { type: this.currentTab, page: this.type }
 		},
 		currentInvoiceManager () {
-			return this.invoice_current.manager ? `${this.invoice_current.manager.FIO} ${this.invoice_current.manager.IMY} ${this.invoice_current.manager.OTCH}` : {}
+			return this.invoice_current.manager ?
+				`${this.invoice_current.manager.FIO} ${this.invoice_current.manager.IMY} ${this.invoice_current.manager.OTCH}`
+			:	{}
 		},
 		local_currentSalon: {
 			get () {

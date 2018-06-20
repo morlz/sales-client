@@ -19,15 +19,17 @@
 			</q-field>
 
 			<q-field>
-				<q-input v-model.number="editFields.budget" type="number" float-label="Бюджет"/>
+				<q-input v-model.number="editFields.budget" type="number" float-label="Бюджет" suffix="Руб."/>
 			</q-field>
 
+			<!--
 			<q-field>
 				<q-input v-model.number="editFields.prepay_summ" type="number" float-label="Сумма предоплаты"/>
 			</q-field>
+			-->
 
 			<q-field>
-				<q-input v-model.number="editFields.calc_summ" type="number" float-label="Сумма расчёта"/>
+				<q-input v-model.number="editFields.calc_summ" type="number" float-label="Сумма расчёта" suffix="Руб."/>
 			</q-field>
 
 			<q-field helper="Примечание">
@@ -36,6 +38,38 @@
 		</div>
 
 		<q-list highlight no-border v-else>
+			<q-item>
+				<q-item-side>Клиент</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					<preview-client :content="content.client"/>
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Вероятность</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					<q-rating :value="+content.chance" readonly :max="5" />
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Бюджет</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.budget }} руб.
+				</q-item-side>
+			</q-item>
+
+			<q-item>
+				<q-item-side>Сумма расчёта</q-item-side>
+				<q-item-main/>
+				<q-item-side right>
+					{{ content.calc_summ }} руб.
+				</q-item-side>
+			</q-item>
+
 			<q-item v-if="content.salon">
 				<q-item-side>Салон</q-item-side>
 				<q-item-main/>
@@ -61,14 +95,6 @@
 			</q-item>
 
 			<q-item>
-				<q-item-side>Клиент</q-item-side>
-				<q-item-main/>
-				<q-item-side right>
-					<preview-client :content="content.client"/>
-				</q-item-side>
-			</q-item>
-
-			<q-item>
 				<q-item-side>Рекл. источник</q-item-side>
 				<q-item-main/>
 				<q-item-side right>
@@ -76,22 +102,7 @@
 				</q-item-side>
 			</q-item>
 
-			<q-item>
-				<q-item-side>Вероятность</q-item-side>
-				<q-item-main/>
-				<q-item-side right>
-					<q-rating :value="+content.chance" readonly :max="5" />
-				</q-item-side>
-			</q-item>
-
-			<q-item>
-				<q-item-side>Бюджет</q-item-side>
-				<q-item-main/>
-				<q-item-side right>
-					{{ content.budget }}
-				</q-item-side>
-			</q-item>
-
+			<!--
 			<q-item>
 				<q-item-side>Сумма предоплаты</q-item-side>
 				<q-item-main/>
@@ -99,14 +110,7 @@
 					{{ content.prepay_summ }} руб.
 				</q-item-side>
 			</q-item>
-
-			<q-item>
-				<q-item-side>Сумма расчёта</q-item-side>
-				<q-item-main/>
-				<q-item-side right>
-					{{ content.calc_summ }} руб.
-				</q-item-side>
-			</q-item>
+		-->
 
 			<q-item>
 				<q-item-side>Примечание</q-item-side>

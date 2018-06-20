@@ -1,30 +1,24 @@
 <template>
-<q-page class="AppContent" v-if="auth_can(1, 'Task')">
+<q-page class="AppContent Tasks" v-if="auth_can(1, 'Task')">
 	<div class="OneTaskWrapper" v-if="isOne">
 		<end-task-form v-loading="task_loadingOne" v-if="auth_can(3, 'Task')" />
 	</div>
 
-	<div class="manyTasksWrapper" v-if="!isOne">
+	<div class="manyTasksWrapper " v-if="!isOne">
 		<edit-task-form v-if="auth_can(3, 'Task')"/>
 
-		<q-card class="manyTasksWrapper__card AppContent__inner">
-			<!--<tabless
-				key="tasks"
-				:data="task_cached"
-				:complete="task_complete"
-				:field-description="CRMTasks"
-				:filters="task_filters"
-				ref="table"
-				@filter="local_task_filtersChange"
-				@sort="local_task_sortChange"
-				@click="routerGoId"
-				@infinite="task_infinity"
-			/>-->
+		<div class="AppContent__tabs">
+			<q-tabs v-model="currentTab">
+				<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
+			</q-tabs>
+		</div>
 
+		<q-card class="manyTasksWrapper__card AppContent__inner">
 			<infinite-table
 				:columns="CRMTasks"
 				:rows="task_cached"
 				:complete="task_complete"
+				:filter-values="task_filters"
 				@infinite="task_infinity"
 				@click="clickHandler"
 				@sort="local_task_sortChange"
@@ -37,13 +31,7 @@
 
 
 <script>
-import fieldDescription from '@/static/fieldDescription'
 import { CRMTasks } from '@/static/fieldDescription'
-
-let {
-	clientContactsFieldDescription,
-	clientTasksFieldDescription
-} = fieldDescription
 
 import {
 	mapGetters,
@@ -65,15 +53,23 @@ export default {
 	data() {
 		return {
 			CRMTasks,
-			clientContactsFieldDescription,
-			clientTasksFieldDescription,
+			currentTab: '',
+			tabs: [
+				{ name: "Мои задачи", type: '' },
+				{ name: "В работе", type: 'inWork' },
+				{ name: "Завершённые", type: 'end' },
+			],
+			lastTasksFilters: {}
 		}
 	},
 	watch: {
 		oneId() {
 			if (this.oneId !== undefined)
 				this.task_getOne(this.oneId)
-		}
+		},
+		async additionalFilters (n) {
+			await this.task_filtersChange (Object.assign({}, this.lastTasksFilters, n))
+		},
 	},
 	computed: {
 		...mapGetters([
@@ -87,8 +83,13 @@ export default {
 			'task_complete'
 		]),
 		task_currentCLientMainContact() {
-			return this.task_current.contactFaces ? this.task_current.contactFaces.find(el => el.regard == "Основной") : {}
+			return this.task_current.contactFaces ?
+				this.task_current.contactFaces.find(el => el.regard == "Основной")
+			:	{}
 		},
+		additionalFilters () {
+			return { type: this.currentTab }
+		}
 	},
 	methods: {
 		...mapActions([
@@ -99,10 +100,12 @@ export default {
 			'task_init'
 		]),
 		...mapMutations([
-			'task_destroy'
+			'task_destroy',
+			'app_layout_headerShadowSet'
 		]),
-		async local_task_filtersChange(n) {
-			await this.task_filtersChange(n)
+		async local_task_filtersChange (n) {
+			this.lastTasksFilters = n
+			await this.task_filtersChange (Object.assign({}, this.additionalFilters, n))
 		},
 		async local_task_sortChange(n) {
 			await this.task_sortChange(n)
@@ -114,7 +117,12 @@ export default {
 	async created () {
 		await this.task_init(this.oneId)
 	},
+	mounted () {
+		this.app_layout_headerShadowSet(!!this.oneId)
+		this.lastTasksFilters = this.task_filters
+	},
 	beforeDestroy () {
+		this.app_layout_headerShadowSet(true)
 		this.task_destroy()
 	}
 }
@@ -122,19 +130,15 @@ export default {
 
 
 
-<style lang="less">
-.OneTaskWrapper {
-	padding: 10px;
-}
+<style lang="stylus">
+.OneTaskWrapper
+	padding 10px
 
-.manyTasksWrapper {
-	width: 100%;
-	height: 100%;
-	padding-top: 8px;
 
-	&__card {
-		margin-top: 0;
-		height: ~"calc(100vh - 68px)";
-	}
-}
+.manyTasksWrapper
+	width 100%
+	height 100%
+
+	&__card
+		height calc(100vh - 120px)
 </style>
