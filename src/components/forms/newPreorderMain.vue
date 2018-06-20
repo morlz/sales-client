@@ -4,7 +4,7 @@
 
 		<q-card-main class="NewPreorderMain__inner">
 			<q-field helper="Рекламный источник">
-				<q-select v-model="form.source" :options="adSources" filter/>
+				<q-select v-model="form.source" :options="adSource_listSelect" filter/>
 			</q-field>
 
 			<q-field>
@@ -25,11 +25,7 @@
 <script>
 
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import fieldDescription from '@/static/fieldDescription'
 import { QRating } from 'quasar'
-let {
-	adSources
-} = fieldDescription
 
 export default {
 	components: {
@@ -37,7 +33,6 @@ export default {
 	},
 	data () {
 		return {
-			adSources,
 			form: {
 				source: "",
 				budget: "",
@@ -51,21 +46,24 @@ export default {
 			this.preorder_add_set(n)
 		}
 	},
+	computed: {
+		...mapGetters([
+			'adSource_listSelect'
+		]),
+		local_preorder_mainForm () {
+			return Object.assign({}, this.form)
+		}
+	},
 	methods: {
 		...mapActions([
-
+			'adSource_getList'
 		]),
 		...mapMutations([
 			'preorder_add_set'
 		])
 	},
-	computed: {
-		...mapGetters([
-
-		]),
-		local_preorder_mainForm () {
-			return Object.assign({}, this.form)
-		}
+	mounted () {
+		this.adSource_getList()
 	}
 }
 </script>
