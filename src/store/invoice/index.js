@@ -109,7 +109,7 @@ const actions = merge(infinite.getActions(true), {
 
 		dispatch('print_run', options)
 	},
-	invoice_printOpt({ commit, dispatch }, { data, type }) {
+	invoice_printOpt({ commit, dispatch, getters }, { data, type }) {
 		let options = type == 'movements' ?
 			{ template: 'deliveryNote', data: reduceMovement(data) }
 		:	{ template: 'invoiceOpt', data }

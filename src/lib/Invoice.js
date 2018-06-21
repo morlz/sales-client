@@ -41,6 +41,19 @@ export default class Invoice extends BaseModel {
 		return 	this.priceWOShipments + this.shipmentsPrice
 	}
 
+	get priceString () {
+		return this.price.toFixed(2)
+	}
+
+	get vat () {
+		return 	this.td.reduce((summ, td) => summ + td.vatSummXCount, 0) +
+				this.zak.reduce((summ, zak) => summ + +zak.vatSummXCount, 0)
+	}
+
+	get vatString () {
+		return this.vat.toFixed(2)
+	}
+
 	get priceWOShipments () {
 		return 	this.td.reduce((summ, td) => summ + td.price, 0) +
 				this.zak.reduce((summ, zak) => summ + +zak.price, 0)

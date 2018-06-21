@@ -83,6 +83,10 @@ export default class Zak extends BaseModel {
 		return this.price * +this.count
 	}
 
+	get priceXCountString () {
+		return this.priceXCount.toFixed(2)
+	}
+
 	get vatSummXCount () {
 		return this.vatSumm * this.count
 	}

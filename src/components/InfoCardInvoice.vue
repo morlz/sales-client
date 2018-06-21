@@ -76,7 +76,12 @@
 				v-if="auth_can(1, 'InvoicePrintOpt') && data.dax && data.salon && +data.salon.group.isInvoicePrintOpt">
 				Печать ОПТ
 			</q-btn>
-			<q-btn color="negative" @click="invoice_remove(data.ID)" v-if="auth_can(4, 'Invoice')" :disable="!data.canRemove">Удалить</q-btn>
+			<q-btn color="negative"
+				@click="invoice_remove(data.ID)"
+				v-if="auth_can(4, 'Invoice')"
+				:disable="!data.canRemove">
+				Удалить
+			</q-btn>
 		</q-card-actions>
 	</q-card>
 </template>
