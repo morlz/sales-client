@@ -27,7 +27,8 @@
 
 			<q-input
 				v-if="currentTab == 'all'"
-				inverted
+				inverted-light
+				color="grey-2"
 				v-model.number="searchByPhone"
 				:value="preorder_filtersPhone"
 				placeholder="Поиск по номеру телефона"

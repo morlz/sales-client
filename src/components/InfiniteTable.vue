@@ -20,6 +20,7 @@
 
 	<virtual-scroller
 		class="InfiniteTable__scroll"
+		:class="{ 'InfiniteTable__cursorDefault': noRowClick }"
 		:items="rows"
 		item-height="51"
 		content-tag="table"
@@ -90,7 +91,8 @@ export default {
 			type: Object,
 			default: a => ({})
 		},
-		filterValues: Object
+		filterValues: Object,
+		noRowClick: Boolean
 	},
 	data() {
 		return {
@@ -334,6 +336,9 @@ $header-height = 50px
 
 			&:hover
 				background rgba(51, 122, 183, .1)
+
+	&__cursorDefault table tr
+		cursor default
 
 
 .InfiniteTableHead

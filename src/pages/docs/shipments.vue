@@ -43,29 +43,21 @@
 			class="manyShipmntsWrapper__horGroup AppContent__headerTabs AppContent__tabs"
 			:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 			<q-field class="manyShipmntsWrapper__salon">
-				<q-select v-model="local_currentSalon" :options="local_salon_list" filter inverted/>
+				<q-select
+					v-model="local_currentSalon"
+					:options="local_salon_list"
+					filter
+					inverted-light
+					color="grey-2"/>
 			</q-field>
 		</div>
 
 		<q-card class="manyShipmntsWrapper__card AppContent__inner">
-			<!--<tabless
-				key="shipments"
-				:data="shipment_cached"
-				:complete="shipment_complete"
-				:field-description="DocsShipmentsFiltred"
-				:filters="shipment_filters"
-				ref="table"
-				@filter="local_shipment_filterChange"
-				@sort="local_shipment_sortChange"
-				@click="routerGoId"
-				@infinite="shipment_infinity"
-			/>-->
-
-
 			<infinite-table
 				:columns="DocsShipmentsFiltred"
 				:rows="shipment_cached"
 				:complete="shipment_complete"
+				:filter-values="shipment_filters"
 				@infinite="shipment_infinity"
 				@click="routerGoId"
 				@sort="local_shipment_sortChange"

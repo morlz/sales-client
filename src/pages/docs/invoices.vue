@@ -24,7 +24,12 @@
 						InvoiceSelectSalon: 1,
 						Salon: 1,
 					})">
-					<q-select v-model="local_currentSalon" :options="local_salon_list" filter inverted/>
+					<q-select
+					v-model="local_currentSalon"
+					:options="local_salon_list"
+					filter
+					inverted-light
+					color="grey-2"/>
 				</q-field>
 			</div>
 

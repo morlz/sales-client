@@ -34,6 +34,7 @@ export default [
 			{ path: '/preorder/clients/:id?', 		component: () => import ('pages/preOrder/clients'), 			meta: { name: "Клиенты" } },
 			{ path: '/preorder/preorders/:id?', 	component: () => import ('pages/preOrder/preorders'), 			meta: { name: "Предзаказы" } },
 			{ path: '/preorder/tasks/:id?', 		component: () => import ('pages/preOrder/tasks'), 				meta: { name: "Задачи" } },
+			{ path: '/preorder/visitors', 			component: () => import ('pages/preOrder/visitors'), 			meta: { name: "Посетители" } },
 
 			{ path: '/reports/sales/', 				component: () => import ('pages/reports/sales'), 				meta: { name: "Отчёт по продажам" } },
 			{ path: '/reports/salesTwo/', 			component: () => import ('pages/reports/salesTwo'), 			meta: { name: "Отчёт 2" } },

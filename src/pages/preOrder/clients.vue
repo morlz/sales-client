@@ -20,7 +20,8 @@
 						v-model="searchByPhone"
 						placeholder="Поиск по номеру телефона"
 						class="searchByPhone"
-						inverted/>
+						inverted-light
+						color="grey-2"/>
 				</q-field>
 			</div>
 

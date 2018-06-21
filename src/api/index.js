@@ -19,6 +19,7 @@ import images from '@/api/images'
 import print from '@/api/print'
 import reports from '@/api/reports'
 import scrollPosition from '@/api/ScrollPosition'
+import visitors from '@/api/visitors'
 
 export default {
 	core,
@@ -41,5 +42,6 @@ export default {
 	errors,
 	reports,
 	print,
-	scrollPosition
+	scrollPosition,
+	visitors
 }

@@ -174,6 +174,13 @@ export let CRMTasks = [
 	{ field: "salon.NAME", label: "Салон", type: "string", width: 100 },
 ]
 
+export let CRMVisitors = [
+	{ field: 'manager.fio', label: 'Менеджер', width: 200 },
+	{ field: 'salon.name', label: 'Салон', width: 150 },
+	{ field: 'date', label: 'Дата', width: 180 },
+	{ field: 'description', label: 'Описание', width: 300 },
+]
+
 export let AdminPersonal = [
 	{ field: "LOGIN", label: "Логин", width: 80 },
 	{ field: "FIO", label: "Фамилия", width: 100 },

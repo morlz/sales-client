@@ -2,6 +2,7 @@
 	<q-toolbar class="header">
 		<q-btn class="header__menuToggle" @click="nav_openToggle" v-if="!app_view_desktop" flat icon="menu"/>
 		<q-toolbar-title> {{ route.meta.name }}</q-toolbar-title>
+		<app-header-popup-visitor class="header__popupVisitor"/>
 		<app-header-popup-salon class="header__popupSalon"/>
 		<app-header-popup-cart class="header__popupCart"/>
 		<app-header-popup-profile class="header__popupProfile"/>
@@ -15,9 +16,10 @@ import {
 	mapActions,
 	mapState
 } from 'vuex'
-import AppHeaderPopupProfile from '@/components/AppHeaderPopupProfile.vue'
-import AppHeaderPopupCart from '@/components/AppHeaderPopupCart.vue'
-import AppHeaderPopupSalon from '@/components/AppHeaderPopupSalon.vue'
+import AppHeaderPopupProfile from '@/components/AppHeaderPopupProfile'
+import AppHeaderPopupCart from '@/components/AppHeaderPopupCart'
+import AppHeaderPopupSalon from '@/components/AppHeaderPopupSalon'
+import AppHeaderPopupVisitor from '@/components/AppHeaderPopupVisitor'
 /**
  invoice - заказы
  SP_OTGRUZOK - доставки
@@ -37,6 +39,7 @@ export default {
 		AppHeaderPopupProfile,
 		AppHeaderPopupCart,
 		AppHeaderPopupSalon,
+		AppHeaderPopupVisitor,
 		QToolbar,
 		QToolbarTitle,
 		QBtn
@@ -75,8 +78,9 @@ export default {
 	height 50px
 	display grid
 	align-items center
-	grid-template-columns max-content 1fr max-content max-content max-content
+	grid-template-columns max-content 1fr repeat(4, max-content)
 
+	&__popupVisitor
 	&__popupProfile
 	&__popupCart
 	&__popupSalon

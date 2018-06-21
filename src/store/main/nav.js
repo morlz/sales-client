@@ -87,6 +87,12 @@ const state = {
 					can: { lvl: 1, action: "Client" }
 				},
 				{
+					name: 'Прохожие',
+					path: '/preorder/visitors',
+					icon: 'call_missed',
+					can: { lvl: 1, action: 'Visitor' }
+				},
+				{
 					name: "Предзаказы",
 					path: "/preorder/preorders",
 					icon: "el-icon-preorder",
