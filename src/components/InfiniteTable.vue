@@ -1,6 +1,8 @@
 <template>
 <div class="InfiniteTable">
-	<div class="InfiniteTable__head InfiniteTableHead" :style="{ transform: `translate(-${scrollReal.left}px, ${head ? '0' : '-100%'})` }">
+	<div
+		class="InfiniteTable__head InfiniteTableHead"
+		:style="{ transform: `translate(-${scrollReal.left}px, ${head ? '0' : '-100%'})` }">
 		<div class="InfiniteTableHead__searches">
 			<div :style="{ width: `${widths[0]}px` }" v-if="$scopedSlots.buttons">
 				<slot name="buttonAll"/>
@@ -29,7 +31,10 @@
 		@update="chunkRenderHandler"
 		@scroll.native="throttledScrollHandler"
 		@resize="updateViewport">
-		<tr slot-scope="props" ref="trs" @click="rowClickHandler($event, props.item, props.itemIndex)">
+		<tr
+			slot-scope="props"
+			ref="trs"
+			@click="rowClickHandler($event, props.item, props.itemIndex)">
 			<td v-if="$scopedSlots.buttons">
 				<div class="InfiniteTable__buttons">
 					<slot name="buttons" :row="props.item" :index="props.itemIndex"/>
@@ -125,7 +130,8 @@ export default {
 			indexes: {
 				start: 0,
 				end: 0
-			}
+			},
+			updateViewportInterval: null
 		}
 	},
 	watch: {
@@ -152,7 +158,10 @@ export default {
 			if (this.filterTimeout)
 				clearTimeout(this.filterTimeout)
 
-			this.filterTimeout = setTimeout(a => this.filterTimeout = this.$emit('filter', n), 500)
+			this.filterTimeout = setTimeout(
+				a => this.filterTimeout = this.$emit('filter', n),
+				500
+			)
 		},
 		filterValues (n) {
 			this.first = true
@@ -171,7 +180,13 @@ export default {
 			return this.sort.direction ? 'sort-amount-up' : 'sort-amount-downs'
 		},
 		formatedFilters () {
-			return Object.keys(this.filters).reduce((prev, key) => this.filters[key] ? { ...prev, [key]: this.filters[key] }  : prev, {})
+			return Object.keys(this.filters)
+				.reduce(
+					(prev, key) => this.filters[key] ?
+						{ ...prev, [key]: this.filters[key] }
+					:	prev,
+					{}
+				)
 		}
 	},
 	methods: {
@@ -179,7 +194,10 @@ export default {
 			if (!this.$refs.scroll) return
 			this.scroll.left = this.$refs.scroll.$el.scrollLeft
 			this.scroll.top = this.$refs.scroll.$el.scrollTop
-			api.scrollPosition.setScroll(document.location.hash, this.$refs.scroll.$el.scrollTop)
+			api.scrollPosition.setScroll(
+				document.location.hash,
+				this.$refs.scroll.$el.scrollTop
+			)
 		},
 		chunkRenderHandler (start, end) {
 			this.updateViewport()
@@ -202,7 +220,9 @@ export default {
 		handleSort (e, column) {
 			this.sort = {
 				column,
-				direction: this.sort.column === column ? !this.sort.direction : false
+				direction: this.sort.column === column ?
+					!this.sort.direction
+				:	false
 			}
 		},
 		rowClickHandler (e, row, index) {
@@ -224,7 +244,11 @@ export default {
 			this.checkForMoreNext()
 		},
 		checkForMorePrev () {
-			if (this.infinite.send.prev || this.complete.prev || this.infinite.waitForScroll.prev) return
+			if (
+				this.infinite.send.prev ||
+				this.complete.prev ||
+				this.infinite.waitForScroll.prev
+			) return
 
 			if (this.indexes.start < this.scrollFire)
 				this.moreContent('prev')
@@ -237,19 +261,27 @@ export default {
 		},
 		setFilters (n) {
 			const getVal = field => n && n[field] ? n[field] : ''
-			this.filters = this.columns.reduce((prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev), { ...n })
+			this.filters = this.columns
+				.reduce(
+					(prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev),
+					{ ...n }
+				)
 		}
 	},
 	mounted () {
 		this.$nextTick(this.updateViewport)
+		this.updateViewportInterval = setInterval(this.updateViewport, 1e3)
 		//console.log(api.scrollPosition.current.scroll);
 		//this.$refs.scroll.$el.scrollTop = api.scrollPosition.current.scroll
 
 		let scrollInner = this.$refs.scroll.$el.querySelector('.item-container')
 
 		const recursiveCheck = (i = 0, callback) => {
-			if (!scrollInner.offsetHeight && scrollInner.offsetHeight < api.scrollPosition.current.scroll && i < 50)
-				return setTimeout(a => recursiveCheck(++i, callback), 30)
+			if (
+				!scrollInner.offsetHeight &&
+				scrollInner.offsetHeight < api.scrollPosition.current.scroll &&
+				i < 50
+			) return setTimeout(a => recursiveCheck(++i, callback), 30)
 
 			setTimeout(() => {
 				this.$refs.scroll.$el.scrollTop = api.scrollPosition.current.scroll
@@ -258,11 +290,15 @@ export default {
 			}, 30)
 		}
 
-		api.scrollPosition.current.convertHandler = (scroll, callback) => this.$nextTick(a => recursiveCheck(0, callback))
+		api.scrollPosition.current.convertHandler = (scroll, callback) =>
+			this.$nextTick(a => recursiveCheck(0, callback))
 	},
 	created () {
 		this.setFilters(this.filterValues)
 		this.table = new InfiniteTable(this.columns, [])
+	},
+	beforeDestroy () {
+		clearInterval(this.updateViewportInterval)
 	}
 }
 </script>
