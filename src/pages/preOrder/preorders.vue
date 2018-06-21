@@ -112,11 +112,15 @@ export default {
 				clearTimeout (this.searchTimeout)
 
 			if (n && (n + '').length < 10) return
+			if (n.length == 10 && n.substr(0, 1) !== '8')
+				n = '8' + n
 
 			this.searchTimeout = setTimeout(() => this.searchByPhoneQuery = n || '', 500)
 		},
-		additionalFilters (n) {
-			this.preorder_filtersChange (Object.assign({}, this.lastFilters, n))
+		async additionalFilters (n) {
+			await this.preorder_filtersChange (Object.assign({}, this.lastFilters, n))
+			if (this.preorder_acceptedAdd && this.auth_can(2, 'Preorder') && !this.preorder_cached.length)
+				this.currentTab = 'new'
 		},
 		preorder_filters (n) {
 			this.lastFilters = { ...n }//89165749385
