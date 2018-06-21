@@ -120,7 +120,7 @@ const getters = merge(infinite.getGetters(true), {
 	task_complete: state => state.complete,
 	task_filters: ({ filters }) => filters,
 	task_current: ({ cached }) => cached.current,
-	task_cached: state => state.cached.list,
+	task_cached: state => state.cached.list.sort( api.core.sortFnFactory( el => +el.expired ) ),
 	task_types: ({ cached }) => cached.types,
 	task_loading: ({ loading }) => loading.list,
 	task_loadingBottom: ({ loading }) => loading.bottom,

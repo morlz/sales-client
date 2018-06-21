@@ -23,7 +23,11 @@
 				@click="clickHandler"
 				@sort="local_task_sortChange"
 				@filter="local_task_filtersChange"
-			/>
+			>
+				<template slot="buttons" slot-scope="{ row }" v-if="row.expired">	
+					<q-icon name="error_outline"/>
+				</template>
+			</infinite-table>
 		</q-card>
 	</div>
 </q-page>
