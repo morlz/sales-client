@@ -11,7 +11,7 @@
     "deploy:emptyDist": "node deploy/emptyDist",
     "deploy:start": "node deploy/start",
     "build": "npm run deploy:emptyDist && quasar build && npm run deploy:start",
-    "dev": "export NODE_OPTIONS=\"--max-old-space-size=6000\" && quasar dev"
+    "dev": "env NODE_OPTIONS=\"--max-old-space-size=4096\" && quasar dev"
   },
   "dependencies": {
     "axios": "^0.18.0",
