@@ -22,6 +22,12 @@
 
 		<div class="formSelectClient__buttons">
 			<q-slide-transition>
+				<q-field v-if="client_select_currentState.exist">
+					<q-btn color="primary" flat :to="client_select_current.href">Перейти к профилю</q-btn>
+				</q-field>
+			</q-slide-transition>
+
+			<q-slide-transition>
 				<q-field v-if="client_select_currentState.buttons.create">
 					<q-btn color="primary" @click="client_select_typeSet('new')">Создать клиента</q-btn>
 				</q-field>
@@ -38,26 +44,6 @@
 </template>
 
 <script>
-/*
-
-<el-select
-	v-model="newClient.phone"
-	placeholder="8 (800) 555 35 35"
-	:allow-create="!client_loadingByPhone"
-	remote
-	filterable
-	:remote-method="client_searchByPhone"
-	:loading="client_loadingByPhone"
-	:loading-text="'Загрузка...'"
-	:no-data-text="'Клиентов не найдено'">
-	<el-option v-for="client, index in client_byPhone" :label="client.phone" :value="client.phone" :key="index" class="clientOption">
-		<div class="name">{{ client.fio }}</div>
-		<div>{{ client.phone }}</div>
-		<div class="salon">{{ client.salon }}</div>
-	</el-option>
-</el-select>
-
-*/
 
 import {
 	mapActions,
@@ -100,7 +86,8 @@ export default {
 	computed: {
 		...mapGetters([
 			'client_select_currentState',
-			'client_select_phone'
+			'client_select_phone',
+			'client_select_current'
 		]),
 		phone: {
 			get () {

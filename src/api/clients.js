@@ -1,5 +1,7 @@
 import core from '@/api/core'
 
+import { Client } from '@/lib'
+
 export default {
 	async getAll (ids) {
 		let params = core.prepareArrays({ ids })
@@ -26,11 +28,16 @@ export default {
 			}
 		})
 
-		return await core.invoke({
+		let res = await core.invoke({
 			method: "get",
 			type: "clients",
 			params
 		})
+
+		if (res && Array.isArray(res.data))
+			res.data = res.data.map(el => new Client(el))
+
+		return res
 	},
 	async getLimited (params) {
 		params = core.prepareArrays(params)

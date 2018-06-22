@@ -68,7 +68,7 @@ const getters = {
 			exist: getters.client_select_selected && state.current == 'exist',
 			new: state.current == 'new',
 			buttons: {
-				create: state.phone && state.current == 'exist',
+				create: state.phone && !getters.client_select_selected && state.current == 'exist',
 				backToSearch: state.current == 'new' || getters.client_select_selected && state.current == 'exist'
 			}
 		}

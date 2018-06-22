@@ -3,6 +3,8 @@ import { ContactFace, Invoice, Salon } from '@/lib'
 import moment from 'moment'
 
 export default class Client extends BaseModel {
+	baseUrl = '/preorder/clients/{id}'
+
 	constructor (arg) {
 		super()
 		this.define({
