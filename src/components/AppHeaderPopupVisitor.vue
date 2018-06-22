@@ -9,9 +9,9 @@
 			:content-css="{minWidth: '400px', minHeight: '330px'}">
 			<q-modal-layout class="HeaderVisitorsModal__layout">
 				<q-toolbar slot="header">
-					<q-btn flat wait-for-ripple v-close-overlay icon="keyboard_arrow_left" @click="local_visitor_create"/>
+					<q-btn flat wait-for-ripple v-close-overlay icon="keyboard_arrow_left"/>
 					<q-toolbar-title>Новый посетитель</q-toolbar-title>
-					<q-btn flat icon-right="redo" v-if="app_view_mobile">Добавить</q-btn>
+					<q-btn flat icon-right="redo" v-if="app_view_mobile" @click="local_visitor_create">Добавить</q-btn>
 				</q-toolbar>
 
 				<div class="HeaderVisitorsModal__content">

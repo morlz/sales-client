@@ -6,7 +6,9 @@ import { Visitor } from '@/lib'
 let infinite = new TwoSideInfinite({ method: api.visitors.getLimited, namespace: 'visitor', returns: Visitor })
 
 const state = merge(infinite.getState(), {
-
+	loading: {
+		add: false
+	}
 })
 
 const actions = merge(infinite.getActions(true), {
@@ -32,18 +34,18 @@ const actions = merge(infinite.getActions(true), {
 		await state.infinite.more(payload)
 	},
 	async visitor_getOne({ commit, dispatch }, payload){
-		commit('visitor_loadingOneSet', true)
+		commit('visitor_loadingOneSet', { add: true })
 		let res = await api.visitors.getOne(payload)
-			commit('visitor_loadingOneSet', false)
+			commit('visitor_loadingOneSet', { add: false })
 		if (!res.data || res.data.error) return
 
 		commit('visitor_currentSet', res.data)
 	},
 
 	async visitor_create({ commit, dispatch, state, getters }, payload) {
-		commit('visitor_loadingAddSet', true)
+		commit('visitor_loadingSet', true)
 		let res = await api.visitors.create(payload)
-		commit('visitor_loadingAddSet', false)
+		commit('visitor_loadingSet', false)
 		if (!res.data || res.data.error) return
 
 		if (res.data.errors)
