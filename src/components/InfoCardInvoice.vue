@@ -66,7 +66,13 @@
 		</q-card-main>
 
 		<q-card-actions class="infoCardInvoice__actions">
-			<q-btn color="primary" @click="invoice_ship(data.ID)" v-if="+data.VID_OPLATI == 3 && !+data.IS_CLOSE">Отгрузить</q-btn>
+			<q-btn v-if="data.preorder" :to="data.preorder.href" color="primary">Перейти к предзаказу</q-btn>
+			<q-btn
+				color="primary"
+				@click="invoice_ship(data.ID)"
+				v-if="+data.VID_OPLATI == 3 && !+data.IS_CLOSE">
+				Отгрузить
+			</q-btn>
 			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">в DAX</q-btn>
 			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">в 1С</q-btn>
 			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
@@ -78,8 +84,7 @@
 			</q-btn>
 			<q-btn color="negative"
 				@click="invoice_remove(data.ID)"
-				v-if="auth_can(4, 'Invoice')"
-				:disable="!data.canRemove">
+				v-if="auth_can(4, 'Invoice') && data.canRemove">
 				Удалить
 			</q-btn>
 		</q-card-actions>
@@ -144,6 +149,7 @@ export default {
 	grid-template-columns 100%
 
 	&__actions
-		display grid
-		grid-auto-flow column
+		display flex
+		> button
+			margin 5px
 </style>

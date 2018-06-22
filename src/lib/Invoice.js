@@ -1,5 +1,5 @@
 import BaseModel from '@/lib/BaseModel'
-import { Shipment, Payment, Manager, Salon, Zak, Td, Marker, Client, AdSource } from '@/lib'
+import { Shipment, Payment, Manager, Salon, Zak, Td, Marker, Client, AdSource, Preorder } from '@/lib'
 import api from '@/api'
 
 
@@ -20,6 +20,7 @@ export default class Invoice extends BaseModel {
 			client: Client,
 			clientOld: Client,
 			adSource: AdSource,
+			preorder: Preorder,
 			realDax: 'VDAX',
 			cachedPrice: 'SUMMA_ZAKAZA',
 			id: 'ID'
