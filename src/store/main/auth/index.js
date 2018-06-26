@@ -70,10 +70,16 @@ const actions = {
 			userAgent: window.navigator.userAgent,
 			deviceMemory: window.navigator.deviceMemory,
 			hardwareConcurrency: window.navigator.hardwareConcurrency,
-			downlink: window.navigator.connection.downlink,
-			effectiveType: window.navigator.connection.effectiveType,
 			gl: {}
 		}
+
+		if ('connection' in window.navigator)
+			info = {
+				...info,
+				downlink: window.navigator.connection.downlink,
+				effectiveType: window.navigator.connection.effectiveType,
+			}
+
 
 		try {
 			commit("auth_loadingSet", { geolocation: true })
