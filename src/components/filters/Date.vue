@@ -1,6 +1,6 @@
 <template>
 	<div class="FilterDate">
-		<q-input v-model="filters" float-label="Фильтр по дате" @click="modal = true"/>
+		<q-input v-model="filters" :float-label="floatLabel" @click="modal = true"/>
 
 		<q-modal v-model="modal" class="FilterDateModal" :content-css="{width: '80vw', minHeight: '80vh', maxWidth: '900px'}">
 			<q-modal-layout>
@@ -132,6 +132,7 @@ const formatDate = (format, value) => {
 export default {
 	props: {
 		value: String,
+		floatLabel: String,
 		type: {
 			type: String,
 			default: a => 'date'

@@ -95,22 +95,22 @@ export let FurnitureDiscount = [
 				`<div class="FurnitureDiscount__discount">${data} <s>${row.td.ModelPriceR}</s></div>`
 			:	data
 	} },
-	{ field: "td.DATE_CEX", label: "Цех", inline: true, width: 100, format: {
+	{ field: "td.DATE_CEX", label: "Цех", inline: true, filter: 'date', width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMMM YYYY") : data
 	} },
 ]
 
 export let DocsShipments = [
 	{ field: "invoice.N_DOC", label: "№ Док", width: 80 },
-	{ field: "DATEV", label: "Дата ввода", inline: true, width: 130, format: {
+	{ field: "DATEV", label: "Дата ввода", inline: true, filter: 'date', width: 130, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "PL_OTGR", label: "Оплата доставки", inline: true, width: 130, format: {
+	{ field: "PL_OTGR", label: "Оплата доставки", inline: true, filter: 'date', width: 130, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
 	{ field: "VIDDOST", label: "Вид", width: 100 },
 	{ field: "", label: "Примечание", width: 200 },
-	{ field: "DATEWORK", label: "В работе", inline: true, width: 130, format: {
+	{ field: "DATEWORK", label: "В работе", inline: true, filter: 'date', width: 130, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
 	{ field: "salon.NAME", label: "Склад", width: 150 },
@@ -118,14 +118,52 @@ export let DocsShipments = [
 
 export let DocsInvoices = [
 	{ field: "N_DOC", label: "Номер документа", width: 85 },
-	{ field: "DATE", label: "Дата оформления", inline: true, width: 130, format: {
+	{ field: "DATE", label: "Дата оформления", inline: true, filter: 'date', width: 130, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "shipments.0.PL_OTGR", width: 130, type: 'array', fields: ['PL_OTGR'], label: "Дата отгрузки", inline: true, format: {
+	{ field: "shipments.0.PL_OTGR", width: 130, type: 'array', filter: 'date',
+		fields: { output: 'shipments.PL_OTGR' }, label: "Дата отгрузки", inline: true, format: {
 		get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "manager.fio", label: "Менеджер", width: 200, search: false },
-	{ field: "client.fio", label: "Клиент", width: 200, search: false },
+	{ field: "manager.fio", label: "Менеджер", width: 200, search: false,
+		filterFormat: {
+			get: filters => filters['manager.fio'].value,
+			set: fio => {
+
+				return {
+					'manager.fio': {
+						type: 'virtual',
+						fields: [
+							'manager.FIO',
+							'manager.IMY',
+							'manager.OTCH'
+						],
+						value: fio
+					}
+				}
+			}
+		}
+	},
+	{ field: "client.fio", label: "Клиент", width: 200, search: false,
+		filterFormat: {
+			get: filters => filters['client.fio'].value,
+			set: fio => {
+				let [lastname, name, patronymic] = fio.trim().split(' ')
+
+				return {
+					'client.fio': {
+						type: 'virtual',
+						fields: [
+							'client.lastname',
+							'client.name',
+							'client.patronymic'
+						],
+						value: fio
+					}
+				}
+			}
+		}
+	},
 	{ field: "adSource.NAME", label: "Р. Ист.", width: 100 },
 	{ field: "storage.NAME", label: "Салон", width: 150 },
 ]
@@ -147,7 +185,7 @@ export let CRMPreorders = [
 	{ field: "client.lastname", label: "Фамилия", width: 100 },
 	{ field: "client.name", label: "Имя", width: 100 },
 	{ field: "client.patronymic", label: "Отчество", width: 100 },
-	{ field: "created_at", label: "Дата создания", inline: true, width: 100, format: {
+	{ field: "created_at", label: "Дата создания", inline: true, filter: 'date', width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 	}},
 	{ field: "status.title", label: "Статус", type: "string", width: 100 },
@@ -163,12 +201,12 @@ export let CRMTasks = [
 	{ field: "client.name", label: "Имя", width: 100 },
 	{ field: "client.patronymic", label: "Отчество", width: 100 },
 	{ field: "description", label: "Задача", type: "string", width: 200 },
-	{ field: "date", label: "Дата", type: "string", inline: true, width: 100, format: {
+	{ field: "date", label: "Дата", type: "string", inline: true, filter: 'date', width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 	} },
 	{ field: "managerresponsible.FIO", label: "Ответственный", width: 150, type: "string" },
 	{ field: "type.title", label: "Тип", type: "string", width: 100 },
-	{ field: "end_date", label: "Выполнена", type: "string", width: 100, inline: true, format: {
+	{ field: "end_date", label: "Выполнена", type: "string", width: 100, inline: true, filter: 'date', format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 	} },
 	{ field: "salon.NAME", label: "Салон", type: "string", width: 100 },
@@ -177,7 +215,7 @@ export let CRMTasks = [
 export let CRMVisitors = [
 	{ field: 'manager.fio', label: 'Менеджер', width: 200 },
 	{ field: 'salon.name', label: 'Салон', width: 150 },
-	{ field: 'date', label: 'Дата', width: 180 },
+	{ field: 'date', label: 'Дата', filter: 'date', width: 180 },
 	{ field: 'description', label: 'Описание', width: 300 },
 ]
 
@@ -186,7 +224,7 @@ export let AdminPersonal = [
 	{ field: "FIO", label: "Фамилия", width: 100 },
 	{ field: "IMY", label: "Имя", width: 100 },
 	{ field: "OTCH", label: "Отчество", width: 100 },
-	{ field: "S_DATE", label: "Дата создания", width: 100 },
+	{ field: "S_DATE", label: "Дата создания", filter: 'date', width: 100 },
 	{ field: "RABOTAET", label: "Работает", width: 50 },
 	{ field: "roles", label: "Роли", type: 'array', fields: ['name'], width: 120 },
 	{ field: "salon.NAME", label: "Салон", width: 120 },

@@ -1,7 +1,7 @@
 <template>
 	<div class="InfiniteTableColumn" :style="style">
 		<template v-if="column.filter == 'date'">
-			<filter-date v-model="filterDateModel"/>
+			<filter-date v-model="filterDateModel" :float-label="column.label"/>
 		</template>
 
 		<template v-else>
@@ -53,18 +53,30 @@ export default {
 	computed: {
 		filterDateModel: {
 			get () {
+				if (this.column.fields && this.column.fields.output)
+					return (this.filters[ this.column.fields.output ] || {}).value || ''
+
 				return (this.filters[ this.column.field ] || {}).value || ''
 			},
 			set (value) {
-				this.$emit('input', { [this.column.field]: { type: 'date', value } })
+				if (this.column.fields && this.column.fields.output)
+					return this.$emit('input', { [this.column.fields.output]: value ? { type: 'date', value } : null })
+
+				this.$emit('input', { [this.column.field]: value ? { type: 'date', value } : null })
 			}
 		},
 		inputModel: {
 			get () {
+				if (this.column.filterFormat && typeof this.column.filterFormat.get == 'function')
+					return this.column.filterFormat.get(this.filters) 
+
 				return this.filters[ this.column.field ] || ''
 			},
-			set (val) {
-				this.$emit('input', { [this.column.field]: val })
+			set (value) {
+				if (this.column.filterFormat && typeof this.column.filterFormat.set == 'function')
+					return this.$emit('input', this.column.filterFormat.set(value))
+
+				this.$emit('input', { [this.column.field]: value ? value : null })
 			}
 		},
 		selectModel: {

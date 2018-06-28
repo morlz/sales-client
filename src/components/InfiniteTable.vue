@@ -146,8 +146,9 @@ export default {
 			//this.$nextTick(a => this.$refs.scroll.itemContainerStyle = { height: 51 * n.length + 'px' })
 		},
 		sort (n) {
+			let column = this.table.columns[n.column]
 			this.$emit('sort', {
-				sortColumn: this.table.columns[n.column].field,
+				sortColumn: column.fields ? column.fields.output : column.field,
 				sortType: n.direction ? 'asc' : 'desk'
 			})
 		},
