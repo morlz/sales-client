@@ -31,7 +31,7 @@ module.exports = function(ctx) {
 			'FastGridArea',
 			'VueGoogleMaps',
 			'moment',
-			'three'
+			//'three'
 		],
 		css: [
 			'app.styl',
@@ -81,7 +81,16 @@ module.exports = function(ctx) {
 				cfg.resolve.alias['@'] = path.resolve('src')
 				cfg.resolve.alias['three.examples'] = path.join(__dirname, 'node_modules/three/examples/js')
 
-				cfg.plugins.push(new webpack.ProvidePlugin({ 'THREE': 'three' }))
+				cfg.plugins.push(new webpack.ProvidePlugin({
+					'THREE': 'three'
+				}))
+
+				for (const rule of cfg.module.rules) {
+					if (!rule.oneOf) continue
+					for (const ruleOneOf of rule.oneOf) {
+						ruleOneOf.use = ruleOneOf.use.filter(u => u.loader !== 'postcss-loader')
+					}
+				}
 
 				//cfg.resolve.alias
 				//console.log(util.inspect(cfg, { depth: null }));
@@ -94,8 +103,8 @@ module.exports = function(ctx) {
 			open: true, // opens browser window automatically
 			proxy: {
 				'/web': {
-					target: 'http://sales-test.ladyagroup.ru/nsl',
-					//target: 'http://127.0.0.1/sales-server/',
+					//target: 'http://sales-test.ladyagroup.ru/nsl',
+					target: 'http://127.0.0.1/sales-server/',
 					changeOrigin: true
 				},
 				'/tiss': {
@@ -148,7 +157,10 @@ module.exports = function(ctx) {
 				'QScrollArea',
 				'QOptionGroup',
 				'QSlideTransition',
-				'QScrollObservable'
+				'QScrollObservable',
+				'QTree',
+				'QDatetimePicker',
+				'QBtnToggle'
 			],
 			directives: [
 				'Ripple',

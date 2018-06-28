@@ -136,7 +136,7 @@ export let CRMClients = [
 	{ field: "patronymic", label: "Отчество", type: "string", width: 150 },
 	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
 	{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
-	{ field: "created_at", label: "Создан", inline: true, width: 120, format: {
+	{ field: "created_at", label: "Создан", inline: true, width: 120, filter: 'date', format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY HH:mm:ss") : data
 	} },
 	{ field: "notactiveDate", label: "Неактивен", type: "string", width: 100 },

@@ -381,11 +381,10 @@ $header-height = 50px
 	background #fff
 	border-bottom 1px solid #e0e0e0
 	&__searches
-		padding 0 3px
+		padding 0 5px
 		height 50px
 		display grid
 		grid-auto-flow column
 		align-items end
-		padding 0 0 5px 0
 
 </style>

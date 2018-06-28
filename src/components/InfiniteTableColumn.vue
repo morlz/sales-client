@@ -1,11 +1,17 @@
 <template>
 	<div class="InfiniteTableColumn" :style="style">
-		<template v-if="select">
-			<q-select v-model="selectModel" filter :options="selectOptions" :style="fieldStyle"/>
+		<template v-if="column.filter == 'date'">
+			<filter-date v-model="filterDateModel"/>
 		</template>
 
 		<template v-else>
-			<q-input v-model="inputModel" :float-label="column.label" :style="fieldStyle"/>
+			<template v-if="select">
+				<q-select v-model="selectModel" filter :options="selectOptions" :style="fieldStyle"/>
+			</template>
+
+			<template v-if="!select">
+				<q-input v-model="inputModel" :float-label="column.label" :style="fieldStyle"/>
+			</template>
 		</template>
 
 		<q-icon :name="sortIcon" @click.native="$emit('sort', $event)"/>
@@ -20,11 +26,13 @@ import {
 	mapState
 } from 'vuex'
 
+import FilterDate from '@/components/filters/Date'
+
 import {} from 'quasar'
 
 export default {
 	components: {
-
+		FilterDate
 	},
 	props: {
 		column: {
@@ -43,6 +51,14 @@ export default {
 
 	},
 	computed: {
+		filterDateModel: {
+			get () {
+				return (this.filters[ this.column.field ] || {}).value || ''
+			},
+			set (value) {
+				this.$emit('input', { [this.column.field]: { type: 'date', value } })
+			}
+		},
 		inputModel: {
 			get () {
 				return this.filters[ this.column.field ] || ''

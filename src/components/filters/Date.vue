@@ -1,43 +1,64 @@
 <template>
-<q-card class="filterDate">
-	<q-card-title>Фильтр по дате</q-card-title>
-	<q-card-main>
-		<q-field helper="Условия выбора даты">
-			<ul>
-				<li v-for="item, index in itogCondition" @click="removeCondition(index)">{{ item }}</li>
-			</ul>
-			<p v-if="!itogCondition.length">Нет условий по дате</p>
-		</q-field>
+	<div class="FilterDate">
+		<q-input v-model="filters" float-label="Фильтр по дате" @click="modal = true"/>
 
-		<q-tabs inverted v-model="add.tab">
-			<q-tab slot="title" label="Промежуток" name="range"/>
-			<q-tab slot="title" label="1 Значение" name="one"/>
+		<q-modal v-model="modal" class="FilterDateModal" :content-css="{width: '80vw', minHeight: '80vh', maxWidth: '900px'}">
+			<q-modal-layout>
+				<q-toolbar slot="header">
+					<q-btn flat round dense v-close-overlay icon="keyboard_arrow_left"/>
+					<q-toolbar-title>Фильтр по дате</q-toolbar-title>
+					<q-btn flat round dense v-close-overlay icon="check"/>
+				</q-toolbar>
 
-			<q-tab-pane name="range">
-				<q-field helper="С какой даты">
-					<q-datetime v-model="add.range.from" type="datetime" />
-				</q-field>
+				<div class="FilterDate__main layout-padding">
+					<q-field>
+						<q-input v-model="filters" float-label="Фильтр по дате"/>
+					</q-field>
 
-				<q-field helper="По какую дату">
-					<q-datetime v-model="add.range.to" type="datetime" />
-				</q-field>
+					<div class="FilterDate__form">
+						<div class="FilterDate__header">
+							<div class="FilterDate__tabs">
+								<q-btn-toggle v-model="currentTab" :options="tabs" />
+							</div>
 
-				<q-option-group type="radio" :options="optionsRange" v-model="add.range.type"/>
-			</q-tab-pane>
+							<div class="FilterDate__controls">
+								<q-btn :color="or ? 'primary' : 'secondary'" @click="or = !or">Или</q-btn>
+								<q-btn color="secondary" flat @click="filters = ''">Очистить</q-btn>
+							</div>
+						</div>
 
-			<q-tab-pane name="one" default>
-				<q-option-group type="radio" :options="optionsOne" v-model="add.one.type"/>
-				<q-field helper="Дата">
-					<q-datetime v-model="add.one.date" type="datetime" />
-				</q-field>
-			</q-tab-pane>
-		</q-tabs>
-	</q-card-main>
+						<div class="FilterDate__content">
+							<div class="FilterDateTab">
+								<q-field class="FilterDateTab__cd">
+									<q-datetime-picker
+										v-model="add.datetime"
+										float-label="Дата и время"
+										:type="type"
+										@input="dateChange"/>
+								</q-field>
+							</div>
 
-	<q-card-actions>
-		<q-btn flat color="primary" @click="addCondition">Добавить</q-btn>
-	</q-card-actions>
-</q-card>
+							<div class="FilterDate__tree">
+								<q-tree :nodes="fastAdd" node-key="label">
+									<template
+										v-for="slot, index in slots"
+										:slot="'header-' + slot.name"
+										slot-scope="props">
+										<q-btn
+											size="10px"
+											outline
+											@click="fnFactory(slot.name)($event)">
+											{{ slot.label }}
+										</q-btn>
+									</template>
+								</q-tree>
+							</div>
+						</div>
+					</div>
+				</div>
+			</q-modal-layout>
+		</q-modal>
+	</div>
 </template>
 
 <script>
@@ -49,85 +70,289 @@ import {
 
 import moment from 'moment'
 
-import { QField, QTabs, QTab, QBtn, QCard, QCardTitle, QCardMain, QCardActions, QTabPane, QDatetime, QOptionGroup } from 'quasar'
 
-const dateTimeFormat = "DD-MM-YYYY HH:mm:ss"
+const findRanges = (arr, format) => {
+	let to = arr.filter(el => el.substr(0, 2) === '..')
+			.map(el => moment(el.substr(2, el.length))),
+
+		from = arr.filter(el => el.substr(-2, 2) === '..')
+			.map(el =>  moment(el.substr(0, el.length - 2))),
+
+		another = arr.filter(el =>
+			el.substr(-2, 2) !== '..' &&
+			el.substr(0, 2) !== '..'
+		),
+
+		newArr = [...another]
+
+
+	from.map(fromDate => {
+		let index = to.reduce((prev, toDate, index) => {
+			if (!fromDate.isBefore(toDate))
+				return prev
+
+			if (prev === false)
+				return index
+
+			if (toDate.diff(fromDate) < to[prev].diff(fromDate))
+				return index
+
+			return prev
+		}, false)
+
+		if (index === false) {
+			newArr.push('..' + fromDate.format(format))
+		} else {
+			let toDate = to.splice(index, 1)[0]
+			newArr.push(fromDate.format(format) + '..' + toDate.format(format))
+		}
+	})
+
+	to.map(el => newArr.push(el.format(format) + '..'))
+
+	return newArr
+}
+
+const findDMY = val => val.match(/\d{1,2}(\.|-)?\d{1,2}(\.|-)?\d{2,4}/g)
+const findDM = val => val.match(/\d{1,2}(\.|-)?\d{1,2}/g)
+const findD = val => val.match(/\d{1,2}/g)
+
+const formatDate = (format, value) => {
+	if (findDMY(value))
+		return moment(value).format(format)
+
+	if (findDM(value), 'DD-MM')
+		return moment(value).format(format)
+
+	if (findD(value), 'DD')
+		return moment(value).format(format)
+
+}
 
 export default {
+	props: {
+		value: String,
+		type: {
+			type: String,
+			default: a => 'date'
+		}
+	},
 	data() {
-		return {
-			add: {
-				tab: "one",
-				range: {
-					conditionType: 'range',
-					from: "",
-					to: "",
-					type: ""
-				},
-				one: {
-					conditionType: 'one',
-					date: "",
-					type: "="
-				}
+		let fastAdd = [
+			{
+				label: 'Неделя',
+				children: [
+					{ header: 'week-next' },
+					{ header: 'week-current' },
+					{ header: 'week-prev' },
+				]
 			},
-			condition: []
+			{
+				label: 'Месяц',
+				children: [
+					{ header: 'month-next' },
+					{ header: 'month-current' },
+					{ header: 'month-prev' },
+				]
+			},
+			{
+				label: 'Квартал',
+				children: [
+					{ header: 'quarter-next', label: 'Следующий' },
+					{ header: 'quarter-current', label: 'Текущий' },
+					{ header: 'quarter-prev', label: 'Прошедший' },
+					{ header: 'quarter-1', label: 'Квартал 1' },
+					{ header: 'quarter-2', label: 'Квартал 2' },
+					{ header: 'quarter-3', label: 'Квартал 3' },
+					{ header: 'quarter-4', label: 'Квартал 4' },
+				]
+			},
+			{
+				label: 'Год',
+				children: [
+					{ header: 'year-next', label: 'Следующий' },
+					{ header: 'year-current', label: 'Текущий' },
+					{ header: 'year-prev', label: 'Прошедший' },
+				]
+			},
+		]
+
+		if (this.type == 'datetime')
+			fastAdd.unshift({
+				label: 'День',
+				children: [
+					{ header: 'day-next' },
+					{ header: 'day-current' },
+					{ header: 'day-prev' },
+				]
+			})
+
+		return {
+			modal: false,
+			currentTab: '=',
+			add: {
+				datetime: ''
+			},
+			or: false,
+			tabs: [
+				{ value: '=', label: 'Равно', icon: 'fas fa-equals', format: date => date },
+				//{ value: '!=', label: 'Не равно', icon: 'fas fa-not-equal', format: date => `!${date}` },
+				{ value: '>', label: 'Больше', icon: 'fas fa-greater-than', format: date => `${date}..` },
+				{ value: '<', label: 'Меньше', icon: 'fas fa-less-than', format: date => `..${date}` },
+			],
+			fastAdd,
+			slots: [
+				{ name: 'day-next', label: 'Завтра' },
+				{ name: 'day-current', label: 'Сегодня' },
+				{ name: 'day-prev', label: 'Вчера' },
+
+				{ name: 'week-next', label: 'Следующая' },
+				{ name: 'week-current', label: 'Текущая' },
+				{ name: 'week-prev', label: 'Прошедшая' },
+
+				{ name: 'month-next', label: 'Следующий' },
+				{ name: 'month-current', label: 'Текущий' },
+				{ name: 'month-prev', label: 'Прошедший' },
+
+				{ name: 'quarter-next', label: 'Следующий' },
+				{ name: 'quarter-current', label: 'Текущий' },
+				{ name: 'quarter-prev', label: 'Прошедший' },
+				{ name: 'quarter-1', label: 'Квартал 1' },
+				{ name: 'quarter-2', label: 'Квартал 2' },
+				{ name: 'quarter-3', label: 'Квартал 3' },
+				{ name: 'quarter-4', label: 'Квартал 4' },
+
+				{ name: 'year-next', label: 'Следующий' },
+				{ name: 'year-current', label: 'Текущий' },
+				{ name: 'year-prev', label: 'Прошедший' },
+			]
 		}
 	},
 	components: {
-		QField,
-		QTabs,
-		QTab,
-		QBtn,
-		QCard,
-		QCardTitle,
-		QCardMain,
-		QCardActions,
-		QTabPane,
-		QDatetime,
-		QOptionGroup
+
 	},
 	watch: {
 
 	},
 	computed: {
-		optionsOne () {
-			return [
-				{ label: "Равно", value: "=" },
-				{ label: "Не равно", value: "!=" },
-				{ label: "Больше чем", value: ">" },
-				{ label: "Меньше чем", value: "<" },
-			]
+		filters: {
+			get () {
+				return this.value
+			},
+			set (n) {
+				this.$emit('input', n)
+			}
 		},
-		optionsRange () {
-			return [
-				{ label: "Входит", value: "" },
-				{ label: "Не входит", value: "!" },
-			]
-		},
-		itogCondition () {
-			return this.condition.map(el => {
-				if (el.conditionType == 'range')
-					return (el.type == '!' ? 'Не в' : 'В') + ` промежутке от ${moment(el.from).format(dateTimeFormat)} до ${moment(el.to).format(dateTimeFormat)}`
-
-				if (el.conditionType == 'one')
-					return this.optionsOne.find(f => f.value == el.type).label + ` ${moment(el.date).format(dateTimeFormat)}`
-			})
+		format () {
+			return this.type == 'date' ?
+				'DD.MM.YYYY'
+			:	'DD.MM.YYYY HH:mm:ss'
 		}
 	},
 	methods: {
-		addCondition () {
-			this.condition.push({ ...this.add[this.add.tab] })
+		dateChange (e) {
+			this.setDate(
+				this.tabs.find(el => el.value == this.currentTab)
+					.format( this.$moment(e).format(this.format) )
+			)
 		},
-		removeCondition (index) {
-			this.condition.splice(index, 1)
+		setDate (date) {
+			this.or ?
+				this.addNew(date)
+			:	this.updateLast(date)
+		},
+		updateLast (date) {
+			let filters = this.filters
+				.split(', ')
+				.map(el => el.trim())
+				.filter(el => el)
+
+			filters[filters.length > 0 ? filters.length - 1 : 0] = date
+
+			this.filters = filters.join(', ')
+		},
+		addNew (date) {
+			let filters = this.filters
+				.split(', ')
+				.map(el => el.trim())
+				.filter(el => el)
+
+			filters.push(date)
+
+			this.filters = filters.join(', ')
+		},
+		fnFactory (name) {
+			let [dateType, timeType] = name.split('-')
+			return e => {
+				let from = this.$moment()
+
+				if (timeType == 'next')
+					from.add(1, dateType)
+
+				if (timeType == 'prev')
+					from.subtract(1, dateType)
+
+				if (+timeType)
+					from.quarter(+timeType)
+
+				from.startOf(dateType)
+				let to = from.clone().endOf(dateType)
+
+				this.setDate(from.format(this.format) + '..' + to.format(this.format))
+			}
 		}
 	},
 }
 </script>
 
 
-<style lang="less">
-.filterDate {
-	width: 400px;
-}
+<style lang="stylus">
+.FilterDate
+	&__main
+		display grid
+		grid-gap 10px
+
+	&__content
+		display grid
+		grid-gap 10px
+		grid-auto-flow column
+
+	.FilterDateTab
+	&__tabs
+		justify-self center
+
+	&__controls
+		display grid
+		grid-gap 10px
+		grid-auto-flow column
+		justify-content center
+
+	&__form
+		display grid
+		grid-gap 10px
+
+	&__tree
+		min-width 200px
+
+	&__header
+		display grid
+		grid-auto-flow column
+		grid-gap 10px
+
+
+@media screen and (max-width: 600px)
+	.FilterDate
+		&__content
+			grid-auto-flow row
+
+		&__header
+			grid-auto-flow row
+
+.FilterDateTab
+	display grid
+	grid-gap 10px
+	justify-items start
+
+	&__cd
+		justify-self center
 </style>
