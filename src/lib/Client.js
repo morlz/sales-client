@@ -1,5 +1,5 @@
 import BaseModel from '@/lib/BaseModel'
-import { ContactFace, Invoice, Salon } from '@/lib'
+import { ContactFace, Invoice, Salon, Manager } from '@/lib'
 import moment from 'moment'
 
 export default class Client extends BaseModel {
@@ -10,7 +10,8 @@ export default class Client extends BaseModel {
 		this.define({
 			contactfaces: [ContactFace],
 			invoices: [Invoice],
-			salon: Salon
+			salon: Salon,
+			manager: Manager
 		}, arg)
 	}
 

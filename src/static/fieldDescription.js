@@ -127,8 +127,10 @@ export let DocsInvoices = [
 	} },
 	{ field: "manager.fio", label: "Менеджер", width: 200, search: false,
 		filterFormat: {
-			get: filters => filters['manager.fio'].value,
+			get: filters => (filters['manager.fio'] || {}).value,
 			set: fio => {
+				if (!fio)
+					return { 'manager.fio': null }
 
 				return {
 					'manager.fio': {
@@ -145,10 +147,12 @@ export let DocsInvoices = [
 		}
 	},
 	{ field: "client.fio", label: "Клиент", width: 200, search: false,
+		fields: { output: 'client.lastname' },
 		filterFormat: {
-			get: filters => filters['client.fio'].value,
+			get: filters => (filters['client.fio'] || {}).value,
 			set: fio => {
-				let [lastname, name, patronymic] = fio.trim().split(' ')
+				if (!fio)
+					return { 'client.fio': null }
 
 				return {
 					'client.fio': {
@@ -172,12 +176,30 @@ export let CRMClients = [
 	{ field: "lastname", label: "Фамилия", type: "string", width: 150 },
 	{ field: "name", label: "Имя", type: "string", width: 150 },
 	{ field: "patronymic", label: "Отчество", type: "string", width: 150 },
-	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 150 },
+	{ field: "manager.fio", label: "Менеджер", type: "string", width: 150, filterFormat: {
+		get: filters => (filters['manager.fio'] || {}).value,
+		set: fio => {
+			if (!fio)
+				return { 'manager.fio': null }
+
+			return {
+				'manager.fio': {
+					type: 'virtual',
+					fields: [
+						'manager.FIO',
+						'manager.IMY',
+						'manager.OTCH'
+					],
+					value: fio
+				}
+			}
+		}
+	} },
 	{ field: "salon.NAME", label: "Салон", type: "string", width: 150 },
 	{ field: "created_at", label: "Создан", inline: true, width: 120, filter: 'date', format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY HH:mm:ss") : data
 	} },
-	{ field: "notactiveDate", label: "Неактивен", type: "string", width: 100 },
+	{ field: "notactiveDate", label: "Неактивен", type: "string", width: 100, fields: { output: 'notactive' } },
 ]
 
 export let CRMPreorders = [
@@ -189,7 +211,25 @@ export let CRMPreorders = [
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
 	}},
 	{ field: "status.title", label: "Статус", type: "string", width: 100 },
-	{ field: "manager.FIO", label: "Менеджер", type: "string", width: 100 },
+	{ field: "manager.fio", label: "Менеджер", type: "string", width: 150, filterFormat: {
+		get: filters => (filters['manager.fio'] || {}).value,
+		set: fio => {
+			if (!fio)
+				return { 'manager.fio': null }
+
+			return {
+				'manager.fio': {
+					type: 'virtual',
+					fields: [
+						'manager.FIO',
+						'manager.IMY',
+						'manager.OTCH'
+					],
+					value: fio
+				}
+			}
+		}
+	} },
 	{ field: "salon.NAME", label: "Салон", width: 120 },
 	{ field: "calc_summ", label: "Сумма расчета", type: "number", width: 100 },
 	{ field: "prepay_summ", label: "Сумма предзаказа", type: "number", width: 100 },
@@ -204,7 +244,25 @@ export let CRMTasks = [
 	{ field: "date", label: "Дата", type: "string", inline: true, filter: 'date', width: 100, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY") : data
 	} },
-	{ field: "managerresponsible.FIO", label: "Ответственный", width: 150, type: "string" },
+	{ field: "managerresponsible.fio", label: "Ответственный", width: 150, filterFormat: {
+		get: filters => (filters['managerresponsible.fio'] || {}).value,
+		set: fio => {
+			if (!fio)
+				return { 'managerresponsible.fio': null }
+
+			return {
+				'managerresponsible.fio': {
+					type: 'virtual',
+					fields: [
+						'managerresponsible.FIO',
+						'managerresponsible.IMY',
+						'managerresponsible.OTCH'
+					],
+					value: fio
+				}
+			}
+		}
+	} },
 	{ field: "type.title", label: "Тип", type: "string", width: 100 },
 	{ field: "end_date", label: "Выполнена", type: "string", width: 100, inline: true, filter: 'date', format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD-MM-YYYY HH:mm:ss") : data
@@ -226,7 +284,7 @@ export let AdminPersonal = [
 	{ field: "OTCH", label: "Отчество", width: 100 },
 	{ field: "S_DATE", label: "Дата создания", filter: 'date', width: 100 },
 	{ field: "RABOTAET", label: "Работает", width: 50 },
-	{ field: "roles", label: "Роли", type: 'array', fields: ['name'], width: 120 },
+	{ field: "roles", label: "Роли",  fields: { output: 'roles.name' }, width: 120 },
 	{ field: "salon.NAME", label: "Салон", width: 120 },
 ]
 

@@ -68,13 +68,19 @@ export default {
 		inputModel: {
 			get () {
 				if (this.column.filterFormat && typeof this.column.filterFormat.get == 'function')
-					return this.column.filterFormat.get(this.filters) 
+					return this.column.filterFormat.get(this.filters)
+
+				if (this.column.fields && this.column.fields.output)
+					return (this.filters[ this.column.fields.output ] || {}).value || ''
 
 				return this.filters[ this.column.field ] || ''
 			},
 			set (value) {
 				if (this.column.filterFormat && typeof this.column.filterFormat.set == 'function')
 					return this.$emit('input', this.column.filterFormat.set(value))
+
+				if (this.column.fields && this.column.fields.output)
+					return this.$emit('input', { [this.column.fields.output]: value ? value : null })
 
 				this.$emit('input', { [this.column.field]: value ? value : null })
 			}
