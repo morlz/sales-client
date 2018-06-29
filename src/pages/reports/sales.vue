@@ -162,7 +162,7 @@ export default {
 		]),
 		exportToExcel () {
 			this.$store.dispatch('notify', 'Создание файла')
-			this.reports_sales_exportToExcel(this.$refs.tableWrapper.innerHTML)
+			this.reports_sales_exportToExcel(this.$refs.tableWrapper.$el.innerHTML)
 		},
 		isZero (val) {
 			return +val === 0
