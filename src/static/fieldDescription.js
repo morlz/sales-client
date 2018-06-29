@@ -121,7 +121,7 @@ export let DocsInvoices = [
 	{ field: "DATE", label: "Дата оформления", inline: true, filter: 'date', width: 130, format: {
 		get: data => moment(data).isValid() ? moment(data).format("DD MMM YYYY") : data
 	} },
-	{ field: "shipments.0.PL_OTGR", width: 130, type: 'array', filter: 'date',
+	{ field: "currentShipment.PL_OTGR", width: 130, type: 'array', filter: 'date',
 		fields: { output: 'shipments.PL_OTGR' }, label: "Дата отгрузки", inline: true, format: {
 		get: data => moment(data).isValid() && typeof data == 'string' ? moment(data).format("DD MMM YYYY") : data
 	} },

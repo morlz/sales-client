@@ -21,10 +21,16 @@ export default class Invoice extends BaseModel {
 			clientOld: Client,
 			adSource: AdSource,
 			preorder: Preorder,
+			lastShippedShipment: Shipment,
+			firstNotShippedShipment: Shipment,
 			realDax: 'VDAX',
 			cachedPrice: 'SUMMA_ZAKAZA',
 			id: 'ID'
 		}, arg)
+	}
+
+	get currentShipment () {
+		return this.firstNotShippedShipment || this.lastShippedShipment
 	}
 
 	get canRemove () {
