@@ -12,7 +12,7 @@ const actions = {
 			if (err.status === 401)
 				return dispatch('logOut')
 
-			if (err.status === 403 && error.messge == 'Неверный токен доступа')
+			if (err.status === 403 && err.message == 'Неверный токен доступа')
 				return dispatch('auth_sessionExpired')
 
 			let { title } = api.errors.getStatusDescription ( err.status ),
