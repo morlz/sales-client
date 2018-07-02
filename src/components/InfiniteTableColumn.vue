@@ -6,7 +6,7 @@
 
 		<template v-else>
 			<template v-if="select">
-				<q-select v-model="selectModel" filter :options="selectOptions" :style="fieldStyle"/>
+				<q-select v-model="selectModel" filter autofocus-filter :options="selectOptions" :style="fieldStyle"/>
 			</template>
 
 			<template v-if="!select">
