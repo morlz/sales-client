@@ -2,7 +2,10 @@
 	<div class="FilterDate">
 		<q-input v-model="filters" :float-label="floatLabel" @click="modal = true"/>
 
-		<q-modal v-model="modal" class="FilterDateModal" :content-css="{width: '80vw', minHeight: '80vh', maxWidth: '900px'}">
+		<q-modal
+			v-model="modal"
+			class="FilterDateModal"
+			:content-css="{minHeight: '80vh', minWidth: '80vw'}">
 			<q-modal-layout>
 				<q-toolbar slot="header">
 					<q-btn flat round dense v-close-overlay icon="keyboard_arrow_left"/>
@@ -28,7 +31,25 @@
 						</div>
 
 						<div class="FilterDate__content">
-							<div class="FilterDateTab">
+							<div class="FilterDateTab" v-if="currentTab == '..'">
+								<q-field class="FilterDateTab__range">
+									<q-datetime
+										v-model="add.from"
+										float-label="С"
+										:type="type"
+										@input="rangeDateChange"/>
+								</q-field>
+
+								<q-field class="FilterDateTab__range">
+									<q-datetime
+										v-model="add.datetime"
+										float-label="По"
+										:type="type"
+										@input="rangeDateChange"/>
+								</q-field>
+							</div>
+
+							<div class="FilterDateTab" v-else>
 								<q-field class="FilterDateTab__cd">
 									<q-datetime-picker
 										v-model="add.datetime"
@@ -192,7 +213,8 @@ export default {
 			modal: false,
 			currentTab: '=',
 			add: {
-				datetime: ''
+				datetime: '',
+				from: ''
 			},
 			or: false,
 			tabs: [
@@ -200,6 +222,7 @@ export default {
 				//{ value: '!=', label: 'Не равно', icon: 'fas fa-not-equal', format: date => `!${date}` },
 				{ value: '>', label: 'Больше', icon: 'fas fa-greater-than', format: date => `${date}..` },
 				{ value: '<', label: 'Меньше', icon: 'fas fa-less-than', format: date => `..${date}` },
+				{ value: '..', label: 'Промежуток', icon: 'fas fa-sliders-h' },
 			],
 			fastAdd,
 			slots: [
@@ -301,7 +324,17 @@ export default {
 
 				this.setDate(from.format(this.format) + '..' + to.format(this.format))
 			}
-		}
+		},
+		rangeDateChange () {
+			let from = this.add.from ?
+					this.$moment(this.add.from).format(this.format)
+				:	'',
+				to = this.add.datetime ?
+					this.$moment(this.add.datetime).format(this.fromat)
+				:	''
+
+			this.setDate(`${from}..${to}`)
+		},
 	},
 }
 </script>
@@ -356,4 +389,10 @@ export default {
 
 	&__cd
 		justify-self center
+
+	&__range
+		width 100%
+
+		.q-datetime-input
+			width 100%
 </style>

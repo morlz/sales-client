@@ -99,7 +99,7 @@ import {
 	QCollapsible,
 } from 'quasar'
 
-import PreviewManager from '@/components/PreviewManager.vue'
+import PreviewManager from '@/components/PreviewManager'
 import Invoice from '@/lib/Invoice'
 
 export default {
