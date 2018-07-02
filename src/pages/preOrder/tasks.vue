@@ -24,7 +24,7 @@
 				@sort="local_task_sortChange"
 				@filter="local_task_filtersChange"
 			>
-				<template slot="buttons" slot-scope="{ row }" v-if="row.expired">	
+				<template slot="buttons" slot-scope="{ row }" v-if="row.expired">
 					<q-icon name="error_outline"/>
 				</template>
 			</infinite-table>
@@ -101,10 +101,10 @@ export default {
 			'task_infinity',
 			'task_filtersChange',
 			'task_sortChange',
-			'task_init'
+			'task_init',
+			'task_destroy'
 		]),
 		...mapMutations([
-			'task_destroy',
 			'app_layout_headerShadowSet'
 		]),
 		async local_task_filtersChange (n) {

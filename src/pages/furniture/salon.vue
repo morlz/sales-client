@@ -290,6 +290,7 @@ export default {
 			'furniture_getOne',
 			'furniture_addToCart',
 			'furniture_preload',
+			'furniture_destroy'
 		]),
 		...mapActions('transfer', [
 			'transfer_take',
@@ -300,7 +301,6 @@ export default {
 			'transfer_selectedToMoveSet'
 		]),
 		...mapMutations([
-			'furniture_destroy',
 			'app_layout_headerShadowSet',
 			'main_auth_settings_showModelsToggle'
 		]),

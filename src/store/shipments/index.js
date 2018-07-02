@@ -28,6 +28,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('salon_getList', getters.currentUserSalon)
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	shipment_destroy ({ commit, dispatch }) {
+		commit('shipment_destroy')
+		commit('shipment_infiniteDestroy')
+	},
 	shipment_defaultSalonSet({ commit, dispatch, state, getters }) {
 		if (state.infinite) return
 		let ID_SALONA = state.filters['salon.ID_SALONA'] !== undefined ?

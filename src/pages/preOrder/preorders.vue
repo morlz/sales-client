@@ -177,10 +177,10 @@ export default {
 			'preorder_sortChange',
 			'preorder_init',
 			'preorder_getOne',
-			'client_select_searchByPhone'
+			'client_select_searchByPhone',
+			'preorder_destroy'
 		]),
 		...mapMutations([
-			'preorder_destroy',
 			'app_layout_headerShadowSet'
 		]),
 		async local_record_filtersChange (n) {

@@ -35,6 +35,10 @@ const actions = merge(infinite.getActions(true), {
 
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	discount_destroy ({ commit, dispatch }) {
+		commit('discount_destroy')
+		commit('discount_infiniteDestroy')
+	},
 	discount_defaultSalonSet({ commit, dispatch, state, getter }) {
 		if (state.infinite) return
 

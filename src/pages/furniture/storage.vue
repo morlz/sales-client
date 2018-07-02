@@ -135,10 +135,10 @@ export default {
 			'storage_getModels',
 			'storage_getOne',
 			'storage_addToCart',
+			'storage_destroy'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'storage_destroy',
 			'main_auth_settings_showModelsToggle'
 		]),
 		async local_storage_filterChange (n) {

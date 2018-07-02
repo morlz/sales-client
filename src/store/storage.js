@@ -28,6 +28,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('storage_getModels', { type: "sgp" })
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	storage_destroy ({ commit, dispatch }) {
+		commit('storage_destroy')
+		commit('storage_infiniteDestroy')
+	},
 	async storage_sortChange({ commit, dispatch, state }, payload){
 		commit("storage_sortSet", payload)
 		state.infinite.sort = payload

@@ -82,6 +82,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('salon_getList')
 		await state.infinite.start(api.scrollPosition.current.offset) //api.scrollPosition.current.offset
 	},
+	furniture_destroy ({ commit, dispatch }) {
+		commit('furniture_destroy')
+		commit('furniture_infiniteDestroy')
+	},
 	furniture_defaultSalonSet ({ commit, state, getters }) {
 		if (state.infinite) return
 

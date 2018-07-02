@@ -71,10 +71,10 @@ export default {
 			'visitor_infinity',
 			'visitor_sortChange',
 			'visitor_filtersChange',
+			'visitor_destroy'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'visitor_destroy'
 		]),
 		async local_visitor_filtersChange (n) {
 			this.lastVisitorsFilters = n

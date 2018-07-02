@@ -118,10 +118,10 @@ export default {
 			'client_infinity',
 			'client_sortChange',
 			'client_filtersChange',
+			'client_destroy'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'client_destroy'
 		]),
 		async local_client_filtersChange (n) {
 			this.lastClientsFilters = n

@@ -67,6 +67,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('salon_getList', getters.currentUserSalon)
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	invoice_destroy ({ commit, dispatch }) {
+		commit('invoice_destroy')
+		commit('invoice_infiniteDestroy')
+	},
 	invoice_defaultSalonSet({ commit, state, getters }) {
 		if (state.infinite) return
 
@@ -191,8 +195,8 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('notify', 'Успешно удалено')
 	},
 	async invoice_editZak ({ commit, dispatch }, payload) {
-		router.push('/furniture/edit')
-		dispatch('furniture_new_setEdit', payload)
+		router.push('/invoice/edit')
+		dispatch('invoice_new_setEdit', payload)
 	},
 	async invoice_exportToAx ({ commit, dispatch }, payload) {
 		let res = await api.invoices.exportToAx(payload)
@@ -236,9 +240,6 @@ const actions = merge(infinite.getActions(true), {
 
 		commit('invoice_currentPaymentRemove', res.data)
 		dispatch('notify', 'Оплата успешно удалена.')
-	},
-	async invoice_destroy ({ commit, dispatch, state }) {
-		commit('invoice_destroy')
 	},
 	async invoice_ship ({ commit, dispatch }, id) {
 		let res = await api.invoices.ship(id)

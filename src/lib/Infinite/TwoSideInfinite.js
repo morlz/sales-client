@@ -425,7 +425,8 @@ export default class TwoSideInfinite extends EventEmitter {
 			cachedSet: (state, payload) => Vue.set(state, 'cached', { ...state.cached, ...payload }),
 			loadingSet: (state, payload) => Vue.set(state, 'loading', { ...state.loading, ...payload }),
 			completeSet: (state, payload) => Vue.set(state, 'complete', { ...state.complete, ...payload }),
-			infiniteSet: (state, payload) => Vue.set(state, 'infinite', payload)
+			infiniteSet: (state, payload) => Vue.set(state, 'infinite', payload),
+			infiniteDestroy: state => state.infinite.reset()
 		}
 
 		return namespaced ? this._withNamespace(res) : res

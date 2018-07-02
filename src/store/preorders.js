@@ -31,6 +31,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('preorder_initInfinite')
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	preorder_destroy ({ commit, dispatch }) {
+		commit('preorder_destroy')
+		commit('preorder_infiniteDestroy')
+	},
 	preorder_defaultSalonSet({ commit, dispatch, state, getters }) {
 		if (state.infinite) return
 

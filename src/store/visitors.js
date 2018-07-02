@@ -19,6 +19,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('visitor_initInfinite')
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	visitor_destroy ({ commit, dispatch }) {
+		commit('visitor_destroy')
+		commit('visitor_infiniteDestroy')
+	},
 	async visitor_sortChange({ commit, dispatch }, payload){
 		commit("visitor_sortSet", payload)
 		state.infinite.sort = payload

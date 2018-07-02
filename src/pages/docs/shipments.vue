@@ -196,10 +196,10 @@ export default {
 			'shipment_sortChange',
 			'shipment_filtersChange',
 			'shipment_getOne',
+			'shipment_destroy'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'shipment_destroy'
 		]),
 		async local_shipment_filterChange(n) {
 			this.lastShipmentsFilters = n

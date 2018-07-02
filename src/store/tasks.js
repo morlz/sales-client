@@ -35,6 +35,10 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('task_initInfinite')
 		await state.infinite.start(api.scrollPosition.current.offset)
 	},
+	task_destroy ({ commit, dispatch }) {
+		commit('task_destroy')
+		commit('task_infiniteDestroy')
+	},
 	async task_sortChange({ commit, dispatch }, payload){
 		commit("task_sortSet", payload)
 		state.infinite.sort = payload

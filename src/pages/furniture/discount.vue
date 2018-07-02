@@ -163,10 +163,10 @@ export default {
 			'discount_getOne',
 			'discount_getModels',
 			'discount_addToCart',
+			'discount_destroy'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'discount_destroy',
 			'main_auth_settings_showModelsToggle'
 		]),
 		async local_discount_filterChange (n) {

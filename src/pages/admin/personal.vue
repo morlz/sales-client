@@ -81,11 +81,11 @@ export default {
 			'personal_filtersChange',
 			'personal_sortChange',
 			'personal_init',
-			'personal_getRoleSetup'
+			'personal_getRoleSetup',
+			'personal_destroy'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',
-			'personal_destroy'
 		]),
 		local_personal_filtersChange (n) {
 			this.personal_filtersChange(n)
