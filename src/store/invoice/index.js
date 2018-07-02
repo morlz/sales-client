@@ -238,9 +238,6 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('notify', 'Оплата успешно удалена.')
 	},
 	async invoice_destroy ({ commit, dispatch, state }) {
-		if (state.cached.current instanceof Invoice)
-			await state.cached.current.updateSumm()
-
 		commit('invoice_destroy')
 	},
 	async invoice_ship ({ commit, dispatch }, id) {
