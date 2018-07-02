@@ -5,6 +5,9 @@ import api from '@/api'
 import Vue from 'vue'
 
 
+const wait = time => new Promise(resolve => setTimeout(resolve, time))
+
+
 export default class TwoSideInfinite extends EventEmitter {
 	constructor (options = {}) {
 		super()

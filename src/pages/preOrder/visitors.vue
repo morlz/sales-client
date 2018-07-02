@@ -16,6 +16,8 @@
 					slot-scope="{ row }"
 					color="negative"
 					name="delete"
+					class="cursor-pointer"
+					@click.native="visitor_delete(row.id)"
 					v-if="row.canRemove && auth_can(4, 'Visitor') && row.manager_id == auth_user.id"
 					/>
 			</infinite-table>
@@ -37,9 +39,6 @@ export default {
 		return {
 			CRMVisitors,
 			lastVisitorsFilters: {},
-			searchByPhone: "",
-			searchByPhone2: "",
-			seachTimeout: false
 		}
 	},
 	mixins: [AuthMixin],
@@ -71,7 +70,8 @@ export default {
 			'visitor_infinity',
 			'visitor_sortChange',
 			'visitor_filtersChange',
-			'visitor_destroy'
+			'visitor_destroy',
+			'visitor_delete'
 		]),
 		...mapMutations([
 			'app_layout_headerShadowSet',

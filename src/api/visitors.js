@@ -26,19 +26,17 @@ export default {
 		return res
 	},
 	async create (data) {
-		return core.invoke({
-			method: 'post',
-			type: 'visitors',
-			data
-		})
+		let res = await core.post('visitors', data)
+		if (res.id)
+			return new Visitor(res)
+
+		return res
 	},
 	async remove (id) {
-		return core.invoke({
-			method: 'delete',
-			type: 'visitor',
-			data: {
-				id
-			}
-		})
+		let res = await core.delete('visitor', { id })
+		if (res.id)
+			return new Visitor(res)
+
+		return res
 	},
 }

@@ -50,21 +50,30 @@ const actions = merge(infinite.getActions(true), {
 		commit('visitor_loadingSet', true)
 		let res = await api.visitors.create(payload)
 		commit('visitor_loadingSet', false)
-		if (!res.data || res.data.error) return
+		if (!res || res.error) return
 
-		if (res.data.errors)
-			return dispatch('handleFormErrors', res.data.errors)
+		if (res.errors)
+			return dispatch('handleFormErrors', res.errors)
 
 		dispatch('notify', 'Посетитель успешно добавлен.')
+		commit('visitor_cachePrepend', [res])
 	},
+	async visitor_delete({ commit, dispatch }, id) {
+		let res = await api.visitors.remove(id)
+		if (!res || res.error) return
+
+		commit('visitor_removeOneFromCached', res)
+		dispatch('notify', 'Посетитель успешно удалён.')
+	}
 })
 
 const mutations = merge(infinite.getMutations(true), {
 	visitor_destroy: state => state.cached.list = [],
 	visitor_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	visitor_cachePrepend: (state, payload) => state.cached.list = [...payload, ...state.cached.list],
 	visitor_filtersSet: (state, payload) => state.filters = payload,
 	visitor_sortSet: (state, payload) => state.sort = payload,
-	visitor_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != payload.id || payload),
+	visitor_removeOneFromCached: (state, payload) => state.cached.list = state.cached.list.filter(el => el.id != (payload.id || payload)),
 	visitor_currentSet: (state, payload) => state.cached.current = payload,
 })
 
