@@ -58,6 +58,12 @@ const actions = {
 	signUp () {
 
 	},
+	auth_sessionExpired ({ commit, dispatch }) {
+		commit("auth_logout", false)
+		commit("auth_permissionsSet", [])
+		commit("auth_updateToken")
+		commit('salon_listEmpty')
+	},
 	async logOut ({ commit, dispatch }) {
 		await api.auth.logOut()
 		commit("auth_logout", false)
@@ -95,7 +101,11 @@ const actions = {
 			}
 		} catch (err) {
 			console.warn(err)
-			dispatch('notify', 'Не удалось получить ваше местоположение, вам нужно выбрать салон вручную.')
+			if (window.location.protocol == 'http:') {
+				dispatch('notify', 'Автоматически определить и предать местоположение возможно только по защищённому https протоколу, вам нужно выбрать салон вручную.')
+			} else {
+				dispatch('notify', 'Не удалось получить ваше местоположение, вам нужно выбрать салон вручную.')
+			}
 		}
 
 		commit("auth_loadingSet", { permissions: true })
