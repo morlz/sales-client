@@ -31,7 +31,7 @@ const state = merge(infinite.getState(), {
 		selected: {
 			edit: false,
 			model: "",
-			type: {},
+			type: "",
 			dekor: "",
 			cloth: {
 				0: {},
@@ -406,7 +406,7 @@ const actions = merge(infinite.getActions(true), {
 	 *
 	 */
 
-	async furniture_clothSearch ({ commit, dispatch, state }, { query, index, offset }) {
+	async furniture_clothSearch ({ commit, dispatch, state, getters }, { query, index, offset }) {
 		commit('furniture_clothSelectForm_querySet', query)
 		commit('furniture_clothSelectForm_loadingListSet', true)
 		let res = await api.furnitures.getNewCloth({
@@ -421,7 +421,7 @@ const actions = merge(infinite.getActions(true), {
 		commit('furniture_clothSelectForm_cachedSet', res.data)
 		commit('furniture_clothSelectForm_offsetSet', 0)
 	},
-	async furniture_clothSelectForm_infinity ({ commit, dispatch, state }, { payload, index }) {
+	async furniture_clothSelectForm_infinity ({ commit, dispatch, state, getters }, { payload, index }) {
 		if (state.clothSelectForm.offset == -1) return
 		commit('furniture_clothSelectForm_loadingBottomSet', true)
 		commit('furniture_clothSelectForm_offsetSet', state.clothSelectForm.offset + 30)
@@ -725,10 +725,14 @@ const getters = merge(infinite.getGetters(true), {
 	furniture_new_normalMaxIndex: state => {
 		let max = { index: 0, price: 0 }
 		for (var index in state.new.cached.cloth)
-			if (state.new.cached.cloth.hasOwnProperty(index) && state.new.cached.cloth[index].price > max.price) {
+			if (
+				state.new.cached.cloth.hasOwnProperty(index) &&
+				state.new.cached.cloth[index].price > max.price
+			) {
 				max.price = state.new.cached.cloth[index].price
 				max.index = index
 			}
+
 		return max.index
 	},
 
@@ -738,6 +742,21 @@ const getters = merge(infinite.getGetters(true), {
 
 	furniture_clothSelectForm: state => state.clothSelectForm,
 	furniture_clothSelectForm_loading: state => state.clothSelectForm.loading.list,
+	furniture_clothSelectForm_type: (state, getters) =>
+		getters.furniture_new_freeTrim ?
+			state.new.selected.type
+				.split('-')
+				.filter(el => el)
+				.map(el => {
+					let finded = state.new.cached.types.find(type => type.CRSEACHNAME == el)
+					if (finded)
+						return finded.CONFIGID
+
+					return el
+				})
+				.join('-')
+
+		:	state.new.selected.type
 })
 
 const modules = {

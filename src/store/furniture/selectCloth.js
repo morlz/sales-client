@@ -11,7 +11,7 @@ const state = {
 }
 
 const actions = {
-	furniture_selectCloth_init ({ commit, dispatch, rootState }, index) {
+	furniture_selectCloth_init ({ commit, dispatch, rootState, rootGetters }, index) {
 		commit('furniture_selectCloth_cacheSet', { [index]: [] })
 		commit('furniture_selectCloth_querySet', { [index]: '' })
 		commit('furniture_selectCloth_katSet', { [index]: null })
@@ -19,6 +19,7 @@ const actions = {
 			method: api.furnitures.getNewCloth,
 			additional: {
 				id: rootState.furniture.new.selected.model,
+				config_id: rootGetters.furniture_clothSelectForm_type,
 				index,
 				stock_id: rootState.furniture.new.cached.stock ? rootState.furniture.new.cached.stock : null,
 			}
@@ -36,8 +37,14 @@ const actions = {
 		commit('furniture_selectCloth_cacheSet', { [index]: undefined })
 		commit('furniture_selectCloth_infiniteSet', { [index]: undefined })
 	},
-	async furniture_selectCloth_start ({ commit, dispatch, state }, index) {
-		state.infinite[index].additional = { ...state.infinite[index].additional, query: state.query[index], kat: state.kat[index] || null }
+	async furniture_selectCloth_start ({ commit, dispatch, state, rootGetters }, index) {
+		state.infinite[index].additional = {
+			...state.infinite[index].additional,
+			query: state.query[index],
+			kat: state.kat[index] || null,
+			config_id: rootGetters.furniture_clothSelectForm_type,
+		}
+
 		await state.infinite[index].start()
 	},
 	async furniture_selectCloth_infinite ({ commit, dispatch }, { index, payload }) {
