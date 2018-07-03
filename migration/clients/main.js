@@ -130,8 +130,7 @@ content.client.elements.reverse().forEach((clientOld, index) => {
 		phone = formatPhoneCode(formatedPhone.numbers()).substr(0, 11),
 		gender = 1
 
-	numbers.push(phone)
-
+	//numbers.push(phone)
 
 	switch (fio.lastName.substr(-1, 1).toLowerCase()) {
 		case 'а':
@@ -143,9 +142,6 @@ content.client.elements.reverse().forEach((clientOld, index) => {
 		default:
 			gender = 1
 	}
-
-
-
 
 	if (!clients[phone])
 		clients[phone] = {
@@ -164,7 +160,7 @@ content.client.elements.reverse().forEach((clientOld, index) => {
 		regard: 'Основной',
 		fio: Object.values(fio).join(' ').trim(),
 		phone,
-		email: client.EMAIL.trim(),
+		email: (client.EMAIL || '').trim(),
 		gender
 	}
 
@@ -184,9 +180,12 @@ numbers = numbers.filter((v, i, a) => {
 */
 
 //numbers = _.uniq(numbers.filter(number => !(!!+number.numbers2() && number.numbers2().length == 11)))
+
+/*
 numbers = _.uniq(numbers)
 numbers.sort()
 console.log(numbers)
+ */
 
 
 
