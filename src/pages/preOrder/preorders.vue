@@ -5,7 +5,7 @@
 		<info-card-contact-faces :content="preorder_current.contactFaces" allow-create v-if="auth_can(1, 'ContactFace')"/>
 		<info-card-tasks :content="preorder_current.tasks" v-if="auth_can(1, 'Task')"/>
 
-		<q-card class="files">
+		<q-card class="files" v-if="false">
 			<q-card-title>
 				Прикреплённые файлы
 			</q-card-title>
@@ -229,9 +229,10 @@ export default {
 .OnePreorderWrapper
 	display grid
 	grid-gap 10px
-	grid-template-columns 1fr
-	/*.tasks, .files
-		grid-column 1 / 3*/
+	grid-template-columns 550px 1fr
+
+	.tasks
+		grid-column 1 / 3
 
 	.info
 		.el-steps
@@ -240,5 +241,12 @@ export default {
 	.contacts
 		.buttons
 			margin-top 10px
+
+@media screen and (max-width: 1100px)
+	.OnePreorderWrapper
+		grid-template-columns 1fr
+
+		.tasks
+			grid-column 1 / 2
 
 </style>
