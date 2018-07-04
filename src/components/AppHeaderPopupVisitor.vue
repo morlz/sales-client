@@ -16,7 +16,7 @@
 
 				<div class="HeaderVisitorsModal__content">
 					<q-field>
-						<q-input :value="now.format('DD MMMM YYYY hh:mm:ss')" float-label="Дата и время" disable/>
+						<q-input :value="now.format('DD MMMM YYYY HH:mm:ss')" float-label="Дата и время" disable/>
 					</q-field>
 
 					<q-field helper="Описание посетителя по которому его можно будет узнать в дальнейшем">
