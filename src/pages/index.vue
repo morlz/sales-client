@@ -1,16 +1,25 @@
 <template>
-<q-page class="flex flex-center">
-	img alt="Quasar logo" src="~assets/quasar-logo-full.svg">
+<q-page class="AppContent">
+	<div class="AppContent__inner Index">
+		<info-card-news/>
+	</div>
 </q-page>
 </template>
 
 <script>
 
+import InfoCardNews from '@/components/InfoCardNews'
+
 export default {
 	name: 'PageIndex',
+	components: {
+		InfoCardNews
+	}
 }
 </script>
 
-<style lang="less">
-
+<style lang="stylus">
+.Index
+	margin 0
+	padding 10px
 </style>

@@ -18,6 +18,9 @@ import Cloth from '@/lib/Cloth'
 import Task from '@/lib/Task'
 import SalonGroupSetup from '@/lib/SalonGroupSetup'
 import Visitor from '@/lib/Visitor'
+import New from '@/lib/New'
+import NewMessage from '@/lib/NewMessage'
+import Chat from '@/lib/Chat'
 
 export default BaseModel
 
@@ -41,5 +44,8 @@ export {
 	Cloth,
 	Task,
 	SalonGroupSetup,
-	Visitor
+	Visitor,
+	New,
+	NewMessage,
+	Chat
 }

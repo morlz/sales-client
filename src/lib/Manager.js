@@ -15,4 +15,12 @@ export default class Manager extends BaseModel {
 	get fio () {
 		return `${this.FIO} ${this.IMY} ${this.OTCH}`.trim()
 	}
+
+	get name () {
+		return this.IMY.trim()
+	}
+
+	get avatar () {
+		return 'https://quasar-framework.org/quasar-play/android/statics/linux-avatar.png'
+	}
 }

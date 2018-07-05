@@ -23,6 +23,7 @@ import print 					from '@/store/print'
 import i18n 					from '@/store/i18n'
 import adSources 				from '@/store/adSources'
 import visitors 				from '@/store/visitors'
+import news 					from '@/store/news'
 
 import tests 					from '@/store/tests'
 
@@ -47,6 +48,7 @@ export default new Vuex.Store({
 		i18n,
 		adSources,
 		visitors,
+		news,
 
 		tests,
 	}

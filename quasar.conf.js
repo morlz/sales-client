@@ -110,7 +110,13 @@ module.exports = function(ctx) {
 				'/tiss': {
 					target: 'http://sales-test.ladyagroup.ru/',
 					changeOrigin: true
+				},
+				/*
+				'socket' {
+					target: 'ws://localhost:81',
+					changeOrigin: true
 				}
+				*/
 			}
 		},
 		// framework: 'all' --- includes everything; for dev only!
@@ -160,7 +166,9 @@ module.exports = function(ctx) {
 				'QScrollObservable',
 				'QTree',
 				'QDatetimePicker',
-				'QBtnToggle'
+				'QBtnToggle',
+				'QChatMessage',
+				'QEditor'
 			],
 			directives: [
 				'Ripple',
