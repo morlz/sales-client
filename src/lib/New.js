@@ -1,5 +1,5 @@
 import BaseModel from '@/lib/BaseModel'
-import { NewMessage, Chat } from '@/lib'
+import { NewMessage, Chat, Manager } from '@/lib'
 import api from '@/api'
 
 export default class New extends BaseModel {
@@ -7,10 +7,11 @@ export default class New extends BaseModel {
 		super()
 		this.define({
 			messages: [NewMessage],
-			//chat: Chat
+			manager: Manager
 		}, {
 			description: '',
 			title: '',
+			archive: 0,
 			...arg
 		})
 	}
@@ -35,5 +36,13 @@ export default class New extends BaseModel {
 		return this.id === undefined ?
 			new New(await api.core.post('new', this))
 		:	new New(await api.core.put('new', this))
+	}
+
+	async archivate () {
+		let res = await api.core.get('new/archive', { id: this.id })
+		if (res.id)
+			return new New(res)
+
+		return res
 	}
 }

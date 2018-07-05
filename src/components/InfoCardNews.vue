@@ -5,27 +5,38 @@
 		</q-card-title>
 
 		<q-card-main class="InfoCardNews__content">
-			<q-list no-border link class="InfoCardNews__list">
+			<div class="InfoCardNews__list">
+				<q-scroll-area
+					class="InfoCardNews__scroll"
+					style="width: 100%; height: 600px;"
+					ref="scroll">
+					<q-list no-border link>
+						<q-item
+							v-for="item, index in cached"
+							:key="index"
+							@click.native="select(item)"
+							class="InfoCardNewsNewTitle"
+							:class="{ 'InfoCardNewsNewTitle__selected' : current == item.id }">
+
+							<q-item-side :avatar="item.manager.avatar"/>
+
+							<q-item-main>
+								<q-item-tile>
+									{{ item.title }}
+								</q-item-tile>
+								<q-item-tile>
+									{{ $moment().to($moment(item.date)) }}
+								</q-item-tile>
+							</q-item-main>
+
+							<q-item-side right>
+							</q-item-side>
+						</q-item>
+					</q-list>
+				</q-scroll-area>
+
 				<info-card-news-create/>
-
-				<q-item
-					v-for="item, index in news"
-					:key="index"
-					@click.native="select(item)"
-					class="InfoCardNewsNewTitle"
-					:class="{ 'InfoCardNewsNewTitle__selected' : current == item.id }">
-
-					<q-item-side>
-					</q-item-side>
-
-					<q-item-main>
-						{{ item.title }}
-					</q-item-main>
-
-					<q-item-side right>
-					</q-item-side>
-				</q-item>
-			</q-list>
+			</div>
 
 			<div class="InfoCardNews__new">
 				<info-card-news-new/>
@@ -59,11 +70,9 @@ export default {
 		}
 	},
 	computed: {
-		...mapState('news', {
-			news: state => state.cached.list,
-		}),
 		...mapGetters('news', [
-			'current'
+			'current',
+			'cached'
 		])
 	},
 	methods: {
@@ -83,11 +92,14 @@ export default {
 
 <style lang="stylus">
 .InfoCardNews
-	width 740px
 	&__content
 		display grid
 		grid-gap 10px
-		grid-template-columns 300px 400px
+		grid-template-columns minmax(300px, 1fr) minmax(400px, 2fr)
+
+	&__list
+		display grid
+		grid-template-rows 1fr max-content
 
 .InfoCardNewsNewTitle
 	user-select none

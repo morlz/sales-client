@@ -57,11 +57,16 @@ export default class Chat extends BaseModelEventEmitter {
 
 	setMessages (val) {
 		this.new.messages = val
-		this.emit('messages', val)
+		this.emit('messages', this.new.messages)
 	}
 
 	setMembers (val) {
 		this.members = val
 		this.emit('members', val)
+	}
+
+	appendMessage (msg) {
+		this.new.messages.push(msg)
+		this.emit('messages', this.new.messages)
 	}
 }

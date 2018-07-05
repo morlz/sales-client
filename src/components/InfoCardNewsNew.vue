@@ -2,11 +2,16 @@
 	<div class="New" v-if="chat.new">
 		<div class="New__description" v-html="chat.new.description"/>
 
-		<div class="NewChat">
+		<div class="New__buttons">
+			<q-btn flat color="primary" icon="edit" @click="edit"/>
+			<q-btn flat color="secondary" icon="archive" @click="archive"/>
+			<q-btn flat color="negative" icon="delete"/>
+		</div>
 
+		<div class="NewChat">
 			<q-scroll-area
 				class="NewChat__messages"
-				style="width: 400px; height: 600px;"
+				style="width: 100%; height: 600px;"
 				ref="scroll">
 				<q-chat-message
 					v-for="msg, index in messages"
@@ -96,12 +101,16 @@ export default {
 			reqCheck(
 				() => !!this.$refs.scroll && this.$refs.scroll.scrollHeight !== undefined,
 				() => this.$nextTick(
-					() => {
-						console.log(this.$refs.scroll.scrollHeight, this.$refs.scroll);
-						this.$refs.scroll.setScrollPosition(this.$refs.scroll.scrollHeight, 300)
-					}
+					() => this.$refs.scroll.setScrollPosition(this.$refs.scroll.scrollHeight, 300)
 				)
 			)
+		},
+		edit () {
+			this.$store.commit('news/setFormId', this.current)
+			this.$store.commit('news/modalSet', true)
+		},
+		archive () {
+			this.$store.dispatch('news/archive', this.chat.new)
 		}
 	},
 	created () {

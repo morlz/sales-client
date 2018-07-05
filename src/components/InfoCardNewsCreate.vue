@@ -1,13 +1,13 @@
 <template>
 <div class="NewsCreate">
-	<q-btn color="primary" @click="modal = !modal">Создать</q-btn>
+	<q-btn color="primary" @click="toggleModalCreate">Создать</q-btn>
 
 	<q-modal v-model="modal" class="NewsCreateModal" :content-css="{minWidth: '80vw', minHeight: '90vh'}">
 		<q-modal-layout class="NewsCreateModal__layout">
 			<q-toolbar slot="header">
 				<q-btn flat wait-for-ripple v-close-overlay icon="keyboard_arrow_left" />
 				<q-toolbar-title>Добавить новость</q-toolbar-title>
-				<q-btn flat icon-right="redo" v-if="app_view_mobile" @click="create">Добавить</q-btn>
+				<q-btn flat icon-right="redo" v-if="app_view_mobile" @click="save">Сохранить</q-btn>
 			</q-toolbar>
 
 			<div class="NewsCreateModal__content">
@@ -25,8 +25,8 @@
 					color="primary"
 					class="NewsCreateModal__button"
 					v-if="!app_view_mobile"
-					@click="create">
-					Добавить
+					@click="save">
+					Сохранить
 				</q-btn>
 			</div>
 		</q-modal-layout>
@@ -56,7 +56,6 @@ export default {
 	},
 	data() {
 		return {
-			modal: false,
 			form: new New(),
 			toolbar: [
 				['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
@@ -110,20 +109,39 @@ export default {
 			}
 		}
 	},
+	watch: {
+		async modal (n) {
+			if (!n) return
+			this.form = this.id ? await New.getOne(this.id) : new New()
+		}
+	},
 	computed: {
 		...mapGetters([
 			'app_view_mobile'
-		])
-	},
-	methods: {
-		create () {
-			this.$store.dispatch('news/create', this.form)
-			this.form = new New()
+		]),
+		...mapState('news', {
+			id: state => state.form.id,
+			modalGetter: state => state.form.modal
+		}),
+		modal: {
+			get () {
+				return this.modalGetter
+			},
+			set (value) {
+				this.$store.commit('news/modalSet', value)
+			}
 		}
 	},
-	created () {
+	methods: {
+		save () {
+			this.$store.dispatch('news/save', this.form)
 
-	}
+			this.modal = false
+		},
+		...mapMutations('news', [
+			'toggleModalCreate'
+		])
+	},
 }
 </script>
 
