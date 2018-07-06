@@ -24,6 +24,7 @@ module.exports = function(ctx) {
 	return {
 		// app plugins (/src/plugins)
 		plugins: [
+			'errors',
 			'i18n',
 			'axios',
 			'ElementUI',
@@ -31,6 +32,7 @@ module.exports = function(ctx) {
 			'FastGridArea',
 			'VueGoogleMaps',
 			'moment',
+
 			//'three'
 		],
 		css: [
