@@ -46,6 +46,7 @@
     "vuex-router-sync": "^5.0.0"
   },
   "devDependencies": {
+    "babel-plugin-transform-export-extensions": "^6.22.0",
     "css-loader": "^0.28.11",
     "imports-loader": "^0.8.0",
     "less": "^3.0.4",
