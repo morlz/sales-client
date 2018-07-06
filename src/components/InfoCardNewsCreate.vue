@@ -15,11 +15,25 @@
 					<q-input v-model="form.title" float-label="Название" />
 				</q-field>
 
-				<q-editor
-					class="NewsCreateModal__editor"
-					v-model="form.description"
-					:toolbar="toolbar"
-					:fonts="fonts" />
+				<div class="NewsCreateModal__middle">
+					<q-editor
+						class="NewsCreateModal__editor"
+						v-model="form.description"
+						:toolbar="toolbar"
+						:fonts="fonts" />
+
+					<q-list no-border>
+						<q-item v-for="group in groups" :key="group.id">
+							<q-item-main>
+								<q-checkbox
+									class="NewsCreateModal__checkbox"
+									:value="form.setup.includes(group.id)"
+									:label="group.name"
+									@input="check($event, group.id)"/>
+							</q-item-main>
+						</q-item>
+					</q-list>
+				</div>
 
 				<q-btn
 					color="primary"
@@ -121,7 +135,8 @@ export default {
 		]),
 		...mapState('news', {
 			id: state => state.form.id,
-			modalGetter: state => state.form.modal
+			modalGetter: state => state.form.modal,
+			groups: state => state.cached.groups
 		}),
 		modal: {
 			get () {
@@ -140,7 +155,12 @@ export default {
 		},
 		...mapMutations('news', [
 			'toggleModalCreate'
-		])
+		]),
+		check (value, id) {
+			value ?
+				this.form.setup.push(+id)
+			:	this.form.setup = this.form.setup.filter(el => el != +id)
+		}
 	},
 }
 </script>
@@ -156,4 +176,12 @@ export default {
 
 	&__editor
 		margin 10px 0
+
+	&__middle
+		display grid
+		grid-gap 10px
+		grid-template-columns minmax(400px, 1fr) 300px
+
+	&__checkbox
+		user-select none
 </style>

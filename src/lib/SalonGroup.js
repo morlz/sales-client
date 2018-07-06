@@ -1,5 +1,6 @@
 import BaseModel from '@/lib/BaseModel'
 import { SalonGroupSetup, Manager } from '@/lib'
+import api from '@/api'
 
 export default class SalonGroup extends BaseModel {
 	constructor (arg) {
@@ -28,5 +29,9 @@ export default class SalonGroup extends BaseModel {
 	pure () {
 		return (Object.keys(SalonGroup.options).concat(SalonGroup.fields))
 			.reduce((prev, option) => ( prev[option] = this[option], prev ), {})
+	}
+
+	static async getList () {
+		return this.wrapArray(await api.core.get('salon-groups'))
 	}
 }

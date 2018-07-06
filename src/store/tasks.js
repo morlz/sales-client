@@ -9,7 +9,8 @@ let infinite = new TwoSideInfinite({ method: api.tasks.getLimited, namespace: 't
 const state = merge(infinite.getState(), {
 	cached: {
 		current: {},
-		types: []
+		types: [],
+		today: []
 	},
 	loading: {
 		one: false,
@@ -93,10 +94,16 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('notify', 'Задача успешно создана')
 		router.push({ path: `/preorder/preorders/${res.data.next.preorder_id}` })
 	},
+	async task_getUserCurrentTasks ({ commit, dispatch, rootGetters }) {
+		let today = await Task.getForUserCurrent()
+		if (!today || today.error) return
+
+		commit('task_cachedSet', { today })
+	}
 })
 
 const mutations = merge(infinite.getMutations(true), {
-	task_destroy: state => state.cached.list = [],
+	task_destroy: state => state.cached.list  = state.cached.currenUserTasks = [],
 	task_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
 	task_cacheUpdate: (state, payload) => {
 		let task = state.cached.list.find(el => el.id == payload.id)
@@ -117,7 +124,7 @@ const mutations = merge(infinite.getMutations(true), {
 	task_edit_currentSet: (state, payload) => state.edit.current = payload,
 	task_edit_visibleSet: (state, payload) => state.edit.visible = payload,
 	task_add_prevSet: (state, payload) => state.add.prev = payload,
-	task_add_nextSet: (state, payload) => state.add.next = payload,
+	task_add_nextSet: (state, payload) => state.add.next = payload
 })
 
 const getters = merge(infinite.getGetters(true), {
@@ -134,7 +141,8 @@ const getters = merge(infinite.getGetters(true), {
 	task_edit_visible: ({ edit }) => edit.visible,
 	task_edit_current: ({ edit }) => edit.current,
 	task_add_next: state => state.add.next,
-	task_type: state => state.filters.type
+	task_type: state => state.filters.type,
+	task_today: state => state.cached.today
 })
 
 export default {

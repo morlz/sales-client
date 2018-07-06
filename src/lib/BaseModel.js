@@ -104,4 +104,18 @@ export default class BaseModel {
 
 		return template.replace(/{(\w+)}/g, (m, p) => data[p])
 	}
+
+	static wrap (res, field = 'id') {
+		if (res[field] !== undefined)
+			return new this(res)
+
+		return res
+	}
+
+	static wrapArray (res) {
+		if (Array.isArray(res))
+			return res.map(el => new this(el))
+
+		return res
+	}
 }

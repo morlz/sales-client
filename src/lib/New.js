@@ -12,24 +12,17 @@ export default class New extends BaseModel {
 			description: '',
 			title: '',
 			archive: 0,
+			setup: [],
 			...arg
 		})
 	}
 
 	static async getAll () {
-		let res = await api.core.get('news')
-		if (Array.isArray(res))
-			return res.map(el => new New(el))
-
-		return res
+		return this.wrapArray(await api.core.get('news'))
 	}
 
 	static async getOne (id) {
-		let res = await api.core.get('new', { id })
-		if (res.id)
-			return new New(res)
-
-		return res
+		return this.wrap(await api.core.get('new', { id }))
 	}
 
 	async save () {
@@ -44,5 +37,17 @@ export default class New extends BaseModel {
 			return new New(res)
 
 		return res
+	}
+
+	async remove () {
+		let res = await api.core.delete('new', { id: this.id })
+		if (res.id)
+			return new New(res)
+
+		return res
+	}
+
+	set newsSetup (val) {
+		this.setup = val.map(el => +el.group_id)
 	}
 }

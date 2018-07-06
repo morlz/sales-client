@@ -1,7 +1,7 @@
 <template>
 <div class="AppWrapper">
-	<q-ajax-bar :delay="200"/>
-	<q-window-resize-observable @resize="app_view_resize" />
+	<q-ajax-bar :delay="200" v-if="!noLoading.includes($route.fullPath)"/>
+	<q-window-resize-observable @resize="app_view_resize"/>
 
 	<transition name="fadeZoom" appear key="mainTransition">
 		<q-layout
@@ -69,6 +69,7 @@ export default {
 			menuLeftOpen: true,
 			layoutLoaded: false,
 			layoutLoadedCheckInterval: false,
+			noLoading: ['/']
 		}
 	},
 	watch: {

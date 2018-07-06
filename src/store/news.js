@@ -1,11 +1,11 @@
 import api from '@/api'
-import { New, Chat, NewMessage } from '@/lib'
+import { New, Chat, NewMessage, SalonGroup } from '@/lib'
 import moment from 'moment'
 
 const state = {
 	cached: {
 		list: [],
-		setup: [],
+		groups: [],
 		current: false,
 		chat: {}
 	},
@@ -20,14 +20,23 @@ const state = {
 }
 
 const actions = {
-	init ({ dispatch }) {
-		dispatch('getAll')
+	async init ({ dispatch }) {
+		return await Promise.all([
+			dispatch('getAll'),
+			dispatch('getGroups')
+		])
 	},
 	destroy ({ commit }) {
 		commit('changeChat', false)
 	},
 	refresh () {
 		dispatch('getAll')
+	},
+	async getGroups ({ commit, dispatch }) {
+		let groups = await SalonGroup.getList()
+		if (!groups || groups.error) return
+
+		commit('cacheSet', { groups })
 	},
 	async getAll ({ commit, dispatch }) {
 		commit('loadingSet', { list: true })
@@ -54,6 +63,13 @@ const actions = {
 	},
 	async archive ({ commit, dispatch, getters }, nw) {
 		let res = await nw.archivate()
+		if (!res || res.error) return
+
+		commit('removeOneFromCache', res.id)
+		commit('cacheSet', { current: false })
+	},
+	async remove ({ commit, dispatch, getters }, nw) {
+		let res = await nw.remove()
 		if (!res || res.error) return
 
 		commit('removeOneFromCache', res.id)

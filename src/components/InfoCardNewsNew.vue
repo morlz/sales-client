@@ -1,11 +1,12 @@
 <template>
 	<div class="New" v-if="chat.new">
+		<h2 class="New__title" v-html="chat.new.title"/>
 		<div class="New__description" v-html="chat.new.description"/>
 
 		<div class="New__buttons">
 			<q-btn flat color="primary" icon="edit" @click="edit"/>
 			<q-btn flat color="secondary" icon="archive" @click="archive"/>
-			<q-btn flat color="negative" icon="delete"/>
+			<q-btn flat color="negative" icon="delete" @click="remove"/>
 		</div>
 
 		<div class="NewChat">
@@ -25,10 +26,10 @@
 
 			<div class="NewChat__createMessage">
 				<q-field>
-					<q-input v-model="newMsg" float-label="Новое сообщение"/>
+					<q-input v-model="newMsg" float-label="Новое сообщение" @keydown.enter.native="send"/>
 				</q-field>
 
-				<q-btn color="primary" icon="send" @click="send"/>
+				<q-btn color="primary" icon="send" @click="send" flat/>
 			</div>
 		</div>
 	</div>
@@ -54,7 +55,8 @@ export default {
 	},
 	data () {
 		return {
-			newMsg: ''
+			newMsg: '',
+			updateTimeTimeout: null
 		}
 	},
 	watch: {
@@ -111,13 +113,20 @@ export default {
 		},
 		archive () {
 			this.$store.dispatch('news/archive', this.chat.new)
+		},
+		remove () {
+			this.$store.dispatch('news/remove', this.chat.new)
 		}
 	},
 	created () {
 		this.initChatForCurrentNew()
+		this.updateTimeTimeout = setInterval(a => this.$forceUpdate(), 1e4)
 	},
 	mounted () {
 		this.scrollBottom()
+	},
+	beforeDestroy () {
+		clearTimeout(this.updateTimeTimeout)
 	}
 }
 </script>

@@ -42,9 +42,6 @@
 				<info-card-news-new/>
 			</div>
 		</q-card-main>
-
-		<q-card-actions>
-		</q-card-actions>
 	</q-card>
 </template>
 
