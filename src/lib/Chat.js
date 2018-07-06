@@ -19,23 +19,29 @@ export default class Chat extends BaseModelEventEmitter {
 	}
 
 	init () {
-		this.loop = setInterval(a => this.refresh(), 1e4)
+		//this.loop = setInterval(a => this.refresh(), 1e4)
+		this.runNext (1e3)
 	}
 
 	destroy () {
-		clearInterval(this.loop)
+		clearTimeout(this.loop)
+		this.preparedToDestroy = true
 	}
 
 	async refresh () {
 		let res = await api.core.get('new/refresh', { t: this.lastUpdate, id: this.new.id })
 
-		if (!res || res.error) return
+		if (!res || res.error)
+			return this.runNext (1e4)
 
 		if (this.typing !== res.typing)
 			this.setTyping(res.typing)
 
 		if (res.newMessages && res.newMessages.length && this.new)
-			this.setMessages([...this.new.messages, ...res.newMessages])
+			this.setMessages([
+				...this.new.messages.filter(el => !res.newMessages.find(n => n.id == el.id)),
+				...res.newMessages
+			])
 
 		if ((res.addedMembers && res.addedMembers.length) || (res.removedMembers && res.removedMembers.length))
 			this.setMembers([
@@ -44,6 +50,17 @@ export default class Chat extends BaseModelEventEmitter {
 			])
 
 		this.lastUpdate = res.t
+		this.runNext (res.next || 1e4)
+	}
+
+	runNext (time = 1e4) {
+		if (this.preparedToDestroy)
+			return
+
+		if (this.loop)
+			clearTimeout(this.loop)
+
+		this.loop = setTimeout(() => this.refresh(), time)
 	}
 
 	createMessage () {

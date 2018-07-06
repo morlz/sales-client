@@ -63,13 +63,13 @@ export default {
 				['print', 'fullscreen'],
 				[
 					{
-						label: this.$q.i18n.editor.formatting,
+						//label: this.$q.i18n.editor.formatting,
 						icon: this.$q.icon.editor.formatting,
 						list: 'no-icons',
 						options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code']
 					},
 					{
-						label: this.$q.i18n.editor.fontSize,
+						//label: this.$q.i18n.editor.fontSize,
 						icon: this.$q.icon.editor.fontSize,
 						fixedLabel: true,
 						fixedIcon: true,
@@ -77,7 +77,7 @@ export default {
 						options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7']
 					},
 					{
-						label: this.$q.i18n.editor.defaultFont,
+						//label: this.$q.i18n.editor.defaultFont,
 						icon: this.$q.icon.editor.font,
 						fixedIcon: true,
 						list: 'no-icons',
@@ -88,7 +88,7 @@ export default {
 				['quote', 'unordered', 'ordered', 'outdent', 'indent'],
 				[
 					{
-						label: this.$q.i18n.editor.align,
+						//label: this.$q.i18n.editor.align,
 						icon: this.$q.icon.editor.align,
 						fixedLabel: true,
 						list: 'only-icons',
