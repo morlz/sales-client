@@ -27,12 +27,18 @@ const actions = {
 		])
 	},
 	destroy ({ commit }) {
+		commit('cacheSet', {
+			list: []
+		})
+	},
+	destroyChat ({ commit }) {
 		commit('changeChat', false)
 	},
 	refresh () {
 		dispatch('getAll')
 	},
-	async getGroups ({ commit, dispatch }) {
+	async getGroups ({ commit, dispatch, state }) {
+		if (state.cached.groups.length) return
 		let groups = await SalonGroup.getList()
 		if (!groups || groups.error) return
 
@@ -48,18 +54,24 @@ const actions = {
 	},
 	async getOne ({ commit, dispatch }, id) {
 		commit('loadingSet', { current: true })
+		dispatch('getGroups')
 		let current = await New.getOne(id)
 		commit('loadingSet', { current: false })
 		if (!current || current.error) return
 
 		commit('changeChat', new Chat(current))
+
+		await current.readed()
 	},
 	async save ({ commit, dispatch }, nw) {
+		commit('modalSet', false)
+
 		let res = await nw.save()
 		if (!res || res.error) return
 
-		commit('cacheListAppendOrUpdate', res)
-		commit('changeChat', new Chat(res))
+		router.push(`/news/${res.id}`)
+		//commit('cacheListAppendOrUpdate', res)
+		//commit('changeChat', new Chat(res))
 	},
 	async archive ({ commit, dispatch, getters }, nw) {
 		let res = await nw.archivate()
@@ -75,11 +87,8 @@ const actions = {
 		commit('removeOneFromCache', res.id)
 		commit('cacheSet', { current: false })
 	},
-	async sendMessage ({ commit, dispatch, getters }, content) {
-		let msg = new NewMessage({
-			content,
-			new_id: getters.current
-		})
+	async sendMessage ({ commit, dispatch, getters }, { content, new_id }) {
+		let msg = new NewMessage({ content, new_id })
 		let res = await msg.save()
 		if (!res || res.error) return
 
@@ -108,8 +117,10 @@ const mutations = {
 }
 
 const getters = {
-	current: state => state.cached.current ? state.cached.current : (state.cached.list[0] || {}).id,
-	cached: state => state.cached.list.sort( api.core.sortFnFactory( item => moment(item.date).valueOf() ) ),
+	cached: state => state.cached.list
+		.sort( api.core.sortFnFactory( item => moment(item.date).valueOf() ) )
+		.sort( api.core.sortFnFactory( item => !!item.newMessagsCount ) )
+		.sort( api.core.sortFnFactory( item => !item.view ) ),
 }
 
 export default {

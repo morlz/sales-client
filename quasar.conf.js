@@ -170,7 +170,8 @@ module.exports = function(ctx) {
 				'QDatetimePicker',
 				'QBtnToggle',
 				'QChatMessage',
-				'QEditor'
+				'QEditor',
+				'QChip'
 			],
 			directives: [
 				'Ripple',

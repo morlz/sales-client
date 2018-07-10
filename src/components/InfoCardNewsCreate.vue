@@ -2,7 +2,7 @@
 <div class="NewsCreate">
 	<q-btn color="primary" @click="toggleModalCreate">Создать</q-btn>
 
-	<q-modal v-model="modal" class="NewsCreateModal" :content-css="{minWidth: '80vw', minHeight: '90vh'}">
+	<q-modal v-model="modal" class="NewsCreateModal" :content-css="{minWidth: '80vw', minHeight: '90vh'}" no-backdrop-dismiss>
 		<q-modal-layout class="NewsCreateModal__layout">
 			<q-toolbar slot="header">
 				<q-btn flat wait-for-ripple v-close-overlay icon="keyboard_arrow_left" />
@@ -42,6 +42,7 @@
 					@click="save">
 					Сохранить
 				</q-btn>
+
 			</div>
 		</q-modal-layout>
 	</q-modal>

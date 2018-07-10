@@ -8,15 +8,14 @@
 			<div class="InfoCardNews__list">
 				<q-scroll-area
 					class="InfoCardNews__scroll"
-					style="width: 100%; height: 600px;"
+					style="width: 100%; height: 100%; min-height: 350px;"
 					ref="scroll">
 					<q-list no-border link>
 						<q-item
 							v-for="item, index in cached"
 							:key="index"
 							@click.native="select(item)"
-							class="InfoCardNewsNewTitle"
-							:class="{ 'InfoCardNewsNewTitle__selected' : current == item.id }">
+							class="InfoCardNewsNewTitle">
 
 							<q-item-side :avatar="item.manager.avatar"/>
 
@@ -30,16 +29,24 @@
 							</q-item-main>
 
 							<q-item-side right>
+								<q-chip
+									v-if="!item.view"
+									icon="notification_important"
+									color="primary">
+									Не прочитано
+								</q-chip>
+
+								<q-chip
+									v-else-if="item.newMessagsCount"
+									color="primary">
+									{{ item.newMessagsCount }}
+								</q-chip>
 							</q-item-side>
 						</q-item>
 					</q-list>
 				</q-scroll-area>
 
 				<info-card-news-create/>
-			</div>
-
-			<div class="InfoCardNews__new">
-				<info-card-news-new/>
 			</div>
 		</q-card-main>
 	</q-card>
@@ -58,14 +65,6 @@ export default {
 		InfoCardNewsCreate
 	},
 	mixins: [AuthMixin],
-	props: {
-
-	},
-	data () {
-		return {
-
-		}
-	},
 	computed: {
 		...mapGetters('news', [
 			'current',
@@ -74,7 +73,8 @@ export default {
 	},
 	methods: {
 		select (item) {
-			this.$store.commit('news/cacheSet', { current: item.id })
+			this.$router.push(`/news/${item.id}`)
+			//this.$store.commit('news/cacheSet', { current: item.id })
 		}
 	},
 	created () {
@@ -89,12 +89,10 @@ export default {
 
 <style lang="stylus">
 .InfoCardNews
-	&__content
-		display grid
-		grid-gap 10px
-		grid-template-columns minmax(300px, 1fr) minmax(400px, 2fr)
-
+	display grid
+	grid-template-rows max-content 1fr
 	&__list
+		height 100%
 		display grid
 		grid-template-rows 1fr max-content
 
