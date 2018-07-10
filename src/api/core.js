@@ -119,7 +119,7 @@ class ApiCore extends EventEmitter {
 		let args = [...Array.from(arguments)]
 		//await this._wait(1000)
 
-		let url = path.join(this.apiPath, to)
+		let url = path.join('/' + this.apiPath, to)
 
 		req.params = { ...req.params, token: auth.getToken() }
 
