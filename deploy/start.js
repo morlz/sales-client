@@ -2,6 +2,14 @@ const {
 	deploy
 } = require('sftp-sync-deploy')
 const auth = require('./config')
+const moment = require('moment')
+
+function log () {
+	let args = Array.from(arguments)
+	args.unshift(moment().format('YYYY MMMM DD HH:mm:ss:SSSS'))
+	args.unshift(`deploy:start`)
+	console.log.apply(null, args)
+}
 
 const config = Object.assign({
 	localDir: 'dist/spa-mat', // Required, Absolute or relative to cwd.
@@ -18,6 +26,8 @@ let options = {
 	forceUpload: false // Force uploading all files, Default to false(upload only newer files).
 }
 
+log(`start`)
+
 deploy(config, options)
-	.then(() => console.log('success!'))
-	.catch(err => console.error('error! ', err))
+	.then(() => log('success!'))
+	.catch(err => log('error! ', err))
