@@ -20,8 +20,8 @@ const actions = {
 			let { title } = api.errors.getStatusDescription ( err.status ),
 				notify = (title ? title : `Ошибка ${err.status ? err.status : ''}`) + ' ' + err.message
 
-			let clientError = new ClientError({ msg: notify })
-			clientError.save()
+			//let clientError = new ClientError({ msg: notify })
+			//clientError.save()
 
 
 			dispatch("alert", notify)
