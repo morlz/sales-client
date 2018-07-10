@@ -10,7 +10,8 @@ const state = merge(infinite.getState(), {
 	cached: {
 		current: {},
 		types: [],
-		today: []
+		today: [],
+		todaySalon: []
 	},
 	loading: {
 		one: false,
@@ -99,6 +100,12 @@ const actions = merge(infinite.getActions(true), {
 		if (!today || today.error) return
 
 		commit('task_cachedSet', { today })
+	},
+	async task_getSalonCurrentTasks ({ commit, dispatch }) {
+		let todaySalon = await Task.getForSalonCurrent()
+		if (!todaySalon || todaySalon.error) return
+
+		commit('task_cachedSet', { todaySalon })
 	}
 })
 
@@ -142,7 +149,8 @@ const getters = merge(infinite.getGetters(true), {
 	task_edit_current: ({ edit }) => edit.current,
 	task_add_next: state => state.add.next,
 	task_type: state => state.filters.type,
-	task_today: state => state.cached.today
+	task_today: state => state.cached.today,
+	task_todaySalon: state => state.cached.todaySalon,
 })
 
 export default {

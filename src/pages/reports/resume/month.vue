@@ -1,6 +1,12 @@
 <template>
 <div class="ReportsResumeAllChart">
-	<reports-resume-all-chart v-if="chart" :chart-data="reports_resume_allChart_cache" :options="options" class='ReportsResumeAllChart__chart' :width="width" :height="height"/>
+	<reports-resume-all-chart
+		v-if="chart"
+		:chart-data="reports_resume_allChart_cache"
+		:options="options"
+		class='ReportsResumeAllChart__chart' 
+		:width="width"
+		:height="height"/>
 </div>
 </template>
 

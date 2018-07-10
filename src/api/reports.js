@@ -4,6 +4,7 @@ import groupBy from 'lodash.groupby'
 
 import { Td, Invoice } from '@/lib'
 
+
 export default {
 	async getSales (params) {
 		params = core.prepareArrays(params)

@@ -1,7 +1,7 @@
 <template>
-	<q-card class="InfoCardCurrentTasks">
+	<q-card class="InfoCardCurrentTasksManager">
 		<q-card-title>
-			Задачи на сегодня
+			Мои задачи
 		</q-card-title>
 
 		<q-card-main>

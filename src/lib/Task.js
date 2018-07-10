@@ -18,4 +18,8 @@ export default class Task extends BaseModel {
 	static async getForUserCurrent () {
 		return this.wrapArray(await api.core.get('task/current'))
 	}
+
+	static async getForSalonCurrent () {
+		return this.wrapArray(await api.core.get('task/current-salon'))
+	}
 }

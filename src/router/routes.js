@@ -12,6 +12,7 @@ export default [
 		component: () => import ('layouts/default'),
 		children: [
 			{ path: '', 							component: () => import ('pages/index'),						meta: { name: "Главная" } },
+			{ path: '/news/:id', 					component: () => import ('pages/main/news'),					meta: { name: "Новости" } },
 
 			{ path: '/admin/personal/:id?', 		component: () => import ('pages/admin/Personal'), 				meta: { name: "Персонал" } },
 			{ path: '/admin/permissions/', 			component: () => import ('pages/admin/Permissions'), 			meta: { name: "Настройка прав" } },
