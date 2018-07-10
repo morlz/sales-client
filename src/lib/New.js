@@ -1,5 +1,5 @@
 import BaseModel from '@/lib/BaseModel'
-import { NewMessage, Chat, Manager } from '@/lib'
+import { NewMessage, Chat, Manager, View } from '@/lib'
 import api from '@/api'
 
 export default class New extends BaseModel {
@@ -7,7 +7,8 @@ export default class New extends BaseModel {
 		super()
 		this.define({
 			messages: [NewMessage],
-			manager: Manager
+			manager: Manager,
+			view: View
 		}, {
 			description: '',
 			title: '',
@@ -49,5 +50,9 @@ export default class New extends BaseModel {
 
 	set newsSetup (val) {
 		this.setup = val.map(el => +el.group_id)
+	}
+
+	async readed () {
+		return await api.core.put('view', { id: this.id, type: 'new' })
 	}
 }
