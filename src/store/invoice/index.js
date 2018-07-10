@@ -195,8 +195,8 @@ const actions = merge(infinite.getActions(true), {
 		dispatch('notify', 'Успешно удалено')
 	},
 	async invoice_editZak ({ commit, dispatch }, payload) {
-		router.push('/invoice/edit')
-		dispatch('invoice_new_setEdit', payload)
+		router.push('/furniture/edit')
+		dispatch('furniture_new_setEdit', payload)
 	},
 	async invoice_exportToAx ({ commit, dispatch }, payload) {
 		let res = await api.invoices.exportToAx(payload)
