@@ -1,6 +1,6 @@
 <template>
 <div class="AppWrapper">
-	<q-ajax-bar :delay="200" v-if="!noLoading.includes($route.fullPath)"/>
+	<q-ajax-bar :delay="200" v-if="!noLoading.some(regex => regex.test($route.fullPath))"/>
 	<q-window-resize-observable @resize="app_view_resize"/>
 
 	<transition name="fadeZoom" appear key="mainTransition">
@@ -69,7 +69,7 @@ export default {
 			menuLeftOpen: true,
 			layoutLoaded: false,
 			layoutLoadedCheckInterval: false,
-			noLoading: ['/']
+			noLoading: [/\/(news)\/\d{1,}/]
 		}
 	},
 	watch: {
