@@ -1,19 +1,33 @@
 <template>
-	<q-card class="contacts" v-if="auth_can(1, 'ContactFace')">
+	<q-card
+		class="InfoCardContactFaces"
+		v-if="auth_can(1, 'ContactFace')">
 		<q-card-title>
 			Контакты
 		</q-card-title>
 
 		<q-card-main>
-			<table-collapsible :columns="clientContactsFieldDescription" :rows="data"/>
+			<table-collapsible
+				:columns="clientContactsFieldDescription"
+				:rows="data"/>
 		</q-card-main>
 
 		<q-card-actions>
-			<q-btn color="primary" @click="add" v-if="allowCreate && auth_can(2, 'ContactFace')" icon="add">Добавить контакт</q-btn>
+			<q-btn
+				color="primary"
+				@click="add"
+				v-if="allowCreate && auth_can(2, 'ContactFace')"
+				icon="add">
+				Добавить контакт
+			</q-btn>
 		</q-card-actions>
 
-		<form-contact-face-add v-if="allowCreate && auth_can(2, 'ContactFace')" v-model="addContactFaceForm"/>
-		<edit-contact-form v-if="auth_can(2, 'ContactFace')"/>
+		<form-contact-face-add
+			v-if="allowCreate && auth_can(2, 'ContactFace')"
+			v-model="addContactFaceForm"/>
+
+		<edit-contact-form
+			v-if="auth_can(2, 'ContactFace')"/>
 	</q-card>
 </template>
 
@@ -65,10 +79,8 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
-.contacts {
-	.buttons {
-		margin-top: 15px;
-	}
-}
+<style lang="stylus" scoped>
+.InfoCardContactFaces
+	display grid
+	grid-template-rows max-content 1fr max-content
 </style>
