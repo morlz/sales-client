@@ -27,7 +27,7 @@
 						:key="msg.id"
 						:text="msg.messages"
 						:name="msg.manager.name"
-						:avatar="msg.manager.avatar"
+						:avatar="msg.manager.avatar ? msg.manager.avatar.href : msg.manager.avatarDefault"
 						:stamp="$moment().to(+msg.created_at)"
 						:sent="auth_user.id == msg.manager.id"/>
 				</q-scroll-area>

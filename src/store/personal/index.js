@@ -17,6 +17,9 @@ const state = merge(infinite.getState(), {
 		one: true,
 		bottom: false,
 		currentRolesSetup: true
+	},
+	edit: {
+		active: false
 	}
 })
 
@@ -69,6 +72,21 @@ const actions = merge(infinite.getActions(true), {
 		if (!res.data || res.data.error) return
 
 		commit('personal_currentRolesSetupSet', res.data)
+	},
+	async personal_save ({ commit, dispatch }, manager) {
+		if (!(manager instanceof Manager)) return
+
+		let res = await manager.save()
+		if (!res || res.error) return
+
+		if (res.errors)
+			return dispatch('handleFormErrors', res.errors, { root: true })
+
+		dispatch('notify', 'Профль успешно изменён.')
+		dispatch('personal_getOne', res.id)
+		commit('auth_update', res)
+
+		return true
 	}
 })
 
@@ -85,6 +103,7 @@ const mutations = merge(infinite.getMutations(true), {
 	personal_loadingBottomSet: (store, payload) => store.loading.bottom = payload,
 	personal_loadingOneSet: (store, payload) => store.loading.one = payload,
 	personal_loadingRolesSetupSet: (store, payload) => store.loading.currentRolesSetup = payload,
+	personal_editSet: (state, payload) => state.edit.active = payload,
 })
 
 const getters = merge(infinite.getGetters(true), {
@@ -96,6 +115,7 @@ const getters = merge(infinite.getGetters(true), {
 	personal_loading: ({ loading }) => loading.list,
 	personal_loadingBottom: ({ loading }) => loading.bottom,
 	personal_loadingOne: ({ loading }) => loading.one,
+	personal_edit: state => state.edit.active
 })
 
 const modules = {

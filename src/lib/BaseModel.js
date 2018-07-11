@@ -71,7 +71,25 @@ export default class BaseModel {
 
 	_setProperty (path, value) {
 		let splited = path.split('.')
-		splited.reduce((prev, el, index) => prev[el] ? prev[el] : Vue.set(prev, el, index + 1 == splited.length ? value : {}), this)
+		splited.reduce(
+			(prev, el, index) =>
+				prev[el] ?
+					index + 1 == splited.length ?
+						Vue.set(
+							prev,
+							el,
+							value
+						)
+					:	prev[el]
+				:	Vue.set(
+						prev,
+						el,
+						index + 1 == splited.length ?
+							value
+						:	{}
+					),
+				this
+		)
 	}
 
 	get instance () {
@@ -118,4 +136,8 @@ export default class BaseModel {
 
 		return res
 	}
+}
+
+export {
+	prefix
 }

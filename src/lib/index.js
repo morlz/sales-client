@@ -2,6 +2,11 @@ import BaseModel from '@/lib/BaseModel'
 export default BaseModel
 
 export { default as BaseModel } 			from '@/lib/BaseModel'
+export { default as BaseModelEventEmitter } from '@/lib/BaseModelEventEmitter'
+export { aggregation } 						from '@/lib/BaseModelEventEmitter'
+export { default as BaseImage } 			from '@/lib/BaseImage'
+export { default as BaseFile } 				from '@/lib/BaseFile'
+
 export { default as Shipment } 				from '@/lib/Shipment'
 export { default as Invoice } 				from '@/lib/Invoice'
 export { default as Payment } 				from '@/lib/Payment'
@@ -26,4 +31,4 @@ export { default as NewMessage } 			from '@/lib/NewMessage'
 export { default as Chat } 					from '@/lib/Chat'
 export { default as ClientError } 			from '@/lib/ClientError'
 export { default as Token } 				from '@/lib/Token'
-export { default as View } 				from '@/lib/View'
+export { default as View } 					from '@/lib/View'

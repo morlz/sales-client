@@ -17,7 +17,7 @@
 							@click.native="select(item)"
 							class="InfoCardNewsNewTitle">
 
-							<q-item-side :avatar="item.manager.avatar"/>
+							<q-item-side v-if="item.manager.avatar" :avatar="item.manager.avatar.href"/>
 
 							<q-item-main>
 								<q-item-tile>

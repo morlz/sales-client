@@ -2,7 +2,7 @@
 <q-page class="AppContent" v-if="auth_can(1, 'Manager')">
 	<div class="onePersonalWrapper" v-if="isOne" v-loading="personal_loadingOne">
 		<div class="cards AppContent__inner">
-			<manager-profile-card :content="personal_current"/>
+			<manager-profile-card :content="personal_current" v-if="personal_current.id"/>
 
 			<manager-roles-card v-if="auth_can(1, 'RoleSetup')" />
 			<manager-groups-card v-if="auth_can(1, 'RoleSetup')" :manager-id="$route.params.id"/>

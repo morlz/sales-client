@@ -163,7 +163,8 @@ const mutations = {
 	auth_currentSalonSet: (state, payload) => state.currentSalon = payload instanceof Salon ? payload : new Salon(payload),
 	auth_currentSalonVisibleSet: (state, payload) => state.visible.currentSalon = payload,
 	auth_loadingSet: (state, payload) => state.loading = { ...state.loading, ...payload },
-	auth_logout: state => state.user = false
+	auth_logout: state => state.user = false,
+	auth_update: (state, payload) => state.user.update(payload)
 }
 
 const getters = {

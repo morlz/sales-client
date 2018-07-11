@@ -1,12 +1,14 @@
 <template>
-<div class="profileWrapper">
-	<q-popover ref="popoverProfie">
+<div class="AppHeaderProfile">
+	<q-popover ref="AppHeaderProfilePopover">
 		<q-card>
 			<q-card-media>
-				<img :src="avatar"/>
+				<div
+					class="AppHeaderProfilePopover__avatar"
+					:style="{ backgroundImage: `url(${loginedAs.avatar.href})` }"/>
 			</q-card-media>
 
-			<q-card-title>{{ fio }}</q-card-title>
+			<q-card-title>{{ loginedAs.fio }}</q-card-title>
 
 			<q-card-main>
 				<q-list no-border>
@@ -33,9 +35,9 @@
 		</q-card>
 	</q-popover>
 
-	<q-btn class="name" flat wait-for-ripple>
+	<q-btn class="AppHeaderProfile__name" flat wait-for-ripple color="white">
 		<q-icon name="account_circle" v-if="app_view_mobile"/>
-		{{ app_view_mobile ? '' : fio }}
+		{{ app_view_mobile ? '' : loginedAs.fio }}
 	</q-btn>
 </div>
 </template>
@@ -64,55 +66,27 @@ export default {
 			'app_view_mobile',
 			'auth_currentSalon'
 		]),
-		fio () {
-			return `${this.loginedAs.FIO} ${this.loginedAs.IMY} ${this.loginedAs.OTCH}`
-		},
-		avatar () {
-			return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'
-		}
 	}
 }
 </script>
 
 
-<style lang="less" scoped>
-.profileWrapper {
-	> .name {
-		cursor: pointer;
-		box-sizing: border-box;
-		color: #fff;
-		transition: all 0.3s ease-in-out;
-		&:hover {
-			background-color: #1565c0;
-		}
-	}
-}
-.profileModalWrapper {
-	display: grid;
-	grid-auto-flow: row;
-	width: 500px;
-	max-width: ~"calc(100vw - 15px)";
-	.bg {
-		display: grid;
-		justify-content: center;
-		text-align: center;
-		.avatar {
-			width: 100px;
-			height: 100px;
-			border-radius: 50px;
-			background-position: center;
-			background-size: cover;
-			border: 3px solid rgba(0, 0, 0, 0.1);
-			margin: 10px;
-		}
-	}
-	.buttons {
-		margin-top: 10px;
-		padding: 10px;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(100px, auto));
-		grid-gap: 10px;
-		justify-items: center;
-	}
-}
+<style lang="stylus" scoped>
+.AppHeaderProfile
+	&__name
+		cursor pointer
+		box-sizing border-box
+		transition all 0.3s ease-in-out
+
+.AppHeaderProfilePopover
+	&__avatar
+		width 200px
+		height 200px
+		border-radius 100px
+		background-position center
+		background-size cover
+		border 3px solid rgba(0, 0, 0, 0.1)
+		margin 10px auto
+
+
 </style>
