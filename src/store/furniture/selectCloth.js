@@ -58,11 +58,20 @@ const mutations = {
 	furniture_selectCloth_cacheSet: (state, payload) => state.cached = { ...state.cached, ...payload },
 	furniture_selectCloth_querySet: (state, payload) => state.query = { ...state.query, ...payload },
 	furniture_selectCloth_katSet: (state, payload) => state.kat = { ...state.kat, ...payload },
-	furniture_selectCloth_cacheAppend: (state, payload) => Object.keys(payload).map(key => state.cached[key] = [...state.cached[key], ...payload[key]]),
+	furniture_selectCloth_cacheAppend: (state, payload) =>
+		Object.keys(payload).map(key => state.cached[key] = [...state.cached[key], ...payload[key]]),
 }
 
 const getters = {
-	furniture_selectCloth_cached: state => Object.keys(state.cached).map(index => groupBy(state.cached[index], 'collection')),
+	furniture_selectCloth_cached: state =>
+		Object.keys(state.cached).reduce(
+			(prev, index) =>
+				(
+					prev[index] = groupBy(state.cached[index], 'collection'),
+					prev
+				),
+				{}
+		),
 	furniture_selectCloth_kats: state => state.kat,
 	furniture_selectCloth_complete: state => state.complete,
 }

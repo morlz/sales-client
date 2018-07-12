@@ -48,7 +48,7 @@ const state = merge(infinite.getState(), {
 			types: [],
 			dekor: [],
 			cat: "0",
-			clothCount: 0,
+			clothCount: [],
 			opt: "0",
 			price: "0",
 			cloth: {
@@ -269,6 +269,9 @@ const actions = merge(infinite.getActions(true), {
 		commit('furniture_new_loadingPriceSet', false)
 		if (data && data.error) return
 
+		if (data.errors)
+			return dispatch('handleFormErrors', data.errors)
+
 		commit('furniture_new_cachedClothSet', { index, data })
 		await dispatch('furniture_new_getClothInfo', index)
 		await dispatch('furniture_new_getDiscountPrice', index)
@@ -470,16 +473,16 @@ const actions = merge(infinite.getActions(true), {
 			await dispatch('furniture_new_dekorSelect', dekor.CONFIGID)
 		}
 
-		if (+state.new.cached.clothCount) {
-			for (var index = 0; index < +state.new.cached.clothCount; index++) {
+		if (state.new.cached.clothCount.length)
+			state.new.cached.clothCount.map(async ({ index }) => {
 				let cloth = getCloth(payload, index)
 				let data = await dispatch('furniture_new_getClothById', { index, cloth })
 				if (!data)
 					return dispatch('alert', `Ткань ${index + 1} не найдена`)
 
 				await dispatch('furniture_new_clothSelect', { index, data })
-			}
-		}
+			})
+
 
 		commit('furniture_new_priceSet', { r: +payload.price, opt: +payload.priceOpt })
 		commit('furniture_new_signSet', payload.comment)
@@ -572,7 +575,10 @@ const mutations = merge(infinite.getMutations(true), {
 	furniture_new_cachedStockSet: (state, payload) => state.new.cached.stock = payload.ACTIONNUM || payload,
 	furniture_new_cachedTypesSet: (state, payload) => state.new.cached.types = payload,
 	furniture_new_cachedDekorSet: (state, payload) => state.new.cached.dekor = payload,
-	furniture_new_cachedClothCountSet: (state, payload) => state.new.cached.clothCount = payload,
+	furniture_new_cachedClothCountSet: (state, payload) =>
+		state.new.cached.clothCount = payload
+			.filter(el => +el.count)
+			.map(({ count, index }) => ({ count: +count, index: +index })),
 	furniture_new_cachedClothSet: (state, payload) => state.new.cached.cloth[payload.index] = payload.data,
 	furniture_new_cachedClothUpdate: (state, payload) =>
 		state.new.cached.cloth[payload.index] = { ...state.new.cached.cloth[payload.index], ...payload.data },
@@ -657,7 +663,7 @@ const getters = merge(infinite.getGetters(true), {
 			if (state.new.selected.cloth.hasOwnProperty(prop) && state.new.selected.cloth[prop])
 				clothFilledCount++
 
-		if (clothFilledCount == state.new.cached.clothCount && currentStep > 2)
+		if (clothFilledCount == state.new.cached.clothCount.length && currentStep > 2)
 			currentStep++
 
 		// шаг заполнения доп информации
@@ -673,9 +679,9 @@ const getters = merge(infinite.getGetters(true), {
 			type: currentStep < 1 || (!state.new.cached.types.length && !state.new.loading.types && currentStep > 0),
 			dekor: currentStep < 2 || (!state.new.cached.dekor.length && !state.new.loading.dekor && currentStep > 1),
 			cloth: [
-				currentStep < 3 || +state.new.cached.clothCount < 1,
-				currentStep < 3 || +state.new.cached.clothCount < 2,
-				currentStep < 3 || +state.new.cached.clothCount < 3,
+				currentStep < 3 || !state.new.cached.clothCount.find(el => el.index == 0),
+				currentStep < 3 || !state.new.cached.clothCount.find(el => el.index == 1),
+				currentStep < 3 || !state.new.cached.clothCount.find(el => el.index == 2),
 			],
 			sign: currentStep < 4,
 			count: currentStep < 4,

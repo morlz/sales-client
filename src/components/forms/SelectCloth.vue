@@ -130,7 +130,13 @@ export default {
 	},
 	watch: {
 		modal (n) {
-			this.$store.dispatch(n ? 'selectCloth/furniture_selectCloth_init' : 'selectCloth/furniture_selectCloth_destroy', this.index)
+			this.$store.dispatch(
+				n ?
+					'selectCloth/furniture_selectCloth_init'
+				:	'selectCloth/furniture_selectCloth_destroy',
+				this.index
+			)
+
 			if (n)
 				this.selected = this.value
 		},
