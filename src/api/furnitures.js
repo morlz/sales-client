@@ -184,9 +184,13 @@ export default {
 			//core.emit('alert', { title: "Используется старая версия", message: "Расхождение данных старой иновой версии подробнее в консоле" })
 		}
 
-		// emit default api work
-		if (dataCorrect && resNew.data.error)
+		if (resNew.data && resNew.data.error)
 			return resNew.data
+
+		if (resNew.data && resNew.data.errors) {
+			resNew.data.errors = [resNew.data.errors]
+			return resNew.data
+		}
 
 
 		if (debug) return dataCorrect
