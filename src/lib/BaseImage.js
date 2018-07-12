@@ -3,7 +3,7 @@ import { aggregation } from '@/lib'
 import BaseModel from '@/lib/BaseModel'
 
 export default class BaseImage extends BaseModel {
-	baseUrl = api.core.apiPath + '/file/local/{id}'
+	baseUrl = `/${api.core.apiPath}/file/local/{id}`
 
 	constructor (arg) {
 		super()
