@@ -444,7 +444,8 @@ export default class TwoSideInfinite extends EventEmitter {
 	}
 
 	_withNamespace (obj) {
-		return Object.keys(obj).reduce((prev, key) => ({ ...prev, [this.namespace + this.namespacePrefix + key]: obj[key] }), {})
+		return Object.keys(obj)
+			.reduce((prev, key) => (prev[this.namespace + this.namespacePrefix + key] = obj[key], prev), {})
 	}
 
 	_getNamespace(show = false) {
