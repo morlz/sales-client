@@ -17,7 +17,9 @@
 		ref="rows"
 	>
 		<div class="ReportResumeAll__salonName">
-			<div class="ReportResumeAll__salonNameHeader" v-if="salon.title" @click="reports_resume_sortSet({ type: 'salon', index: 1 })">
+			<div class="ReportResumeAll__salonNameHeader"
+				v-if="salon.title"
+				@click="reports_resume_sortSet({ type: 'salon', index: 1 })">
 				<q-input value="" @input="reports_resume_salonNameFilterSet" float-label="Поиск по салону или группе" />
 				<q-icon :name="!sortDirection ? 'arrow_upward' : 'arrow_downward'" class="cursor-pointer">
 					<q-tooltip>
@@ -29,7 +31,7 @@
 			<template v-else>
 				<div
 					class="ReportResumeAll__salonName-text"
-					@click="goToDay(salon.id, -1)"
+					@click.stop="goToDay(salon.id, -1)"
 					:style="{
 						fontWeight: salon.best ? 'bold' : 'normal'
 					}">
@@ -57,7 +59,7 @@
 
 			<div
 				v-else
-				@click="goToDay(salon.id, iIndex, salon.footer)"
+				@click.stop="goToDay(salon.id, iIndex, salon.footer)"
 				:title="getTitle(reports_resume_currentDate, iIndex, salon.footer)"
 				:style="{
 					opacity: money(item) === '0.00' ? '0.3' : 1,
