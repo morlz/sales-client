@@ -1,23 +1,20 @@
 <template>
 <q-page class="AppContent New">
 	<q-card class="AppContent__inner">
-		<q-card-title>
-		</q-card-title>
-
-		<q-card-main v-if="chat.new">
+		<q-card-main v-if="chat.new && auth_can(1, 'News')">
 			<div >
 				<h2 class="New__title" v-html="chat.new.title"/>
 				<div class="New__description" v-html="chat.new.description"/>
 
 				<div class="New__buttons">
-					<q-btn flat color="primary" icon="edit" @click="edit"/>
-					<q-btn flat color="secondary" icon="archive" @click="archive"/>
-					<q-btn flat color="negative" icon="delete" @click="remove"/>
-					<info-card-news-create/>
+					<q-btn flat v-if="auth_can(3, 'News')" color="primary" icon="edit" @click="edit"/>
+					<q-btn flat v-if="auth_can(3, 'News')" color="secondary" icon="archive" @click="archive"/>
+					<q-btn flat v-if="auth_can(4, 'News')" color="negative" icon="delete" @click="remove"/>
+					<info-card-news-create v-if="auth_can(2, 'News')"/>
 				</div>
 			</div>
 
-			<div class="NewChat">
+			<div class="NewChat" v-if="auth_can(1, 'NewsMessage')">
 				<q-scroll-area
 					class="NewChat__messages"
 					style="width: 100%; height: 600px;"
@@ -32,7 +29,7 @@
 						:sent="auth_user.id == msg.manager.id"/>
 				</q-scroll-area>
 
-				<div class="NewChat__createMessage">
+				<div class="NewChat__createMessage" v-if="auth_can(2, 'NewsMessage')">
 					<q-field>
 						<q-input v-model="newMsg" float-label="Новое сообщение" @keydown.enter.native="send"/>
 					</q-field>

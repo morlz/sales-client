@@ -1,26 +1,37 @@
 <template>
 <q-page class="AppContent">
 	<div class="AppContent__inner Index">
-		<info-card-current-tasks-manager/>
-		<info-card-current-tasks-salon/>
-		<info-card-news class="Index__news"/>
-		<info-card-main-chart-now/>
-		<info-card-main-chart-preorders/>
-		<info-card-main-chart-orders/>
-		<info-card-main-chart-best-salons/>
+		<info-card-current-tasks-manager v-if="auth_can(1, 'Task')"/>
+		<info-card-current-tasks-salon v-if="auth_can({
+			Salon: 1,
+			Task: 1
+		})"/>
+		<info-card-news class="Index__news" v-if="auth_can({
+			News: 1,
+			View: 1
+		})"/>
+		<template v-if="auth_can(1, 'ReportMain')">
+			<info-card-main-chart-now/>
+			<info-card-main-chart-preorders/>
+			<info-card-main-chart-orders/>
+			<info-card-main-chart-best-salons v-if="false"/>
+			<info-card-chart-sales-model/>
+		</template>
 	</div>
 </q-page>
 </template>
 
 <script>
 
-import InfoCardNews from '@/components/InfoCardNews'
-import InfoCardCurrentTasksSalon from '@/components/InfoCardCurrentTasksSalon'
-import InfoCardCurrentTasksManager from '@/components/InfoCardCurrentTasksManager'
-import InfoCardMainChartPreorders from '@/components/InfoCardMainChartPreorders'
-import InfoCardMainChartOrders from '@/components/InfoCardMainChartOrders'
-import InfoCardMainChartNow from '@/components/InfoCardMainChartNow'
-import InfoCardMainChartBestSalons from '@/components/InfoCardMainChartBestSalons'
+import InfoCardNews 					from '@/components/InfoCardNews'
+import InfoCardCurrentTasksSalon 		from '@/components/InfoCardCurrentTasksSalon'
+import InfoCardCurrentTasksManager 		from '@/components/InfoCardCurrentTasksManager'
+import InfoCardMainChartPreorders 		from '@/components/InfoCardMainChartPreorders'
+import InfoCardMainChartOrders 			from '@/components/InfoCardMainChartOrders'
+import InfoCardMainChartNow 			from '@/components/InfoCardMainChartNow'
+import InfoCardMainChartBestSalons 		from '@/components/InfoCardMainChartBestSalons'
+import InfoCardChartSalesModel 			from '@/components/InfoCardChartSalesModel'
+import { AuthMixin } 					from '@/mixins'
 
 export default {
 	name: 'PageIndex',
@@ -31,8 +42,10 @@ export default {
 		InfoCardMainChartPreorders,
 		InfoCardMainChartOrders,
 		InfoCardMainChartNow,
-		InfoCardMainChartBestSalons
-	}
+		InfoCardMainChartBestSalons,
+		InfoCardChartSalesModel
+	},
+	mixins: [AuthMixin]
 }
 </script>
 

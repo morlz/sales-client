@@ -4,12 +4,9 @@
 		<div class="cards AppContent__inner">
 			<manager-profile-card :content="personal_current" v-if="personal_current.id"/>
 
-			<manager-roles-card v-if="auth_can(1, 'RoleSetup')" />
-			<manager-groups-card v-if="auth_can(1, 'RoleSetup')" :manager-id="$route.params.id"/>
-			<manager-salons-card v-if="auth_can({
-				'Salon': 1,
-				'SalonsSetup': 1
-			})"/>
+			<manager-roles-card v-if="auth_can(1, 'RoleSetup') && false" />
+			<manager-groups-card v-if="auth_can(1, 'RoleSetup') && false" :manager-id="$route.params.id"/>
+			<manager-salons-card v-if="auth_can({ 'Salon': 1, 'SalonsSetup': 1 }) && false"/>
 		</div>
 	</div>
 

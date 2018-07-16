@@ -79,9 +79,26 @@
 					</template>
 
 					<template slot="buttons" slot-scope="{ row, index }">
-						<q-checkbox :value="infiniteSelect_isSelected(row.td.ID)" @input="infiniteSelect_onSelect($event, row.td.ID)" v-if="tab == 'new'" class="InfiniteSelect__item"/>
-						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(2, 'Cart')" @click.stop="furniture_addToCart({ UN: row.UN })">shopping_cart</i>
-						<i aria-hidden="true" class="q-icon material-icons" v-if="auth_can(1, 'MovingSofaBetweenSalons')" @click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(row))">local_shipping</i>
+						<q-checkbox :value="infiniteSelect_isSelected(row.td.ID)"
+							@input="infiniteSelect_onSelect($event, row.td.ID)"
+							v-if="tab == 'new'"
+							class="InfiniteSelect__item"/>
+
+						<i
+							aria-hidden="true"
+							class="q-icon material-icons"
+							v-if="auth_can(2, 'Cart')"
+							@click.stop="furniture_addToCart(row)">
+							shopping_cart
+						</i>
+
+						<i
+							aria-hidden="true"
+							class="q-icon material-icons"
+							v-if="auth_can(1, 'MovingSofaBetweenSalons')"
+							@click.stop="(selectSalonModal = true, transfer_selectedToMoveSet(row))">
+							local_shipping
+						</i>
 					</template>
 				</infinite-table>
 			</q-card>

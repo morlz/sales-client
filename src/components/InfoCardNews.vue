@@ -1,5 +1,5 @@
 <template>
-	<q-card class="InfoCardNews">
+	<q-card class="InfoCardNews" v-if="auth_can(1, 'News')">
 		<q-card-title>
 			Новости
 		</q-card-title>
@@ -46,7 +46,7 @@
 					</q-list>
 				</q-scroll-area>
 
-				<info-card-news-create/>
+				<info-card-news-create v-if="auth_can(2, 'News')"/>
 			</div>
 		</q-card-main>
 	</q-card>
