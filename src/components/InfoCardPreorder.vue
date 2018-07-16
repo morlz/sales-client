@@ -5,17 +5,30 @@
 	</q-card-title>
 
 	<q-card-main>
-		<q-stepper alternative-labels :value="+data.status_id - 1" no-header-navigation>
-			<q-step v-for="item, index in preorder_statuses" :name="index" :title="item.title" :key="index" active-icon="fas fa-eye"/>
+		<q-stepper
+			alternative-labels
+			:value="+data.status_id - 1"
+			no-header-navigation>
+			<q-step
+				v-for="item, index in preorder_statuses"
+				:name="index"
+				:title="item.title"
+				:key="index"
+				active-icon="fas fa-eye"/>
 		</q-stepper>
 
 		<div class="InfoCardPreorder__edit" v-if="edit">
 			<q-field helper="Рекламный источник">
-				<q-select v-model="editFields.ad_source_id" :options="adSource_listSelect" float-label="Рекламный источник" filter/>
+				<q-select
+					v-model="editFields.ad_source_id"
+					:options="adSource_listSelect"
+					float-label="Рекламный источник"
+					filter/>
 			</q-field>
 
 			<q-field helper="Вероятность">
-				<q-rating v-model.number="editFields.rating" :max="5" size="30px"/>
+				<q-rating
+					v-model.number="editFields.rating" :max="5" size="30px"/>
 			</q-field>
 
 			<q-field>
