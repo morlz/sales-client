@@ -70,11 +70,11 @@
 			<q-btn
 				color="primary"
 				@click="invoice_ship(data.ID)"
-				v-if="+data.VID_OPLATI == 3 && !+data.IS_CLOSE">
+				v-if="data.isShipShow(auth_currentSalon)">
 				Отгрузить
 			</q-btn>
-			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">в DAX</q-btn>
-			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">в 1С</q-btn>
+			<q-btn color="primary" @click="invoice_exportTo1c(data.ID)">Выгрузить (1С)</q-btn>
+			<q-btn color="primary" @click="invoice_exportToAx(data.ID)">подтвердить (DAX)</q-btn>
 			<q-btn color="primary" @click="invoice_print({ data, type })">Печать</q-btn>
 			<q-btn
 				color="primary"
@@ -128,6 +128,9 @@ export default {
 		}
 	},
 	computed: {
+		...mapGetters([
+			'auth_currentSalon'
+		]),
 		data () {
 			if (!this.content)
 				return {}

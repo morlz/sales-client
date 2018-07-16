@@ -94,4 +94,15 @@ export default class Invoice extends BaseModel {
 	get dax () {
 		return !(this.td || []).every(el => !el.dax) || (this.zak || []).every(el => !el.dax)
 	}
+
+	/**
+	 * доп.условие на кнопку Отгрузить, к тому что в документе есть есть строка с салоном НЕ 0, (edited)
+	 * Есть строка с салоном НЕ 0, и НЕ 40, и НЕ 122, и НЕ 1040, и (салон НЕ относится к группе ТС Ладья или все строки диваны_тд заказа имеют установленный ВДАКС)
+	 * @param  Salon  salon Салон
+	 * @return Boolean
+	 */
+
+	isShipShow (salon) {
+		return this.td.some(el => ![0, 122, 40, 1040].includes(+el.salon.id)) && (this.salon.group != 1 || this.td.every(el => +el.dax))
+	}
 }
