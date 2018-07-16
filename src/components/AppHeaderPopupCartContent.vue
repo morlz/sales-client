@@ -1,7 +1,7 @@
 <template>
-	<div class="items scroll">
+	<div class="AppHeaderPopupCartContent scroll">
 		<template v-if="cart_exist.length">
-			<div class="title">Мебель из салона (склада)</div>
+			<div class="AppHeaderPopupCartContent__title">Мебель из салона (склада)</div>
 			<table-collapsible :rows="cart_exist" :columns="CartPopupExist">
 				<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
 					<q-btn
@@ -16,7 +16,7 @@
 		</template>
 
 		<template v-if="cart_new.length">
-			<div class="title">Заказные позиции</div>
+			<div class="AppHeaderPopupCartContent__title">Заказные позиции</div>
 			<table-collapsible :rows="cart_new" :columns="CartPopupNew">
 				<div slot="end" slot-scope="props" class="tableCollapsible__rowColumnEnd">
 					<q-btn
@@ -30,7 +30,7 @@
 			</table-collapsible>
 		</template>
 
-		<div class="title" v-if="!cart_exist.length && !cart_new.length">
+		<div class="AppHeaderPopupCartContent__title" v-if="!cart_exist.length && !cart_new.length">
 			Корзина пуста
 		</div>
 	</div>
@@ -110,5 +110,16 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="stylus">
+.AppHeaderPopupCartContent
+	display grid
+	grid-gap 10px
+	align-content start
+	overflow-y auto
+	padding-right 10px
+	max-height 100%
+
+	&__title
+		font-size 18px
+		font-weight bold
 </style>
