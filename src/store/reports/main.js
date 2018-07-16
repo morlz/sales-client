@@ -29,7 +29,6 @@ const actions = {
 	async report_main_getData ({ commit, dispatch }) {
 		commit('report_main_loaingSet', true)
 		let res = await ReportMain.get()
-		console.log(res);
 		commit('report_main_loaingSet', false)
 
 		if (!res || res.error) return
@@ -130,13 +129,13 @@ const getters = {
 		})
 
 		datasets.push({
-			data: data.ended,
-			label: 'Оформлено'
+			data: data.paid,
+			label: 'Оплачено'
 		})
 
 		datasets.push({
-			data: data.paid,
-			label: 'Оплачено'
+			data: data.ended,
+			label: 'Отгружено'
 		})
 
 		datasets.forEach(

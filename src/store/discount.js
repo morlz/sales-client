@@ -2,12 +2,14 @@ import api from '@/api'
 import Infinite from '@/lib/Infinite'
 import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
 import merge from 'lodash.merge'
+import Preremoved from '@/lib/Preremoved'
 import { Furniture } from '@/lib'
 
+let preremoved = new Preremoved('discount')
 let infinite = new TwoSideInfinite({ method: api.discounts.getLimited, namespace: 'discount', returns: Furniture })
 
 
-const state = merge(infinite.getState(), {
+const state = merge(infinite.getState(), preremoved.getState(), {
 	cached: {
 		current: {},
 		models: []
@@ -19,7 +21,7 @@ const state = merge(infinite.getState(), {
 	}
 })
 
-const actions = merge(infinite.getActions(true), {
+const actions = merge(infinite.getActions(true), preremoved.getActions(true), {
 	async discount_init ({ commit, dispatch, state, getters }, payload) {
 		if (payload)
 			await dispatch('discount_getOne', payload)
@@ -90,12 +92,17 @@ const actions = merge(infinite.getActions(true), {
 		commit('discount_cachedModelsSet', res.data)
 	},
 	async discount_addToCart({ commit, dispatch }, payload) {
-		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
-		commit('discount_removeOneFromCache', payload)
+		const findItem = el => el.UN == payload.UN
+
+		commit('discount_preremove', findItem)
+		if ( await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) )
+			return commit('discount_preremoveRemove', findItem)
+
+		commit('discount_preremoveRestore', findItem)
 	},
 })
 
-const mutations = merge(infinite.getMutations(true), {
+const mutations = merge(infinite.getMutations(true), preremoved.getMutations(true), {
 	discount_destroy: state => state.cached.models = state.cached.list = [],
 	discount_cacheAppend: (state, payload) => state.infinite.cached = { view: [...state.infinite.cached, ...payload] },
 	discount_filtersSet: (state, payload) => state.filters = payload,
@@ -110,7 +117,7 @@ const mutations = merge(infinite.getMutations(true), {
 	discount_loadingModelsSet: (state, payload) => state.loading.models = payload,
 })
 
-const getters = merge(infinite.getGetters(true), {
+const getters = merge(infinite.getGetters(true), preremoved.getGetters(true), {
 	discount_filters: state => ({ ...state.filters, 'NAKC': state.filters['td.salon.ID_SALONA'] == '1040' ? '65536' : undefined}),
 	discount_current: ({ cached }) => cached.current,
 	discount_cached: ({ cached }) => cached.list,

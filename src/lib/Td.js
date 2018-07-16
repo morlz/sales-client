@@ -1,5 +1,5 @@
 import BaseModel from '@/lib/BaseModel'
-import { Furniture } from '@/lib'
+import { Furniture, Salon } from '@/lib'
 
 const vat = 18
 
@@ -8,6 +8,7 @@ export default class Td extends BaseModel {
 		super()
 		this.define({
 			furniture: Furniture,
+			salon: Salon,
 			count: 'KOL',
 			dax: 'VDAX'
 		}, arg)

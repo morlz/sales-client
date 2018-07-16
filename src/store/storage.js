@@ -2,11 +2,13 @@ import api from '@/api'
 import Infinite from '@/lib/Infinite'
 import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
 import merge from 'lodash.merge'
+import Preremoved from '@/lib/Preremoved'
 import { Furniture } from '@/lib'
 
+let preremoved = new Preremoved('storage')
 let infinite = new TwoSideInfinite({ method: api.storages.getLimited, namespace: 'storage', returns: Furniture })
 
-const state = merge(infinite.getState(), {
+const state = merge(infinite.getState(), preremoved.getState(), {
 	cached: {
 		current: {},
 		models: []
@@ -18,7 +20,7 @@ const state = merge(infinite.getState(), {
 	}
 })
 
-const actions = merge(infinite.getActions(true), {
+const actions = merge(infinite.getActions(true), preremoved.getActions(true), {
 	async storage_init ({ commit, dispatch, getters, state }, payload) {
 		if (payload)
 			return dispatch('storage_getOne', payload)
@@ -63,12 +65,17 @@ const actions = merge(infinite.getActions(true), {
 		commit('storage_cachedModelsSet', res.data)
 	},
 	async storage_addToCart({ commit, dispatch }, payload) {
-		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
-		commit('storage_removeOneFromCache', payload)
+		const findItem = el => el.UN == payload.UN
+
+		commit('storage_preremove', findItem)
+		if ( await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) )
+			return commit('storage_preremoveRemove', findItem)
+
+		commit('storage_preremoveRestore', findItem)
 	},
 })
 
-const mutations = merge(infinite.getMutations(true), {
+const mutations = merge(infinite.getMutations(true), preremoved.getMutations(true), {
 	storage_destroy: state => state.cached.models = state.cached.list = [],
 	storage_cacheAppend: (state, payload) => state.infinite.cached = { view: [...state.infinite.cached, ...payload] },
 	storage_filtersSet: (state, payload) => state.filters = payload,
@@ -85,7 +92,7 @@ const mutations = merge(infinite.getMutations(true), {
 	storage_initInfinite: (state, payload) => state.infinite = payload,
 })
 
-const getters = merge(infinite.getGetters(true), {
+const getters = merge(infinite.getGetters(true), preremoved.getGetters(true), {
 	storage_filters: state => ({ ...state.filters, type: undefined }),
 	storage_current: state => state.cached.current,
 	storage_cached: state => state.cached.list,

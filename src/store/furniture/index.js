@@ -1,18 +1,21 @@
 import api from '@/api'
 import Infinite from '@/lib/Infinite'
 import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
+import Preremoved from '@/lib/Preremoved'
 import merge from 'lodash.merge'
 import transfer from './transfer'
 import selectCloth from './selectCloth'
 import { Furniture } from '@/lib'
 
+let preremoved = new Preremoved('furniture')
 let infinite = new TwoSideInfinite({ method: api.furnitures.getLimited, namespace: 'furniture', returns: Furniture })
 
-const state = merge(infinite.getState(), {
+const state = merge(infinite.getState(), preremoved.getState(), {
 	cached: {
 		current: {},
 		models: []
 	},
+	preremoved: {},
 	loading: {
 		one: true,
 		models: true,
@@ -71,7 +74,7 @@ const state = merge(infinite.getState(), {
 })
 
 
-const actions = merge(infinite.getActions(true), {
+const actions = merge(infinite.getActions(true), preremoved.getActions(true), {
 	async furniture_init ({ commit, dispatch, getters, state }, payload) {
 		if (payload)
 			return dispatch('furniture_getOne', payload)
@@ -134,8 +137,13 @@ const actions = merge(infinite.getActions(true), {
 		commit('furniture_loadingModelsSet', false)
 	},
 	async furniture_addToCart({ commit, dispatch }, payload) {
-		if ( !await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) ) return
-		commit('furniture_removeOneFromCache', payload)
+		const findItem = el => el.UN == payload.UN
+
+		commit('furniture_preremove', findItem)
+		if ( await dispatch('cart_addItem', { type: 'exist', un: payload.UN }) )
+			return commit('furniture_preremoveRemove', findItem)
+
+		commit('furniture_preremoveRestore', findItem)
 	},
 
 	/*
@@ -530,12 +538,15 @@ const actions = merge(infinite.getActions(true), {
 	}
 })
 
-const mutations = merge(infinite.getMutations(true), {
+const mutations = merge(infinite.getMutations(true), preremoved.getMutations(true), {
 	furniture_destroy: state => state.cached.models = state.cached.list = [],
 	furniture_initInfinite: (state, payload) => state.infinite = payload,
 	//furniture_cacheSet: (state, payload) => state.cached.list = payload,
 	furniture_completeSet: (state, payload) => state.complete = payload,
-	furniture_cacheAppend: (state, payload) => state.cached.list = [...state.cached.list, ...payload],
+	furniture_cacheAppend: (state, payload) =>
+		state.infinite.cached = {
+			view: [...state.infinite.cached, ...payload]
+		},
 	furniture_filtersSet: (state, payload) => state.filters = payload,
 	furniture_sortSet: (state, payload) => state.sort = payload,
 	furniture_lastOffsetSet: (state, payload) => state.offset.last = payload,
@@ -614,7 +625,7 @@ const mutations = merge(infinite.getMutations(true), {
 		state.new.selected.sign = (state.new.selected.sign + ' ' + payload).trim()
 })
 
-const getters = merge(infinite.getGetters(true), {
+const getters = merge(infinite.getGetters(true), preremoved.getGetters(true), {
 	furniture_infinite: state => state.infinite,
 	furniture_complete: state => state.complete,
 	furniture_filters: (state, getters) => {

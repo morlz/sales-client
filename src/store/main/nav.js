@@ -14,6 +14,7 @@ const state = {
 		{
 			name: 'Помощь',
 			path: "/help",
+			can: { lvl: 1, action: 'Help' },
 			icon: "fas fa-info"
 		},
 		{

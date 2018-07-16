@@ -4,6 +4,7 @@ import resume from './resume'
 import inventory from './inventory'
 import ad from './ad'
 import main from './main'
+import salesModel from './salesModel'
 
 export default {
 	namespaced: true,
@@ -13,6 +14,7 @@ export default {
 		resume,
 		inventory,
 		ad,
-		main
+		main,
+		salesModel
 	}
 }
