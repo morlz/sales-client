@@ -19,6 +19,7 @@
 				:rows="task_cached"
 				:complete="task_complete"
 				:filter-values="task_filters"
+				:row-style="rowStyle"
 				@infinite="task_infinity"
 				@click="clickHandler"
 				@sort="local_task_sortChange"
@@ -116,6 +117,11 @@ export default {
 		},
 		clickHandler (e, row) {
 			this.routerGoIdPath('/preorder/preorders')(e, row.preorder_id)
+		},
+		rowStyle (props) {
+			return {
+				opacity: props.item.next ? '0.5' : '1'
+			}
 		}
 	},
 	async created () {

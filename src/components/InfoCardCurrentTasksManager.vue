@@ -11,12 +11,18 @@
 					:key="task.id"
 					@click.native="$router.push('preorder/preorders/' + task.preorder_id)"
 					class="cursor-pointer">
-					<q-item-side 
+					<q-item-side
 						v-if="task.expired"
 						icon="error_outline"/>
 
 					<q-item-main>
-						{{ task.description }}
+						<q-item-tile v-if="task.client">
+							{{ task.client.fio }}
+						</q-item-tile>
+
+						<q-item-tile>
+							{{ task.description }}
+						</q-item-tile>
 					</q-item-main>
 
 					<q-item-side right>

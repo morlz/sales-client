@@ -33,6 +33,7 @@
 		@resize="updateViewport">
 		<tr
 			slot-scope="props"
+			:style="getRowStyle(props)"
 			ref="trs"
 			@click="rowClickHandler($event, props.item, props.itemIndex)">
 			<td v-if="$scopedSlots.buttons">
@@ -97,7 +98,10 @@ export default {
 			default: a => ({})
 		},
 		filterValues: Object,
-		noRowClick: Boolean
+		noRowClick: Boolean,
+		rowStyle: {
+			type: Function
+		}
 	},
 	data() {
 		return {
@@ -267,6 +271,10 @@ export default {
 					(prev, el) => (this.$set(prev, el.field, getVal(el.field)), prev),
 					{ ...n }
 				)
+		},
+		getRowStyle (props) {
+			if (typeof this.rowStyle != 'function') return
+			return this.rowStyle(props)
 		}
 	},
 	mounted () {
