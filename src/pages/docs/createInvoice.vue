@@ -70,8 +70,12 @@
 							<form-select-address v-model="options.to" @select="form.shipment.to = $event" :initial="form.shipment.to"/>
 						</q-field>
 
-						<q-field>
-							<q-input v-model.number="form.shipment.price" type="number" float-label="Цена доставки"/>
+						<q-field helper="1000 руб - доставка, 790 - подъем и сборка">
+							<q-input
+								v-model.number="form.shipment.price"
+								type="number"
+								float-label="Цена доставки"
+								suffix="руб."/>
 						</q-field>
 
 						<q-field>
@@ -133,7 +137,7 @@ export default {
 				shipment: {
 					type: false,
 					date: this.$moment().add(1, 'day').toDate(),
-					price: 0,
+					price: 1790,
 					to: {
 						address: '',
 						lat: 0,
