@@ -64,7 +64,7 @@
 							</q-item-side>
 						</q-item>
 
-						<q-item>
+						<q-item v-if="false">
 							<q-item-side>Цена товара</q-item-side>
 							<q-item-main/>
 							<q-item-side right>
