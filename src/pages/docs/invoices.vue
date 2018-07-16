@@ -13,10 +13,17 @@
 
 		<div class="manyInvoicesWrapper" v-if="!isOne">
 			<div
-				class="manyInvoicesWrapper__horGroup AppContent__headerTabs AppContent__tabs"
+				class="manyInvoicesWrapper__horGroup AppContent__headerTabs AppContent__tabs AppContent__select"
 				:class="{ 'manyInvoicesWrapper__horGroup-mobile': app_view_mobile }">
 
-				<q-tabs v-model="tab">
+				<q-select
+					color="grey-2"
+					inverted-light
+					v-model="tab"
+					:options="tabOptions"
+				/>
+
+				<q-tabs v-model="tab" v-if="false">
 					<q-tab v-for="tab, index in tabs" :name="tab.type" slot="title" :label="tab.name" :key="index"/>
 				</q-tabs>
 
@@ -89,6 +96,9 @@ export default {
 				{ name: "Отгружено", type: 'shipped' },
 				{ name: "Отказ", type: 'deny' },
 				{ name: "Все счета", type: '' }, // all
+				{ name: 'Выгруженые', type: 'dax' },
+				{ name: 'Не выгруженые', type: 'nodax' },
+				{ name: 'Выгружено в 1С', type: '1c' }
 			]
 		}
 	},
@@ -153,6 +163,9 @@ export default {
 			if (this.local_currentSalon)
 				return this.DocsInvoices.filter(el => el.field != 'storage.NAME')
 			return this.DocsInvoices
+		},
+		tabOptions () {
+			return this.tabs.map(el => ({ label: el.name, value: el.type }))
 		}
 	},
 	methods: {

@@ -45,7 +45,7 @@ const state = merge(infinite.getState(), {
 		},
 		invoiceSource: [
 			{ label: "Сайт", value: "1" },
-			{ label: "Звнонок", value: "2" },
+			{ label: "Звонок", value: "2" },
 			{ label: "Салон", value: "3" },
 		]
 	}
