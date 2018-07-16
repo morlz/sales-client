@@ -1,8 +1,8 @@
 <template>
 <div class="AppHeaderProfile">
-	<q-popover ref="AppHeaderProfilePopover">
+	<q-popover ref="AppHeaderProfilePopover" max-height="90vh">
 		<q-card>
-			<q-card-media>
+			<q-card-media v-if="loginedAs.avatar">
 				<div
 					class="AppHeaderProfilePopover__avatar"
 					:style="{ backgroundImage: `url(${loginedAs.avatar.href})` }"/>
