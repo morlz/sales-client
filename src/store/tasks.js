@@ -2,6 +2,7 @@ import api from '@/api'
 import Infinite from '@/lib/Infinite'
 import TwoSideInfinite from '@/lib/Infinite/TwoSideInfinite'
 import merge from 'lodash.merge'
+import moment from 'moment'
 import { Task } from '@/lib'
 
 let infinite = new TwoSideInfinite({ method: api.tasks.getLimited, namespace: 'task', returns: Task })
@@ -149,8 +150,12 @@ const getters = merge(infinite.getGetters(true), {
 	task_edit_current: ({ edit }) => edit.current,
 	task_add_next: state => state.add.next,
 	task_type: state => state.filters.type,
-	task_today: state => state.cached.today,
-	task_todaySalon: state => state.cached.todaySalon,
+	task_today: state => state.cached.today
+		.sort( api.core.sortFnFactory( item => moment(item.date).valueOf() ) )
+		.sort( api.core.sortFnFactory( item => item.expired ) ),
+	task_todaySalon: state => state.cached.todaySalon
+		.sort( api.core.sortFnFactory( item => moment(item.date).valueOf() ) )
+		.sort( api.core.sortFnFactory( item => item.expired ) ),
 })
 
 export default {
