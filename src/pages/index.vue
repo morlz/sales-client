@@ -15,7 +15,7 @@
 			<info-card-main-chart-preorders/>
 			<info-card-main-chart-orders/>
 			<info-card-main-chart-best-salons v-if="false"/>
-			<info-card-chart-sales-model/>
+			<info-card-chart-sales-model v-if="auth_can(1, 'ReportSalesModel')"/>
 		</template>
 	</div>
 </q-page>
