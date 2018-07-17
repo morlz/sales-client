@@ -141,7 +141,7 @@ const actions = {
 	auth_getGeolocation() {
 		return new Promise((resolve, reject) => window.navigator.geolocation.getCurrentPosition(resolve, reject))
 	},
-	async auth_currentSalonSet ({ commit, dispatch }, payload) {
+	async auth_currentSalonSet ({ commit, dispatch, state }, payload) {
 		commit("auth_loadingSet", { currentSalon: true })
 		let res = await api.auth.setSalon(payload)
 		commit("auth_loadingSet", { currentSalon: false })
@@ -160,7 +160,12 @@ const mutations = {
 	auth_permissionsSet: (state, payload) => state.permissions = payload || [],
 	auth_salonsSet: (state, payload) => state.salons = payload || [],
 	auth_formSet: (state, payload) => state.form[payload.type] = payload.data,
-	auth_currentSalonSet: (state, payload) => state.currentSalon = payload instanceof Salon ? payload : new Salon(payload),
+	auth_currentSalonSet: (state, payload) => {
+		state.currentSalon = payload instanceof Salon ? payload : new Salon(payload)
+		if (state.user.hasAccessToNewInterface) return
+		api.auth.unsetToken()
+		window.location.href = '/sl/projectSRC/htmlData/forumList.html'
+	},
 	auth_currentSalonVisibleSet: (state, payload) => state.visible.currentSalon = payload,
 	auth_loadingSet: (state, payload) => state.loading = { ...state.loading, ...payload },
 	auth_logout: state => state.user = false,
