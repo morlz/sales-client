@@ -101,8 +101,21 @@
 			</q-card-main>
 
 			<q-card-actions>
-				<q-btn color="primary" :disabled="furniture_new_active.button" @click="furniture_new_save" v-if="edit">Сохранить</q-btn>
-				<q-btn color="primary" :disabled="furniture_new_active.button" @click="furniture_new_addToCart" v-else>Создать</q-btn>
+				<q-btn
+					color="primary"
+					:disabled="furniture_new_active.button"
+					@click="furniture_new_save"
+					v-if="edit">
+					Сохранить
+				</q-btn>
+
+				<q-btn
+					color="primary"
+					:disabled="furniture_new_active.button"
+					@click="furniture_new_addToCart"
+					v-else>
+					Создать
+				</q-btn>
 			</q-card-actions>
 		</q-card>
 	</div>

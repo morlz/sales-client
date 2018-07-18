@@ -374,6 +374,7 @@ const actions = merge(infinite.getActions(true), preremoved.getActions(true), {
 
 	async furniture_new_addToCart({ commit, dispatch }) {
 		await dispatch('cart_addItem', await dispatch('furniture_new_collectData'))
+		await dispatch('furniture_new_modelSelect', '')
 	},
 	async furniture_new_collectData ({ commit, dispatch, state, getters }) {
 		//prepared data
