@@ -358,7 +358,7 @@ const actions = merge(infinite.getActions(true), preremoved.getActions(true), {
 		commit('furniture_new_priceSet', { r: 0, opt: 0 })
 		if (getters.furniture_new_freeTrim) return
 		// empty form
-		commit('furniture_new_dekorSelect', '')
+		//commit('furniture_new_dekorSelect', '')
 	},
 	//on dekor select
 	async furniture_new_dekorSelect ({ commit, dispatch }, payload) {
@@ -586,10 +586,12 @@ const mutations = merge(infinite.getMutations(true), preremoved.getMutations(tru
 	furniture_new_cachedStockSet: (state, payload) => state.new.cached.stock = payload.ACTIONNUM || payload,
 	furniture_new_cachedTypesSet: (state, payload) => state.new.cached.types = payload,
 	furniture_new_cachedDekorSet: (state, payload) => state.new.cached.dekor = payload,
-	furniture_new_cachedClothCountSet: (state, payload) =>
+	furniture_new_cachedClothCountSet: (state, payload) => {
+		if (!Array.isArray(payload)) return
 		state.new.cached.clothCount = payload
 			.filter(el => +el.count)
-			.map(({ count, index }) => ({ count: +count, index: +index })),
+			.map(({ count, index }) => ({ count: +count, index: +index }))
+	},
 	furniture_new_cachedClothSet: (state, payload) => state.new.cached.cloth[payload.index] = payload.data,
 	furniture_new_cachedClothUpdate: (state, payload) =>
 		state.new.cached.cloth[payload.index] = { ...state.new.cached.cloth[payload.index], ...payload.data },
