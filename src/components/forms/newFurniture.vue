@@ -195,13 +195,16 @@ export default {
 		},
 
 		models () {
-			return this.furniture_new_cached.models.map(el => ({ value: el.ITEMID, label: el.ITEMNAME }))
+			return this.furniture_new_cached.models
+				.map(el => ({ value: el.ITEMID, label: el.ITEMNAME, stamp: el.ITEMID }))
 		},
 		types () {
-			return this.furniture_new_cached.types.map(el => ({ value: el.CONFIGID, label: el.NAME.substr(0, 80) }))
+			return this.furniture_new_cached.types
+				.map(el => ({ value: el.CONFIGID, label: el.NAME.substr(0, 80), stamp: el.CONFIGID }))
 		},
 		dekors () {
-			return this.furniture_new_cached.dekor.map(el => ({ value: el.CONFIGID, label: el.CONFIGID }))
+			return this.furniture_new_cached.dekor
+				.map(el => ({ value: el.CONFIGID, label: el.CONFIGID, stamp: el.CONFIGID }))
 		},
 	},
 	methods: {
